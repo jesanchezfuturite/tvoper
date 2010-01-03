@@ -1,5 +1,6 @@
 @extends('layout.app')
 
+
 @section('content')
 <link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración Entidad Tramite</small></h3>
