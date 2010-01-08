@@ -199,16 +199,22 @@ class Operaciontransacciones extends Command
             $encontrados [$tr->referencia]= (float)$tr->importe_transaccion ;
         }
 
+
         // revisar los montos en registers
         foreach($this->registers as $r)
         {
-            if( $encontrados[$r->referencia] != $r->importe_transaccion )
+            foreach($encontrados as $ref => $amount_found)
             {
+                if($ref == $r->referencia)
+                {
+                    if($amount_found != $r->monto)
+                    {
+                         // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
+                        $this->ad []= $r->referencia; 
 
-                // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
-                $this->ad []= $r->referencia; 
-
-                $this->discarted [] = $r->referencia;
+                        $this->discarted [] = $r->referencia;
+                    }
+                }
             }
         }
 
@@ -239,7 +245,7 @@ class Operaciontransacciones extends Command
                     $this->valid []= $r->referencia;
                 }    
             }else{
-                dd("1",$r);
+
                 $this->valid []= $r->referencia;
             }
         }
@@ -262,21 +268,26 @@ class Operaciontransacciones extends Command
         Log::info('[Conciliacion:OperTransacciones] @udpdateTransactionsAsProcessed - Actualizar egobierno');
 
 
-        $egob = $this->tr->updateStatusInArray($this->valid);
+        #$egob = $this->tr->updateStatusInArray($this->valid);
         // actualizar con los registros que se procesaron correctamente
         Log::info('[Conciliacion:OperTransacciones] @udpdateTransactionsAsProcessed - Actualizar operacion');
-        $oper = $this->pr->updateStatusTo($this->valid,"p");
-        
+
+        try{
+
+            $oper = $this->pr->updateStatusPerReferenceTo($this->valid,"p");
+        }catch( \Exception $e ){
+            dd($e->getMessage());
+        }
         if(count($this->ad))
         {
             // actualizar con los registros que tienen error diferencia de montos
-            $oper = $this->pr->updateStatusTo($this->ad,"ad");   
+            $oper = $this->pr->updateStatusPerReferenceTo($this->ad,"ad");   
         }
 
         if(count($this->ane))
         {
             // actualizar con los registros que tienen error no existen en transacciones de egobierno
-            $oper = $this->pr->updateStatusTo($this->ane,"ane");   
+            $oper = $this->pr->updateStatusPerReferenceTo($this->ane,"ane");   
         }
 
         
