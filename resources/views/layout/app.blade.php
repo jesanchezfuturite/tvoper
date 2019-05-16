@@ -60,6 +60,7 @@ License: You must have a valid license purchased only from themeforest(the above
 		<!-- BEGIN LOGO -->
 		<div class="page-logo">
 			<a href="index.html">
+			
 			<img src="assets/admin/layout/img/logo.png" alt="logo" class="logo-default"/>
 			</a>
 			<div class="menu-toggler sidebar-toggler">
@@ -76,7 +77,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				<!-- BEGIN NOTIFICATION DROPDOWN -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
 				<li class="dropdown dropdown-extended dropdown-notification" id="header_notification_bar">
-					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+					<!--<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<i class="icon-bell"></i>
 					<span class="badge badge-default">
 					7 </span>
@@ -180,12 +181,12 @@ License: You must have a valid license purchased only from themeforest(the above
 								</li>
 							</ul>
 						</li>
-					</ul>
+					</ul>-->
 				</li>
 				<!-- END NOTIFICATION DROPDOWN -->
 				<!-- BEGIN INBOX DROPDOWN -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-				<li class="dropdown dropdown-extended dropdown-inbox" id="header_inbox_bar">
+				<li class="dropdown dropdown-extended dropdown-inbox" id="header_inbox_bar"><!--
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<i class="icon-envelope-open"></i>
 					<span class="badge badge-default">
@@ -270,12 +271,12 @@ License: You must have a valid license purchased only from themeforest(the above
 								</li>
 							</ul>
 						</li>
-					</ul>
+					</ul>-->
 				</li>
 				<!-- END INBOX DROPDOWN -->
 				<!-- BEGIN TODO DROPDOWN -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
-				<li class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar">
+				<li class="dropdown dropdown-extended dropdown-tasks" id="header_task_bar"><!--
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<i class="icon-calendar"></i>
 					<span class="badge badge-default">
@@ -367,27 +368,28 @@ License: You must have a valid license purchased only from themeforest(the above
 								</li>
 							</ul>
 						</li>
-					</ul>
+					</ul>-->
 				</li>
 				<!-- END TODO DROPDOWN -->
 				<!-- BEGIN USER LOGIN DROPDOWN -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
 				<li class="dropdown dropdown-user">
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-					<img alt="" class="img-circle" src="assets/admin/layout/img/avatar3_small.jpg"/>
-					<span class="username username-hide-on-mobile">
-					Nick </span>
+					<!--<img alt="" class="img-circle" src="assets/admin/layout/img/avatar3_small.jpg"/>-->
+					<span class="username username-hide-on-mobile">{{ Auth::user()->name }} </span>
 					<i class="fa fa-angle-down"></i>
 					</a>
 					<ul class="dropdown-menu dropdown-menu-default">
 						<li>
 							<a href="extra_profile.html">
-							<i class="icon-user"></i> My Profile </a>
+							<i class="icon-user"></i> Perfil </a>
 						</li>
+
 						<li>
 							<a href="page_calendar.html">
-							<i class="icon-calendar"></i> My Calendar </a>
+							<i class="icon-calendar"></i> Levantar solicitud </a>
 						</li>
+						<!--
 						<li>
 							<a href="inbox.html">
 							<i class="icon-envelope-open"></i> My Inbox <span class="badge badge-danger">
@@ -406,17 +408,24 @@ License: You must have a valid license purchased only from themeforest(the above
 							<a href="extra_lock.html">
 							<i class="icon-lock"></i> Lock Screen </a>
 						</li>
+					-->
 						<li>
-							<a href="login.html">
-							<i class="icon-key"></i> Log Out </a>
+							<a href="{{ route('logout') }}" onclick="event.preventDefault();
+                                 document.getElementById('logout-form').submit();">
+							<i class="icon-key"></i> Salir </a>
+							
 						</li>
+						<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
 					</ul>
 				</li>
 				<!-- END USER LOGIN DROPDOWN -->
 				<!-- BEGIN QUICK SIDEBAR TOGGLER -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
+				<!--
 				<li class="dropdown dropdown-quick-sidebar-toggler">
-					<a href="javascript:;" class="dropdown-toggle">
+					<a href="javascript:;" class="dropdown-toggle" href="#">
 					<i class="icon-logout"></i>
 					</a>
 				</li>
@@ -465,8 +474,8 @@ License: You must have a valid license purchased only from themeforest(the above
 				</li>
 				<li class="start ">
 					<a href="javascript:;">
-					<i class="icon-home"></i>
-					<span class="title">Dashboard</span>
+					<!--<i class="icon-home"></i>-->
+					<span class="title">Consultas</span>
 					<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
@@ -489,8 +498,8 @@ License: You must have a valid license purchased only from themeforest(the above
 				</li>
 				<li>
 					<a href="javascript:;">
-					<i class="icon-basket"></i>
-					<span class="title">eCommerce</span>
+					<!-- <i class="icon-basket"></i> -->
+					<span class="title">Operación</span>
 					<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
@@ -521,12 +530,11 @@ License: You must have a valid license purchased only from themeforest(the above
 						</li>
 					</ul>
 				</li>
-				<li class="active open">
+				<li >
 					<a href="javascript:;">
-					<i class="icon-rocket"></i>
-					<span class="title">Page Layouts</span>
-					<span class="selected"></span>
-					<span class="arrow open"></span>
+					<!--<i class="icon-rocket"></i>-->
+					<span class="title">Administración</span>
+					<span class="arrow"></span>
 					</a>
 					<ul class="sub-menu">
 						<li>
@@ -613,8 +621,8 @@ License: You must have a valid license purchased only from themeforest(the above
 				</li>
 				<li>
 					<a href="javascript:;">
-					<i class="icon-diamond"></i>
-					<span class="title">UI Features</span>
+					<!--<i class="icon-diamond"></i>-->
+					<span class="title">Reportes</span>
 					<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
@@ -706,8 +714,8 @@ License: You must have a valid license purchased only from themeforest(the above
 				</li>
 				<li>
 					<a href="javascript:;">
-					<i class="icon-puzzle"></i>
-					<span class="title">UI Components</span>
+					<!--<i class="icon-puzzle"></i>-->
+					<span class="title">Indicadores</span>
 					<span class="arrow "></span>
 					</a>
 					<ul class="sub-menu">
@@ -758,13 +766,14 @@ License: You must have a valid license purchased only from themeforest(the above
 					<a href="angularjs" target="_blank">
 					<i class="icon-paper-plane"></i>
 					<span class="title">
-					AngularJS Version </span>
+					Configuración </span>
 					</a>
 				</li>
-				<!-- END ANGULARJS LINK -->
+				<!-- END ANGULARJS LINK --
 				<li class="heading">
 					<h3 class="uppercase">Features</h3>
 				</li>
+				<!--
 				<li>
 					<a href="javascript:;">
 					<i class="icon-settings"></i>
@@ -1167,7 +1176,7 @@ License: You must have a valid license purchased only from themeforest(the above
 							Vector Maps</a>
 						</li>
 					</ul>
-				</li>
+				</li>-->
 			</ul>
 			<!-- END SIDEBAR MENU -->
 		</div>
@@ -1839,7 +1848,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
 <div class="page-footer-inner">
-	 2014 &copy; Metronic by keenthemes. <a href="http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes" title="Purchase Metronic just for 27$ and get lifetime updates for free" target="_blank">Purchase Metronic!</a>
+	 {{date('Y')}} &copy; Tesorería Virtual. 
 </div>
 <div class="scroll-to-top">
 	<i class="icon-arrow-up"></i>
