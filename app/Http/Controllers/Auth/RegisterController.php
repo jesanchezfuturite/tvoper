@@ -49,7 +49,6 @@ class RegisterController extends Controller
             return $this->user->email;
         });
         /* revisar que solamente los perfiles de francisco cerda y jsanchez sean los que estan accediendo */
-        
     }
 
     /**
