@@ -40,7 +40,16 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            
+            $this->user = Auth::user();
+                
+            return $this->user->email;
+        });
+        /* revisar que solamente los perfiles de francisco cerda y jsanchez sean los que estan accediendo */
+        
     }
 
     /**
@@ -73,9 +82,4 @@ class RegisterController extends Controller
         ]);
     }
 
-
-    protected function guard()
-    {
-        return Auth::guard('guard-name');
-    }
 }

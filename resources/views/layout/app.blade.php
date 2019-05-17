@@ -1192,7 +1192,7 @@ License: You must have a valid license purchased only from themeforest(the above
 	</div>
 </div>
 <!-- END CONTENT -->
-<!-- BEGIN QUICK SIDEBAR -->
+<!-- BEGIN QUICK SIDEBAR --
 <a href="javascript:;" class="page-quick-sidebar-toggler"><i class="icon-close"></i></a>
 <div class="page-quick-sidebar-wrapper">
 	<div class="page-quick-sidebar">
