@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
+use Illuminate\Support\Facades\Auth;
+
+
 class RegisterController extends Controller
 {
     /*
@@ -37,7 +40,8 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('auth');
+
     }
 
     /**
@@ -69,4 +73,17 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+
+    protected function validateUser($user)
+    {
+        try
+        {
+            return view("home");    
+        }catch( \Exception $e){
+            dd($e-getMessage());
+        }
+        
+    }
+
 }
