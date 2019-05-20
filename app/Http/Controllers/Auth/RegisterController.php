@@ -42,13 +42,6 @@ class RegisterController extends Controller
     {
         $this->middleware('auth');
 
-        $this->middleware(function ($request, $next) {
-            
-            $this->user = Auth::user();
-                
-            return $this->user->email;
-        });
-        /* revisar que solamente los perfiles de francisco cerda y jsanchez sean los que estan accediendo */
     }
 
     /**
@@ -79,6 +72,18 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+
+    protected function validateUser($user)
+    {
+        try
+        {
+            return view("home");    
+        }catch( \Exception $e){
+            dd($e-getMessage());
+        }
+        
     }
 
 }
