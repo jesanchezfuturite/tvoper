@@ -3,11 +3,14 @@
 namespace App\Http\Middleware;
 
 use Closure;
+
 use Illuminate\Support\Facades\Auth;
 
 
-class Permissions
+
+class Permissions 
 {
+
     /**
      * Handle an incoming request.
      *
@@ -17,7 +20,16 @@ class Permissions
      */
     public function handle($request, Closure $next)
     {
-        dd("paso por aqui", Auth::user()->email);
+        
+        $value = session('is_admin');
+
+        if($value == false){
+
+            return redirect('/home');
+        }
+
         return $next($request);
     }
+
+    
 }
