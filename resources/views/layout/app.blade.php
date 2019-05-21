@@ -61,7 +61,7 @@ License: You must have a valid license purchased only from themeforest(the above
 		<div class="page-logo">
 			<a href="index.html">
 			
-			<img src="assets/admin/layout/img/logo.png" alt="logo" class="logo-default"/>
+			<img src="assets/admin/layout/img/teso.png" width="80%" alt="logo" class="logo-default"/>
 			</a>
 			<div class="menu-toggler sidebar-toggler">
 			</div>
@@ -455,10 +455,11 @@ License: You must have a valid license purchased only from themeforest(the above
 			<!-- DOC: Set data-auto-speed="200" to adjust the sub menu slide up/down speed -->
 			<ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
 				<!-- DOC: To remove the search box from the sidebar you just need to completely remove the below "sidebar-search-wrapper" LI element -->
-				<li class="sidebar-search-wrapper">
+				
+				<li class="sidebar-search-wrapper"><br /><br />
 					<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
 					<!-- DOC: Apply "sidebar-search-bordered" class the below search form to have bordered search box -->
-					<!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box -->
+					<!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box --
 					<form class="sidebar-search sidebar-search-bordered" action="extra_search.html" method="POST">
 						<a href="javascript:;" class="remove">
 						<i class="icon-close"></i>

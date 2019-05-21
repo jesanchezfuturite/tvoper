@@ -24,4 +24,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
+    Route::get('/adminmenu', 'AdminMenuController@index');
 });
