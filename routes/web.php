@@ -11,8 +11,6 @@
 |
 */
 
-
-
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -20,7 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
+Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
