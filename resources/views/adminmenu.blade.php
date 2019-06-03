@@ -130,9 +130,9 @@ Configuración <small> Menu principal</small>
 <!-- levels in menu -->
 <form action=" {{ url('/adminmenu/saveMenu') }}" method="POST">
 @csrf
-<input type="hidden" id="first_level" name="first_level" value="[]" >
-<input type="hidden" id="second_level" name="second_level" value="[]" >
-<input type="hidden" id="third_level" name="third_level" value="[]" >
+<input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
+<input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
+<input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
 
 <div class="row">
     <div class="col-md-12">
@@ -142,12 +142,30 @@ Configuración <small> Menu principal</small>
     </div>
 </div>
 </form>
+@endsection
 
 
+
+@section('scripts')
 
 <script type="text/javascript">
 
-    
+    $( document ).ready(function() {
+        var elements = $.parseJSON($("#first_level").val());
+
+        //clean the principal level
+        $('#principal').empty();
+
+        $.each(elements,function(i, item){
+
+           $('#principal').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+    });
     
     function addPrincipalLevel()
     {

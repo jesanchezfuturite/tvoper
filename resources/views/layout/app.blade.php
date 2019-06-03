@@ -1886,6 +1886,7 @@ QuickSidebar.init(); // init quick sidebar
 Demo.init(); // init demo features
       });
    </script>
+   @yield('scripts')
 <!-- END JAVASCRIPTS -->
 </body>
 <!-- END BODY -->
