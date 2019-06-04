@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Repositories\AdministratorsRepositoryEloquent;
 
-
-
 class HomeController extends Controller
 {
 
@@ -61,7 +59,7 @@ class HomeController extends Controller
     {
         // check if the user is admin
         $results = $this->admin->findByField('name',$user);
-        
+
         if(count($results))
         {
             session( ["is_admin" => true] );

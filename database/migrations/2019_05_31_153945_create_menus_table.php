@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateAdministratorsTable.
+ * Class CreateMenusTable.
  */
-class CreateAdministratorsTable extends Migration
+class CreateMenusTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateAdministratorsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('administrators', function(Blueprint $table) {
+		Schema::create('menus', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateAdministratorsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('administrators');
+		Schema::drop('menus');
 	}
 }
