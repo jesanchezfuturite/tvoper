@@ -45,7 +45,18 @@ class AdminMenuController extends Controller
     		/* get the info and make the arrays */
     		$menu = json_decode($menu_info->content,true);
 
-    		$data = $this->getLevelsFromArrays($menu);
+    		if(count($menu) > 0)
+    		{
+    			$data = $this->getLevelsFromArrays($menu);	
+    		}else{
+    			$data = array(
+		    		"first_level" 	=> '[]',
+		    		"second_level"	=> '[]',
+		    		"third_level"	=> '[]',
+		    	);	
+    		}
+
+    		
 
     	}else{
     		/* load the view with the info saved */
