@@ -38,7 +38,6 @@ class AdminMenuController extends Controller
      */
     public function index()
     {
-
     	$menu_info = $this->menu->find(1);
 
     	if($menu_info->count() > 0)
