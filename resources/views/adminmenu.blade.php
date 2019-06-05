@@ -33,7 +33,7 @@ Configuración <small> Menu principal</small>
                 <div class="form-body">
                     <div class="form-group">
                         <label>Menu Principal</label>
-                        <a href="javascript:;" class="btn btn-icon-only red">
+                        <a href="javascript:;" class="btn btn-icon-only red" id="deletePrincipal">
                             <i class="fa fa-times"></i>
                         </a> 
                         <select size="6" class="form-control" id="principal" onchange="changesPrincipal();">
@@ -166,6 +166,54 @@ Configuración <small> Menu principal</small>
         });
 
     });
+
+    $("#deletePrincipal").click(function(){
+        /* check if it has child levels */
+
+        // get the id
+        var id = $("#principal").val();
+        var second = $.parseJSON($("#second_level").val());
+        // check in second level in fathers field
+        var childs = 0;
+        $.each(second, function(i,item){
+            if(item.id_father == id)
+            {
+                childs = 1; // here I save the position in the array who has the element without childs
+            }
+        });
+        // if true returns an alert and exit
+        if(childs == 1)
+        {
+            alert("No es posible eliminar el elemento principal del menu porque no esta vacío");
+        }else{
+            // else delete the node
+            var first = $.parseJSON($("#first_level").val());
+
+            $.each(first,function (i,item){
+                if(item.id == id)
+                {
+                    delete first[i];
+                } 
+            });
+
+            var filtered = first.filter(function (el) {
+                return el != null;
+            });
+            // update the hidden field
+            $("#first_level").val(JSON.stringify(filtered));
+            /* delete all elements in the list*/
+            $('#principal').empty();
+            /*refresh select box data*/
+            $.each(filtered, function (i, item) {
+                console.log(item);   
+                $('#principal').append($('<option>', { 
+                    value: item.id,
+                    text : item.title 
+                }));
+            }); 
+        }
+        
+    });
     
     function addPrincipalLevel()
     {
@@ -252,7 +300,6 @@ Configuración <small> Menu principal</small>
 
             if(item.id_father === principal)
             {
-                console.log("Entro en el if");
                 /* add the new node in menu */
                 i = {}
                 i ["title"] = item.title;
