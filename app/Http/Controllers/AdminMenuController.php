@@ -38,7 +38,12 @@ class AdminMenuController extends Controller
      */
     public function index()
     {
-    	$menu_info = $this->menu->find(1);
+        try{
+            $menu_info = $this->menu->find(1);    
+        }catch( \Exception $e){
+            dd( "Error: " . $e->getMessage());
+        }
+    	
 
     	if($menu_info->count() > 0)
     	{

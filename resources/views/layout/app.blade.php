@@ -763,13 +763,27 @@ License: You must have a valid license purchased only from themeforest(the above
 					</ul>
 				</li>
 				<!-- BEGIN ANGULARJS LINK -->
-				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="AngularJS version demo">
-					<a href="angularjs" target="_blank">
-					<i class="icon-paper-plane"></i>
-					<span class="title">
-					Configuración </span>
+
+				@if(session('is_admin') == true)
+				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
+					<a href="{{ url('/adminmenu') }}" >
+						<i class="icon-paper-plane"></i>
+						<span class="title">Menu </span>
 					</a>
 				</li>
+				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
+					<a href="{{ url('/asignaherramientas') }}" >
+						<i class="icon-paper-plane"></i>
+						<span class="title">Asignar Herramientas </span>
+					</a>
+				</li>
+				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
+					<a href="{{ url('/register') }}">
+						<i class="icon-paper-plane"></i>
+						<span class="title">Alta de usuarios </span>
+					</a>
+				</li>
+				@endif
 				<!-- END ANGULARJS LINK --
 				<li class="heading">
 					<h3 class="uppercase">Features</h3>

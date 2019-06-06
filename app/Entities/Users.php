@@ -20,6 +20,7 @@ class Users extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $table = "users";
+    protected $fillable = [  ];
 
 }

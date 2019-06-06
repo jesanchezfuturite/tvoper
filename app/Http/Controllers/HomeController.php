@@ -60,7 +60,9 @@ class HomeController extends Controller
         // check if the user is admin
         $results = $this->admin->findByField('name',$user);
 
-        if(count($results))
+        $results = $results [0];
+
+        if($results->is_admin == 1)
         {
             session( ["is_admin" => true] );
         }else{
