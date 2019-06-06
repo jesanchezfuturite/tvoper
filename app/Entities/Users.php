@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Administrators.
+ * Class Users.
  *
  * @package namespace App\Entities;
  */
-class Administrators extends Model implements Transformable
+class Users extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,7 +20,6 @@ class Administrators extends Model implements Transformable
      *
      * @var array
      */
-    protected $table = 'oper_administrators';
-    protected $fillable = ['name', 'is_admin', 'extra', 'menu'];
+    protected $fillable = [];
 
 }
