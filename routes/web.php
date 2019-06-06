@@ -23,4 +23,6 @@ Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
     Route::get('/adminmenu', 'AdminMenuController@index');
+    /* set the user menu tools */
+    Route::get('/asignaherramientas', 'AsignaHerramientasController@index'); 
 });
