@@ -10,16 +10,24 @@ use Illuminate\Support\Facades\Log;
 
 use App\Repositories\MenuRepositoryEloquent;
 
+use App\Repositories\UsersRepositoryEloquent;
+
 class AsignaHerramientasController extends Controller
 {
     //
-    protected $menu; 
+    protected $menu;
+    protected $users; 
 
-    public function __construct(MenuRepositoryEloquent $menu)
+    public function __construct(
+        MenuRepositoryEloquent $menu,
+        UsersRepositoryEloquent $users
+    )
     {
         $this->middleware('auth');
 
         $this->menu = $menu;
+
+        $this->users = $users;
 
     }
 
@@ -30,6 +38,10 @@ class AsignaHerramientasController extends Controller
      */
     public function index()
     {
+        /* get the user list */
+
+        $users = $this->users->findWhere( [ 'status' => 1 ] );
+
     	$menu_info = $this->menu->find(1);
 
     	if($menu_info->count() > 0)
@@ -57,7 +69,10 @@ class AsignaHerramientasController extends Controller
 	    		"second_level"	=> '[]',
 	    		"third_level"	=> '[]',
 	    	);	
-    	}   	
+        }   	
+
+        $data ["users"]= $users;
+
     	return view('asignaherramientas', $data);
     }
 
@@ -72,7 +87,9 @@ class AsignaHerramientasController extends Controller
     protected function getLevelsFromArrays($menu)
     {
     	// get first level
-    	foreach($menu as $j => $elements)
+    	$first_level = $second_level = $second_level_complete = $third_level = $third_level_complete = array();
+
+        foreach($menu as $j => $elements)
     	{	
     		foreach($elements as $i => $element)
     		{

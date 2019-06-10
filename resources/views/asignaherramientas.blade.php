@@ -32,8 +32,10 @@ Configuración <small> Asignación de Herramientas</small>
             <div class="form-group">
                 
                 <select id="users_select" class="form-control">
-                    <option>Jose Enrique Sanchez Villanueva</option>
-                    <option>Francisco Cerda Duran</option>
+                    <option value="0"> ----- </option>
+                    @foreach($users as $user)
+                        <option value='{{$user->email}}'>{{$user->name}} - ({{$user->email}})</option>
+                    @endforeach
                 </select>
             </div>
             
@@ -119,6 +121,9 @@ Configuración <small> Asignación de Herramientas</small>
     </div>
 </div>
 
+<input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
+<input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
+<input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
 
 
 @endsection
@@ -129,6 +134,23 @@ Configuración <small> Asignación de Herramientas</small>
 
 <script type="text/javascript">
 
+
+    $( document ).ready(function() {
+        var elements = $.parseJSON($("#first_level").val());
+
+        //clean the principal level
+        $('#principal_level').empty();
+
+        $.each(elements,function(i, item){
+
+           $('#principal_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+    });
     
 </script>
 @endsection
