@@ -204,8 +204,7 @@ Configuración <small> Menu principal</small>
             /* delete all elements in the list*/
             $('#principal').empty();
             /*refresh select box data*/
-            $.each(filtered, function (i, item) {
-                console.log(item);   
+            $.each(filtered, function (i, item) { 
                 $('#principal').append($('<option>', { 
                     value: item.id,
                     text : item.title 

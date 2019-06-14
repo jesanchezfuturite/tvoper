@@ -18,11 +18,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
     Route::get('/adminmenu', 'AdminMenuController@index');
+    Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
     /* set the user menu tools */
     Route::get('/asignaherramientas', 'AsignaHerramientasController@index'); 
+    Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile'); 
 });

@@ -44,52 +44,37 @@ Configuración <small> Asignación de Herramientas</small>
             <div class="row">
                 <div class="col-md-3">
                     <select id="principal_level" class="form-control">
-                        <option>Consultas</option>
-                        <option>Operación</option>
-                        <option>Administración</option>
-                        <option>Reportes</option>
-                        <option>Indicadores</option>
+                        
                     </select>
                 </div>
                 <div class="col-md-3">
                     Disponibles:
                     <select multiple id="secondary_level" class="form-control">
-                        <option>Reporte 1</option>
-                        <option>Reporte 2</option>
-                        <option>Reporte 3</option>
-                        <option>Reporte 4</option>
-                        <option>Reporte 5</option>
+                        
                     </select>
                 </div>
                 <div class="col-md-3">
                     
                     <div class="btn-toolbar">
                         <div class="btn-group btn-group-lg btn-group-solid margin-bottom-10 center-block">
-                            <button type="button" class="btn red"> << </button>
-                            <button type="button" class="btn green"> >> </button>
+                            <button type="button" class="btn red" id="deleteSecond"> << </button>
+                            <button type="button" class="btn green" id="addSecond"> >> </button>
                         </div>
                     </div>
                 
                 </div>
                 <div class="col-md-3">
                     Agregadas:
-                    <select multiple id="secondary_level" class="form-control">
+                    <select multiple id="secondary_level_added" class="form-control">
                         
                     </select>
                 </div>
             </div>
+            <!--
             <hr>
-            <h4>Nivel secundario</h4>
+            <h4>Menu Auxiliar</h4>
             <div class="row">
-                <div class="col-md-3">
-                    <select id="principal_level" class="form-control">
-                        <option>Consultas</option>
-                        <option>Operación</option>
-                        <option>Administración</option>
-                        <option>Reportes</option>
-                        <option>Indicadores</option>
-                    </select>
-                </div>
+                <div class="col-md-3"> &nbsp;</div>
                 <div class="col-md-3">
                     Disponibles:
                     <select multiple id="secondary_level" class="form-control">
@@ -117,29 +102,35 @@ Configuración <small> Asignación de Herramientas</small>
                     </select>
                 </div>
             </div>
+        -->
         </div>
     </div>
-</div>
-
+</div>   
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
 <input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
+<input type="hidden" id="saved_tools" name="saved_tools" value="[]" >
 
-
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn blue" type="submit">
+            Guardar
+        </button>
+    </div>
+</div>
 @endsection
-
-
-
 @section('scripts')
-
 <script type="text/javascript">
-
-
     $( document ).ready(function() {
         var elements = $.parseJSON($("#first_level").val());
 
         //clean the principal level
         $('#principal_level').empty();
+
+        $('#principal_level').append($('<option>', { 
+                value: 0,
+                text : '-----' 
+            }));
 
         $.each(elements,function(i, item){
 
@@ -149,6 +140,143 @@ Configuración <small> Asignación de Herramientas</small>
             })); 
 
         });
+
+        // add method ajax to check how many tools has the user profile
+        /* save with ajax in DB */
+        
+
+    });
+
+    /* principal_level on change */
+
+    $("#principal_level").change( function (){
+
+        var first = $("#principal_level").val();
+
+        /* reads the second level and loads the childs in multiple selector */
+        var second = $.parseJSON($("#second_level").val());
+
+        
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        objList.push(i);
+
+        $.each(second, function (i, item){
+            
+            if(item.id_father == first)
+            {
+                i = {}
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+
+                objList.push(i);
+            }
+        });
+
+        /* fill the list */
+        $('#secondary_level').empty();
+        $.each(objList,function(i, item){
+
+           $('#secondary_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+
+    });
+
+    /* this function adds the element to saves in DB in tools assigned per user */ 
+    $("#addSecond").click( function(){
+        var selected = $("#secondary_level").val();
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+
+        if(selected == 0 || selected == null)
+        {
+            alert("Por favor selecciona una herramienta.");
+            return false;
+        }
+
+        /* remove element from secondary and update the multi select */
+        var second = $.parseJSON($("#second_level").val());
+        var aux = {};
+        $.each(second, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                aux = item;
+                delete second[i];
+            }
+
+        });
+
+        var filtered = second.filter(function (el) {
+            return el != null;
+        });
+
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        filtered.push(i);
+
+        $('#secondary_level').empty();
+        /*refresh select box data*/
+        $.each(filtered, function (i, item) { 
+            $('#secondary_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+
+        /* add the new element first reads the hidden field */
+        var saved = $.parseJSON($("#saved_tools").val());
+
+        /*push aux to saved*/
+        saved.push(aux);
+
+        $("#secondary_level_added").empty();
+
+        $.each(saved, function (i, item) { 
+            $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        /* save with ajax in DB */
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/asignaherramientas/saveuserprofile') }}",
+            data: { tools: JSON.stringify(saved), username: user, _token: '{{ csrf_token() }}' }
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+
+    });
+
+    $("#users_select").change(function (){
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+        
 
     });
     

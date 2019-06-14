@@ -12,6 +12,8 @@ use App\Repositories\MenuRepositoryEloquent;
 
 use App\Repositories\UsersRepositoryEloquent;
 
+use App\Repositories\AdministratorsRepositoryEloquent;
+
 class AsignaHerramientasController extends Controller
 {
     //
@@ -20,7 +22,8 @@ class AsignaHerramientasController extends Controller
 
     public function __construct(
         MenuRepositoryEloquent $menu,
-        UsersRepositoryEloquent $users
+        UsersRepositoryEloquent $users,
+        AdministratorsRepositoryEloquent $admins
     )
     {
         $this->middleware('auth');
@@ -28,6 +31,8 @@ class AsignaHerramientasController extends Controller
         $this->menu = $menu;
 
         $this->users = $users;
+
+        $this->admins = $admins;
 
     }
 
@@ -52,6 +57,7 @@ class AsignaHerramientasController extends Controller
     		if(count($menu) > 0)
     		{
     			$data = $this->getLevelsFromArrays($menu);	
+
     		}else{
     			$data = array(
 		    		"first_level" 	=> '[]',
@@ -74,6 +80,26 @@ class AsignaHerramientasController extends Controller
         $data ["users"]= $users;
 
     	return view('asignaherramientas', $data);
+    }
+
+    /**
+     * Loads the view from index.
+     * @param 
+     *      request. Variable saved_tools in json has the json tools added at user and profile 
+     *
+     * 
+     * @return an array
+     */
+    public function saveUserProfile(Request $request)
+    {
+        try{
+            $this->admins->updateMenuByName( ['name' => $request->username], [ 'menu' => $request->tools ]);
+        }catch( \Exception $e){
+            Log::info('[AsignaHerramientasController@saveUserProfile] Error ' . $e->getMessage());    
+        }
+        
+       // Log::info('[AsignaHerramientasController@saveUserProfile] - Tools : '.$request->tools);
+       // Log::info('[AsignaHerramientasController@saveUserProfile] - Username :'.$request->username);
     }
 
     /**
