@@ -49,7 +49,7 @@ Configuración <small> Asignación de Herramientas</small>
                 </div>
                 <div class="col-md-3">
                     Disponibles:
-                    <select multiple id="secondary_level" class="form-control">
+                    <select size="6" id="secondary_level" class="form-control">
                         
                     </select>
                 </div>
@@ -65,7 +65,7 @@ Configuración <small> Asignación de Herramientas</small>
                 </div>
                 <div class="col-md-3">
                     Agregadas:
-                    <select multiple id="secondary_level_added" class="form-control">
+                    <select size="6"  id="secondary_level_added" class="form-control">
                         
                     </select>
                 </div>
@@ -119,8 +119,12 @@ Configuración <small> Asignación de Herramientas</small>
     </div>
 </div>
 @endsection
+
 @section('scripts')
 <script type="text/javascript">
+    /**
+    This method fills the first level in the menu hierarchy
+    */
     $( document ).ready(function() {
         var elements = $.parseJSON($("#first_level").val());
 
@@ -139,24 +143,35 @@ Configuración <small> Asignación de Herramientas</small>
                 text : item.title 
             })); 
 
-        });
-
-        // add method ajax to check how many tools has the user profile
-        /* save with ajax in DB */
-        
+        });   
 
     });
 
-    /* principal_level on change */
+    /* 
+        It's used when the user selects a principal element in menu
+        Loads the second level in each selection
+        Loads the tools in the profile selected 
+        Validates if which tools has assigned the profile to show in the correct selectbox
+    */
 
     $("#principal_level").change( function (){
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
 
         var first = $("#principal_level").val();
 
         /* reads the second level and loads the childs in multiple selector */
         var second = $.parseJSON($("#second_level").val());
 
-        
+        /* reads the saved_tools hidden field */
+        var saved = $.parseJSON($("#saved_tools").val());
+
         var objList = [];
         i = {};
         i ["title"] = '-----';
@@ -166,12 +181,27 @@ Configuración <small> Asignación de Herramientas</small>
         $.each(second, function (i, item){
             
             if(item.id_father == first)
-            {
-                i = {}
-                i ["title"] = item.title;
-                i ["id"] = item.id;
+            {   
+                if(saved.length == 0)
+                {
+                    i = {};
+                    i ["title"] = item.title;
+                    i ["id"] = item.id;
+                    objList.push(i);
+                }else{
 
-                objList.push(i);
+                    $.each(saved, function (j,sv){
+
+                        if(item.id != sv.id)
+                        {
+                            i = {};
+                            i ["title"] = item.title;
+                            i ["id"] = item.id;
+                            objList.push(i);        
+                        }
+                    });
+                }
+                
             }
         });
 
@@ -186,10 +216,46 @@ Configuración <small> Asignación de Herramientas</small>
 
         });
 
+        var listAdded = [];
+
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        listAdded.push(i);
+
+        /* we update the values in secondary_level_added with the values saved in */
+        $.each(saved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+
+        /* fill the list added */
+        $('#secondary_level_added').empty();
+        $.each(listAdded,function(i, item){
+
+           $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
 
     });
 
-    /* this function adds the element to saves in DB in tools assigned per user */ 
+    /* 
+        This function has been actived when: clicks in green button
+        validate than we have a user selected and secondary field selected  
+        if all goes well:
+            using ajax we will go to the Controller and save the hidden field saved_tools
+            with the response updates the select box
+        else
+            throws Alert exceptions !
+    */ 
     $("#addSecond").click( function(){
         var selected = $("#secondary_level").val();
 
@@ -266,6 +332,12 @@ Configuración <small> Asignación de Herramientas</small>
 
     });
 
+    /*
+        This function allows to load the initial configuration with the profile selected
+        we check with the value selected in users_select if the user is active
+        And with the response we load the saved_tools hidden field
+    */
+
     $("#users_select").change(function (){
 
         var user = $("#users_select").val();
@@ -276,7 +348,133 @@ Configuración <small> Asignación de Herramientas</small>
             return false;   
         }
 
-        
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/asignaherramientas/loaduserprofile') }}",
+            data: { username: user, _token: '{{ csrf_token() }}' }
+        })
+        .done( function ( values ) {
+            /* here we loads the tools in the profile */
+            $("#saved_tools").val(values);
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });        
+
+
+
+    });
+
+    /* 
+        delete a menu element added to the profile 
+        Validate the selection
+        read the tools_saved hidden field and deletes the node selected
+        updates the DB
+        reloads the secondary and the assigned
+    */
+
+    $("#deleteSecond").click( function (){
+
+        var user = $("#users_select").val();
+        var first = $("#principal_level").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+        var added = $("#secondary_level_added").val();
+
+        if(added == 0)
+        {
+            alert("Debes seleccionar una herramienta para eliminarla del perfil !");
+            return false;   
+        }
+
+        var saved = $.parseJSON($("#saved_tools").val());
+        /* deletes in select */
+
+        $.each(saved, function (i, item){
+            
+            if(item.id == added)
+            {   
+                delete saved[i];
+            }
+
+        });
+
+        var filtered = saved.filter(function (el) {
+            return el != null;
+        });
+        $('#secondary_level_added').empty();
+        /*refresh select box data*/
+        $.each(filtered, function (i, item) { 
+            $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+
+        /* update DB */
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/asignaherramientas/deleteelementuserprofile') }}",
+            data: { username: user, id: added, _token: '{{ csrf_token() }}' }
+        })
+        .done( function ( values ) {
+            /* update the secondary */
+            if(values == 0){
+                alert("Error al desasignar la herramienta por favor verifica en la Base de Datos !!!");
+                return false;
+            }
+
+        });
+        /* adding the second level array */
+        var second = $.parseJSON($("#second_level").val());
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        objList.push(i);
+        $.each(second, function (i, item){
+            
+            if(item.id_father == first)
+            {
+                if(filtered.length == 0)
+                {
+                    i = {};
+                    i ["title"] = item.title;
+                    i ["id"] = item.id;
+                    objList.push(i);   
+                }else{
+                    $.each(filtered, function (j,sv){
+
+                        if(item.id != sv.id)
+                        {
+                            i = {};
+                            i ["title"] = item.title;
+                            i ["id"] = item.id;
+                            objList.push(i);        
+                        }
+                    });
+                }
+            }
+        });
+
+        /* fill the list */
+        $('#secondary_level').empty();
+        $.each(objList,function(i, item){
+
+           $('#secondary_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
 
     });
     

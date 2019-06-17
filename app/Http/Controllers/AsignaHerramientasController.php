@@ -92,14 +92,13 @@ class AsignaHerramientasController extends Controller
      */
     public function saveUserProfile(Request $request)
     {
+        /* here i have to modify to just save the identifier */
         try{
             $this->admins->updateMenuByName( ['name' => $request->username], [ 'menu' => $request->tools ]);
         }catch( \Exception $e){
             Log::info('[AsignaHerramientasController@saveUserProfile] Error ' . $e->getMessage());    
         }
         
-       // Log::info('[AsignaHerramientasController@saveUserProfile] - Tools : '.$request->tools);
-       // Log::info('[AsignaHerramientasController@saveUserProfile] - Username :'.$request->username);
     }
 
     /**
@@ -160,4 +159,83 @@ class AsignaHerramientasController extends Controller
 
     	return $data;
     }
+
+
+    /**
+     * Looks for the menu assigned to the user .
+     * @param 
+     *      menu. Array with menu saved in DB
+     *
+     * 
+     * @return an array
+     */
+    public function loadUserProfile(Request $request)
+    {
+        #get the menu saved
+        $users = $this->admins->findWhere( [ "name" => trim($request->username) ] );
+
+        if($users->count())
+        {
+            foreach($users as $u)
+            {
+                $menu = $u->menu;
+            }
+            return $menu;
+        }else{
+            return "[]";
+        }
+
+    }
+
+    /**
+     * update the menu field in Admin Table.
+     * @param 
+     *      id => json identifier in menu field
+     *
+     * 
+     * @return true if goes well
+     */
+    public function deleteElementUserProfile(Request $request)
+    {
+        $users = $this->admins->findWhere( [ "name" => trim($request->username) ] );
+
+        try{
+            $toDelete = $request->id;    
+        }catch( \Exception $e){
+            log::info("Error while update tools" . $e->getMessage() );
+        }
+        
+        if($users->count())
+        {
+            foreach($users as $u)
+            {
+                $menu = $u->menu;
+            }
+            
+            $menu  = json_decode($menu);
+
+            foreach($menu as $m => $v)
+            {
+                if($v->id == $toDelete)
+                {
+                    unset($menu[$m]);
+                }
+            }
+
+            /* here change to json and updates the db*/
+
+            try{
+                $this->admins->updateMenuByName( ['name' => $u->name ], [ 'menu' => json_encode($menu) ]);
+
+                return 1 ;
+
+            }catch( \Exception $e){
+                log::info('[AsignaHerramientasController@deleteElementUserProfile] Error ' . $e->getMessage());   
+
+                return 0;
+
+            }
+        }
+    }
+
 }
