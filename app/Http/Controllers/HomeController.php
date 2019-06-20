@@ -92,7 +92,7 @@ class HomeController extends Controller
     protected function configureMenu($menu_user)
     {
 
-        $menu_user = json_decode($menu_user);
+        $menu_user = empty($menu_user) ? [] : json_decode($menu_user);
 
         if(count($menu_user) > 0)
         {
