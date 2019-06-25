@@ -38,7 +38,12 @@ class AdminMenuController extends Controller
      */
     public function index()
     {
-    	$menu_info = $this->menu->find(1);
+        try{
+            $menu_info = $this->menu->find(1);    
+        }catch( \Exception $e){
+            dd( "Error: " . $e->getMessage());
+        }
+    	
 
     	if($menu_info->count() > 0)
     	{
@@ -290,7 +295,8 @@ class AdminMenuController extends Controller
      */
     protected function getLevelsFromArrays($menu)
     {
-    	// get first level
+    	$first_level = $second_level = $second_level_complete = $third_level = $third_level_complete = array();
+        // get first level
     	foreach($menu as $j => $elements)
     	{	
     		foreach($elements as $i => $element)

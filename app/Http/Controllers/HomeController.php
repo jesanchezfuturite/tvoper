@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Repositories\AdministratorsRepositoryEloquent;
 
+use App\Repositories\MenuRepositoryEloquent;
+
 class HomeController extends Controller
 {
 
@@ -19,13 +21,17 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct( AdministratorsRepositoryEloquent $admin )
+    public function __construct( 
+        AdministratorsRepositoryEloquent $admin,
+        MenuRepositoryEloquent $menu
+     )
     {
         $this->middleware('auth');
 
         // define the repositories
 
         $this->admin = $admin;
+        $this->menu = $menu;
     }
 
     /**
@@ -55,18 +61,72 @@ class HomeController extends Controller
     *
     */
 
-    protected function defineUserPrivilegies($user)
+    public function defineUserPrivilegies($user)
     {
         // check if the user is admin
         $results = $this->admin->findByField('name',$user);
 
-        if(count($results))
+        $results = $results [0];
+
+        if($results->is_admin == 1)
         {
-            session( ["is_admin" => true] );
+            $var = true;
         }else{
-            session( ["is_admin" => false] );
+            $var = false;
         }
+
+        session( ["is_admin" => $var, "menu" => $this->configureMenu($results->menu) ] );
+
     }
 
+    /**
+    * Configure Menu: This method returns an array with the permissions to the logged user
+    * 
+    * @param 
+    *   $ menu_user . It's a json string with the elements assigned to the profile
+    *
+    *
+    * @return null  
+    *
+    */
+    protected function configureMenu($menu_user)
+    {
+
+        $menu_user = empty($menu_user) ? [] : json_decode($menu_user);
+
+        if(count($menu_user) > 0)
+        {
+            # get fathers
+            $fathers_nodes = $this->getFatherNodes();
+
+            foreach($menu_user as $mu => $data)
+            {
+                $father [$data->id_father]= $fathers_nodes[$data->id_father];
+            }
+
+            $array_menu = array('father' => $father, 'childs' => $menu_user);
+
+        }else{
+            // el usuario no tiene herramientas asignadas
+            $array_menu = false;
+        }
+
+        return $array_menu;
+
+    }
+
+    protected function getFatherNodes()
+    {
+        $menu = $this->menu->find(1);
+
+        $menu = json_decode($menu->content);
+
+        foreach($menu as $m => $values)
+        {
+            $response [$values->info->id]= $values->info->title;
+        }
+
+        return $response;
+    }
     
 }
