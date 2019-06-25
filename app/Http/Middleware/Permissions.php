@@ -20,6 +20,7 @@ class Permissions
      */
     public function handle($request, Closure $next)
     {
+
         
         $value = session('is_admin');
 
@@ -27,7 +28,7 @@ class Permissions
 
             return redirect('/home');
         }
-
+        
         return $next($request);
     }
 
