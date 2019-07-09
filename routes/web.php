@@ -18,6 +18,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
+Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
