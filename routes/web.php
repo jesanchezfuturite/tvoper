@@ -21,6 +21,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
 Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 
+
+/* conciliacion app */
+Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
+
+
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
     Route::get('/adminmenu', 'AdminMenuController@index');
