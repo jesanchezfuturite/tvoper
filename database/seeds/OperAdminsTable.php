@@ -15,12 +15,10 @@ class OperAdminsTable extends Seeder
         //
         DB::table('oper_administrators')->insert([
          	[
-         		'name' => 'jesanchez.villanueva@gmail.com',
-         		'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-         		'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
-         	],
-            [
-            	'name' => 'cerdaduran@gmail.com',
+         		'name'       => 'admin@localhost.com',
+                'is_admin'   => '1',
+                'extra'      => '[]',
+                'menu'       => '[]', 
          		'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
          		'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
          	],
