@@ -19,7 +19,37 @@
         </li>
     </ul>
 </div>
-
+<div class="row">
+    <div class="col-md-12 ">
+        <!-- BEGIN SAMPLE FORM PORTLET-->
+        <div class="portlet box blue">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-gift"></i> Carga de archivos para conciliación
+                </div>
+            </div>
+            <div class="portlet-body form">
+                <form role="form">
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label for="exampleInputFile1">Cargar Archivo</label>
+                            <input type="file" id="archivo">
+                            <p class="help-block">
+                                 Archivo para conciliar
+                            </p>
+                        </div>
+                        
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn blue">Subir</button>
+                        <button type="button" class="btn default">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- END SAMPLE FORM PORTLET-->
+    </div>
+</div>
 
 
 
