@@ -1,7 +1,6 @@
 @extends('layout.app')
 
 @section('content')
-
 <h3 class="page-title"> Conciliación <small>Carga de Archivo</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -29,11 +28,12 @@
                 </div>
             </div>
             <div class="portlet-body form">
-                <form role="form">
+                <form action=" {{ url('/conciliacion-uploadfile') }}" method="POST" role="form" method="post" enctype="multipart/form-data" >
+                    @csrf
                     <div class="form-body">
                         <div class="form-group">
                             <label for="exampleInputFile1">Cargar Archivo</label>
-                            <input type="file" id="archivo">
+                            <input type="file" id="file" name="file">
                             <p class="help-block">
                                  Archivo para conciliar
                             </p>
@@ -41,7 +41,7 @@
                         
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn blue">Subir</button>
+                        <button type="submit" class="btn blue">Procesar</button>
                         <button type="button" class="btn default">Cancel</button>
                     </div>
                 </form>
@@ -50,9 +50,6 @@
         <!-- END SAMPLE FORM PORTLET-->
     </div>
 </div>
-
-
-
 @endsection
 
 @section('scripts')

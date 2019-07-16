@@ -24,6 +24,7 @@ Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 
 /* conciliacion app */
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
+Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 
 
 Route::group(['middleware' => 'permissions'], function () {
