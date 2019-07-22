@@ -121,7 +121,8 @@ class ConciliacionController extends Controller
 
     public function index()
     {
-    	return view('conciliacion/loadFile');
+    	// valid 1 is init status 
+    	return view('conciliacion/loadFile', [ "valid" => 1 ]);
     }
 
 
@@ -146,7 +147,8 @@ class ConciliacionController extends Controller
     	// check if is a valid file
     	if(!$this->checkValidFilename($fileName))
     	{
-			// Throws an error with the file invalid code    			
+			// Throws an error with the file invalid status file code 
+			return view('conciliacion/loadFile', [ "valid" => 0 ]);   			
     	}else{
     		// save the file in the storage folder
 	    	try
@@ -156,7 +158,8 @@ class ConciliacionController extends Controller
 	    	}catch( \Exception $e ){
 	    		dd($e->getMessage());
 	    	}
-
+	    	# return to the view with the status file uploaded
+	    	return view('conciliacion/loadFile', [ "valid" => 3 ]);
     	}
 
     }
