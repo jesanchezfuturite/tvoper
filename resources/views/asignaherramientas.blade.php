@@ -109,7 +109,7 @@ Configuración <small> Asignación de Herramientas</small>
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
 <input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
-<input type="hidden" id="saved_tools" name="saved_tools" value="[]" >
+<input type="hidden" id="saved_tools" name="saved_tools" value="0" >
 
 <div class="row">
     <div class="col-md-12">
@@ -164,6 +164,7 @@ Configuración <small> Asignación de Herramientas</small>
             return false;   
         }
 
+
         var first = $("#principal_level").val();
 
         /* reads the second level and loads the childs in multiple selector */
@@ -171,7 +172,7 @@ Configuración <small> Asignación de Herramientas</small>
 
         /* reads the saved_tools hidden field */
         var saved = $.parseJSON($("#saved_tools").val());
-
+        
         var objList = [];
         i = {};
         i ["title"] = '-----';
@@ -356,6 +357,10 @@ Configuración <small> Asignación de Herramientas</small>
         })
         .done( function ( values ) {
             /* here we loads the tools in the profile */
+            if(values == ""){
+                alert("Error de configuración inicial el usuario tiene vacío el campo menu en la tabla oper_administrator");
+            }
+            
             $("#saved_tools").val(values);
         })
         .fail(function( msg ) {
