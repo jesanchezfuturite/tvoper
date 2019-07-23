@@ -13,7 +13,7 @@ class CrateOperEntidad extends Migration
      */
     public function up()
     {
-        Schema::table('oper_entidad', function (Blueprint $table) {
+        Schema::create('oper_entidad', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->longText('nombre');

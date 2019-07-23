@@ -13,7 +13,7 @@ class CrateOperCatalogotramite extends Migration
      */
     public function up()
     {
-        Schema::table('oper_catalogotramite', function (Blueprint $table) {
+        Schema::create('oper_catalogotramite', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->longText('nombre');

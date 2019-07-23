@@ -13,7 +13,7 @@ class CrateOperCuentasbanco extends Migration
      */
     public function up()
     {
-        Schema::table('oper_cuentasbanco', function (Blueprint $table) {
+        Schema::create('oper_cuentasbanco', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->bigInteger('banco_id');

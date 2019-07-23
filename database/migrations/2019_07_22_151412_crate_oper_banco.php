@@ -13,7 +13,7 @@ class CrateOperBanco extends Migration
      */
     public function up()
     {
-        Schema::table('oper_banco', function (Blueprint $table) {
+        Schema::create('oper_banco', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->longText('nombre');
