@@ -13,7 +13,7 @@ class CrateOperTiporeferencia extends Migration
      */
     public function up()
     {
-        Schema::table('oper_tiporeferencia', function (Blueprint $table) {
+        Schema::create('oper_tiporeferencia', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->string('fecha_condensada',100);

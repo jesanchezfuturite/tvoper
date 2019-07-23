@@ -13,7 +13,7 @@ class CrateOperPagotramite extends Migration
      */
     public function up()
     {
-        Schema::table('oper_pagotramite', function (Blueprint $table) {
+        Schema::create('oper_pagotramite', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->bigInteger('metodo_id');
