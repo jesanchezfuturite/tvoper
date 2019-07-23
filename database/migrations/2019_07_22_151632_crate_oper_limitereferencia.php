@@ -13,7 +13,7 @@ class CrateOperLimitereferencia extends Migration
      */
     public function up()
     {
-        Schema::table('oper_limitereferencia', function (Blueprint $table) {
+        Schema::create('oper_limitereferencia', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('descripcion');
             $table->longText('periodicidad');

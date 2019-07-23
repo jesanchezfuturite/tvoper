@@ -13,7 +13,7 @@ class CrateOperMetodopago extends Migration
      */
     public function up()
     {
-        Schema::table('oper_metodopago', function (Blueprint $table) {
+        Schema::create('oper_metodopago', function (Blueprint $table) {
             //
             $table->bigIncrements('id');
             $table->bigInteger('banco_id');
