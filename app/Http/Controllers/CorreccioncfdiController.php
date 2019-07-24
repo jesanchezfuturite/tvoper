@@ -29,24 +29,7 @@ class CorreccioncfdiController extends Controller
      */
     public function index()
     {
-
-    	// try {
-    	
-    	// 	$enc = $this->encabezado->findWhere(['folio_unico'=>'180000000000006317559222904211'],['rfc_receptor','fecha_registro','metodo_de_pago']);
-
-    	// 	if ($enc->count()) {
-	    // 		foreach ($enc as $key => $value) {
-	    // 			dd($value->rfc_receptor,$value->fecha_registro,$value->metodo_de_pago);
-	    // 		}
-    	// 	}
-
-    		
-    	// } catch (\Exception $e) {
-    	// 	dd($e->getMessage());
-    	// }
-
     	return view('cfditool/cfdicorreccion');
-
     }
 
     /**
@@ -62,14 +45,36 @@ class CorreccioncfdiController extends Controller
     	{
     		try {
     			$enc = $this->encabezado->findWhere(['rfc_receptor'=>$request->rfc,['fecha_transaccion','>=',date('Y').'-01-01']],['folio_unico','folio_pago','fecha_transaccion','total']);
-
-                
-    			
     			return json_encode($enc);
     			
-    		} catch (\Exception $e) {
+    		} 
+            catch (\Exception $e) 
+            {
     			return json_encode($e);
     		}
     	}
+    }
+
+    /**
+     *
+     * @param GET request Folio Unico
+     * Return result from Encabezados query.
+     *
+     * @return data from Encabezados.
+     */
+    public function encabezado(Request $request)
+    {
+        if($request->isMethod('get'))
+        {
+            try {
+                $enc = $this->encabezado->findWhere(['folio_unico'=>$request->fu],['folio_unico','folio_pago','fecha_transaccion','total','metodo_de_pago','forma_de_pago']);
+                return json_encode($enc);
+                
+            } 
+            catch (\Exception $e) 
+            {
+                return json_encode($e);
+            }
+        }
     }
 }
