@@ -26,6 +26,12 @@ Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
 Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 
+/* motor de pagos app */
+Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
+Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
+Route::get('/bancos','MotorpagosController@bancos');
+Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
+
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
