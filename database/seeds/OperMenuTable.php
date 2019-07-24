@@ -13,9 +13,11 @@ class OperMenuTable extends Seeder
     {
         //
         DB::table('oper_menu')->insert(
+            [
             'content'    => '[]',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            ]
         );
     }
 }
