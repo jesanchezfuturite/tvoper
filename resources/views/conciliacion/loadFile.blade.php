@@ -35,7 +35,15 @@
                             <label for="exampleInputFile1">Cargar Archivo</label>
                             <input type="file" id="file" name="file">
                             <p class="help-block">
-                                 Archivo para conciliar
+
+                                @if($valid == 1)
+                                    Archivo para conciliar
+                                @elseif($valid == 0)
+                                    Archivo incorrecto - por favor verifique lo que intenta subir
+                                @else
+                                    Archivo cargado correctamente
+                                @endif
+                                 
                             </p>
                         </div>
                         
