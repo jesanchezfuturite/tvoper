@@ -86,6 +86,8 @@ class MotorpagosController extends Controller
      */
     public function bancos()
     {
+
+    	/* aqui hay que obtener cuales bancos se tienen registrados en el sistema */ 
     	
     	return view('motorpagos/bancos');
     }
