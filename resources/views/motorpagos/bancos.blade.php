@@ -80,6 +80,9 @@
                             Servicio / CIE / CLABE
                         </th>
                         <th>
+                            Método de pago
+                        </th>
+                        <th>
                             &nbsp;
                         </th>
                     </tr>
@@ -93,6 +96,7 @@
                             <span class="label label-sm label-success">
                             Activa </span>
                         </td>
+                        <td>Tarjeta de Crédito Bancomer Cuenta 12345</td>
                         <td>
                             <a href="javascript:;" class="btn btn-icon-only red">
                                 <i class="fa fa-power-off"></i>
@@ -103,10 +107,11 @@
                         <td>
                              9803096712345
                         </td>
-                        <td>98030967123459803096712345
+                        <td>98030967123459803096799999
                             <span class="label label-sm label-danger">
                             Inactiva </span>
                         </td>
+                        <td>Tarjeta de Crédito Bancomer Cuenta 99999</td>
                         <td>
                             <a href="javascript:;" class="btn btn-icon-only green">
                                 <i class="fa fa-power-off"></i>
@@ -132,6 +137,12 @@
             <div class="modal-body">
                  <form action="#" class="form-horizontal">
                     <div class="form-body">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Método de Pago</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Enter text">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Cuenta</label>
                             <div class="col-md-4">
