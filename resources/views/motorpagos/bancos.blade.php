@@ -83,6 +83,12 @@
                             Método de pago
                         </th>
                         <th>
+                            Monto Mínimo
+                        </th>
+                        <th>
+                            Monto Máximo
+                        </th>
+                        <th>
                             &nbsp;
                         </th>
                     </tr>
@@ -97,6 +103,8 @@
                             Activa </span>
                         </td>
                         <td>Tarjeta de Crédito Bancomer Cuenta 12345</td>
+                        <td>$ 1.00</td>
+                        <td>$ 10,000.00</td>
                         <td>
                             <a href="javascript:;" class="btn btn-icon-only red">
                                 <i class="fa fa-power-off"></i>
@@ -112,6 +120,8 @@
                             Inactiva </span>
                         </td>
                         <td>Tarjeta de Crédito Bancomer Cuenta 99999</td>
+                        <td>$ 1.00</td>
+                        <td>$ 10,000.00</td>
                         <td>
                             <a href="javascript:;" class="btn btn-icon-only green">
                                 <i class="fa fa-power-off"></i>
@@ -151,6 +161,18 @@
                         </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Servicio / CIE / CLABE</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Enter text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Monto Mínimo</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Enter text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Monto Máximo</label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="Enter text">
                             </div>
