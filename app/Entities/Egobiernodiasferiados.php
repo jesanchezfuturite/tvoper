@@ -28,4 +28,5 @@ class Egobiernodiasferiados extends Model implements Transformable
     protected $table = "diasferiados";
 
 	public $timestamps = false;
+
 }

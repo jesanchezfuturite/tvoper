@@ -95,10 +95,10 @@ class MotorpagosController extends Controller
     	{
 			
 			$info2 = $this->diasferiadosdb->deleteWhere([
-    //Default Condition =
-    'state_id'=>'10',
-    'country_id'=>'15',
-]);
+				'Ano'=>'2019'
+				'Mes'=>'10',
+				'Dia'=>'15',
+			]);
     		$info = $this->diasferiadosdb->all();
 
     	}catch( \Exception $e ){
