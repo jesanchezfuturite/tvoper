@@ -126,6 +126,9 @@
                     <td>$ 1.00</td>
                     <td>$ 10,000.00</td>
                     <td>
+                        <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Agregar Cuenta">
+                            <i class="fa fa-calendar"></i>
+                        </a>
                         <a href="javascript:;" class="btn btn-icon-only red">
                             <i class="fa fa-minus"></i>
                         </a>
@@ -141,6 +144,9 @@
                     <td>$ 1.00</td>
                     <td>$ 10,000.00</td>
                     <td>
+                        <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Agregar Cuenta">
+                            <i class="fa fa-calendar"></i>
+                        </a>
                         <a href="javascript:;" class="btn btn-icon-only red">
                             <i class="fa fa-minus"></i>
                         </a>
@@ -207,6 +213,9 @@
                     <td>$ 1.00</td>
                     <td>$ 10,000.00</td>
                     <td>
+                        <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Agregar Cuenta">
+                            <i class="fa fa-calendar"></i>
+                        </a>
                         <a href="javascript:;" class="btn btn-icon-only red">
                             <i class="fa fa-minus"></i>
                         </a>
@@ -222,9 +231,13 @@
                     <td>$ 1.00</td>
                     <td>$ 10,000.00</td>
                     <td>
+                        <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Agregar Cuenta">
+                            <i class="fa fa-calendar"></i>
+                        </a>
                         <a href="javascript:;" class="btn btn-icon-only red">
                             <i class="fa fa-minus"></i>
                         </a>
+                        
                     </td>
                 </tr>
                 
@@ -241,39 +254,30 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Configurar Nueva Cuenta</h4>
+                <h4 class="modal-title">Configuración específica</h4>
             </div>
             <div class="modal-body">
                  <form action="#" class="form-horizontal">
                     <div class="form-body">
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Método de Pago</label>
+                            <label class="col-md-3 control-label">Descripción</label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" placeholder="Enter text">
                             </div>
                         </div>
+                        
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Cuenta</label>
+                            <label class="col-md-3 control-label">Fecha de Inicio</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Enter text">
+                                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="">
+                                <span class="help-block">Selecciona una fecha </span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Servicio / CIE / CLABE</label>
+                            <label class="col-md-3 control-label">Fecha Fin</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Enter text">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Monto Mínimo</label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Enter text">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Monto Máximo</label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Enter text">
+                                <input id="datetime2" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="">
+                                <span class="help-block">Selecciona una fecha </span>
                             </div>
                         </div>
                         <div class="form-actions">
@@ -296,5 +300,11 @@
 @endsection
 
 @section('scripts')
-
+<script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function() {       
+       ComponentsPickers.init();
+    }); 
+</script>
 @endsection
