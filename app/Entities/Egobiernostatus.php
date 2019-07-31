@@ -22,8 +22,10 @@ class Egobiernostatus extends Model implements Transformable
      */
     protected $connection = "mysql3";
     
-    protected $fillable = [];
+    protected $fillable = ['Status','Descripcion'];
 
     protected $table = "status";
+	
+	public $timestamps = false;
 
 }

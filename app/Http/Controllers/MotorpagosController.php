@@ -61,6 +61,63 @@ class MotorpagosController extends Controller
 
     	return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
     }
+	public function insertDiasFeriados(Request $request)
+	{
+		$response = array();
+		try
+    	{
+			
+			$anio = $request->anio;$mes = $request->mes;$dia = $request->dia;			
+			$info2 = $this->diasferiadosdb->create(['Ano' => $anio,'Mes' => $mes,'Dia' => $dia] );
+    		
+    	}catch( \Exception $e ){
+    		Log::info2('Error Method diasferiados: '.$e->getMessage());
+    	}
+		
+    	$info = $this->diasferiadosdb->all();
+			
+
+    	foreach($info as $i)
+    	{
+    		$response []= array(
+    			"anio" 	=> $i->Ano,
+    			"mes" 	=> $i->Mes,
+    			"dia"	=> $i->Dia
+    		);
+    	}
+		return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+
+    	
+	}
+	public function deleteDiasFeriados(Request $request)
+	{
+		try
+    	{
+			
+			$info2 = $this->diasferiadosdb->deleteWhere([
+				'Ano'=>'2019'
+				'Mes'=>'10',
+				'Dia'=>'15',
+			]);
+    		$info = $this->diasferiadosdb->all();
+
+    	}catch( \Exception $e ){
+    		Log::info('Error Method diasferiados: '.$e->getMessage());
+    	}
+
+    	$response = array();
+
+    	foreach($info as $i)
+    	{
+    		$response []= array(
+    			"anio" 	=> $i->Ano,
+    			"mes" 	=> $i->Mes,
+    			"dia"	=> $i->Dia
+    		);
+    	}
+
+    	return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+	}
     /**
      * Muestra la vista para capturar nuevos metodos de pago y el listado de los que ya estan capturados
      *
