@@ -31,6 +31,7 @@ Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
 Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
+Route::get('/pago-tramite','MotorpagosController@pagotramite');
 
 
 Route::group(['middleware' => 'permissions'], function () {

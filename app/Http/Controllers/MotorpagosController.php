@@ -106,4 +106,19 @@ class MotorpagosController extends Controller
     	return view('motorpagos/statustransaccion');
     }
 
+    /**
+     * Esta herramienta es operativa y sirve para configurar los parametros para permitir el pago de servicios
+     *
+     * @param NULL because it's the initial view in the app
+     *
+     *
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function pagotramite()
+    {
+        
+        return view('motorpagos/pagotramite');
+    }
+
 }
