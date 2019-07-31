@@ -28,6 +28,8 @@ Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 
 /* motor de pagos app */
 Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
+Route::post('/dias-feriados-insert','MotorpagosController@insertDiasFeriados');
+Route::post('/dias-feriados-eliminar','MotorpagosController@deletediasferiados');
 Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
