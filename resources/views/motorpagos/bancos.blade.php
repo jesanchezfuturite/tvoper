@@ -63,7 +63,6 @@
                 <div class="tools">
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
-                    </a>
                     <a href="javascript:;" class="remove" data-original-title="" title="Desactivar Banco">
                     </a>
                 </div>
