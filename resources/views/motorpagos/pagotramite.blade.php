@@ -22,6 +22,33 @@
     <div class="portlet box blue">
         <div class="portlet-title">
             <div class="caption">
+                <i class="fa fa-bank"></i>Trámite
+            </div>
+            
+        </div>
+        <div class="portlet-body">
+            <form class="form-inline" role="form">
+                <div class="form-group">
+                    <label >&nbsp;&nbsp;Selecciona el trámite para configurar</label>
+                    
+                        <select class="form-control">
+                            <option>------</option>
+                            <option>Acta de Nacimiento</option>
+                            <option>Pago de Tenencia</option>
+                            <option>Pago de Actas</option>
+                        </select>
+                </div>
+                
+                <button class="btn green">Agregar</button>
+            </form>
+        </div>
+    </div>
+</div>
+<h3 class="page-title">Acta de Nacimiento: </h3>
+<div class="row">
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
                 <i class="fa fa-bank"></i>Agregar Banco
             </div>
             
@@ -39,94 +66,174 @@
                         </select>
                 </div>
                 
-                <button class="btn btn-default">Agregar</button>
+                <button class="btn green">Agregar</button>
             </form>
         </div>
     </div>
 </div>
 <div class="row">
-        <!-- BEGIN SAMPLE TABLE PORTLET-->
-        <div class="portlet box blue">
-            <div class="portlet-title">
-                <div class="caption">
-                    <i class="fa fa-cogs"></i>Cuentas Bancomer &nbsp;<span class="label label-sm label-success">
-                            Activa </span>
-                </div>
-                <div class="tools">
-                    <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
-                    </a>
-                    </a>
-                    <a href="javascript:;" class="remove" data-original-title="" title="Desactivar Banco">
-                    </a>
-                </div>
-            </div>
-            <div class="portlet-body">
-                <div class="table-scrollable">
-                    <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th>
-                            Cuenta
-                        </th>
-                        <th>
-                            Servicio / CIE / CLABE
-                        </th>
-                        <th>
-                            Método de pago
-                        </th>
-                        <th>
-                            Monto Mínimo
-                        </th>
-                        <th>
-                            Monto Máximo
-                        </th>
-                        <th>
-                            &nbsp;
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                             9803096712345
-                        </td>
-                        <td>98030967123459803096712345
-                            <span class="label label-sm label-success">
-                            Activa </span>
-                        </td>
-                        <td>Tarjeta de Crédito Bancomer Cuenta 12345</td>
-                        <td>$ 1.00</td>
-                        <td>$ 10,000.00</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-icon-only red">
-                                <i class="fa fa-power-off"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                             9803096712345
-                        </td>
-                        <td>98030967123459803096799999
-                            <span class="label label-sm label-danger">
-                            Inactiva </span>
-                        </td>
-                        <td>Tarjeta de Crédito Bancomer Cuenta 99999</td>
-                        <td>$ 1.00</td>
-                        <td>$ 10,000.00</td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-icon-only green">
-                                <i class="fa fa-power-off"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    
-                    </tbody>
-                    </table>
-                </div>
+    <!-- BEGIN SAMPLE TABLE PORTLET-->
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-cogs"></i>Cuentas Bancomer
             </div>
         </div>
-        <!-- END SAMPLE TABLE PORTLET-->
+        <div class="portlet-body">
+            <div class="form-group">
+                <label >&nbsp;&nbsp;Cuentas disponibles:</label>
+                
+                    <select class="form-control">
+                        <option>------</option>
+                        <option>9803096790 Tarjeta de Crédito Bancomer</option>
+                        <option>9803096791 Tarjeta de Crédito Bancomer</option>
+                        <option>9803096792 Tarjeta de Crédito Bancomer</option>
+                    </select>
+            </div>
+            <button class="btn green">Agregar</button>
+            <div class="table-scrollable">
+                <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>
+                        Cuenta
+                    </th>
+                    <th>
+                        Servicio / CIE / CLABE
+                    </th>
+                    <th>
+                        Método de pago
+                    </th>
+                    <th>
+                        Monto Mínimo
+                    </th>
+                    <th>
+                        Monto Máximo
+                    </th>
+                    <th>
+                        &nbsp;
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                         9803096712345
+                    </td>
+                    <td>98030967123459803096712345
+                    </td>
+                    <td>Tarjeta de Crédito Bancomer Cuenta 12345</td>
+                    <td>$ 1.00</td>
+                    <td>$ 10,000.00</td>
+                    <td>
+                        <a href="javascript:;" class="btn btn-icon-only red">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         9803096799999
+                    </td>
+                    <td>98030967123459803096799999
+                    </td>
+                    <td>Tarjeta de Crédito Bancomer Cuenta 99999</td>
+                    <td>$ 1.00</td>
+                    <td>$ 10,000.00</td>
+                    <td>
+                        <a href="javascript:;" class="btn btn-icon-only red">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </td>
+                </tr>
+                
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- END SAMPLE TABLE PORTLET-->
+    <!-- BEGIN SAMPLE TABLE PORTLET-->
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-cogs"></i>Cuentas Banorte
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="form-group">
+                <label >&nbsp;&nbsp;Cuentas disponibles:</label>
+                
+                    <select class="form-control">
+                        <option>------</option>
+                        <option>9803096790 Tarjeta de Crédito Banorte</option>
+                        <option>9803096791 Tarjeta de Crédito Banorte</option>
+                        <option>9803096792 Tarjeta de Crédito Banorte</option>
+                    </select>
+            </div>
+            <button class="btn green">Agregar</button>
+            <div class="table-scrollable">
+                <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>
+                        Cuenta
+                    </th>
+                    <th>
+                        Servicio / CIE / CLABE
+                    </th>
+                    <th>
+                        Método de pago
+                    </th>
+                    <th>
+                        Monto Mínimo
+                    </th>
+                    <th>
+                        Monto Máximo
+                    </th>
+                    <th>
+                        &nbsp;
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                         9803096712345
+                    </td>
+                    <td>98030967123459803096712345
+                    </td>
+                    <td>Tarjeta de Crédito Banorte Cuenta 12345</td>
+                    <td>$ 1.00</td>
+                    <td>$ 10,000.00</td>
+                    <td>
+                        <a href="javascript:;" class="btn btn-icon-only red">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         9803096799999
+                    </td>
+                    <td>98030967123459803096799999
+                    </td>
+                    <td>Tarjeta de Crédito Banorte Cuenta 99999</td>
+                    <td>$ 1.00</td>
+                    <td>$ 10,000.00</td>
+                    <td>
+                        <a href="javascript:;" class="btn btn-icon-only red">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </td>
+                </tr>
+                
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- END SAMPLE TABLE PORTLET-->
 
 </div>
 <div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -95,7 +95,7 @@ class MotorpagosController extends Controller
     	{
 			
 			$info2 = $this->diasferiadosdb->deleteWhere([
-				'Ano'=>'2019'
+				'Ano'=>'2019',
 				'Mes'=>'10',
 				'Dia'=>'15',
 			]);
