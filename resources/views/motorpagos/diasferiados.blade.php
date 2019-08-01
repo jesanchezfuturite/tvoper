@@ -23,10 +23,10 @@
         <div class="form-group">
             <label class="control-label col-md-3">Día feriado</label>
             <div class="col-md-3">
-                <input class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="">
+                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="">
                 <span class="help-block">
                 Selecciona una fecha </span>
-                <button class="btn blue">
+                <button class="btn blue" onclick="guardar()" type="submit">
                     Agregar
                 </button>
             </div>
@@ -87,5 +87,23 @@
     jQuery(document).ready(function() {       
        ComponentsPickers.init();
     });   
+	function guardar() {
+	  
+		var date = $("#datetime1").datepicker("getDate");
+		 var anioj = date.getFullYear();
+         var mesj = date.getMonth();
+		 var diaj = date.getDate();
+		  $.ajax({
+            method: "POST",
+            url: "{{ url('/dias-feriados-insert') }}",
+            data: { anio: anioj, mes: mesj, dia: diaj, _token: '{{ csrf_token() }}' }
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+			//alert(formatted);
+	}
+	
+	
 </script>
 @endsection
