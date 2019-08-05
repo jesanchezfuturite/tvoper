@@ -195,7 +195,7 @@ return json_encode($response);
             );
         }
         return view('motorpagos/limitereferencia',[ "saved_days" => $response ]);
-
+    }
     /**
      * Esta herramienta es operativa y sirve para configurar los parametros para permitir el pago de servicios
      *
