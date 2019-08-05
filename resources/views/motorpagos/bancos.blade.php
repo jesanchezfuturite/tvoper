@@ -63,7 +63,6 @@
                 <div class="tools">
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
-                    </a>
                     <a href="javascript:;" class="remove" data-original-title="" title="Desactivar Banco">
                     </a>
                 </div>
@@ -106,6 +105,9 @@
                         <td>$ 1.00</td>
                         <td>$ 10,000.00</td>
                         <td>
+                            <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Editar">
+                            <i class="fa fa-pencil"></i>
+                            </a>
                             <a href="javascript:;" class="btn btn-icon-only red">
                                 <i class="fa fa-power-off"></i>
                             </a>
@@ -123,6 +125,9 @@
                         <td>$ 1.00</td>
                         <td>$ 10,000.00</td>
                         <td>
+                            <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Editar">
+                            <i class="fa fa-pencil"></i>
+                            </a>
                             <a href="javascript:;" class="btn btn-icon-only green">
                                 <i class="fa fa-power-off"></i>
                             </a>
@@ -150,7 +155,12 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Método de Pago</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Enter text">
+                                <select class="form-control">
+                                    <option>------</option>
+                                    <option>Tarjeta de Credito</option>
+                                    <option>Tarjeta de Debito</option>
+                                    <option>Referencia Bancaria</option>
+                                </select>   
                             </div>
                         </div>
                         <div class="form-group">

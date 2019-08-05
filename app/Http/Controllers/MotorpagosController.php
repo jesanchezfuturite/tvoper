@@ -99,9 +99,11 @@ class MotorpagosController extends Controller
     	{
 				$anio = $request->anio;$mes = $request->mes;$dia = $request->dia;
 			$info2 = $this->diasferiadosdb->deleteWhere([
+
 				'Ano'=>$anio,
 				'Mes'=>$mes,
 				'Dia'=>$dia
+
 			]);
     		
     	}catch( \Exception $e ){
@@ -166,6 +168,7 @@ return json_encode($response);
     	return view('motorpagos/statustransaccion');
     }
 
+
     public function limitereferencia()
     {
         try
@@ -192,6 +195,21 @@ return json_encode($response);
             );
         }
         return view('motorpagos/limitereferencia',[ "saved_days" => $response ]);
+
+    /**
+     * Esta herramienta es operativa y sirve para configurar los parametros para permitir el pago de servicios
+     *
+     * @param NULL because it's the initial view in the app
+     *
+     *
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function pagotramite()
+    {
+        
+        return view('motorpagos/pagotramite');
+
     }
 
 }
