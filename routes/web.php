@@ -34,6 +34,9 @@ Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
 
+Route::get('/limite-referencia','MotorpagosController@limitereferencia');
+
+
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');

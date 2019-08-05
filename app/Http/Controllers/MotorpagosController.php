@@ -10,22 +10,26 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
+use App\Repositories\limitereferenciaRepositoryEloquent;
 
 class MotorpagosController extends Controller
 {
     
 	protected $diasferiadosdb;
+    protected $limitereferenciadb;
 
     // In this method we ensure that the user is logged in using the middleware
 
 
     public function __construct( 
-    	EgobiernodiasferiadosRepositoryEloquent $diasferiadosdb
+    	EgobiernodiasferiadosRepositoryEloquent $diasferiadosdb,
+        limitereferenciaRepositoryEloquent $limitereferenciadb
      )
     {
         $this->middleware('auth');
 
         $this->diasferiadosdb = $diasferiadosdb;
+        $this->limitereferenciadb=$limitereferenciadb;
     }
 
     /**
@@ -85,26 +89,25 @@ class MotorpagosController extends Controller
     			"dia"	=> $i->Dia
     		);
     	}
-		return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+		//return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
 
-    	
+    	return json_encode($response);
 	}
-	public function deleteDiasFeriados(Request $request)
+	public function deleteDiasFeriados(Request $request) 
 	{
 		try
     	{
-			
+				$anio = $request->anio;$mes = $request->mes;$dia = $request->dia;
 			$info2 = $this->diasferiadosdb->deleteWhere([
-				'Ano'=>'2019'
-				'Mes'=>'10',
-				'Dia'=>'15',
+				'Ano'=>$anio,
+				'Mes'=>$mes,
+				'Dia'=>$dia
 			]);
-    		$info = $this->diasferiadosdb->all();
-
+    		
     	}catch( \Exception $e ){
     		Log::info('Error Method diasferiados: '.$e->getMessage());
     	}
-
+        $info = $this->diasferiadosdb->all();
     	$response = array();
 
     	foreach($info as $i)
@@ -115,8 +118,8 @@ class MotorpagosController extends Controller
     			"dia"	=> $i->Dia
     		);
     	}
-
-    	return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+return json_encode($response);
+    	//return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
 	}
     /**
      * Muestra la vista para capturar nuevos metodos de pago y el listado de los que ya estan capturados
@@ -161,6 +164,34 @@ class MotorpagosController extends Controller
     {
     	
     	return view('motorpagos/statustransaccion');
+    }
+
+    public function limitereferencia()
+    {
+        try
+        {
+
+            $info = $this->limitereferenciadb->all();
+
+        }catch( \Exception $e ){
+            Log::info('Error Method diasferiados: '.$e->getMessage());
+        }
+
+        $response = array();
+
+        foreach($info as $i)
+        {
+            $response []= array(
+                "id" => $i->id,
+                "descripcion" => $i->descripcion,
+                "periodicidad" => $i->periodicidad,
+                "vencimiento" => $i->vencimiento,
+                "created_at" => $i->created_at,
+                "updated_at" => $i->updated_at
+
+            );
+        }
+        return view('motorpagos/limitereferencia',[ "saved_days" => $response ]);
     }
 
 }
