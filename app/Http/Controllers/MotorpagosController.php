@@ -237,22 +237,87 @@ return json_encode($response);
         return json_encode($response);
         
     }
-
-    public function CuentasBanco()
-    {
-         $info = $this->bancodb->all();
-        $responseinfo = array();
-
+     public function findCuenta_edit(Request $request)
+    {       
+        $id=$request->id;
+        $response = array();  
+        $info = $this->cuentasbancodb->findWhere(['id' => $id]);
         foreach($info as $i)
-        {
-            $responseinfo []= array(
-                "id"=>$i->id,
-                "nombre" => $i->nombre  
+        {             
+            $response []= array(              
+                "id" => $i->id,
+                "banco_id" => $i->banco_id,
+                "metodopago" => $metodpago_id,               
+                "beneficiario" => $i->beneficiario,
+                "monto_min" => $i->monto_min,
+                "monto_max" => $i->monto_max
             );
         }
-        return json_encode($responseinfo);
+        return json_encode($response);        
     }
 
+    public function insertCuentasBanco(Request $request)
+    {
+        $banco_id=$request->banco_id;
+        $metodopago=$request->metodopago;
+        $beneficiario=$request->beneficiario;
+        $monto_min=$request->monto_min;
+        $monto_max=$request->monto_max;
+        $fechaIn=$request->fechaIn;
+   
+        try{  
+          $info = $this->cuentasbancodb->create(['banco_id' => $banco_id,'metodopago_id' => $metodopago,'beneficiario' => $beneficiario,'status'=>'1','monto_min'=>$monto_min,'monto_max'=>$monto_max,'created_at'=>$fechaIn,'updated_at'=>$fechaIn] );
+        
+        }catch( \Exception $e ){
+            Log::info('Error Method insertCuentasBanco: '.$e->getMessage());
+        }      
+    }
+    public function updateCuentasBanco(Request $request)
+    {
+        
+        $metodopago=$request->metodopago;
+        $beneficiario=$request->beneficiario;
+        $monto_min=$request->monto_min;
+        $monto_max=$request->monto_max;
+        $fechaIn=$request->fechaIn;
+   
+        try{  
+          $info = $this->cuentasbancodb->update(['metodopago_id' => $metodopago,'beneficiario' => $beneficiario,'monto_min'=>$monto_min,'monto_max'=>$monto_max,'updated_at'=>$fechaIn],$id );
+        
+        }catch( \Exception $e ){
+            Log::info('Error Method insertCuentasBanco: '.$e->getMessage());
+        }      
+    }
+    public function findMetodopago()
+    {
+         $response = array();  
+        $info = $this->metodopagodb->all();
+        foreach($info as $i)
+        {
+            $response []= array(              
+                "id" => $i->id,
+                "nombre" => $i->nombre,
+            );
+        }
+        return json_encode($response);
+    }
+    public function DesactivaCuentaBanco(Request $request)
+    {
+        $response="false";
+        try
+        {   
+            $id = $request->id;
+            $status = $request->status;
+            $info2 = $this->cuentasbancodb->update(['status' => $status],$id);
+            $response="true";
+        }catch( \Exception $e ){
+            Log::info2('Error Method limitereferencia: '.$e->getMessage());
+            $response="false";
+        }
+        //return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+
+        return $response;
+    }
     /**
      * Esta herramienta es operativa y sirve para modificar el estatus de una transaccion
      *
@@ -426,129 +491,8 @@ return json_encode($response);
         return view('motorpagos/pagotramite');
 
     }
-    private function checkValidFilename($filename)
-    {
-        
-        $data = explode(".",$filename);
-
-        $bank_data = $data[0];
-
-        // check the length of the name
-        $length = strlen($bank_data);
-
-        $length -= 8;
-
-        $name = substr($bank_data,0, $length);
-
-        $validNames = $this->files;
-
-        $valid = false;
-
-        foreach($validNames as $v => $d)
-        {
-            if(strcmp($v,$name) == 0)
-            {
-                $valid = true;
-                return $valid;
-            }
-        }
-
-        return $valid;
-
-    }
-    protected $files = array (
-        "afirmeGobMx"           =>  
-            array(
-                "extension"     => "txt",
-                "lineExample"   => "27/06/201900000000005100010000000000121412560624146225",
-                "positions"     => array
-                    (
-                    "month"     => [3,2],
-                    "day"       => [0,2],
-                    "year"      => [6,4],
-                    "amount"    => [10,2],
-                    "id"        => [0,2]
-                    ),
-                "startFrom"     => 0
-            ), 
-        "afirmeVentanilla"      =>
-            array(
-                "extension" => "txt",
-                "lineExample"   => "D0000391137808110010000000000121393260624181257                                                                                          2019062800000000016280001V0000000101121305MXP201906281507080000000000000000000000000000000000000000",
-                "positions"     => array
-                    (
-                    "month"     => [141,2],
-                    "day"       => [143,2],
-                    "year"      => [137,4],
-                    "amount"    => [145,15],
-                    "id"        => [29,8]
-                    ),
-                "startFrom"     => 1
-            ),
-        "american"              =>
-            array(
-                "extension" => "csv",
-                "lineExample"   => "AMEXGWS,12141757,27/06/2019 11:01,American Express,Captura,338.00,Aprobadas,376689xxxxx2009,MANUEL GARCIA GARZA,207799,0,660,Internet,No evaluado,No se requiere,Coincidencia parcial,Coincidencia,19062768696",
-                "positions"     => array
-                    (
-                    "month"     => [141,2],
-                    "day"       => [143,2],
-                    "year"      => [137,4],
-                    "amount"    => [145,15],
-                    "id"        => [29,8]
-                    ),
-                "startFrom"     => 1
-            ),
-        "banamex"               =>
-            array(
-                "extension" => "txt",
-            ),
-        "banamexVentanilla"     =>
-            array(
-                "extension" => "txt",
-            ),
-        "bancomer"              =>
-            array(
-                "extension" => "txt",
-            ),
-        "bancomerVentanilla"    =>
-            array(
-                "extension" => "txt",
-            ),
-        "banorteCheque"         =>
-            array(
-                "extension" => "txt",
-            ),
-        "banorteNominas"        =>
-            array(
-                "extension" => "txt",
-            ),
-        "banregioVentanilla"    =>
-            array(
-                "extension" => "txt",
-            ),
-        "bazteca"               =>
-            array(
-                "extension" => "txt",
-            ),
-        "hsbc"                  => 
-            array(
-                "extension" => "txt",
-            ),
-        "santanderVentanilla"   => 
-            array(
-                "extension" => "txt",
-            ),
-        "scotiabankVentanilla"  =>
-            array(
-                "extension" => "txt",
-            ),
-        "telecomm"              =>
-            array(
-                "extension" => "txt",
-            ),
-    );
-
+   
+    
 
 
 }
