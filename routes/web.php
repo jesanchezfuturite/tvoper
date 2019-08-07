@@ -34,8 +34,22 @@ Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
 Route::get('/pago-tramite','MotorpagosController@pagotramite');
-
+/* Limite Referencia app */
 Route::get('/limite-referencia','MotorpagosController@limitereferencia');
+Route::post('/limite-referencia-deleted','MotorpagosController@deleteLimiteReferencia');
+Route::post('/limite-referencia-insert','MotorpagosController@insertLimiteReferencia');
+Route::post('/limite-referencia-find','MotorpagosController@FindLimiteReferencia');
+Route::post('/limite-referencia-update','MotorpagosController@updateLimiteReferencia');
+/* Banco app */
+Route::post('/banco-insert','MotorpagosController@insertBanco');
+Route::post('/banco-find','MotorpagosController@findBanco');
+Route::post('/cuentasbanco-find','MotorpagosController@findCuentasBanco');
+Route::post('/cuentasbanco-insert','MotorpagosController@insertCuentasBanco');
+Route::post('/cuentasbanco-update','MotorpagosController@updateCuentasBanco');
+Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco');
+/*Metodo Pago*/
+Route::get('/metodopago-find','MotorpagosController@findMetodopago');
+
 
 
 

@@ -22,8 +22,10 @@ class Metodopago extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['banco_id','nombre'];
+    protected $fillable = ['id','nombre','abreviatura','created_at','update_at'];
 
     protected $table = "oper_metodopago";
+
+    public $timestamps = false;
 
 }

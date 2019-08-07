@@ -33,6 +33,9 @@ License: You must have a valid license purchased only from themeforest(the above
 <link href="assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
 
 <!-- END GLOBAL MANDATORY STYLES -->
+<link href="assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css" rel="stylesheet"/>
+<link href="assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet"/>
+<link href="assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet"/>
 <!-- BEGIN THEME STYLES -->
 <link href="assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css"/>
 <link href="assets/global/css/plugins.css" rel="stylesheet" type="text/css"/>
