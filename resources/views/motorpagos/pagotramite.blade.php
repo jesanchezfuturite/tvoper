@@ -54,20 +54,19 @@
             
         </div>
         <div class="portlet-body">
-            <form class="form-inline" role="form">
-                <div class="form-group">
-                    <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>
-                    
-                        <select class="form-control">
+         
+             <div class="form-group col-md-2"><input id="agregabanco" class="form-control"  autocomplete="off" placeholder="Agregar Banco"></div> 
+            <button class="btn green">Agregar Banco</button>
+            
+           <div class="form-group col-md-3">  <label>Bancos Registrados (Selecciona para ver las cuentas)</label></div>             
+                    <div class="form-group col-md-2">    
+                        <select class="form-control" name="selectBanco" id="selectBanco">
                             <option>------</option>
                             <option>Bancomer</option>
                             <option>HSBC</option>
                             <option>Banamex</option>
                         </select>
-                </div>
-                
-                <button class="btn green">Agregar</button>
-            </form>
+                </div>               
         </div>
     </div>
 </div>
@@ -80,6 +79,7 @@
             </div>
         </div>
         <div class="portlet-body">
+
             <div class="form-group">
                 <label >&nbsp;&nbsp;Cuentas disponibles:</label>
                 
