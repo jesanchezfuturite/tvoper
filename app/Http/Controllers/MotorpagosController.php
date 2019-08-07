@@ -282,7 +282,7 @@ return json_encode($response);
         $fechaIn=$request->fechaIn;
    
         try{  
-          $info = $this->cuentasbancodb->update(['metodopago_id' => $metodopago,'beneficiario' => $beneficiario,'monto_min'=>$monto_min,'monto_max'=>$monto_max,'updated_at'=>$fechaIn],$id );
+          $info = $this->cuentasbancodb->update('metodopago_id' => $metodopago,'beneficiario' => $beneficiario,'monto_min'=>$monto_min,'monto_max'=>$monto_max,'updated_at'=>$fechaIn],$id );
         
         }catch( \Exception $e ){
             Log::info('Error Method insertCuentasBanco: '.$e->getMessage());
@@ -361,11 +361,12 @@ return json_encode($response);
         }
         return view('motorpagos/limitereferencia',[ "saved_days" => $response ]);
     }
+
     public function deleteLimiteReferencia(Request $request) 
     {
         try
         {
-                $id = $request->id;
+            $id = $request->id;
             $info2 = $this->limitereferenciadb->deleteWhere([
                 "id" => $id
             ]);
