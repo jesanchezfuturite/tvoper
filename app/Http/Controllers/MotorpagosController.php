@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
-use App\Repositories\limitereferenciaRepositoryEloquent;
+use App\Repositories\LimitereferenciaRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
 use App\Repositories\MetodopagoRepositoryEloquent;
