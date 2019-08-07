@@ -105,7 +105,7 @@
             <div class="modal-body">
                  <form action="#" class="form-horizontal">
                     <div class="form-body">
-                        <input hidden="true" type="text" class="form-control" placeholder="Ingrese una Cuenta" id="idCuenta">
+                        <input hidden="true" type="text"  placeholder="Ingrese una Cuenta" id="idCuenta">
                         <div class="form-group">
                             <label class="col-md-3 control-label">Método de Pago</label>
                             <div class="col-md-6">
@@ -419,6 +419,7 @@
     function editarCuenta(id_)
     {
         document.getElementById('idCuenta').value=id_;
+        
     }
 
     function updatecuenta()
