@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<h3 class="page-title"> Configuración de motor de pagos <small>Limite Referencia</small></h3>
+<h3 class="page-title"> Configuración de motor de pagos <small>Configuración de Límite de Referencia</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -14,7 +14,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Limite Referencia</a>
+            <a href="#">Configuración de Límite de Referencia</a>
         </li>
     </ul>
 </div>
@@ -22,7 +22,7 @@
 <!----  #tabla -->
 <div class="row">
 	<div class="col-md-12">				
-		<div class="portlet box red-intense" id="tabla_1">
+		<div class="portlet box blue" id="tabla_1">
 			<div class="portlet-title">
 				<div class="caption">
 					<i class="fa fa-globe"></i>Registros
@@ -45,7 +45,7 @@
                             <td>{{$sd["descripcion"]}}</td>
                             <td>{{$sd["periodicidad"]}}</td>
                             <td>{{$sd["vencimiento"]}}</td>
-                            <td><button type="button" class="btn btn-danger" data-toggle="modal" href="#static" onclick="deleted({{$sd['id']}}) "><i class="fa fa-trash-o"></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type="button" class="btn btn-primary" data-toggle="modal" href="#static2" onclick="update({{$sd['id']}})""><i class="fa fa-trash-o"></i>&nbsp;Editar</button></td>
+                            <td><button type="button" class="btn btn-danger" data-toggle="modal" href="#static" onclick="deleted({{$sd['id']}}) "><i class="fa fa-trash-o"></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type="button" class="btn btn-primary" data-toggle="modal" href="#static2" onclick="update({{$sd['id']}})""><i class="fa fa-edit"></i>&nbsp;Editar</button></td>
                         </tr>
                         @endforeach
 				</tbody>
@@ -275,7 +275,7 @@ var item = '';
                  +"<td>"+ item.descripcion + "</td>"                 
                  + "<td>"+ item.periodicidad + "</a></td>"                 
                  + "<td>"+ item.vencimiento + "</a></td>"                 
-                 + "<td><button type='button' class='btn btn-danger' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type='button' class='btn btn-primary' data-toggle='modal' href='#static2' onclick='update("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Editar</button></td>"
+                 + "<td><button type='button' class='btn btn-danger' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type='button' class='btn btn-primary' data-toggle='modal' href='#static2' onclick='update("+item.id+")'><i class='fa fa-edit'></i>&nbsp;Editar</button></td>"
                  + "</tr>");
                 });  
      TableAdvanced.init();
