@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class CfdiEncabezados.
+ * Class CfdiDetalle.
  *
  * @package namespace App\Entities;
  */
-class CfdiEncabezados extends Model implements Transformable
+class CfdiDetalle extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,13 +20,12 @@ class CfdiEncabezados extends Model implements Transformable
      *
      * @var array
      */
-    protected $connection = "mysql2";
+ 	protected $connection = "mysql2";
 
-    protected $fillable = ["metodo_de_pago","rfc_receptor"];
-    
-    protected $table = "cfdi_encabezados_t";
+    protected $fillable = ['concepto','precio_unitario','importe','partida'];
+
+    protected $table = "cfdi_detalle_t";
 
     public $timestamps = false;
-    
 
 }

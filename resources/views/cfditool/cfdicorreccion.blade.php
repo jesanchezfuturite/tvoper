@@ -39,7 +39,7 @@
                         </div>                        
                     </div>
                     <div class="form-actions noborder">
-                        <button type="submit" class="btn blue" id="buscar">Buscar</button>
+                        <button type="submit" class="btn blue" id="buscar">Buscar <i class="fa fa-search"></i></button>
                     </div>
                 </form>
             </div>
@@ -87,8 +87,8 @@
                 <p>Modal example.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger" id="myModalButton">Submit</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar <i class="fa fa-close"></i></button>
+                <button type="button" class="btn btn-success" id="btnUpd">Actualizar <i class="fa fa-refresh"></i></button>
             </div>
         </div>
     </div>
@@ -185,27 +185,174 @@
         }
     });
 
-   function loadHeader(id)
-   {
-       if(id != "" && id != 'undefined')
-       {
+    function loadHeader(id)
+    {
+        if(id != "" && id != 'undefined')
+        {    
+            var b = $('#myModal').find('#btnAdd');
+            b.remove();
+
             $.ajax({
                 method: "get",
-                // beforeSend:  function(){
-                    
-                    
-                // },
                 url: "{{ url('/cfdi-correccion/encabezado') }}",
                 data: { fu: id, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){
-                console.log(data);
+
+                var mbody = $('#myModal').find('.modal-body');
+                var mdata = JSON.parse(data);
+                
+                mbody.html('');
+                $('#myModalTitle').html('Edición de Encabezado');
+                mbody.append(
+                    $('<form>',{ role: 'form',id:'edit-form' }).addClass('form-horizontal')
+                        .append($('<div>').addClass('form-body')
+                            .append($('<div>').addClass('form-group')
+                                .append($('<label>').addClass('col-md-3 control-label').text('Folio Unico'))
+                                .append($('<div>').addClass('col-md-9')
+                                    .append($('<input>',{type:'hidden',name:'id',value:mdata[0].idcfdi_encabezados}))
+                                    .append($('<input>',{value: mdata[0].folio_unico,name:'folio_unico'}).addClass('form-control').attr('readonly',true)))
+                            )
+                            .append($('<div>').addClass('form-group')
+                                .append($('<label>').addClass('col-md-3 control-label').text('Folio Pago'))
+                                .append($('<div>').addClass('col-md-9')
+                                    .append($('<input>',{ value: mdata[0].folio_pago,name:'folio_pago' }).addClass('form-control').attr('readonly',true)))
+                            )
+                            .append($('<div>').addClass('form-group')
+                                .append($('<label>').addClass('col-md-3 control-label').text('Fecha Transacción'))
+                                .append($('<div>').addClass('col-md-9')
+                                    .append($('<input>',{ value: mdata[0].fecha_transaccion,name:'fecha_transaccion' }).addClass('form-control').attr('readonly',true)))
+                            )
+                            .append($('<div>').addClass('form-group')
+                                .append($('<label>').addClass('col-md-3 control-label').text('Total'))
+                                .append($('<div>').addClass('col-md-9')
+                                    .append($('<input>',{ value: mdata[0].total,name:'total' }).addClass('form-control').attr('readonly',true)))
+                            )
+                            .append($('<div>').addClass('form-group')
+                                .append($('<label>').addClass('col-md-3 control-label').text('Metodo de Pago'))
+                                .append($('<div>').addClass('col-md-9')
+                                    .append($('<input>',{ value: mdata[0].metodo_de_pago,name:'metodo_pago' }).addClass('form-control')))
+                            )
+                        )
+                        .append($('<input>',{type:'hidden',value:'header',name:'edit',id:'edit'}))
+                        .append($('<input>',{type:'hidden',value:'{{ csrf_token() }}',name:'_token'}))
+                    );
+                $('.modal-dialog').removeClass('modal-full');
+                $('#btnUpd').attr('disabled',false);
+                $("#myModal").modal('show');
             });
+        }
+    }
 
-       }
-   }
+    function loadDetail(id)
+    {
+       if(id != "" && id != 'undefined')
+       {    
+            if(!$('#btnAdd').length)
+            {
+                var b = $('#myModal').find('.modal-footer');
+                b.append($('<button>',{id:'btnAdd'}).on('click',function(){addRow()}).addClass('btn btn-primary').text('Nuevo ').append($('<i>').addClass('fa fa-plus')));
+            }
+
+            $.ajax({
+                method: "get",
+                url: "{{ url('/cfdi-correccion/detalle') }}",
+                data: { fu: id, _token: '{{ csrf_token() }}' }
+            })
+            .done(function(data){
+                
+                var mbody = $('#myModal').find('.modal-body');
+                var mdata = JSON.parse(data);
+                var t = $('<table>',{id:'tblDetails'}).addClass('table table-hover');
+                
+                mbody.html('');
+                $('#myModalTitle').html('Edición del Detalle');
+                
+                if(!mdata.length)
+                {
+                    alert('Elemento Vacio');
+                }
+                else
+                {   
+                    var thead = $('<thead>');
+                    thead.append($('<tr>')
+                        .append($('<td>').append($('<b>').text('Folio Unico')))
+                        .append($('<td>').append($('<b>').text('Cantidad')))
+                        .append($('<td>').append($('<b>').text('Unidad')))
+                        .append($('<td>').append($('<b>').text('Concepto')))
+                        .append($('<td>').append($('<b>').text('Precio Unitario')))
+                        .append($('<td>').append($('<b>').text('Importe')))
+                        .append($('<td>').append($('<b>').text('Partida')))
+                        .append($('<td>').append($('<b>').text('Fecha Registro')))
+                    );
+                    
+                    var tbody = $('<tbody>');
+                    $.each(mdata,function(i,item){
+                        tbody.append($('<tr>')
+                            .append($('<input>',{type:'hidden',value:item.idcfdi_detalle,name:'ids[]'}))
+                            .append($('<td>').append($('<input>',{name:'fun[]',value:item.folio_unico}).attr('readonly',true).addClass('form-control')))
+                            .append($('<td>').append($('<input>',{name:'can[]',value:item.cantidad}).attr('readonly',true).addClass('form-control input-xsmall')))
+                            .append($('<td>').append($('<input>',{name:'uni[]',value:item.unidad}).attr('readonly',true).addClass('form-control input-xsmall')))
+                            .append($('<td>').append($('<input>',{name:'con[]',value:item.concepto}).attr('readonly',false).addClass('form-control')))
+                            .append($('<td>').append($('<input>',{name:'pre[]',value:item.precio_unitario}).attr('readonly',false).addClass('form-control')))
+                            .append($('<td>').append($('<input>',{name:'imp[]',value:item.importe}).attr('readonly',false).addClass('form-control')))
+                            .append($('<td>').append($('<input>',{name:'par[]',value:item.partida}).attr('readonly',false).addClass('form-control input-xsmall')))
+                            .append($('<td>').append($('<input>',{name:'fec[]',value:item.fecha_registro}).attr('readonly',true).addClass('form-control')))
+                        );
+                    });
+
+                    t.append(thead).append(tbody);
+                    
+                    mbody.append($('<form>',{ role: 'form',id: 'edit-form' }).addClass('form-horizontal')
+                        .append($('<div>').addClass('form-body').append(t)
+                            .append($('<input>',{type:'hidden',value:'detail',name:'edit',id:'edit'}))
+                            .append($('<input>',{type:'hidden',value:'{{ csrf_token() }}',name:'_token'})))
+                    )
+                    $('.modal-dialog').addClass('modal-full');
+                    $('#btnUpd').attr('disabled',false);
+                    $("#myModal").modal('show');
+                }
+            });
+        }
+    }
     
+    function addRow() 
+    {
+        var row = $('<tr>')
+            .append($('<input>',{type:'hidden',value:0,name:'ids[]'}))
+            .append($('<td>').append($('<input>',{name:'fun[]'}).addClass('form-control')))                                         // FolioUnico
+            .append($('<td>').append($('<input>',{name:'can[]'}).addClass('form-control input-xsmall')))                            // Cantidad
+            .append($('<td>').append($('<input>',{name:'uni[]',value:'Servicio'}).attr('readonly',true).addClass('form-control input-xsmall')))  // Unidad
+            .append($('<td>').append($('<input>',{name:'con[]'}).addClass('form-control')))                                         // Concepto
+            .append($('<td>').append($('<input>',{name:'pre[]'}).addClass('form-control')))                                         // PrecioUnitario
+            .append($('<td>').append($('<input>',{name:'imp[]'}).addClass('form-control')))                                         // Importe
+            .append($('<td>').append($('<input>',{name:'par[]'}).addClass('form-control input-xsmall')))                            // Partida
+            .append($('<td>').append($('<input>',{name:'fec[]'}).addClass('form-control')))                                         // FechaRegistro
 
+        $('#tblDetails > tbody').append(row);    
+    }
+
+    $('#btnUpd').on('click',function(){
+        var mbody = $('#myModal').find('.modal-body');
+        
+        $.ajax({
+            method: "post",
+            url: "{{ url('/cfdi-correccion/edit') }}",
+            data: $('#edit-form').serialize(),
+            beforeSend:function(){
+                return confirm("¿Desea guardar los cambios?");
+            },
+        })
+        .done(function(data){
+            if(data.length)
+            {
+                $('#edit-form input').attr('readonly',true);
+                $('#btnUpd').attr('disabled',true);
+            }
+        });
+
+        // console.log(reference.value);
+    });
 
 </script>
 @endsection
