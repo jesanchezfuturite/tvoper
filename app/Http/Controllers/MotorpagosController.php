@@ -244,10 +244,9 @@ return json_encode($response);
         $info = $this->cuentasbancodb->findWhere(['id' => $id]);
         foreach($info as $i)
         {             
-            $response []= array(              
-                "id" => $i->id,
+            $response []= array( 
                 "banco_id" => $i->banco_id,
-                "metodopago" => $metodpago_id,               
+                "metodopago_id" => $i->metodopago_id,               
                 "beneficiario" => $i->beneficiario,
                 "monto_min" => $i->monto_min,
                 "monto_max" => $i->monto_max
@@ -274,7 +273,8 @@ return json_encode($response);
     }
     public function updateCuentasBanco(Request $request)
     {
-        
+        $response='false';
+        $id=$request->id;
         $metodopago=$request->metodopago;
         $beneficiario=$request->beneficiario;
         $monto_min=$request->monto_min;
@@ -282,6 +282,7 @@ return json_encode($response);
         $fechaIn=$request->fechaIn;
    
         try{  
+
           $info = $this->cuentasbancodb->update(
             [
                 'metodopago_id' => $metodopago,
@@ -290,10 +291,13 @@ return json_encode($response);
                 'monto_max'=>$monto_max,
                 'updated_at'=>$fechaIn
             ],$id );
+        $response="true";
         
         }catch( \Exception $e ){
             Log::info('Error Method insertCuentasBanco: '.$e->getMessage());
-        }      
+            $response='false';
+        }    
+        return $response;
     }
     public function findMetodopago()
     {
@@ -324,6 +328,27 @@ return json_encode($response);
         //return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
 
         return $response;
+    }
+    public function DesactivaBanco(Request $request)
+    {
+      $response = array();
+        try
+        {   
+            $id = $request->id;
+            $status =$request->status;
+            $info2 = $this->bancodb->update(['status' => $status],$id);
+            
+        }catch( \Exception $e ){
+            Log::info2('Error Method limitereferencia: '.$e->getMessage());            
+        }
+        $info = $this->bancodb->findWhere(['id' => $id]);
+        foreach($info as $i)
+        {             
+            $response []= array( 
+                "status" => $i->status
+            );
+        }
+        return json_encode($response);
     }
     /**
      * Esta herramienta es operativa y sirve para modificar el estatus de una transaccion

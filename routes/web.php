@@ -44,9 +44,11 @@ Route::post('/limite-referencia-update','MotorpagosController@updateLimiteRefere
 Route::post('/banco-insert','MotorpagosController@insertBanco');
 Route::post('/banco-find','MotorpagosController@findBanco');
 Route::post('/cuentasbanco-find','MotorpagosController@findCuentasBanco');
+Route::post('/cuentasbanco-edit','MotorpagosController@findCuenta_edit');
 Route::post('/cuentasbanco-insert','MotorpagosController@insertCuentasBanco');
 Route::post('/cuentasbanco-update','MotorpagosController@updateCuentasBanco');
 Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco');
+Route::post('/banco-status-update','MotorpagosController@DesactivaBanco');
 /*Metodo Pago*/
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
 
