@@ -65,7 +65,7 @@
                 <div class="tools" id="removeBanco">
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
-                        <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick=""><i class='fa fa-remove' style="color:white !important;"></i>
+                   <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick="desactivabanco()"><i class='fa fa-remove' style="color:white !important;"></i>
                         </a>
                     
                 </div>
@@ -99,7 +99,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiaCuentapago()"></button>
                 <h4 class="modal-title">Configurar Nueva Cuenta</h4>
             </div>
             <div class="modal-body">
@@ -141,7 +141,7 @@
                         <div class="form-actions">
                             <div class="row">
                                 <div class="col-md-offset-3 col-md-6">
-                                    <button type="button" class="btn blue" onclick="insertCuentaB()">Guardar</button>
+                                    <button type="button" class="btn blue" onclick="metodoSaveUpdate()">Guardar</button>
                                     <button type="button" data-dismiss="modal" class="btn default" class="close" onclick="limpiaCuentapago()">Cancelar</button>
                                 </div>
                             </div>
@@ -206,6 +206,7 @@
          var est;
         var estadoBanco="";
         var estadolabel="";
+        var iconB="";
        if(items=='limpia')
        {
         $("#borraheader").remove();
@@ -233,14 +234,18 @@
         {
             estadoBanco="Activa";
             estadolabel="success";
+            iconB="Desactivar Banco";
         }
         else
         {
             estadoBanco="Inactiva";
             estadolabel="danger";
+            iconB="Activar Banco";
+
         }
        $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
-         
+          $("#Remov").remove();
+        $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i> </a>");
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -263,7 +268,6 @@
 
     function tablacuentasbanco(Resp)
     { 
-        console.log(Resp);
         var item="";
         var item2="";
         var status="";
@@ -293,45 +297,11 @@
             +"<td>"+Cuent+"</td>"
             +"<td >"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
             +"<td>"+item.metodopago+"</td>"
-            +"<td>"+item.monto_min+"</td>"
-            +"<td>"+item.monto_max+"</td>"
+            +"<td>$"+item.monto_min+"</td>"
+            +"<td>$"+item.monto_max+"</td>"
             +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='editarCuenta("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' onclick='desactivarCuenta("+item.id+","+item.status+")'><i class='fa fa-power-off'></i></a></td>"
             +"</tr>");
         });
-    }
-    function desactivabanco()
-    {
-        var items=$("#items").val();
-        var banco=$("#items option:selected").text();
-         var est;
-        var estadoBanco="";
-        var estadolabel="";
-        var desactiva="";
-         $("#borraheader").remove();
-        $.ajax({
-           method: "POST",           
-           url: "{{ url('/banco-find') }}",
-           data: {id:items,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {
-        var Resp=$.parseJSON(response);
-        $.each(Resp, function(i, item) {                
-        est=item.status;         
-            });
-        if(est==1)
-        {
-            estadoBanco="Activa";
-            estadolabel="success";
-        }
-        else
-        {
-            estadoBanco="Inactiva";
-            estadolabel="danger";
-        }
-       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
-         
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
     }
 
     function insertCuentaB()
@@ -419,12 +389,41 @@
     function editarCuenta(id_)
     {
         document.getElementById('idCuenta').value=id_;
+
+         $.ajax({
+           method: "POST",           
+           url: "{{ url('/cuentasbanco-edit') }}",
+           data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
         
+            var item="";
+            var item2="";             
+            var Resp=$.parseJSON(response);      
+            $.each(Resp, function(i, item) {
+            var Serv="";
+            var Cuent="";             
+            var Mtdo=$.parseJSON(item.beneficiario);
+            $.each(Mtdo, function(ii, item2) {
+                Serv=item2.servicio;
+                Cuent=item2.cuenta;                
+            });
+             document.getElementById('cuenta').value=Cuent;
+            document.getElementById('servicio').value=Serv;
+            document.getElementById('monto_max').value=item.monto_max;
+             document.getElementById('monto_min').value=item.monto_min; 
+            document.getElementById('itemMetodopago').value=item.metodopago_id;
+            });
+          
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+
     }
 
     function updatecuenta()
     {   
-        var idcuenta=$("#idCuenta").val();        
+        var idCuenta=$("#idCuenta").val();        
         var metodopago_=$("#itemMetodopago").val();
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
@@ -433,7 +432,7 @@
         var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();     
-       if(banco=="limpia")
+       if(metodopago_=="limpia")
         { 
             Command: toastr.warning("No Success", "Notifications")
             limpiaCuentapago();
@@ -445,13 +444,109 @@
            data: {id:idCuenta, metodopago:metodopago_,beneficiario:formdata, monto_min:monto_min_, monto_max:monto_max_, fechaIn:fechaIn_, _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
-        Command: toastr.success("Success", "Notifications")
+        if(response=="true"){
+            Command: toastr.success("Success", "Notifications")
            limpiaCuentapago();
             CuentasBanco();
+        }
+        else{
+            Command: toastr.warning("No Success", "Notifications") 
+        }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
         }
+    }
+    function metodoSaveUpdate()
+    {
+        var idcuenta=$("#idCuenta").val();
+        if(idcuenta=="")
+        {
+            insertCuentaB();
+        }
+        else
+        {
+            updatecuenta();
+        }
+    }
+       function desactivabanco()
+    {
+        var items=$("#items").val();
+        var estatus="";
+        var banco=$("#items option:selected").text();
+         var est;       
+        if(banco=="limpia")
+        {
+           Command: toastr.warning("No Success", "Notifications") 
+        }
+        else{ 
+         $("#borraheader").remove();
+        
+        $.ajax({
+           method: "POST",           
+           url: "{{ url('/banco-find') }}",
+           data: {id:items,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var item="";
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) {                
+        est=item.status;         
+            });  
+        if(est==1)
+        {
+            estatus="0";
+            desactiva(estatus);         
+        }
+        else
+        {
+            estatus="1";
+            desactiva(estatus);   
+        }      
+        
+        })
+        .fail(function( msg ) {
+         console.log(msg);  });
+        }
+    }
+    function desactiva(estatus)
+    {
+        var items=$("#items").val();
+         var banco=$("#items option:selected").text();
+        var estadoBanco="";
+        var estadolabel="";
+        var est;
+        var iconB="";
+         $.ajax({
+           method: "POST",           
+           url: "{{ url('/banco-status-update') }}",
+           data: {id:items,status:estatus,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var item="";
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) { 
+            est=item.status;         
+        });
+        Command: toastr.success("Success", "Notifications")
+        if(est==1)
+        {
+           estadoBanco="Activa";
+            estadolabel="success";
+            iconB="Desactivar Banco";           
+        }
+        else
+        {
+             estadoBanco="Inactiva";
+            estadolabel="danger";
+            iconB="Activar Banco";
+        } 
+        $("#borraheader").remove();
+       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
+        $("#Remov").remove();
+        $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i></a>");
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  }); 
     }
     toastr.options = {
         "closeButton": true,
