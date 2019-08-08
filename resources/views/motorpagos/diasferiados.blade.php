@@ -23,9 +23,9 @@
         <div class="form-group">
             <label class="control-label col-md-3">Día feriado</label>
             <div class="col-md-3">
-                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="">
+                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" placeholder="Selecciona una fecha">
                 <span class="help-block">
-                Selecciona una fecha </span>
+                 </span>
                 <button class="btn blue" onclick="guardar()" type="submit">
                     Agregar
                 </button>
@@ -45,7 +45,7 @@
             </div>
             <div class="portlet-body">
                 <div class="table-scrollable">
-                    <table class="table table-striped table-bordered table-advance table-hover">
+                    <table id="table" class="table table-striped table-bordered table-advance table-hover">
                     <thead>
                     <tr>
                         <th>
@@ -58,15 +58,16 @@
                     <tbody>
                         @foreach( $saved_days as $sd)
                         <tr>
+                            <td hidden>{{$sd["anio"]}}-{{$sd["mes"]}}-{{$sd["dia"]}}</td>
                             <td class="highlight">
                                 <div class="success"></div>
                                 <a href="javascript:;"> 
-                                    {{$sd["anio"]}} -  {{$sd["mes"]}} - {{$sd["dia"]}}  
+                                     &nbsp; {{$sd["anio"]}} - {{$sd["mes"]}} - {{$sd["dia"]}}  
                                 </a>
                             </td>
                             <td>
-                                <a href="javascript:;" class="btn default btn-xs black">
-                                <i class="fa fa-trash-o"></i> Borrar </a>
+                                <a  class="btn default btn-xs black" data-toggle="modal" href="#static">
+                                <i class="fa fa-trash-o" ></i> Borrar </a>
                             </td>
                         </tr>
                         @endforeach
@@ -78,11 +79,33 @@
         <!-- END SAMPLE TABLE PORTLET-->
     </div>
 </div>
+<!-- modal-dialog -->
+<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="idvalor" id="idvalor" class="idvalor">
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="deleted()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
+
 <script>
     jQuery(document).ready(function() {       
        ComponentsPickers.init();
@@ -91,19 +114,109 @@
 	  
 		var date = $("#datetime1").datepicker("getDate");
 		 var anioj = date.getFullYear();
-         var mesj = date.getMonth();
+         var mesj = date.getMonth()+1;
 		 var diaj = date.getDate();
 		  $.ajax({
             method: "POST",
             url: "{{ url('/dias-feriados-insert') }}",
             data: { anio: anioj, mes: mesj, dia: diaj, _token: '{{ csrf_token() }}' }
         })
+          .done(function(response){ 
+           //alert(data);
+            var Resp=$.parseJSON(response);
+            var item = '';
+            $("#table tbody tr").remove();
+            /*agrega tabla*/
+                $.each(Resp, function(i, item) {                
+                 $('#table tbody').append("<tr>"  
+                 +"<td hidden>"+ item.anio +"-"+ item.mes +"-"+ item.dia + "</td>"                 
+                 + "<td class='highlight'><div class='success'></div><a href='javascript:;'> &nbsp;" + item.anio +" - "+ item.mes +" - "+ item.dia + "</a></td>"                 
+                 + "<td><a  class='btn default btn-xs black' data-toggle='modal' href='#static'><i class='fa fa-trash-o' ></i> Borrar </a></td>"                  
+                 + "</tr>");
+                 
+                });
+            Command: toastr.success("Success!", "Notifications")
+           })
         .fail(function( msg ) {
+            Command: toastr.warning("Failed to Add", "Notifications")
             console.log( "AJAX Failed to add in : " + msg );
         });
-			//alert(formatted);
+			toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "positionClass": "toast-top-right",
+            "onclick": null,
+            "showDuration": "1000",
+            "hideDuration": "1000",
+            "timeOut": "4000",
+            "extendedTimeOut": "1000"
+            }
 	}
-	
-	
+	$('#table').on('click', 'tr td a', function (evt) {
+
+       var row = $(this).parent().parent();
+       var celdas = row.children();
+	   var com = new RegExp('\"','g'); 
+	   var valor=$(celdas[0]).html();
+        document.getElementById('idvalor').value =valor;
+
+	   //var res=valor.replace(com,"");
+	   //res=res.replace("<div class=success></div>","");
+	   //res=res.replace("<a href=javascript:;>","");
+	   //res=res.replace("</a>","");
+	   //res=res.trim();
+	   //res=res.replace(/ /g,"");
+	   //var fecha= new Date(valor);   
+		/*var r = confirm("ELIMINAR REGISTRO!");
+		if (r == true) {
+		deleted(fecha);
+		} else {
+		return;
+		}  */     
+    });
+
+	function deleted()
+	{
+        var fecha = $("#idvalor").val();
+        var fecha2= new Date(fecha+" 12:00:00"); 
+		var date = fecha2;
+		 var anioj = date.getFullYear();
+         var mesj = date.getMonth()+1;
+		 var diaj = date.getDate();
+        
+		$.ajax({
+           method: "POST",
+           url: "{{ url('/dias-feriados-eliminar') }}",
+           data: { anio: anioj, mes: mesj, dia: diaj, _token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) { 
+             var Resp=$.parseJSON(response);
+            var item = '';
+            $("#table tbody tr").remove();
+            /*agrega tabla*/
+                $.each(Resp, function(i, item) {                
+                 $('#table tbody').append("<tr>"  
+                 +"<td hidden>"+ item.anio +"-"+ item.mes +"-"+ item.dia + "</td>"                 
+                 + "<td class='highlight'><div class='success'></div><a href='javascript:;'> &nbsp;" + item.anio +" - "+ item.mes +" - "+ item.dia + "</a></td>"                 
+                 + "<td><a  class='btn default btn-xs black'  data-toggle='modal' href='#static'><i class='fa fa-trash-o'></i> Borrar </a></td>"                  
+                 + "</tr>");
+                
+                });
+         Command: toastr.success("Success", "Notifications") })
+        .fail(function( msg ) {
+         Command: toastr.warning("No deleted", "Notifications")  });
+        toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "positionClass": "toast-top-right",
+         "onclick": null,
+        "showDuration": "1000",
+        "hideDuration": "1000",
+        "timeOut": "4000",
+         "extendedTimeOut": "1000"
+        }
+    }
+    
+
 </script>
 @endsection

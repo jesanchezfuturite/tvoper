@@ -22,8 +22,8 @@ class Limitereferencia extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['descripcion','periodicidad','vencimiento'];
+    protected $fillable = ['id','descripcion','periodicidad','vencimiento','created_at','updated_at'];
 
     protected $table = "oper_limitereferencia";
-
+    public $timestamps = false;
 }
