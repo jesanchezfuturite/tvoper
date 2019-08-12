@@ -22,8 +22,8 @@ class Pagotramite extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['metodo_id','tramite_id','status_id','catalogotramite_id','descripcion','monto_minimo','monto_maximo','fecha_inicio','fecha_fin'];
+    protected $fillable = ['id','cuentasbanco_id','tramite_id','descripcion','fecha_inicio','fecha_fin','created_at','updated_at'];
 
     protected $table = "oper_pagotramite";
-
+    public $timestamps = false;
 }

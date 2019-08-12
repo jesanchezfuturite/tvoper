@@ -51,7 +51,16 @@ Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco
 Route::post('/banco-status-update','MotorpagosController@DesactivaBanco');
 /*Metodo Pago*/
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
+Route::get('/banco-find-all','MotorpagosController@findBancoAll');
+/*metodo tipo servicio*/
+Route::get('/tiposervicio-find-all','MotorpagosController@findTipoServicioAll');
+/*metodo tipo PagoTramite*/
 
+Route::post('/pagotramite-find','MotorpagosController@findTipoServicio');
+Route::post('/pagotramite-insert','MotorpagosController@insertPagoTramite');
+Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere');
+Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
+Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
 
 
 

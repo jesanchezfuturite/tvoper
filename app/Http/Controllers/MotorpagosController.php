@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log;
-
+use Carbon\Carbon;
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 use App\Repositories\LimitereferenciaRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
 use App\Repositories\MetodopagoRepositoryEloquent;
-
+use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+use App\Repositories\PagotramiteRepositoryEloquent;
 class MotorpagosController extends Controller
 {
     
@@ -23,6 +24,8 @@ class MotorpagosController extends Controller
     protected $bancodb;
     protected $cuentasbancodb;
     protected $metodopagodb;
+    protected $tiposerviciodb;
+    protected $pagotramitedb;
 
     // In this method we ensure that the user is logged in using the middleware
 
@@ -32,7 +35,9 @@ class MotorpagosController extends Controller
         limitereferenciaRepositoryEloquent $limitereferenciadb,
         BancoRepositoryEloquent $bancodb,
         MetodopagoRepositoryEloquent $metodopagodb,
-        CuentasbancoRepositoryEloquent $cuentasbancodb
+        CuentasbancoRepositoryEloquent $cuentasbancodb,
+        EgobiernotiposerviciosRepositoryEloquent $tiposerviciodb,
+        PagotramiteRepositoryEloquent $pagotramitedb
      )
     {
         $this->middleware('auth');
@@ -42,6 +47,9 @@ class MotorpagosController extends Controller
         $this->bancodb=$bancodb;
         $this->metodopagodb=$metodopagodb;
         $this->cuentasbancodb=$cuentasbancodb;
+        $this->tiposerviciodb=$tiposerviciodb;
+        $this->pagotramitedb=$pagotramitedb;
+
     }
 
     /**
@@ -163,18 +171,31 @@ return json_encode($response);
     }
     public function insertBanco(Request $request)
     {
+        $result=0;
+        $V=0;
         // identify the name of the file 
         $uploadedFile = $request->file('file');
-        $fecha = $request->fechaIn; $nombre = $request->nombre;
+        $fecha = $request->fechaIn; 
+        $nombre = $request->nombre;
         $status = $request->estatus; 
         // get the filename 
         $fileName = $uploadedFile->getClientOriginalName(); 
         // check if is a valid file
        // save the file in the storage folder
-            try
-            {
+        try
+            { 
+                $info3 = $this->bancodb->all();
+                foreach($info3 as $i)
+                {
+                     $V(strcasecmp($nombre, $i->nombre));
+                      $result=$V+$result;
+
+                }
+                if($result=0){
+
                $response = $uploadedFile->storeAs('Image_Banco/',$fileName);
                 $info2 = $this->bancodb->create(['nombre' => $nombre,'url_logo' => 'Image_Banco/'.$fileName,'status' => $status,'created_at'=>$fecha,'updated_at'=>$fecha] ); 
+                 }
         
             }catch( \Exception $e ){
                 dd($e->getMessage());
@@ -205,7 +226,7 @@ return json_encode($response);
         foreach($info as $i)
         {
             $response []= array(              
-                "status" => $i->status,
+                "status" => $i->status
             );
         }
         return json_encode($response);
@@ -213,6 +234,7 @@ return json_encode($response);
     }
     public function findCuentasBanco(Request $request)
     {
+
         $metodpago;
         $id=$request->id;
         $response = array();  
@@ -307,7 +329,7 @@ return json_encode($response);
         {
             $response []= array(              
                 "id" => $i->id,
-                "nombre" => $i->nombre,
+                "nombre" => $i->nombre
             );
         }
         return json_encode($response);
@@ -350,6 +372,154 @@ return json_encode($response);
         }
         return json_encode($response);
     }
+    /*find todos los bancos agregados*/
+    public function findBancoAll()
+    {
+
+       
+        $response = array();  
+        $info = $this->bancodb->findWhere(['status' => '1']);
+        foreach($info as $i)
+        {
+            $response []= array(
+                "id"=>$i->id,              
+                "nombre" => $i->nombre
+            );
+        }
+        return json_encode($response);
+        
+    }
+
+    /* tipo servicio*/
+
+    public function findTipoServicioAll()
+    {       
+        $response = array();  
+        $info = $this->tiposerviciodb->all();
+        foreach($info as $i)
+        {
+            $response []= array(
+                "id"=>$i->Tipo_Code,              
+                "nombre" => $i->Tipo_Descripcion
+            );
+        }
+        return json_encode($response);
+        
+    }
+
+    public function findTipoServicio(Request $request)
+    {
+        $idBanco=$request->idBanco;
+        $idTiposervicio=$request->idTiposervicio;
+        /*atributos cuentas Banco*/        
+        $beneficiario;
+        $metodopago;
+        $monto_min;
+        $montop_max;
+        /*end*/
+        $responseTipoServicio = array();        
+        $infoCuentasBanco=$this->cuentasbancodb->findWhere(['banco_id'=>$idBanco]);
+        foreach($infoCuentasBanco as $i)
+        {
+            $info2 = $this->metodopagodb->findWhere(['id' => $i->metodopago_id]);
+             foreach($info2 as $iii)
+                {
+                    $metodopago=$iii->nombre;
+                }
+                $beneficiario=$i->beneficiario;
+                $monto_min=$i->moto_min;
+                $monto_max=$i->monto_max;
+
+            $infoTipoServicio = $this->pagotramitedb->findWhere(['cuentasbanco_id'=>$i->id,'tramite_id'=>$idTiposervicio]);
+             foreach($infoTipoServicio as $ii)
+            {
+                $responseTipoServicio []= array(
+                "id"=>$ii->id,              
+                "metodopago" => $metodopago,
+                "beneficiario" => $i->beneficiario,
+                "monto_min" => $i->monto_min,
+                "monto_max" => $i->monto_max
+
+                );
+            }
+            
+        }
+        return json_encode($responseTipoServicio);
+    }
+
+    public function insertPagoTramite(Request $request)
+    {
+        $Id_tiposervicio=$request->Id_tiposervicio;
+        $Id_Banco=$request->Id_Banco;
+        $fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d h:i:s');
+        $response = "false";
+        try{  
+        $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>' ','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
+            $response="true";
+            }
+            catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
+    }
+     public function findPagoTramiteWhere(Request $request)
+    {
+        $id=$request->id;
+        $response = array();   
+        $info = $this->pagotramitedb->findWhere(['id'=>$id]);
+
+           foreach($info as $i)
+            {
+                $date = Carbon::parse($i->fecha_inicio)->format('d/m/Y');
+                $date2 = Carbon::parse($i->fecha_fin)->format('d/m/Y');
+                $response []= array(              
+                "descripcion" => $i->descripcion,
+                "fecha_inicio" =>$date,
+                "fecha_fin" => $date2
+
+                );
+            } 
+
+       return json_encode($response);
+    }
+    public function updatePagoTramite(Request $request)
+    {
+        $id=$request->id;
+        $descripcion=$request->descripcion;
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
+        $response = "false";
+        $date = Carbon::parse($fecha_inicio)->format('Y-m-d');
+        $date2 = Carbon::parse($fecha_fin)->format('Y-m-d');
+        try{   
+        $info = $this->pagotramitedb->update(['descripcion'=>$descripcion,'fecha_inicio'=>$date,'fecha_fin'=>$date2],$id);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+
+       return $response;
+    }
+     public function deletePagoTramite(Request $request)
+    {
+        $id=$request->id;
+        $response = "false";
+        try{   
+        $info = $this->pagotramitedb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+
+       return $response;
+    }
+
+
+
     /**
      * Esta herramienta es operativa y sirve para modificar el estatus de una transaccion
      *
