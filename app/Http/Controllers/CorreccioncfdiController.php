@@ -10,16 +10,20 @@ use Illuminate\Support\Facades\Log;
 
 use App\Repositories\CfdiEncabezadosRepositoryEloquent;
 
+use App\Repositories\CfdiDetalleRepositoryEloquent;
+
 class CorreccioncfdiController extends Controller
 {
     //
     protected $encabezado;
+    protected $detalle;
 
-    public function __construct(CfdiEncabezadosRepositoryEloquent $encabezado)
+    public function __construct(CfdiEncabezadosRepositoryEloquent $encabezado,CfdiDetalleRepositoryEloquent $detalle)
     {
     	$this->middleware('auth');
 
     	$this->encabezado = $encabezado;
+        $this->detalle = $detalle;
     }
 
     /**
@@ -29,24 +33,7 @@ class CorreccioncfdiController extends Controller
      */
     public function index()
     {
-
-    	// try {
-    	
-    	// 	$enc = $this->encabezado->findWhere(['folio_unico'=>'180000000000006317559222904211'],['rfc_receptor','fecha_registro','metodo_de_pago']);
-
-    	// 	if ($enc->count()) {
-	    // 		foreach ($enc as $key => $value) {
-	    // 			dd($value->rfc_receptor,$value->fecha_registro,$value->metodo_de_pago);
-	    // 		}
-    	// 	}
-
-    		
-    	// } catch (\Exception $e) {
-    	// 	dd($e->getMessage());
-    	// }
-
     	return view('cfditool/cfdicorreccion');
-
     }
 
     /**
@@ -61,15 +48,108 @@ class CorreccioncfdiController extends Controller
     	if($request->isMethod('post'))
     	{
     		try {
-    			$enc = $this->encabezado->findWhere(['rfc_receptor'=>$request->rfc,['fecha_transaccion','>=',date('Y').'-01-01']],['folio_unico','folio_pago','fecha_transaccion','total']);
-
-                
+    			$reg = $this->encabezado->findWhere(['rfc_receptor'=>$request->rfc,['fecha_transaccion','>=',date('Y').'-01-01']],['folio_unico','folio_pago','fecha_transaccion','total']);
+    			return json_encode($reg);
     			
-    			return json_encode($enc);
-    			
-    		} catch (\Exception $e) {
+    		} 
+            catch (\Exception $e) 
+            {
     			return json_encode($e);
     		}
     	}
+    }
+
+    /**
+     *
+     * @param GET request Folio Unico
+     * Return result from Encabezados query.
+     *
+     * @return data from Encabezados.
+     */
+    public function encabezado(Request $request)
+    {
+        if($request->isMethod('get'))
+        {
+            try {
+                $enc = $this->encabezado->findWhere(['folio_unico'=>$request->fu],['idcfdi_encabezados','folio_unico','folio_pago','fecha_transaccion','total','metodo_de_pago','forma_de_pago']);
+                
+                return json_encode($enc);
+                
+            } 
+            catch (\Exception $e) 
+            {
+                return json_encode($e);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param GET request Folio Unico
+     * Return result from Detalle query.
+     *
+     * @return data from Detalle.
+     */
+    public function detalle(Request $request)
+    {
+        if($request->isMethod('get'))
+        {
+            try {
+                $det = $this->detalle->findWhere(['folio_unico'=>$request->fu]);
+                
+                return json_encode($det);
+                
+            } 
+            catch (\Exception $e) 
+            {
+                return json_encode($e);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param GET request type of edition
+     * Return result from edition.
+     *
+     * @return data from edition.
+     */
+    public function edit(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            if($request->post('edit') == 'header')
+            {
+                try {
+                    
+                    if(!$request->post('id') || !$request->post('metodo_pago'))
+                        return json_encode([]);
+
+                    $up = $this->encabezado->updateByIDCFDI(['idcfdi_encabezados'=>$request->post('id')],['metodo_de_pago'=>$request->post('metodo_pago')]);
+
+                    return json_encode($request->post());                
+                } 
+                catch (\Exception $e) 
+                {
+                    return json_encode($e);
+                }
+
+            }
+            elseif($request->post('edit') == 'detail')
+            {
+                try {
+                    return json_encode($request->post());                
+                } 
+                catch (\Exception $e) 
+                {
+                    return json_encode($e);
+                }
+            }
+            else
+            {
+                return json_encode([]);                
+            }
+            
+        }
     }
 }

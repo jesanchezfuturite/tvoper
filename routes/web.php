@@ -18,9 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
-Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
-
 
 /* conciliacion app */
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
@@ -51,7 +48,16 @@ Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco
 Route::post('/banco-status-update','MotorpagosController@DesactivaBanco');
 /*Metodo Pago*/
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
+Route::get('/banco-find-all','MotorpagosController@findBancoAll');
+/*metodo tipo servicio*/
+Route::get('/tiposervicio-find-all','MotorpagosController@findTipoServicioAll');
+/*metodo tipo PagoTramite*/
 
+Route::post('/pagotramite-find','MotorpagosController@findTipoServicio');
+Route::post('/pagotramite-insert','MotorpagosController@insertPagoTramite');
+Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere');
+Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
+Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
 
 
 
@@ -67,3 +73,10 @@ Route::group(['middleware' => 'permissions'], function () {
 
 
 });
+
+/* herramienta de cfdi */
+Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
+Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
+Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
+Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
+Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
