@@ -34,5 +34,22 @@ class CfdiEncabezadosRepositoryEloquent extends BaseRepository implements CfdiEn
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+
+    /**
+     * Update by idcfdi_encabezado,
+     */
+    public function updateByIdCFDI($idcfdi,$metodo)
+    {
+        try {
+            
+            return CfdiEncabezados::where( $idcfdi )->update($metodo);
+
+        } catch (Exception $e) {
+            
+            Log::info('[CfdiEncabezadosRepositoryEloquent@updateByIdCFDI] Error ' . $e->getMessage());
+        }
+    }
+
     
 }

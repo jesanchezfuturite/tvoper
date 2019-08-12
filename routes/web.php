@@ -18,9 +18,6 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
-Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
-
 
 /* conciliacion app */
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
@@ -76,3 +73,10 @@ Route::group(['middleware' => 'permissions'], function () {
 
 
 });
+
+/* herramienta de cfdi */
+Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
+Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
+Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
+Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
+Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
