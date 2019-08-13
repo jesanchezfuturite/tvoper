@@ -16,6 +16,10 @@ use App\Repositories\CuentasbancoRepositoryEloquent;
 use App\Repositories\MetodopagoRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PagotramiteRepositoryEloquent;
+use App\Repositories\EntidadRepositoryEloquent;
+
+
+
 class MotorpagosController extends Controller
 {
     
@@ -26,6 +30,7 @@ class MotorpagosController extends Controller
     protected $metodopagodb;
     protected $tiposerviciodb;
     protected $pagotramitedb;
+    protected $entidaddb;
 
     // In this method we ensure that the user is logged in using the middleware
 
@@ -37,7 +42,8 @@ class MotorpagosController extends Controller
         MetodopagoRepositoryEloquent $metodopagodb,
         CuentasbancoRepositoryEloquent $cuentasbancodb,
         EgobiernotiposerviciosRepositoryEloquent $tiposerviciodb,
-        PagotramiteRepositoryEloquent $pagotramitedb
+        PagotramiteRepositoryEloquent $pagotramitedb,
+        EntidadRepositoryEloquent $entidaddb
      )
     {
         $this->middleware('auth');
@@ -49,6 +55,7 @@ class MotorpagosController extends Controller
         $this->cuentasbancodb=$cuentasbancodb;
         $this->tiposerviciodb=$tiposerviciodb;
         $this->pagotramitedb=$pagotramitedb;
+        $this->entidaddb=$entidaddb;
 
     }
 
@@ -171,8 +178,7 @@ return json_encode($response);
     }
     public function insertBanco(Request $request)
     {
-        $result=0;
-        $V=0;
+       
         // identify the name of the file 
         $uploadedFile = $request->file('file');
         $fecha = $request->fechaIn; 
@@ -184,18 +190,10 @@ return json_encode($response);
        // save the file in the storage folder
         try
             { 
-                $info3 = $this->bancodb->all();
-                foreach($info3 as $i)
-                {
-                     $V(strcasecmp($nombre, $i->nombre));
-                      $result=$V+$result;
-
-                }
-                if($result=0){
-
+                
                $response = $uploadedFile->storeAs('Image_Banco/',$fileName);
                 $info2 = $this->bancodb->create(['nombre' => $nombre,'url_logo' => 'Image_Banco/'.$fileName,'status' => $status,'created_at'=>$fecha,'updated_at'=>$fecha] ); 
-                 }
+               
         
             }catch( \Exception $e ){
                 dd($e->getMessage());
@@ -389,6 +387,19 @@ return json_encode($response);
         return json_encode($response);
         
     }
+    public function findBancoAllWhere()
+    {
+        $response = array();  
+        $info = $this->bancodb->all();
+        foreach($info as $i)
+        {
+            $response []= array(
+                "id"=>$i->id,              
+                "nombre" => $i->nombre
+            );
+        }
+        return json_encode($response);
+    }
 
     /* tipo servicio*/
 
@@ -455,7 +466,7 @@ return json_encode($response);
         $date=$fechaActual->format('Y-m-d h:i:s');
         $response = "false";
         try{  
-        $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>' ','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
+        $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>'----','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
             $response="true";
             }
             catch( \Exception $e ){
@@ -519,6 +530,110 @@ return json_encode($response);
     }
 
 
+
+    /*ENTIDAD*/
+    public function entidadView()
+    {
+
+        $response = array();   
+        $info = $this->entidaddb->all();
+
+           foreach($info as $i)
+            {                
+                $response []= array(              
+                "id" => $i->id,
+                "nombre" =>$i->nombre
+                );
+            } 
+
+        return view('motorpagos/entidad',["viewEntidad"=>$response]);
+         //return view('motorpagos/entidad',[ "viewEntidad" => $response ]);
+
+    }
+    public function findentidad()
+    {
+
+        $response = array();   
+        $info = $this->entidaddb->all();
+
+           foreach($info as $i)
+            {                
+                $response []= array(              
+                "id" => $i->id,
+                "nombre" =>$i->nombre
+                );
+            }
+       return json_encode($response);
+    }
+    public function findentidadWhere(Request $request)
+    {
+        $id=$request->id;
+        $response = array();   
+        $info = $this->entidaddb->findWhere(['id'=>$id]);
+
+           foreach($info as $i)
+            {                
+                $response []= array(              
+                "id" => $i->id,
+                "nombre" =>$i->nombre
+                );
+            }
+       return json_encode($response);
+    }
+     public function insertentidad(Request $request)
+    {
+        $nombre=$request->nombre;
+
+        $fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d h:i:s');
+        $response = "false";
+        try{   
+       $info = $this->entidaddb->create(['nombre'=>$nombre,'created_at'=>$date,'updated_at'=>$date]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+     public function updateentidad(Request $request)
+    {
+        $id=$request->id;
+        $nombre=$request->nombre;        
+        $fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d h:i:s');
+        $response = "false";
+        try{   
+       $info = $this->entidaddb->update(['nombre'=>$nombre,'updated_at'=>$date],$id);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+     public function deleteentidad(Request $request)
+    {
+        $id=$request->id;
+        $response = "false";
+        try{   
+       $info = $this->entidaddb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+
+    /*- Entidad Tramite-----------------------------------**/
+
+    public function entidadtramiteView()
+    {
+
+        return view('motorpagos/entidadtramite');
+        //,["viewEntidad"=>$response]
+    }
 
     /**
      * Esta herramienta es operativa y sirve para modificar el estatus de una transaccion

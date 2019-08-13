@@ -22,8 +22,9 @@ class Entidad extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['nombre'];
+    protected $fillable = ['id','nombre','created_at','updated_at'];
 
     protected $table = "oper_entidad";
 
+    public $timestamps = false;
 }
