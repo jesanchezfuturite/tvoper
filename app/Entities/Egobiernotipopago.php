@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Entidad.
+ * Class Egobiernotipopago.
  *
  * @package namespace App\Entities;
  */
-class Entidad extends Model implements Transformable
+class Egobiernotipopago extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,11 +20,12 @@ class Entidad extends Model implements Transformable
      *
      * @var array
      */
-    protected $connection = "mysql";
+    protected $connection = "mysql3";
 
-    protected $fillable = ['id','nombre','created_at','updated_at'];
-
-    protected $table = "oper_entidad";
+    protected $table = "tipopago";
 
     public $timestamps = false;
+
+    protected $fillable = [];
+
 }

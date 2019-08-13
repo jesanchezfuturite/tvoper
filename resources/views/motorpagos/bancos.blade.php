@@ -40,7 +40,7 @@
                                 <input type="file" name="file" id="file">
                                 </span>
                 </div>
-                <button type="button" class="btn btn-default" onclick="guardarBanco()">Agregar</button>
+                <button type="button" class="btn btn-default" onclick="SaveBanco()">Agregar</button>
                 <div class="form-group">
                     <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>             
                         <select class="form-control"name="items" id="items" onchange="CuentasBanco()">
@@ -129,13 +129,13 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Mínimo</label>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Ingrese el Monto" id="monto_min">
+                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_min">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Máximo</label>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Ingrese el Monto" id="monto_max">
+                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max">
                             </div>
                         </div>
                         <div class="form-actions">
@@ -158,10 +158,52 @@
 @endsection
 
 @section('scripts')
+<script src="assets/global/scripts/validar_img.js" type="text/javascript"></script>
 <script>
     jQuery(document).ready(function() {       
       itemMetodopago();
+      
     });
+   
+  function SaveBanco()
+  {
+    var nombre=$("#bancoNombre").val();
+    var file=$("#file").val();
+    if(nombre.length==0)
+    {
+    Command: toastr.warning("Nombre del Banco Requerido!", "Notifications")
+    }else if(file.length==0)
+      { 
+         Command: toastr.warning("Archivo Requerido!", "Notifications")
+    }else{
+          $.ajax({
+           method: "get",           
+           url: "{{ url('/banco-find-allWhere') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+        var Banco="";
+        var coincidencia=0;
+        $.each(Resp, function(i, item) {
+          Banco=item.nombre;
+         if(Banco.toLowerCase()==nombre.toLowerCase())
+        {
+          coincidencia=coincidencia+1;
+        } 
+        });
+        if(coincidencia==0)
+        {
+          guardarBanco();
+        }
+        else{
+          Command: toastr.warning("Banco Resgistrado!", "Notifications")
+        }
+      })
+        .fail(function( msg ) {
+         console.log("Error al Cargar items");  }); 
+    }
+ }
+
  function guardarBanco() 
  {           
             var imagenV = $("#file")[0].files[0];  
@@ -460,16 +502,42 @@
     function metodoSaveUpdate()
     {
         var idcuenta=$("#idCuenta").val();
-        if(idcuenta=="")
-        {
+        var cuenta=$("#cuenta").val();
+        var servicio=$("#servicio").val();
+        var monto_max=$("#monto_max").val();
+        var monto_min=$("#monto_min").val();
+        var metodP=$("#itemMetodopago").val();
+        var idbacon=$("#items").val();
+        if(idbacon=="limpia"){
+            Command: toastr.warning("Banco Sin Seleccionar Requerido!", "Notifications")
+            }else if(metodP=="limpia")
+            {              
+              Command: toastr.warning("Campo Metodo de Pago Requerido!", "Notifications")
+              document.getElementById("itemMetodopago").focus(); 
+            }else if(cuenta.length<8){
+              Command: toastr.warning("Campo Cuenta Requerido! 8 Caracteres Min.", "Notifications")
+              document.getElementById("cuenta").focus();
+            }else if(servicio.length<8){
+               Command: toastr.warning("Campo Servicio Requerido! 8 Caracteres Min.", "Notifications")
+               document.getElementById("servicio").focus();
+            }else if(monto_min.length<1){
+              Command: toastr.warning("Campo Monto Min. Requerido! 1 Caracteres Min.", "Notifications")
+              document.getElementById("monto_min").focus();
+            }else if(monto_max.length<1){
+             Command: toastr.warning("Campo Monto Max. Requerido! 1 Caracteres Min.", "Notifications")
+             document.getElementById("monto_max").focus();
+          }else{
+            if(idcuenta=="")
+            {
             insertCuentaB();
-        }
-        else
-        {
+             }
+             else
+            {
             updatecuenta();
-        }
+            }
+          }
     }
-       function desactivabanco()
+    function desactivabanco()
     {
         var items=$("#items").val();
         var estatus="";

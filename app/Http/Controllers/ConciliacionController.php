@@ -42,17 +42,21 @@ class ConciliacionController extends Controller
 					),
 				"startFrom"		=> 1
 			),
+			/*
+			para american express se separa todo en un arreglo con explode
+			el valor del arreglo positions esta en relacion a los datos en lineExample
+			*/
 		"american"				=>
 			array(
 				"extension"	=> "csv",
 				"lineExample"	=> "AMEXGWS,12141757,27/06/2019 11:01,American Express,Captura,338.00,Aprobadas,376689xxxxx2009,MANUEL GARCIA GARZA,207799,0,660,Internet,No evaluado,No se requiere,Coincidencia parcial,Coincidencia,19062768696",
 				"positions"		=> array
 					(
-					"month"		=> [141,2],
-					"day" 		=> [143,2],
-					"year"		=> [137,4],
-					"amount"	=> [145,15],
-					"id"		=> [29,8]
+					"month"		=> 2,
+					"day" 		=> 2,
+					"year"		=> 2,
+					"amount"	=> 5,
+					"id"		=> 1
 					),
 				"startFrom"		=> 1
 			),
