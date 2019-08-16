@@ -26,4 +26,6 @@ class Entidadtramite extends Model implements Transformable
 
     protected $table = "oper_entidadtramite";
 
+    public $timestamps = false;
+
 }

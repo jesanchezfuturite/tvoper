@@ -17,7 +17,7 @@ $("#file").change(function () {
   var extensionValida = extensionesValidas.indexOf(extension);
 
   if(extensionValida < 0) {
-           Command: toastr.warning("La extension no es valida Su fichero tiene de extension: ."+ extension+"", "Notifications") 
+           Command: toastr.warning("La extension no es valida Su fichero tiene de extension  ."+ extension+"", "Notifications") 
             return false;
         } else {
             return true;
