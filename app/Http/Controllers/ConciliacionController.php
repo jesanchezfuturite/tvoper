@@ -13,107 +13,14 @@ use Illuminate\Support\Facades\Storage;
 class ConciliacionController extends Controller
 {
     //
-	protected $files = array (
-		"afirmeGobMx" 			=>	
-			array(
-				"extension"		=> "txt",
-				"lineExample"	=> "27/06/201900000000005100010000000000121412560624146225",
-				"positions"		=> array
-					(
-					"month"		=> [3,2],
-					"day" 		=> [0,2],
-					"year"		=> [6,4],
-					"amount"	=> [10,2],
-					"id"		=> [0,2]
-					),
-				"startFrom"		=> 0
-			), 
-		"afirmeVentanilla" 		=>
-			array(
-				"extension"	=> "txt",
-				"lineExample"	=> "D0000391137808110010000000000121393260624181257                                                                                          2019062800000000016280001V0000000101121305MXP201906281507080000000000000000000000000000000000000000",
-				"positions"		=> array
-					(
-					"month"		=> [141,2],
-					"day" 		=> [143,2],
-					"year"		=> [137,4],
-					"amount"	=> [145,15],
-					"id"		=> [29,8]
-					),
-				"startFrom"		=> 1
-			),
-			/*
-			para american express se separa todo en un arreglo con explode
-			el valor del arreglo positions esta en relacion a los datos en lineExample
-			*/
-		"american"				=>
-			array(
-				"extension"	=> "csv",
-				"lineExample"	=> "AMEXGWS,12141757,27/06/2019 11:01,American Express,Captura,338.00,Aprobadas,376689xxxxx2009,MANUEL GARCIA GARZA,207799,0,660,Internet,No evaluado,No se requiere,Coincidencia parcial,Coincidencia,19062768696",
-				"positions"		=> array
-					(
-					"month"		=> 2,
-					"day" 		=> 2,
-					"year"		=> 2,
-					"amount"	=> 5,
-					"id"		=> 1
-					),
-				"startFrom"		=> 1
-			),
-		"banamex"				=>
-			array(
-				"extension"	=> "txt",
-			),
-		"banamexVentanilla"		=>
-			array(
-				"extension"	=> "txt",
-			),
-		"bancomer"				=>
-			array(
-				"extension"	=> "txt",
-			),
-		"bancomerVentanilla"	=>
-			array(
-				"extension"	=> "txt",
-			),
-		"banorteCheque"			=>
-			array(
-				"extension"	=> "txt",
-			),
-		"banorteNominas"		=>
-			array(
-				"extension"	=> "txt",
-			),
-		"banregioVentanilla"	=>
-			array(
-				"extension"	=> "txt",
-			),
-		"bazteca"				=>
-			array(
-				"extension"	=> "txt",
-			),
-		"hsbc"					=> 
-			array(
-				"extension"	=> "txt",
-			),
-		"santanderVentanilla"	=> 
-			array(
-				"extension"	=> "txt",
-			),
-		"scotiabankVentanilla"	=>
-			array(
-				"extension"	=> "txt",
-			),
-		"telecomm"				=>
-			array(
-				"extension"	=> "txt",
-			),
-	);
-
+    protected $files;
 
     public function __construct()
     {
     	$this->middleware('auth');
+
+    	$this->files = config('conciliacion.conciliacion_conf');
+
     }
 
 
