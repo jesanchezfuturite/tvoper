@@ -30,22 +30,22 @@
 			</div>
 		<div class="portlet-body" id="tabla_2">
 			 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
-			<table  class="table table-striped table-bordered table-hover"  id="sample_2">
+			<table  class="table table-hover"  id="sample_2">
 				<thead>
 					<tr>						
 						<th>Descripción</th>
-						<th>Periodicidad</th>							
-						<th>Vencimiento</th>
-						<th>Operacion</th>							
+						<th class="text-center">Periodicidad</th>							
+						<th class="text-center">Vencimiento</th>
+						<th class="text-center">Operacion</th>							
 					</tr>
 				</thead>
 				<tbody>							
 					 @foreach( $saved_days as $sd)
                         <tr>
                             <td>{{$sd["descripcion"]}}</td>
-                            <td>{{$sd["periodicidad"]}}</td>
-                            <td>{{$sd["vencimiento"]}}</td>
-                            <td><button type="button" class="btn btn-danger" data-toggle="modal" href="#static" onclick="deleted({{$sd['id']}}) "><i class="fa fa-trash-o"></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type="button" class="btn btn-primary" data-toggle="modal" href="#static2" onclick="update({{$sd['id']}})""><i class="fa fa-edit"></i>&nbsp;Editar</button></td>
+                            <td class="text-center">{{$sd["periodicidad"]}}</td>
+                            <td class="text-center">{{$sd["vencimiento"]}}</td>
+                            <td class="text-right" width="20%"><button type="button" class="btn btn-primary" data-toggle="modal" href="#static2" onclick="update({{$sd['id']}})""><i class="fa fa-edit"></i>&nbsp;Editar</button><button type="button" class="btn btn-danger" data-toggle="modal" href="#static" onclick="deleted({{$sd['id']}}) "><i class="fa fa-trash-o"></i>&nbsp;Borrar</button></td>
                         </tr>
                         @endforeach
 				</tbody>
@@ -102,7 +102,8 @@
 														<div class="form-group">
 															<label class="control-label">Periodicidad</label>
 																<select id="periodicidad" class="select2me form-control">
-																	<option value="Mesual">Mesual</option>
+                                                                    <option value="limpia">-------</option>
+																	<option value="Mensual">Mensual</option>
 																	<option value="Trimestral">Trimestral</option>
 																</select>
 																<span class="help-block">
@@ -118,7 +119,7 @@
 													<div class="col-md-4">
 														<div class="form-group">
 															<label class="control-label">Fecha Vencimiento</label>
-															<input id="vencimiento" class="form-control" size="16" type="text" maxlength="2"autocomplete="off" placeholder="Ingrese el dia ej. 23">
+															<input id="vencimiento" class="form-control" size="16" type="number" maxlength="2" min="1" max="31"  autocomplete="off" placeholder="Ingrese el dia ej. 23"oninput="prueba(this);">
 															<span class="help-block">Ingrese una Numero</span>
 
 														</div>
@@ -150,21 +151,51 @@
 	jQuery(document).ready(function() {       
        ComponentsPickers.init();
        TableAdvanced.init();
-
+        
     });
+
 function metodo()
 {
+    var description_=$("#descripcion").val();
+    var vencimiento_=$("#vencimiento").val();
+    var periodicidad_=$("#periodicidad").val();
+
 	var id_=$("#idupdate").val();
-	if(id_=="")
-	{
-	guardar();
-		
-	}
-	else{
-	actulizar();
-	
-	}
+    if(description_.length<3){
+    Command: toastr.warning("Descripción 3 Caracteres Min., Requerido!", "Notifications")
+    document.getElementById('descripcion').focus();
+    }else if(vencimiento_.length<1){
+        var date = new Date();
+       var ultimoDia = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+       var dia=ultimoDia.getDate();
+        Command: toastr.warning("Vencimiento Valor Valido 1 entre "+dia+", Requerido!", "Notifications")
+        document.getElementById('vencimiento').focus();
+    }else if(periodicidad_=="limpia"){
+        Command: toastr.warning("Periodicidad Sin Seleccionar, Requerido!", "Notifications")
+        document.getElementById('periodicidad').focus();
+    }
+    else{
+	   if(id_=="")
+	   {
+        guardar();		
+	   }
+	   else{
+	   actulizar();	
+	   }
+    }
 }
+function prueba(n) {
+       var num = n.value;
+        var date = new Date();
+       var ultimoDia = new Date(date.getFullYear(), date.getMonth()+2, 0);
+       var dia=ultimoDia.getDate();
+       if (parseFloat(num) >= 1&& parseFloat(num) <= dia) {
+         
+       } else {      
+           document.getElementById('vencimiento').value='';
+ 
+       }
+    }
 function guardar()
 {
 
@@ -234,7 +265,8 @@ function update(id_)
                document.getElementById('idupdate').value=item.id;
                document.getElementById('descripcion').value=item.descripcion;
         document.getElementById('vencimiento').value=item.vencimiento;
-        document.getElementById('periodicidad').value=item.periodicidad;
+        //document.getElementById('periodicidad').value=item.periodicidad;
+        $("#periodicidad").val(item.periodicidad).change();
                 });
         
      })
@@ -273,29 +305,22 @@ var item = '';
                 $.each(Resp, function(i, item) {                
                  $('#sample_2 tbody').append("<tr>"  
                  +"<td>"+ item.descripcion + "</td>"                 
-                 + "<td>"+ item.periodicidad + "</a></td>"                 
-                 + "<td>"+ item.vencimiento + "</a></td>"                 
-                 + "<td><button type='button' class='btn btn-danger' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Borrar</button>&nbsp;&nbsp;<button type='button' class='btn btn-primary' data-toggle='modal' href='#static2' onclick='update("+item.id+")'><i class='fa fa-edit'></i>&nbsp;Editar</button></td>"
+                 + "<td class='text-center'>"+ item.periodicidad + "</a></td>"                 
+                 + "<td class='text-center'>"+ item.vencimiento + "</a></td>"                 
+                 + "<td class='text-center' width='20%'><button type='button' class='btn btn-primary' data-toggle='modal' href='#static2' onclick='update("+item.id+")'><i class='fa fa-edit'></i>&nbsp;Editar</button><button type='button' class='btn btn-danger' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Borrar</button></td>"
                  + "</tr>");
                 });  
      TableAdvanced.init();
 }
 function limpiar()
 {
-	 document.getElementById('descripcion').value="";
-        document.getElementById('vencimiento').value="";
-        document.getElementById('idupdate').value="";
+	document.getElementById('descripcion').value="";
+    document.getElementById('vencimiento').value="";
+    document.getElementById('idupdate').value="";
+    $("#periodicidad").val("limpia").change();
+
 }
-  toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "positionClass": "toast-top-right",
-         "onclick": null,
-        "showDuration": "1000",
-        "hideDuration": "1000",
-        "timeOut": "4000",
-         "extendedTimeOut": "1000"
-        }
+  
 
 </script>
 @endsection

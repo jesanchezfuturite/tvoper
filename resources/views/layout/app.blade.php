@@ -31,7 +31,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
 <link href="assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css"/>
 <link href="assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
-
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css"/>
 <!-- END GLOBAL MANDATORY STYLES -->
 <link href="assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css" rel="stylesheet"/>
 <link href="assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet"/>
@@ -49,7 +49,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css"/>
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css"/>
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css"/>
-<link rel="stylesheet" type="text/css" href="assets/global/plugins/select2/select2.css"/>
+
 <!-- ENDTABLE STYLES -->
 <link rel="shortcut icon" href="favicon.ico"/>
 </head>

@@ -27,16 +27,25 @@
             
         </div>
         <div class="portlet-body">
-            <form class="form-inline" role="form">
+        <div class="form-body">
+        <div class="row">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label >&nbsp;&nbsp;Selecciona el trámite para configurar</label>                    
-                        <select class="form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
-                            <option>------</option>                           
-                        </select>
+                    <label >&nbsp;&nbsp;Selecciona el trámite para configurar</label> 
                 </div>
-            </form>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                                       
+                        <select class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
+                            <option>------</option>                           
+                    </select>
+                </div>
+           </div>
+            </div>
         </div>
     </div>
+</div>
 </div>
 <div id="tituloTamite">
 <h3 class="page-title">TRAMITE NO SELECCIONADA: </h3>
@@ -50,16 +59,28 @@
             
         </div>
         <div class="portlet-body">
-         
-          <form class="form-inline" role="form">
+         <div class="form-body">
+            <div class="row"> 
+                <div class="col-md-3 col-ms-12">
                 <div class="form-group">
-                    <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>             
-                        <select class="form-control"name="itemsBancos" id="itemsBancos" >
+                    <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>  
+                </div> 
+                </div>
+                <div class="col-md-3 col-ms-12">        
+                <div class="form-group">             
+                        <select class=" select2me form-control"name="itemsBancos" id="itemsBancos" >
                            <option value="limpia">------</option>                           
                         </select>            
                 </div>
-                 <button type="button" class="btn green" onclick="existeID()">Agregar</button> 
-            </form>              
+                </div>
+                <div class="col-md-1 col-ms-12">
+                  <div class="form-group">
+                      <button type="button" class="btn green" onclick="existeID()">Agregar</button>
+                  </div>
+              </div>
+             </div>
+
+            </div>            
         </div>
     </div>
 </div>
@@ -239,7 +260,8 @@
          }
         $("#tituloTamite h3").remove();
         $("#tituloTamite").append("<h3 class='page-title'>"+title+": </h3>");
-       document.getElementById('itemsBancos').value="limpia"; 
+       //document.getElementById('itemsBancos').value="limpia"; 
+         $("#itemsBancos").val("limpia").change();
        $("#addTables div").remove();
 
     }
@@ -264,14 +286,13 @@
           var titleServicio=$("#itemsTipoServicio option:selected").text();
         if(valueServicio=="limpia")
         {
-            Command: toastr.warning("Tramite No Seleccionado", "Notifications")          
-            document.getElementById('CuentasOption').value="limpia";
+            Command: toastr.warning("Tramite No Seleccionado", "Notifications")
              document.getElementById('itemsBancos').value="limpia";
         }else{
         if(valueBanco=="limpia")
         {
             Command: toastr.warning("Banco No Seleccionado", "Notifications")
-            document.getElementById('CuentasOption').value="limpia";
+            
         }else
         {
             addTablaVacio(titlebanco,valueBanco);
@@ -346,42 +367,7 @@ function FindCuentasBancarias(banco_)
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
 }
-function insertTramite(banco_)
-{
-     var Serv=$("#itemsTipoServicio").val();
-     var CuentaB=$("#CuentasOption"+banco_+"").val();
-     var Banc=$("#itemsBancos").val();
-     if(Serv=="limpia")
-     {
-        Command: toastr.warning("No Success, No Selected Tipo Tramite", "Notifications")
-     }  else if(Banc=="limpia")
-        {
-        Command: toastr.warning("No Success, No Selected Banco", "Notifications")
-     }  else if(CuentaB=="limpia")
-        {
-        Command: toastr.warning("No Success, No Selected Cuenta Banco", "Notifications")
-     }
-     else{
-    var idTipoSer=$("#itemsTipoServicio").val();
-    var idBanco=$("#CuentasOption"+banco_+"").val();
-    $.ajax({
-           method: "POST",            
-           url: "{{ url('/pagotramite-insert') }}",
-           data: {Id_Banco:idBanco,Id_tiposervicio:idTipoSer,_token:'{{ csrf_token() }}'}  })
-        .done(function (responseinfo) {
-            if(responseinfo=="true")
-                {Command: toastr.success("Success", "Notifications")
-             ActualizarTabla();
 
-        }
-            else{Command: toastr.warning("No Success", "Notifications")}
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-    }
-            return false;
-
-}
 function findPagoTramite(id_,banco_,idbanco_)
 {
 
@@ -477,7 +463,7 @@ function eliminarRegistro(banco_,idbanco_)
 function addTablaVacio(banco,idbanco_)
 {
 
-    $("#addTables").append("<div id='Add"+banco+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'>            <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> </div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+banco+"'>                <option>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite(\'"+banco+"\',"+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+banco+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
+    $("#addTables").append("<div id='Add"+banco+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'>            <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> </div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+banco+"'>                <option value='limpia'>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite(\'"+banco+"\',"+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+banco+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
 }
 function InsertPagoTramite(banco_,id_)
 {
@@ -487,6 +473,15 @@ function InsertPagoTramite(banco_,id_)
 }
 function PagoTramite(banco_,id_)
 {
+     var Serv=$("#itemsTipoServicio").val();
+     var CuentaB=$("#CuentasOption"+banco_+"").val();
+     if(Serv=="limpia")
+     {
+        Command: toastr.warning("No Success, No Selected Tipo Tramite", "Notifications")
+     }else if(CuentaB=="limpia")
+        {
+        Command: toastr.warning("Cuenta Banco Sin Seleccionar, Requerido!", "Notifications")
+     }else{
      var TipoServ=$("#itemsTipoServicio").val();
      var idcuentaBanco=$("#CuentasOption"+banco_+"").val();       
 
@@ -503,6 +498,7 @@ function PagoTramite(banco_,id_)
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
+    }
 }
 function ActualizarTabla(banco_,idbanco_)
 {
