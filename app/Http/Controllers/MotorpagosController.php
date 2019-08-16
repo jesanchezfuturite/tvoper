@@ -17,7 +17,7 @@ use App\Repositories\MetodopagoRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PagotramiteRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
-
+use App\Repositories\EntidadtramiteRepositoryEloquent;
 
 
 class MotorpagosController extends Controller
@@ -31,7 +31,7 @@ class MotorpagosController extends Controller
     protected $tiposerviciodb;
     protected $pagotramitedb;
     protected $entidaddb;
-
+    protected $entidadtramitedb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -43,7 +43,8 @@ class MotorpagosController extends Controller
         CuentasbancoRepositoryEloquent $cuentasbancodb,
         EgobiernotiposerviciosRepositoryEloquent $tiposerviciodb,
         PagotramiteRepositoryEloquent $pagotramitedb,
-        EntidadRepositoryEloquent $entidaddb
+        EntidadRepositoryEloquent $entidaddb,
+        EntidadtramiteRepositoryEloquent $entidadtramitedb
      )
     {
         $this->middleware('auth');
@@ -56,6 +57,7 @@ class MotorpagosController extends Controller
         $this->tiposerviciodb=$tiposerviciodb;
         $this->pagotramitedb=$pagotramitedb;
         $this->entidaddb=$entidaddb;
+        $this->entidadtramitedb=$entidadtramitedb;
 
     }
 
@@ -250,6 +252,27 @@ return json_encode($response);
                 "metodopago" => $metodpago,               
                 "beneficiario" => $i->beneficiario,
                  "status" => $i->status,  
+                "monto_min" => $i->monto_min,
+                "monto_max" => $i->monto_max
+            );
+        }
+        return json_encode($response);
+        
+    }
+    public function findCuentasBancoWhere(Request $request)
+    {
+
+        $id=$request->id;
+        $metodopago=$request->metodopago;
+        $response = array();  
+        $info = $this->cuentasbancodb->findWhere(['banco_id' => $id,'metodopago_id'=>$metodopago]);
+        foreach($info as $i)
+        {             
+            $response []= array(              
+                "id" => $i->id,
+                "banco_id" => $i->banco_id,
+                "metodopago" => $i->metodopago_id,               
+                "beneficiario" => $i->beneficiario, 
                 "monto_min" => $i->monto_min,
                 "monto_max" => $i->monto_max
             );
@@ -475,6 +498,26 @@ return json_encode($response);
         }
         return $response;
     }
+    public function findPagoTramite(Request $request)
+    {
+        $id=$request->id;
+        $response = array();   
+        $info = $this->pagotramitedb->findWhere(['id'=>$id]);
+
+           foreach($info as $i)
+            {
+                $date = Carbon::parse($i->fecha_inicio)->format('d/m/Y');
+                $date2 = Carbon::parse($i->fecha_fin)->format('d/m/Y');
+                $response []= array(              
+                "descripcion" => $i->descripcion,
+                "fecha_inicio" =>$date,
+                "fecha_fin" => $date2
+
+                );
+            } 
+
+       return json_encode($response);
+    }
      public function findPagoTramiteWhere(Request $request)
     {
         $id=$request->id;
@@ -634,6 +677,104 @@ return json_encode($response);
         return view('motorpagos/entidadtramite');
         //,["viewEntidad"=>$response]
     }
+    public function findtramiteEntidad(Request $request)
+    {
+        $id=$request->id;
+        $response = array();
+        $TipoServicio;   
+        $info = $this->entidadtramitedb->findWhere(['entidad_id'=>$id]);
+           foreach($info as $i)
+            {  
+                $info2 = $this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
+                foreach($info2 as $ii)
+                { 
+                    $TipoServicio=$ii->Tipo_Descripcion;
+                }
+                $response []= array(              
+                "id" => $i->id,
+                "tiposervicio" =>$TipoServicio
+                );
+            }
+       return json_encode($response);
+    }
+    public function insertentidadtramite(Request $request)
+    {
+        $Id_entidad=$request->Id_entidad;
+        $Id_tiposervicio=$request->Id_tiposervicio;
+        $fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d h:i:s');
+        $response = "false";
+        try{  
+        $info = $this->entidadtramitedb->create(['entidad_id'=>$Id_entidad,'tipo_servicios_id'=>$Id_tiposervicio,'created_at'=>$date,'updated_at'=>$date]);
+            $response="true";
+            }
+            catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
+
+    }
+     public function updateentidadtramite(Request $request)
+    {
+        $id=$request->id;
+        $Id_tiposervicio=$request->Id_tiposervicio;
+        $fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d h:i:s');
+        $response = "false";
+        try{  
+        $info = $this->entidadtramitedb->update(['tipo_servicios_id'=>$Id_tiposervicio,'updated_at'=>$date],$id);
+            $response="true";
+            }
+            catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
+
+    }
+    public function deleteentidadtramite(Request $request)
+    {
+        $id=$request->id;
+        $response = "false";
+        try{   
+       $info = $this->entidadtramitedb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+     public function findtramiteEntidadWhere(Request $request)
+    {
+        $id=$request->id;
+        $response = array();
+        $info = $this->entidadtramitedb->findWhere(['entidad_id'=>$id]);
+           foreach($info as $i)
+            {  
+                $response []= array(              
+                "id" => $i->id,
+                "tipo_servicios_id" =>$i->tipo_servicios_id
+                );
+            }
+       return json_encode($response);
+    }
+    public function findtramiteEntidadWhereID(Request $request)
+    {
+        $id=$request->id;
+        $response = array();
+        $info = $this->entidadtramitedb->findWhere(['id'=>$id]);
+           foreach($info as $i)
+            {  
+                $response []= array(              
+                "id" => $i->id,
+                "tipo_servicios_id" =>$i->tipo_servicios_id
+                );
+            }
+       return json_encode($response);
+    }
+
 
     /**
      * Esta herramienta es operativa y sirve para modificar el estatus de una transaccion
@@ -794,6 +935,8 @@ return json_encode($response);
 
         return json_encode($response);
     }
+
+
     /**
      * Esta herramienta es operativa y sirve para configurar los parametros para permitir el pago de servicios
      *

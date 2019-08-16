@@ -27,30 +27,46 @@
             </div>
         </div>
         <div class="portlet-body">
-            <form class="form-inline" role="form">
+        <div class="form-body">
+        <div class="row">
+            <div class="col-md-2 col-ms-12">
                 <div class="form-group">
                     <label class="sr-only" for="bancoNombre">Nuevo Banco</label>
-                    <input type="text" class="form-control" id="bancoNombre"name="bancoNombre" placeholder="Nuevo Banco">
+                    <input type="text" class="form-control" id="bancoNombre"name="bancoNombre" autocomplete="off"placeholder="Nuevo Banco">
                 </div>
+            </div>
+            <div class="col-md-1 col-ms-12">
                 <div class="form-group">
                 <span class="btn green fileinput-button">
-                                <i class="fa fa-plus"></i>
+                                <i class="fa fa-plus"></i>&nbsp;
                                 <span>
-                                Add Logo... </span>
+                                Logo... </span>
                                 <input type="file" name="file" id="file">
                                 </span>
                 </div>
-                <button type="button" class="btn btn-default" onclick="SaveBanco()">Agregar</button>
+                </div>
+                 <div class="col-md-1 col-ms-12">
                 <div class="form-group">
-                    <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>             
-                        <select class="form-control"name="items" id="items" onchange="CuentasBanco()">
+                <button type="button" class="btn btn-default" onclick="SaveBanco()">Agregar</button>
+              </div>
+            </div>
+                 <div class="col-md-3 col-ms-12">
+                <div class="form-group">
+                    <label >Bancos Registrados (Selecciona para ver las cuentas)</label>   
+                  </div>
+                </div>
+                <div class="col-md-3 col-ms-12">
+                <div class="form-group">           
+                        <select class="select2me form-control"name="items" id="items" onchange="CuentasBanco()">
                            <option value="limpia">------</option>
                            @foreach( $saved_banco as $sd)
                             <option value="{{$sd["id"]}}">{{$sd["nombre"]}}</option>
                             @endforeach
                         </select>            
-                </div> 
-            </form>
+                </div>
+                </div>
+              </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -109,7 +125,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Método de Pago</label>
                             <div class="col-md-6">
-                                <select class="form-control"  id="itemMetodopago">
+                                <select class="select2me form-control"  id="itemMetodopago">
                                     <option>------</option>                                             
                                 </select>   
                             </div>
@@ -196,7 +212,8 @@
           guardarBanco();
         }
         else{
-          Command: toastr.warning("Banco Resgistrado!", "Notifications")
+          Command: toastr.warning("Banco Ya Se Encuentra Registrado!", "Notifications")
+          
         }
       })
         .fail(function( msg ) {
@@ -356,10 +373,12 @@
         var monto_min_=$("#monto_min").val();        
         var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'"}]';             
         var fecha_=new Date();
-        var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();     
+        var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();  
+
+
        if(banco=="limpia")
         { 
-            Command: toastr.warning("No Success", "Notifications")
+            Command: toastr.warning("Banco Sin Seleccionar", "Notifications")
             limpiaCuentapago();
          }
         else{
@@ -370,7 +389,8 @@
        })
         .done(function (response) {
         limpiaCuentapago();
-        CuentasBanco();      
+        CuentasBanco(); 
+        Command: toastr.success("Success", "Notifications")     
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -382,7 +402,8 @@
          document.getElementById('servicio').value="";
          document.getElementById('monto_max').value="";
          document.getElementById('monto_min').value=""; 
-         document.getElementById('itemMetodopago').value="limpia";
+         //document.getElementById('itemMetodopago').value="limpia";
+         $("#itemMetodopago").val("limpia").change();
          document.getElementById('idCuenta').value="";
     }
     function itemMetodopago()
@@ -453,7 +474,9 @@
             document.getElementById('servicio').value=Serv;
             document.getElementById('monto_max').value=item.monto_max;
              document.getElementById('monto_min').value=item.monto_min; 
-            document.getElementById('itemMetodopago').value=item.metodopago_id;
+            //document.getElementById('itemMetodopago').value=item.metodopago_id;
+              $("#itemMetodopago").val(item.metodopago_id).change();
+
             });
           
         })
@@ -501,7 +524,6 @@
     }
     function metodoSaveUpdate()
     {
-        var idcuenta=$("#idCuenta").val();
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
         var monto_max=$("#monto_max").val();
@@ -526,8 +548,64 @@
             }else if(monto_max.length<1){
              Command: toastr.warning("Campo Monto Max. Requerido! 1 Caracteres Min.", "Notifications")
              document.getElementById("monto_max").focus();
-          }else{
-            if(idcuenta=="")
+          }else if (parseFloat(monto_max) <= parseFloat(monto_min)) {
+         Command: toastr.warning("Campo Monto Max. debe ser Mayor al Monto Min.", "Notifications")
+       }else{
+            validaExisteMtodoP();
+      }
+    }
+    function validaExisteMtodoP()
+    {
+      var metodP=$("#itemMetodopago").val();
+      var idbacon=$("#items").val();
+      var cuenta_=$("#cuenta").val();
+      var idcuenta=$("#idCuenta").val();      
+      var monto_max=$("#monto_max").val();
+      var monto_min=$("#monto_min").val();
+      $.ajax({
+           method: "POST",           
+           url: "{{ url('/cuentasbanco-find-where') }}",
+           data: {id:idbacon,metodopago:metodP,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var item="";
+        var item2="";
+        var Resp=$.parseJSON(response);
+        var cuenta="";
+        var max="";
+        var min="";
+        var contadorCuenta=0;
+        var ContadorMonto=0;
+        $.each(Resp, function(i, item) {                
+              var beneficiario=$.parseJSON(item.beneficiario);
+              max=item.monto_max;
+              min=item.monto_min;
+               $.each(beneficiario, function(ii, item2) {  
+                cuenta=item2.cuenta;
+              });
+               if(parseFloat(idcuenta)!==parseFloat(item.id)){
+              if(cuenta==cuenta_)
+               {
+                contadorCuenta=contadorCuenta+1;
+               }
+              if(parseFloat(monto_min)>=parseFloat(min) && parseFloat(monto_min) <parseFloat(max))
+               {
+                ContadorMonto=ContadorMonto+1;
+               }
+              if(parseFloat(monto_max)>parseFloat(min) && parseFloat(monto_max)<=parseFloat(max)){
+                ContadorMonto=ContadorMonto+1;
+               }
+             }
+              console.log(parseFloat(min)+"  "+parseFloat(max) +" -- " + parseFloat(monto_min)+"  "+parseFloat(monto_max) );
+
+          });
+        console.log(" contador:"+ContadorMonto);
+        if(contadorCuenta>0)
+        {
+           Command: toastr.warning("La Cuenta Ya Existe A Un Tipo de Metodo de Pago!", "Notifications") 
+        }else if(ContadorMonto>0){
+          Command: toastr.warning("El Monto Minimo y Maximo se Cruza Con Otra Cuenta", "Notifications")
+        }else{
+          if(idcuenta=="")
             {
             insertCuentaB();
              }
@@ -535,8 +613,11 @@
             {
             updatecuenta();
             }
-          }
-    }
+        }
+        })
+        .fail(function( msg ) {
+         console.log(msg);  });
+    } 
     function desactivabanco()
     {
         var items=$("#items").val();

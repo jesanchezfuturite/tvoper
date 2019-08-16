@@ -23,7 +23,7 @@
         <div class="form-group">
             <label class="control-label col-md-3">Día feriado</label>
             <div class="col-md-3">
-                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" placeholder="Selecciona una fecha">
+                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
                 <span class="help-block">
                  </span>
                 <button class="btn blue" onclick="guardar()" type="submit">
@@ -139,7 +139,6 @@
            })
         .fail(function( msg ) {
             Command: toastr.warning("Failed to Add", "Notifications")
-            console.log( "AJAX Failed to add in : " + msg );
         });
 			toastr.options = {
             "closeButton": true,
@@ -159,20 +158,6 @@
 	   var com = new RegExp('\"','g'); 
 	   var valor=$(celdas[0]).html();
         document.getElementById('idvalor').value =valor;
-
-	   //var res=valor.replace(com,"");
-	   //res=res.replace("<div class=success></div>","");
-	   //res=res.replace("<a href=javascript:;>","");
-	   //res=res.replace("</a>","");
-	   //res=res.trim();
-	   //res=res.replace(/ /g,"");
-	   //var fecha= new Date(valor);   
-		/*var r = confirm("ELIMINAR REGISTRO!");
-		if (r == true) {
-		deleted(fecha);
-		} else {
-		return;
-		}  */     
     });
 
 	function deleted()

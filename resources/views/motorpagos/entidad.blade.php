@@ -234,7 +234,7 @@
     function TableEntidad()
     {
          $.ajax({
-           method: "get",            
+           method: "POST",            
            url: "{{ url('/entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 

@@ -41,6 +41,7 @@ Route::post('/limite-referencia-update','MotorpagosController@updateLimiteRefere
 Route::post('/banco-insert','MotorpagosController@insertBanco');
 Route::post('/banco-find','MotorpagosController@findBanco');
 Route::post('/cuentasbanco-find','MotorpagosController@findCuentasBanco');
+Route::post('/cuentasbanco-find-where','MotorpagosController@findCuentasBancoWhere');
 Route::post('/cuentasbanco-edit','MotorpagosController@findCuenta_edit');
 Route::post('/cuentasbanco-insert','MotorpagosController@insertCuentasBanco');
 Route::post('/cuentasbanco-update','MotorpagosController@updateCuentasBanco');
@@ -69,9 +70,12 @@ Route::post('/entidad-delete','MotorpagosController@deleteentidad');
 
 /* Entidad Tramite*/
 Route::get('/entidad-tramite','MotorpagosController@entidadtramiteView');
-
-
-
+Route::post('/entidad-tramite-find','MotorpagosController@findtramiteEntidad');
+Route::post('/entidad-tramite-insert','MotorpagosController@insertentidadtramite');
+Route::post('/entidad-tramite-update','MotorpagosController@updateentidadtramite');
+Route::post('/entidad-tramite-delete','MotorpagosController@deleteentidadtramite');
+Route::post('/entidad-tramite-find-where','MotorpagosController@findtramiteEntidadWhere');
+Route::post('/entidad-tramite-find-id','MotorpagosController@findtramiteEntidadWhereID');
 
 
 Route::group(['middleware' => 'permissions'], function () {

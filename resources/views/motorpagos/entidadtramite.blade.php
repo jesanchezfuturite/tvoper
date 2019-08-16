@@ -18,7 +18,45 @@
         </li>
     </ul>
 </div>
-
+<div class="row">
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-bank"></i>Agregar Entidad
+            </div>
+        </div>
+        <div class="portlet-body">
+        <div class="form-body">
+        <div class="row">
+            
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="sr-only" for="entidad">Nueva Entidad</label>
+                    <input type="text" class="form-control" id="entidad"name="entidad" autocomplete="off" placeholder="Nueva Entidad">
+                </div> 
+            </div> 
+            <div class="col-md-1">
+                <div class="form-group">               
+                    <button type="button" class="btn green" onclick="saveEntidad()">Agregar</button>
+                </div>
+            </div>
+            <div class="col-md-3">   
+                <div class="form-group">
+                    <label>Entidades Registradas (Selecciona para ver los Tramites)</label>         
+                </div>
+            </div> 
+                <div class="col-md-3">   
+                <div class="form-group">    
+                    <select class="select2me form-control" name="OptionEntidad" id="OptionEntidad" onchange="TableTramiteEntidad()">
+                        <option value="limpia">------</option>
+                    </select>       
+                </div> 
+                </div> 
+                </div>            
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <!-- BEGIN SAMPLE TABLE PORTLET-->
@@ -39,24 +77,20 @@
                 <tr>
                     <th>
                         Nombre
-                    </th>
-                    
+                    </th>                    
                     <th>
                         &nbsp;
                     </th>
                 </tr>
                 </thead>
-                <tbody>
-              
+                <tbody>              
                         <tr>                           
                             <td>                              
-                                                        
+                              <span class="help-block">No Found</span>                          
                             </td>
                             <td class="text-right">
-                               <a class="btn btn-icon-only blue" href="#portlet-config" data-toggle="modal" data-original-title="" title="Agregar Cuenta" onclick="updateEntidad()"><i class="fa fa-edit"></i> </a><a class="btn btn-icon-only red" data-toggle="modal" href="#static" onclick="DeleteEntidad()"><i class="fa fa-minus"></i> </a>
                             </td>
-                        </tr>
-                              
+                        </tr>                              
                 </tbody>
                 </table>
             </div>
@@ -70,28 +104,31 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="Limpiar()"></button>
-                <h4 class="modal-title">Registro Entidad</h4>
+                <h4 class="modal-title">Registro Tramite Entidad</h4>
             </div>
             <div class="modal-body">
-                 <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                         <input hidden="true" type="text"  id="idEntidad">
-                        <div class="form-group">
-                            <label class="col-md-4 control-label">Entidad</label>
-                            <div class="col-md-6">
-                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Entidad" id="entidad">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-offset-3 col-md-6">
-                                    <button type="submit" data-dismiss="modal" class="btn blue" onclick="saveUpdateEntidad()">Guardar</button>
-                                    <button type="button" data-dismiss="modal" class="btn default" onclick="Limpiar()">Cancelar</button>
-                                </div>
-                            </div>
+                 <div class="form-body">
+                      <input type="text" name="idtramiteEntidad" id="idtramiteEntidad" hidden="true">                          
+                     <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                        <label class="control-label">Tipo Tramite</label>
+                                            <select id="itemsTipoServicio" class="select2me form-control">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block">
+                                    Seleccione una Opcion </span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
-                </form>
+                    <br>
+                 <div class="form-actions">
+
+                     <button type="submit" class="btn blue" onclick="savetramiteEntidad()"><i class="fa fa-check"></i> Guardar</button>
+                     <button type="button" onclick="Limpiar()" data-dismiss="modal" class="btn default" >Cancelar</button>
+                 </div>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -115,7 +152,7 @@
             </div>
             <div class="modal-footer">
          <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminaEntidad()">Confirmar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminaTramiteEntidad()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -124,22 +161,69 @@
 @endsection
 @section('scripts')
 <script type="text/javascript">
-    function saveUpdateEntidad()
-    {
-        var idR=$("#idEntidad").val();
-        if(idR=="")
-        {
-            insertEntidad();
-        }else{
-            EditaEntidad();
-        }
+    jQuery(document).ready(function() {       
+      FindEntidad();
+      AddOptionTipoServicio();
+      
+    });
+     function AddOptionTipoServicio() 
+    {          
+            $.ajax({
+           method: "get",            
+           url: "{{ url('/tiposervicio-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) { 
+        $("#itemsTipoServicio option").remove();
+        var Resp=$.parseJSON(responseinfo);
+
+         $('#itemsTipoServicio').append(
+                "<option value='limpia'>------</option>"
+        );
+          var item="";
+        $.each(Resp, function(i, item) {                
+                 $('#itemsTipoServicio').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+            return false;
     }
+    function saveEntidad()
+    {
+        var validaentidad=$("#entidad").val();
+        $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo); 
+        var coincidencia=0;    
+        var entidad_="";    
+        $.each(Resp, function(i, item) {                
+           entidad_=item.nombre;
+            if(validaentidad.toLowerCase()==entidad_.toLowerCase()){
+                coincidencia=coincidencia+1;
+                }
+            });
+        if(coincidencia==0){
+          insertEntidad();
+            }else{
+            Command: toastr.warning("La Entidad Ya Se Encuentra Registrado!", "Notifications")
+          
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+
     function insertEntidad()
     {   
         var validaentidad=$("#entidad").val();
         if(validaentidad.length==0)
             {
-                Command: toastr.warning("No Success", "Notifications")
+                Command: toastr.warning("Entidad Requerido!", "Notifications")
             }else{
         var entidad=$("#entidad").val();
          $.ajax({
@@ -148,7 +232,9 @@
            data: {nombre:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response=="true"){
-                TableEntidad();
+                FindEntidad();
+                 document.getElementById('entidad').value="";
+
             Command: toastr.success("Success", "Notifications")
             }else{
                 Command: toastr.warning("No Success", "Notifications") 
@@ -162,19 +248,89 @@
         }
             return false;
     }
-    function updateEntidad(id_)
+    function savetramiteEntidad()
+    {
+        var entidad=$("#OptionEntidad").val();
+        var tiposervicio=$("#itemsTipoServicio").val();
+        if(entidad=="limpia")
+        {
+            Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
+        }else if(tiposervicio=="limpia"){
+                 Command: toastr.warning("Tipo Tramite Requerido!", "Notifications")
+            
+        }else{
+            $.ajax({
+           method: "POST",            
+           url: "{{ url('/entidad-tramite-find-where') }}",
+           data: {id:entidad,_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo); 
+        var coincidencia=0;    
+        var tiposer="";    
+        $.each(Resp, function(i, item) {                
+           tiposer=item.tipo_servicios_id;
+            if(tiposervicio==tiposer){
+                coincidencia=coincidencia+1;
+                }
+            });
+            if(coincidencia==0){
+            var itramite=$("#idtramiteEntidad").val();
+                if(itramite.length==0)
+                {
+                    inserttramiteEntidad();
+                }
+                else{
+                    EditaTramiteEntidad();
+                }          
+            }else{
+            Command: toastr.warning("La Entidad Ya Se Encuentra Registrado!", "Notifications")
+          
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+            
+        }
+    }
+    function inserttramiteEntidad()
+    {
+        var entidad=$("#OptionEntidad").val();
+        var tiposervicio=$("#itemsTipoServicio").val();
+        if(entidad=="limpia")
+        {
+            Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
+        }else{            
+                $.ajax({
+                method: "POST",            
+                url: "{{ url('/entidad-tramite-insert') }}",
+                data: {Id_entidad:entidad,Id_tiposervicio:tiposervicio,_token:'{{ csrf_token() }}'}  })
+                .done(function (response) {
+            if(response=="true")
+            {
+                Command: toastr.success("Success", "Notifications")
+                TableTramiteEntidad();
+                  Limpiar();
+                }
+            })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
+    }
+    function updateTramiteEntidad(id_)
     {
           
-         document.getElementById('idEntidad').value=id_;
+         document.getElementById('idtramiteEntidad').value=id_;
+
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-find-where') }}",
+           url: "{{ url('/entidad-tramite-find-id') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             var Resp=$.parseJSON(response);
           var item="";
         $.each(Resp, function(i, item) {
-           document.getElementById('entidad').value=item.nombre; 
+           //document.getElementById('itemsTipoServicio').value=item.tipo_servicios_id; 
+            $("#itemsTipoServicio").val(item.tipo_servicios_id).change();
             });
            
         })
@@ -182,22 +338,18 @@
          Command: toastr.warning("No Success", "Notifications")  });
 
     }
-    function EditaEntidad()
+    function EditaTramiteEntidad()
     {
-        var validaentidad=$("#entidad").val();
-        if(validaentidad.length==0)
-            {
-                Command: toastr.warning("No Success", "Notifications")
-            }else{
-        var entidad=$("#entidad").val();
-        var identidad=$("#idEntidad").val();
+        
+        var idtramite=$("#idtramiteEntidad").val();
+        var idtiposerv=$("#itemsTipoServicio").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-update') }}",
-           data: {id:identidad,nombre:entidad,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/entidad-tramite-update') }}",
+           data: {id:idtramite,Id_tiposervicio:idtiposerv,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
            if(response=="true") {
-            TableEntidad();
+            TableTramiteEntidad();
             Command: toastr.success("Success", "Notifications")
             }else{ Command: toastr.warning("No Success", "Notifications")}
             Limpiar();
@@ -205,23 +357,22 @@
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-        }
-            return false;
+        
     }
-    function DeleteEntidad(id_)
+    function DeleteTramiteEntidad(id_)
     {
          document.getElementById('idregistro').value=id_;
     }
-    function eliminaEntidad()
+    function eliminaTramiteEntidad()
     {
         var entidad=$("#idregistro").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-delete') }}",
+           url: "{{ url('/entidad-tramite-delete') }}",
            data: {id:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              if(response=="true") {
-            TableEntidad();
+            TableTramiteEntidad();
             Command: toastr.success("Success", "Notifications")
             }else{
                 Command: toastr.warning("No Success", "Notifications")
@@ -231,29 +382,65 @@
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
     }
-    function TableEntidad()
+    function FindEntidad()
     {
          $.ajax({
            method: "get",            
            url: "{{ url('/entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#OptionEntidad option").remove();
+          $("#OptionEntidad").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#OptionEntidad").append("<option value='"+item.id+"'>"+item.nombre+"</option>"
+            );  
+        });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function TableTramiteEntidad()
+    {
+        var id_=$("#OptionEntidad").val();
+        if(id_=="limpia")
+            {
+                $("#table tbody tr").remove();
+                $('#table').append("<tr>"
+                    +"<td> <span class='help-block'>No Found</span></td>"
+                    +"<td class='text-right'></td>"
+                    +"</tr>");
+            }else{
+                $.ajax({
+           method: "POST",            
+           url: "{{ url('/entidad-tramite-find') }}",
+           data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#table tbody tr").remove();
         var Resp=$.parseJSON(responseinfo);
           var item="";
         $.each(Resp, function(i, item) {                
                  $('#table').append("<tr>"
-                    +"<td>"+item.nombre+"</td>"
-                    +"<td class='text-right'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Agregar Cuenta' onclick='updateEntidad("+item.id+")'><i class='fa fa-edit'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='DeleteEntidad("+item.id+")'><i class='fa fa-minus'></i> </a></td>"
+                    +"<td>"+item.tiposervicio+"</td>"
+                    +"<td class='text-right'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar Registro' onclick=\"updateTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-edit'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar Registro' onclick=\"DeleteTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>");    });
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
+            }
+         
     }
     function Limpiar()
     {
-       document.getElementById('entidad').value=""; 
-       document.getElementById('idEntidad').value=""; 
+        //$("#itemsTipoServicio").val('limpia')
+        //$("#itemsTipoServicio option[value='limpia']").attr("selected", true);
+        document.getElementById('itemsTipoServicio').value="limpia";
+       document.getElementById('idtramiteEntidad').value="";
+        document.getElementById('idregistro').value="";
+       $("#itemsTipoServicio").val("limpia").change();
+         
     }
 </script>
 @endsection
