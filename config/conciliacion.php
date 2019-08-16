@@ -52,7 +52,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "1|28/06/19|A|15|00|519|1214381327|A|64,793.00|00092946",
-				"positions"		=> 
+				"positions"		=> array
 					(
 					"month"		=> 1,
 					"day" 		=> 1,
@@ -66,7 +66,7 @@ return array (
 			array(
 				"extension"	=> "txt",
 				"lineExample"	=> "11906280000000000726000024144552010519712321128010000000000121442650624141203                                24         ",
-				"positions"		=> 
+				"positions"		=> array
 					(
 					"month"		=> [3,2],
 					"day" 		=> [5,2],
@@ -80,7 +80,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "00000000000012141368000000000STU34562019  1               3390.0000923934530000000000005052392019-06-27 07:29:01.770000 1         ************66292019-06-28 07:50:08.529901                            0.00 0",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [98,2],
 					"day" 		=> [101,2],
@@ -94,7 +94,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "1480138000000000000000000001800000000000002526107241682760000000000000.000000000000000.000000000000707.000003678562019-06-28SANTA CATA0204EFE",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [119,2],
 					"day" 		=> [122,2],
@@ -104,12 +104,12 @@ return array (
 					),
 				"startFrom"		=> 0 /*el archivo no tiene encabezados y los registros comienzan con numero, sino se descartan*/
 			),
-		"banorteCheque"			=>
-			array(
+		"banorteCheque"			=> array
+			(
 				/* aqui se hace un explode a la linea por | */
 				"extension"		=> "txt",
 				"lineExample"	=> "0524310375|28/06/2019|0000000000|COM CHQ ELECCHE050534427Jun19|537|8502|$0.00|$52.50|$667,004.30|246915|COMISIONES POR ECHECK",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> 1,
 					"day" 		=> 1,
@@ -123,7 +123,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "2088469179574555003508I10400000000012559000000000000N00000000012559000000000000010000000000120648880624148284                                                                                                                        000101018846130316A00020190628**31620720000000                                                       003508",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [11,2],
 					"day" 		=> [13,2],
@@ -137,7 +137,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "2088469179574555003508I10400000000012559000000000000N00000000012559000000000000010000000000120648880624148284                                                                                                                        000101018846130316A00020190628**31620720000000                                                       003508",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [0,2],
 					"day" 		=> [3,2],
@@ -151,7 +151,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [56,2],
 					"day" 		=> [58,2],
@@ -165,7 +165,7 @@ return array (
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "405756518620190627101115003980000000295700CR05503000000000000000000000010000000000121396370624141264          0000182408665CR",
-				"positions"		=>
+				"positions"		=> array
 					(
 					"month"		=> [14,2],
 					"day" 		=> [16,2],
@@ -173,19 +173,49 @@ return array (
 					"amount"	=> [29,13], /* se divide entre 100*/
 					"id"		=> [82,8] /* 8 posiciones a partir de 91 */ 
 					),
-				"startFrom"		=> 'D' /* considerar los movimientos que inicien con la letra D (depositos) */
+				"startFrom"		=> 0 /* el archivo no tiene condiciones especiales o delimitadores */
 			),
 		"santanderVentanilla"	=> 
 			array(
-				"extension"	=> "txt",
+				"extension"		=> "txt",
+				"lineExample"	=> "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
+				"positions"		=> array
+					(
+					"month"		=> [16,2],
+					"day" 		=> [18,2],
+					"year"		=> [20,4],
+					"amount"	=> [79,12], /* se divide entre 100*/
+					"id"		=> [125,8] /* 8 posiciones a partir de 91 */ 
+					),
+				"startFrom"		=> 0 /* el archivo no tiene condiciones especiales o delimitadores */
 			),
 		"scotiabankVentanilla"	=>
 			array(
-				"extension"	=> "txt",
+				"extension"		=> "txt",
+				"lineExample"	=> "DMONTERREY, N.L001037000000000295700|010000000000121204020624141235|20190628||                                                                                                                                                                                                 20190628201906282019062820190628+00000000029570000100000000000   000000000295700112551063120351112035110000000000000001",
+				"positions"		=> array
+					(
+					"month"		=> [283,2],
+					"day" 		=> [285,2],
+					"year"		=> [279,4],
+					"amount"	=> [304,15], /* se divide entre 100*/
+					"id"		=> [49,8]  /* 8 posiciones a partir de 91 */ 
+					),
+				"startFrom"		=> 'D' /* considerar los movimientos que inicien con la letra D (depositos) */
 			),
 		"telecomm"				=>
 			array(
 				"extension"	=> "txt",
+				"lineExample"	=> "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
+				"positions"		=> array
+					(
+					"month"		=> [2,2],
+					"day" 		=> [0,2],
+					"year"		=> [4,4],
+					"amount"	=> [46,10], /* se divide entre 100*/
+					"id"		=> [20,8] /* 8 posiciones a partir de 91 */ 
+					),
+				"startFrom"		=> 0 /* el archivo no tiene condiciones especiales o delimitadores */
 			),
 	)
 );	

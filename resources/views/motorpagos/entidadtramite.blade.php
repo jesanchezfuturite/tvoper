@@ -187,6 +187,8 @@
             </div>
         </div>
     </div>
+    <!-- added jesv-->
+    <input type="hidden" id="selectedChecks" value="[]">
 </div>
 @endsection
 @section('scripts')
@@ -209,7 +211,7 @@
           $("#sample_6 tbody tr").remove();
         $.each(Resp, function(i, item) {                
                $("#sample_6").append("<tr>"
-                +"<td class='text-center'><input type='checkbox' id='"+item.id+"' name='checks[]' value='"+item.id+"'></td>"
+                +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
                 +"<td >"+item.nombre+"</td>"
                 +"</tr>"
             );  
@@ -247,8 +249,12 @@
     {
       $('input:checkbox').removeAttr('checked');
     }
+
+
     function obtenerTodocheck()
     {
+
+      /*jesv aqui que guardar los elementos del selectedChecks*/
       var contador=0;
      $("input[type=checkbox]").each(function(x,y){
       console.log(y);
@@ -257,6 +263,8 @@
     });
       console.log(contador);
     }
+
+
     function saveEntidad()
     {
         var validaentidad=$("#entidad").val();
@@ -509,6 +517,44 @@
         document.getElementById('idregistro').value="";
        $("#itemsTipoServicio").val("limpia").change();
          
+    }
+    /* jesv added code */
+    function addRemoveElement(element)
+    {
+
+      // checar el status del campo
+
+      var eleStatus = $("#ch_"+element).prop("checked");
+
+      var checkedElements = $.parseJSON($("#selectedChecks").val());
+
+      if(eleStatus == true)
+      {
+        // esta seleccionado (agregarlo al json)
+        checkedElements.push(element);
+
+        $("#selectedChecks").val(JSON.stringify(checkedElements));
+
+      }else{
+        // no esta seleccionado (quitarlo del json)
+        $.each(checkedElements,function(i,value){
+
+            if(element == value){
+              //remover el nodo
+              delete checkedElements[i];
+            }
+
+        });
+
+        // eliminar los nodos vacíos
+        var filtered = checkedElements.filter(function (el) {
+          return el != null;
+        });
+
+        $("#selectedChecks").val(JSON.stringify(filtered));
+      
+      }
+
     }
 </script>
 @endsection
