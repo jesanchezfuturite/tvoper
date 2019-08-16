@@ -30,7 +30,7 @@
 			</div>
 		<div class="portlet-body" id="tabla_2">
 			 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
-			<table  class="table table-hover"  id="sample_2">
+			<table  class="table table-hover"  id="sample_6">
 				<thead>
 					<tr>						
 						<th>Descripción</th>
@@ -301,9 +301,9 @@ function actualizatabla(Resp)
 var item = '';
 	$("#tabla_2").remove();
             /*agrega tabla*/
-             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><table  class='table table-striped table-bordered table-hover' id='sample_2'><thead><tr><th>Descripción</th><th>Periodicidad</th><th>Vencimiento</th><th>Operacion</th></tr></thead><tbody></tbody></table></div>");
+             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><table  class='table table-striped table-bordered table-hover' id='sample_6'><thead><tr><th>Descripción</th><th>Periodicidad</th><th>Vencimiento</th><th>Operacion</th></tr></thead><tbody></tbody></table></div>");
                 $.each(Resp, function(i, item) {                
-                 $('#sample_2 tbody').append("<tr>"  
+                 $('#sample_6 tbody').append("<tr>"  
                  +"<td>"+ item.descripcion + "</td>"                 
                  + "<td class='text-center'>"+ item.periodicidad + "</a></td>"                 
                  + "<td class='text-center'>"+ item.vencimiento + "</a></td>"                 

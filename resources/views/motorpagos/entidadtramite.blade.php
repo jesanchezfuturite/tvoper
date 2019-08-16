@@ -1,6 +1,7 @@
 @extends('layout.app')
 
 @section('content')
+<link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración Entidad Tramite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -24,6 +25,7 @@
             <div class="caption">
                 <i class="fa fa-bank"></i>Agregar Entidad
             </div>
+
         </div>
         <div class="portlet-body">
         <div class="form-body">
@@ -68,7 +70,7 @@
         </div>
         <div class="portlet-body">           
             <div class="form-group">           
-                <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
+                <button class="btn green" href='#static2' data-toggle='modal' >Agregar</button>
             </div>
             
             <div class="table-scrollable">
@@ -104,11 +106,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="Limpiar()"></button>
-                <h4 class="modal-title">Registro Tramite Entidad</h4>
+                <h4 class="modal-title">Editar Tramite Entidad</h4>
             </div>
             <div class="modal-body">
                  <div class="form-body">
-                      <input type="text" name="idtramiteEntidad" id="idtramiteEntidad" hidden="true">                          
+                      <input type="text" name="idtramiteEntidad" id="idtramiteEntidad" hidden="true">                   
                      <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -157,15 +159,66 @@
         </div>
     </div>
 </div>
-
+<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Registro Tramite Entidad</h4>
+            </div>
+            <div class="modal-body">
+               <div class="overflow-auto" id="demo">
+                 <table class="table table-hover" id="sample_6">
+                    <thead>
+                      <tr>            
+                        <th>Selecciona</th>
+                        <th>Tipo Tramite</th> 
+                      </tr>
+                    </thead>
+                    <tbody>  
+                        
+                    </tbody>
+                  </table>
+               </div> 
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="obtenerTodocheck()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {       
       FindEntidad();
       AddOptionTipoServicio();
+      FindEntidadTable();
       
     });
+    function FindEntidadTable()
+    {
+      $.ajax({
+        method: "get",            
+        url: "{{ url('/tiposervicio-find-all') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#sample_6 tbody tr").remove();
+        $.each(Resp, function(i, item) {                
+               $("#sample_6").append("<tr>"
+                +"<td class='text-center'><input type='checkbox' id='"+item.id+"' name='checks[]' value='"+item.id+"'></td>"
+                +"<td >"+item.nombre+"</td>"
+                +"</tr>"
+            );  
+        });
+           TableAdvanced.init();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
      function AddOptionTipoServicio() 
     {          
             $.ajax({
@@ -189,6 +242,20 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
+    }
+    function limpiarCheck()
+    {
+      $('input:checkbox').removeAttr('checked');
+    }
+    function obtenerTodocheck()
+    {
+      var contador=0;
+     $("input[type=checkbox]").each(function(x,y){
+      console.log(y);
+      if($(this).is(":checked"))
+        contador++;
+    });
+      console.log(contador);
     }
     function saveEntidad()
     {
@@ -402,6 +469,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
     }
+
     function TableTramiteEntidad()
     {
         var id_=$("#OptionEntidad").val();
