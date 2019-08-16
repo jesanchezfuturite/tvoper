@@ -1,7 +1,6 @@
 @extends('layout.app')
 
 @section('content')
-<link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración Entidad Tramite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -183,7 +182,7 @@
             </div>
             <div class="modal-footer">
          <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="obtenerTodocheck()">Confirmar</button>
+            <button type="button" class="btn green" onclick="obtenerTodocheck()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -251,7 +250,7 @@
     {
       var contador=0;
      $("input[type=checkbox]").each(function(x,y){
-      console.log(y);
+      console.log(x);
       if($(this).is(":checked"))
         contador++;
     });
