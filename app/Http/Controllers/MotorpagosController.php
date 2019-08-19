@@ -699,20 +699,35 @@ return json_encode($response);
     }
     public function insertentidadtramite(Request $request)
     {
+    
+        $checkedsAll =json_decode($request->checkedsAll);
+        
         $Id_entidad=$request->Id_entidad;
-        $Id_tiposervicio=$request->Id_tiposervicio;
         $fechaActual=Carbon::now();
-        $date=$fechaActual->format('Y-m-d h:i:s');
-        $response = "false";
-        try{  
-        $info = $this->entidadtramitedb->create(['entidad_id'=>$Id_entidad,'tipo_servicios_id'=>$Id_tiposervicio,'created_at'=>$date,'updated_at'=>$date]);
-            $response="true";
+        $date=$fechaActual->format('Y-m-d h:i:s');     
+        $contador=0;
+        
+           log::info(gettype($checkedsAll));
+        //try{
+            foreach($checkedsAll as $i) 
+            {             
+                log::info($i);
+                $info2 = $this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad,'tipo_servicios_id'=>$i]);
+                
+                if($info2->count() == 0)
+                {
+                $info = $this->entidadtramitedb->create(['entidad_id'=>$Id_entidad,'tipo_servicios_id'=>$i,'created_at'=>$date,'updated_at'=>$date]);
+                    $contador=$contador+1;
+                }
             }
-            catch( \Exception $e ){
-            Log::info('Error Method limitereferencia: '.$e->getMessage());
-            $response="false";            
-        }
-        return $response;
+       
+
+       // }
+           // catch( \Exception $e ){
+            //Log::info('Error Method limitereferencia: '.$e->getMessage());
+           // $contador=0;            
+        //}
+        return $contador;
 
     }
      public function updateentidadtramite(Request $request)
