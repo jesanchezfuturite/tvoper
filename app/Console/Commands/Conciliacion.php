@@ -16,11 +16,24 @@ class Conciliacion extends Command
     protected $signature = 'conciliacion:processFiles';
 
     /**
+     *  Este arreglo contiene la configuracion para leer cada archivo que esta 
+     *
+     *
+    */
+
+    /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Procesa los archivos que se guardan y corresponden a los estados de cuenta bancarios, guarda los resultados en la tabla para procesar y eliminar el archivo de la carpeta storage/app/toProcess';
+
+    /**
+     *
+     * Declaro la variable de configuración para cargar los datos de los archivo
+     *
+     */ 
+    protected $files;
 
     /**
      * Create a new command instance.
@@ -30,6 +43,9 @@ class Conciliacion extends Command
     public function __construct()
     {
         parent::__construct();
+
+        // cargar el archivo de configuracion con los datos por banco
+        $this->files = config('conciliacion.conciliacion_conf');
     }
 
     /**
@@ -39,7 +55,9 @@ class Conciliacion extends Command
      */
     public function handle()
     {
-        //
+        // 
         Log::info('Enter in Scheduled task conciliacion:ProcessFiles ');
     }
+
+
 }
