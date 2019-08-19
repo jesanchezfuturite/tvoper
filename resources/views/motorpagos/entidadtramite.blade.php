@@ -1,6 +1,7 @@
 @extends('layout.app')
 
 @section('content')
+<link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración Entidad Tramite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -162,12 +163,16 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarr()"></button>
                 <h4 class="modal-title">Registro Tramite Entidad</h4>
             </div>
-            <div class="modal-body">
-               <div class="overflow-auto" id="demo">
-                 <table class="table table-hover" id="sample_6">
+            <div class="modal-body">  
+              <label for="search">Buscar:</label>
+                <input type="text" name="search" id="search" class="form-control" placeholder="Escribe...">
+                <br>
+               <div  id="demo">
+              
+                 <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
                     <thead>
                       <tr>            
                         <th>Selecciona</th>
@@ -181,7 +186,7 @@
                </div> 
             </div>
             <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+         <button type="button" data-dismiss="modal" onclick="limpiarr()" class="btn default">Cancelar</button>
             <button type="button" class="btn green" onclick="obtenerTodocheck()">Confirmar</button>
             </div>
         </div>
@@ -207,9 +212,9 @@
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
           var item="";
-          $("#sample_6 tbody tr").remove();
+          $("#table2 tbody tr").remove();
         $.each(Resp, function(i, item) {                
-               $("#sample_6").append("<tr>"
+               $("#table2").append("<tr>"
                 +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
                 +"<td >"+item.nombre+"</td>"
                 +"</tr>"
@@ -254,16 +259,32 @@
     {
 
       /*jesv aqui que guardar los elementos del selectedChecks*/
-      var contador=0;
-     $("input[type=checkbox]").each(function(x,y){
-      console.log(x);
-      if($(this).is(":checked"))
-        contador++;
-    });
-      console.log(contador);
+      var checkeds=$("#selectedChecks").val();
+       var entidad=$("#OptionEntidad").val();
+       var entidad=$("#OptionEntidad").val();
+       
+        if (checkeds.length < 3) {
+          Command: toastr.warning("Tramites Sin Seleccionar Requerido!", "Notifications")
+        }else if(entidad=="limpia")
+        { 
+          Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
+        }else{            
+                $.ajax({
+                method: "POST",            
+                url: "{{ url('/entidad-tramite-insert') }}",
+                data: {Id_entidad:entidad,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
+                .done(function (response) {
+            if(response==0){
+              Command: toastr.warning("Ninguno Fue Agregado!", "Notifications")
+            }else{ 
+             
+              Command: toastr.success(" "+response+" Registados!", "Notifications")}
+              TableTramiteEntidad();
+            })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
     }
-
-
     function saveEntidad()
     {
         var validaentidad=$("#entidad").val();
@@ -364,30 +385,6 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             
-        }
-    }
-    function inserttramiteEntidad()
-    {
-        var entidad=$("#OptionEntidad").val();
-        var tiposervicio=$("#itemsTipoServicio").val();
-        if(entidad=="limpia")
-        {
-            Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
-        }else{            
-                $.ajax({
-                method: "POST",            
-                url: "{{ url('/entidad-tramite-insert') }}",
-                data: {Id_entidad:entidad,Id_tiposervicio:tiposervicio,_token:'{{ csrf_token() }}'}  })
-                .done(function (response) {
-            if(response=="true")
-            {
-                Command: toastr.success("Success", "Notifications")
-                TableTramiteEntidad();
-                  Limpiar();
-                }
-            })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
         }
     }
     function updateTramiteEntidad(id_)
@@ -555,5 +552,31 @@
       }
 
     }
+    function limpiarr()
+    {
+
+      // checar el status del campo
+
+      var checkbox= $("#selectedChecks").val();
+
+      var checkedElements = $.parseJSON(checkbox);
+     
+      $.each(checkedElements,function(i,value){
+       $("#ch_"+value+"").prop("checked", false);
+       //$("#ch_"+value+" :checkbox").attr('checked', true);
+       //$("#ch_"+value+"").removeAttr('checked');
+        });
+    }
+    $("#search").keyup(function(){
+        _this = this;
+          // Show only matching TR, hide rest of them
+        $.each($("#table2 tbody tr"), function() {
+        if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+        $(this).hide();
+        else
+        $(this).show();
+        });
+        });
+
 </script>
 @endsection

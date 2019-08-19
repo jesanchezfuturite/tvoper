@@ -1,16 +1,17 @@
 
-.demo input[type="checkbox"] + label span {
+.demo input[type="checkbox"]{
 	display: inline-block;
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	margin: -1px 4px 0 0;
 	vertical-align: middle;
 	cursor: pointer;
-	color:blue;
+	background-color:blue;
 }
+
 .my-custom-scrollbar {
 position: relative;
-height: 200px;
+height: 300px;
 overflow: auto;
 }
 .table-wrapper-scroll-y {
