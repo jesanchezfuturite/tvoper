@@ -6,14 +6,13 @@
 	margin: -1px 4px 0 0;
 	vertical-align: middle;
 	cursor: pointer;
-	background-color:blue;
 }
 
-.my-custom-scrollbar {
+.my-custom-scrollbar tbody {
 position: relative;
 height: 300px;
 overflow: auto;
 }
-.table-wrapper-scroll-y {
+.table-wrapper-scroll-y tbody{
 display: block;
 }
