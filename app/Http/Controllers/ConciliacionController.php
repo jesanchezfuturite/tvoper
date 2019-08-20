@@ -95,7 +95,7 @@ class ConciliacionController extends Controller
 
     	$length -= 8;
 
-    	$name = substr($bank_data,0, $length);
+    	$name = substr($bank_data,0,$length);
 
     	$validNames = $this->files;
 
