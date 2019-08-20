@@ -8,11 +8,11 @@
 	cursor: pointer;
 }
 
-.my-custom-scrollbar {
+.my-custom-scrollbar tbody {
 position: relative;
 height: 300px;
 overflow: auto;
 }
-.table-wrapper-scroll-y {
+.table-wrapper-scroll-y tbody{
 display: block;
 }

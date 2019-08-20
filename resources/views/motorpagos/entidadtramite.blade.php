@@ -185,7 +185,6 @@
                     <thead>
                       <tr>            
                         <th>Selecciona</th>
-                        <th>Tipo Tramite</th> 
                       </tr>
                     </thead>
                     <tbody>  
@@ -229,7 +228,7 @@
                 +"</tr>"
             );  
         });
-      
+        sortTable();
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -258,19 +257,13 @@
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
     }
-    function limpiarCheck()
-    {
-      $('input:checkbox').removeAttr('checked');
-    }
-
-
     function obtenerTodocheck()
     {
 
       /*jesv aqui que guardar los elementos del selectedChecks*/
       var checkeds=$("#selectedChecks").val();
        var entidad=$("#OptionEntidad").val();
-       var entidad=$("#OptionEntidad").val();
+    
        
         if (checkeds.length < 3) {
           Command: toastr.warning("Tramites Sin Seleccionar Requerido!", "Notifications")
@@ -522,12 +515,12 @@
        document.getElementById('idtramiteEntidad').value="";
         document.getElementById('idregistro').value="";
        $("#itemsTipoServicio").val("limpia").change();
-       document.getElementById('selectedChecks').value="";
+       document.getElementById('selectedChecks').value="[]";
          
     }
     /* jesv added code */
-    function addRemoveElement(element)
-    {
+  function addRemoveElement(element)
+  {
 
       // checar el status del campo
 
@@ -562,34 +555,57 @@
       
       }
 
-    }
-    function limpiarr()
-    {
+  }
+  function limpiarr()
+  {
 
       // checar el status del campo
 
-      var checkbox= $("#selectedChecks").val();
+      //var checkbox= $("#selectedChecks").val();
 
-      var checkedElements = $.parseJSON(checkbox);
+      ///var checkedElements = $.parseJSON(checkbox);
      
-      $.each(checkedElements,function(i,value){
-       $("#ch_"+value+"").prop("checked", false);
+      ///$.each(checkedElements,function(i,value){
+       ///$("#ch_"+value+"").prop("checked", false);
        //$("#ch_"+value+" :checkbox").attr('checked', true);
        //$("#ch_"+value+"").removeAttr('checked');
-        });
-      document.getElementById('selectedChecks').value="";
+        //});
+      document.getElementById('selectedChecks').value="[]";
       document.getElementById('search').value="";
+       $('input:checkbox').removeAttr('checked');
+  }
+  function sortTable() {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("table2");
+  switching = true;
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[1];
+      y = rows[i + 1].getElementsByTagName("TD")[1];
+      if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+        shouldSwitch = true;
+        break;
+      }
     }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+  }
     $("#search").keyup(function(){
         _this = this;
-          // Show only matching TR, hide rest of them
         $.each($("#table2 tbody tr"), function() {
         if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
         $(this).hide();
         else
         $(this).show();
         });
-        });
+    });
+
 
 </script>
 @endsection

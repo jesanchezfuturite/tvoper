@@ -289,9 +289,15 @@ function update(id_)
                document.getElementById('idupdate').value=item.id;
                document.getElementById('descripcion').value=item.descripcion;
         document.getElementById('vencimiento').value=item.vencimiento;
-        //document.getElementById('periodicidad').value=item.periodicidad;
         $("#periodicidad").val(item.periodicidad).change();
-                });
+        if(parseFloat(item.vencimiento)==0)
+        {
+          $("#checkbox30").prop("checked", true);
+         document.getElementById("vencimiento").disabled=true;
+        }
+        //document.getElementById('periodicidad').value=item.periodicidad;
+       
+        });
         
      })
         .fail(function( msg ) {
