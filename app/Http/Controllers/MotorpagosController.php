@@ -437,6 +437,7 @@ return json_encode($response);
                 "nombre" => $i->Tipo_Descripcion
             );
         }
+
         return json_encode($response);
         
     }
@@ -623,6 +624,28 @@ return json_encode($response);
             }
        return json_encode($response);
     }
+     public function findEntidadAll(Request $request)
+    {   
+        $id=$request->id;    
+        $response = array();  
+        $info = $this->entidadtramitedb->findWhere(['entidad_id'=>$id]);
+        foreach($info as $i)
+        {
+            $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
+           
+           foreach($findServicio as $ii)
+            { 
+                $response []= array(
+                "id"=>$ii->Tipo_Code,              
+                "nombre" => $ii->Tipo_Descripcion
+                );
+            }
+        }
+        
+        return json_encode($response);
+        
+    }
+
      public function insertentidad(Request $request)
     {
         $nombre=$request->nombre;

@@ -68,11 +68,17 @@
                 <i class="fa fa-cogs"></i>Registros Entidad Tramite
             </div>
         </div>
-        <div class="portlet-body">           
+        <div class="portlet-body">
+          <div class="row">
+         <div class="col-md-12">           
             <div class="form-group">           
                 <button class="btn green" href='#static2' data-toggle='modal' >Agregar</button>
             </div>
-            
+          </div>
+          </div>
+          <div class="row">
+           <div class="col-md-12">           
+            <div class="form-group"> 
             <div class="table-scrollable">
                 <table class="table table-hover" id="table">
                 <thead>
@@ -96,6 +102,9 @@
                 </tbody>
                 </table>
             </div>
+            </div>
+            </div>
+        </div>
         </div>
     </div>
     <!-- END SAMPLE TABLE PORTLET-->    
@@ -176,7 +185,6 @@
                     <thead>
                       <tr>            
                         <th>Selecciona</th>
-                        <th>Tipo Tramite</th> 
                       </tr>
                     </thead>
                     <tbody>  
@@ -220,7 +228,7 @@
                 +"</tr>"
             );  
         });
-           TableAdvanced.init();
+        sortTable();
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -249,19 +257,13 @@
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
     }
-    function limpiarCheck()
-    {
-      $('input:checkbox').removeAttr('checked');
-    }
-
-
     function obtenerTodocheck()
     {
 
       /*jesv aqui que guardar los elementos del selectedChecks*/
       var checkeds=$("#selectedChecks").val();
        var entidad=$("#OptionEntidad").val();
-       var entidad=$("#OptionEntidad").val();
+    
        
         if (checkeds.length < 3) {
           Command: toastr.warning("Tramites Sin Seleccionar Requerido!", "Notifications")
@@ -347,11 +349,12 @@
     {
         var entidad=$("#OptionEntidad").val();
         var tiposervicio=$("#itemsTipoServicio").val();
+        var tramites=$("#selectedChecks").val();
         if(entidad=="limpia")
         {
-            Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
-        }else if(tiposervicio=="limpia"){
-                 Command: toastr.warning("Tipo Tramite Requerido!", "Notifications")
+            Command: toastr.warning("Tipo Tramite Sin Seleccionar, Requerido!", "Notifications")
+        }else if(tramites>=2){
+                 Command: toastr.warning("Tramites Sin Seleccionar, Requerido!", "Notifications")
             
         }else{
             $.ajax({
@@ -512,11 +515,12 @@
        document.getElementById('idtramiteEntidad').value="";
         document.getElementById('idregistro').value="";
        $("#itemsTipoServicio").val("limpia").change();
+       document.getElementById('selectedChecks').value="[]";
          
     }
     /* jesv added code */
-    function addRemoveElement(element)
-    {
+  function addRemoveElement(element)
+  {
 
       // checar el status del campo
 
@@ -551,32 +555,57 @@
       
       }
 
-    }
-    function limpiarr()
-    {
+  }
+  function limpiarr()
+  {
 
       // checar el status del campo
 
-      var checkbox= $("#selectedChecks").val();
+      //var checkbox= $("#selectedChecks").val();
 
-      var checkedElements = $.parseJSON(checkbox);
+      ///var checkedElements = $.parseJSON(checkbox);
      
-      $.each(checkedElements,function(i,value){
-       $("#ch_"+value+"").prop("checked", false);
+      ///$.each(checkedElements,function(i,value){
+       ///$("#ch_"+value+"").prop("checked", false);
        //$("#ch_"+value+" :checkbox").attr('checked', true);
        //$("#ch_"+value+"").removeAttr('checked');
-        });
+        //});
+      document.getElementById('selectedChecks').value="[]";
+      document.getElementById('search').value="";
+       $('input:checkbox').removeAttr('checked');
+  }
+  function sortTable() {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("table2");
+  switching = true;
+  while (switching) {
+    switching = false;
+    rows = table.rows;
+    for (i = 1; i < (rows.length - 1); i++) {
+      shouldSwitch = false;
+      x = rows[i].getElementsByTagName("TD")[1];
+      y = rows[i + 1].getElementsByTagName("TD")[1];
+      if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+        shouldSwitch = true;
+        break;
+      }
     }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+  }
     $("#search").keyup(function(){
         _this = this;
-          // Show only matching TR, hide rest of them
         $.each($("#table2 tbody tr"), function() {
         if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
         $(this).hide();
         else
         $(this).show();
         });
-        });
+    });
+
 
 </script>
 @endsection
