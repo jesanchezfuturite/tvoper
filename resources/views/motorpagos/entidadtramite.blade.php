@@ -68,11 +68,17 @@
                 <i class="fa fa-cogs"></i>Registros Entidad Tramite
             </div>
         </div>
-        <div class="portlet-body">           
+        <div class="portlet-body">
+          <div class="row">
+         <div class="col-md-12">           
             <div class="form-group">           
                 <button class="btn green" href='#static2' data-toggle='modal' >Agregar</button>
             </div>
-            
+          </div>
+          </div>
+          <div class="row">
+           <div class="col-md-12">           
+            <div class="form-group"> 
             <div class="table-scrollable">
                 <table class="table table-hover" id="table">
                 <thead>
@@ -96,6 +102,9 @@
                 </tbody>
                 </table>
             </div>
+            </div>
+            </div>
+        </div>
         </div>
     </div>
     <!-- END SAMPLE TABLE PORTLET-->    
@@ -220,7 +229,7 @@
                 +"</tr>"
             );  
         });
-           TableAdvanced.init();
+      
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -347,11 +356,12 @@
     {
         var entidad=$("#OptionEntidad").val();
         var tiposervicio=$("#itemsTipoServicio").val();
+        var tramites=$("#selectedChecks").val();
         if(entidad=="limpia")
         {
-            Command: toastr.warning("Entidad Sin Seleccionar Requerido!", "Notifications")
-        }else if(tiposervicio=="limpia"){
-                 Command: toastr.warning("Tipo Tramite Requerido!", "Notifications")
+            Command: toastr.warning("Tipo Tramite Sin Seleccionar, Requerido!", "Notifications")
+        }else if(tramites>=2){
+                 Command: toastr.warning("Tramites Sin Seleccionar, Requerido!", "Notifications")
             
         }else{
             $.ajax({
@@ -512,6 +522,7 @@
        document.getElementById('idtramiteEntidad').value="";
         document.getElementById('idregistro').value="";
        $("#itemsTipoServicio").val("limpia").change();
+       document.getElementById('selectedChecks').value="";
          
     }
     /* jesv added code */
@@ -566,6 +577,8 @@
        //$("#ch_"+value+" :checkbox").attr('checked', true);
        //$("#ch_"+value+"").removeAttr('checked');
         });
+      document.getElementById('selectedChecks').value="";
+      document.getElementById('search').value="";
     }
     $("#search").keyup(function(){
         _this = this;

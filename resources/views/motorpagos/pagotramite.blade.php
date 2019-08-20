@@ -22,6 +22,35 @@
     <div class="portlet box blue">
         <div class="portlet-title">
             <div class="caption">
+                <i class="fa fa-bank"></i>Entidad
+            </div>
+            
+        </div>
+        <div class="portlet-body">
+        <div class="form-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label >&nbsp;&nbsp;Selecciona la Entidad para Mostrar los Tramites</label> 
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                                       
+                        <select class="select2me form-control" id="optionEntidad" onchange="ChangeEntidadTramite()">
+                            <option>------</option>                           
+                    </select>
+                </div>
+           </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
                 <i class="fa fa-bank"></i>Trámite
             </div>
             
@@ -195,8 +224,50 @@
     jQuery(document).ready(function() {       
        ComponentsPickers.init();
        AddOptionBanco();
-       AddOptionTipoServicio();
+       
+       FindEntidad();
     }); 
+     function FindEntidad()
+    {
+         $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#optionEntidad option").remove();
+          $("#optionEntidad").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#optionEntidad").append("<option value='"+item.id+"'>"+item.nombre+"</option>"
+            );  
+        });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function ChangeEntidadTramite()
+    {
+      var entidad=$("#optionEntidad").val();
+      if(entidad=="limpia")
+      {
+        $("#itemsTipoServicio option").remove();
+          $("#itemsTipoServicio").append("<option value='limpia'>-------</option>"
+            );
+           $("#itemsTipoServicio").val("limpia").change();
+             $("#tituloTamite h3").remove();
+        $("#tituloTamite").append("<h3 class='page-title'>TRAMITE NO SELECCIONADA: </h3>");
+       //document.getElementById('itemsBancos').value="limpia"; 
+         $("#itemsBancos").val("limpia").change();
+       $("#addTables div").remove();
+
+
+      }
+      else{
+        AddOptionTipoServicio();
+      }
+    }
     function AddOptionBanco() 
     {          
             $.ajax({
@@ -223,11 +294,12 @@
     }
     
      function AddOptionTipoServicio() 
-    {          
+    { 
+      var entidadId=$("#optionEntidad").val();
             $.ajax({
-           method: "get",            
-           url: "{{ url('/tiposervicio-find-all') }}",
-           data: {_token:'{{ csrf_token() }}'}  })
+           method: "POST",            
+           url: "{{ url('/entidad-find-all') }}",
+           data: {id:entidadId,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#itemsTipoServicio option").remove();
         var Resp=$.parseJSON(responseinfo);

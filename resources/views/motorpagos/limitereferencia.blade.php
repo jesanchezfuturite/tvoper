@@ -81,7 +81,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
                 <h3 class="form-section">Limite Referencia</h3>
             </div>
             <div class="modal-body">
@@ -101,10 +101,11 @@
 													<div class="col-md-6">
 														<div class="form-group">
 															<label class="control-label">Periodicidad</label>
-																<select id="periodicidad" class="select2me form-control">
-                                                                    <option value="limpia">-------</option>
-																	<option value="Mensual">Mensual</option>
-																	<option value="Trimestral">Trimestral</option>
+																<select id="periodicidad" class="select2me form-control" onchange="ChangePeriodicidad()">
+                                  <option value="limpia">-------</option>
+																	<option value="Anual">Anual</option>
+                                  <option value="Mensual">Mensual</option>
+                                  <option value="Trimestral">Trimestral</option>																	
 																</select>
 																<span class="help-block">
 																Seleccione una Opcion </span>
@@ -113,7 +114,7 @@
 													<!--/span-->
 												</div>
 												<!--/row-->
-												<div class="row">
+												<div class="row" id="AddCheck">
 													
 													<!--/span-->
 													<div class="col-md-4">
@@ -121,9 +122,10 @@
 															<label class="control-label">Fecha Vencimiento</label>
 															<input id="vencimiento" class="form-control" size="16" type="number" maxlength="2" min="1" max="31"  autocomplete="off" placeholder="Ingrese el dia ej. 23"oninput="prueba(this);">
 															<span class="help-block">Ingrese una Numero</span>
-
-														</div>
+                            </div>
 													</div>
+                         
+													
 													<!--/span-->
 												</div>
 												<!--/row-->
@@ -153,7 +155,31 @@
        TableAdvanced.init();
         
     });
-
+function verificaMes()
+{
+  var check=$("#checkbox30").prop("checked");
+  if(check==true)
+  {
+    document.getElementById("vencimiento").disabled=true;
+    document.getElementById("vencimiento").value="0";
+  }
+  else{
+    document.getElementById("vencimiento").disabled=false;
+    document.getElementById("vencimiento").value="";
+  }
+}
+function ChangePeriodicidad()
+{
+  var periodicidad=$("#periodicidad").val();
+  if(periodicidad=="Mensual")
+  {
+    $("#AddCheck").append("<div class='col-md-4' id='Removecheck'><span class='help-block'>Obligatorio si es fin de Mes</span> <div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='verificaMes()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>  Fin de Mes. </label> </div><span class='help-block'>Marque</span> </div> </div>");
+  }
+  else{
+    $("#Removecheck").remove();
+    document.getElementById("vencimiento").disabled=false;
+    document.getElementById("vencimiento").value="";}
+}
 function metodo()
 {
     var description_=$("#descripcion").val();
@@ -187,9 +213,7 @@ function metodo()
 function prueba(n) {
        var num = n.value;
         var date = new Date();
-       var ultimoDia = new Date(date.getFullYear(), date.getMonth()+2, 0);
-       var dia=ultimoDia.getDate();
-       if (parseFloat(num) >= 1&& parseFloat(num) <= dia) {
+       if (parseFloat(num) >= 1&& parseFloat(num) <= 31) {
          
        } else {      
            document.getElementById('vencimiento').value='';
