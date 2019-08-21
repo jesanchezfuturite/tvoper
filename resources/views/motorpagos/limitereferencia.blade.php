@@ -152,8 +152,7 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {       
        ComponentsPickers.init();
-       TableAdvanced.init();
-        
+       TableAdvanced.init();        
     });
 function verificaMes()
 {

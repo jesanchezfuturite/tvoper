@@ -37,6 +37,7 @@ Route::post('/limite-referencia-deleted','MotorpagosController@deleteLimiteRefer
 Route::post('/limite-referencia-insert','MotorpagosController@insertLimiteReferencia');
 Route::post('/limite-referencia-find','MotorpagosController@FindLimiteReferencia');
 Route::post('/limite-referencia-update','MotorpagosController@updateLimiteReferencia');
+Route::get('/limite-referencia-fin-all','MotorpagosController@limitereferenciaFindAll');
 /* Banco app */
 Route::post('/banco-insert','MotorpagosController@insertBanco');
 Route::post('/banco-find','MotorpagosController@findBanco');
@@ -77,7 +78,8 @@ Route::post('/entidad-tramite-update','MotorpagosController@updateentidadtramite
 Route::post('/entidad-tramite-delete','MotorpagosController@deleteentidadtramite');
 Route::post('/entidad-tramite-find-where','MotorpagosController@findtramiteEntidadWhere');
 Route::post('/entidad-tramite-find-id','MotorpagosController@findtramiteEntidadWhereID');
-
+/*/ Tipo Servicio/*/
+Route::get('/tipo-servicio','MotorpagosController@tiposervicio');
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');

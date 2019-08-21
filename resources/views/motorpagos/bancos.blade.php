@@ -170,7 +170,30 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
+<!-- modal-dialog -->
+<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Desactivar/Activar Registro?
+                </p>
+                 <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
+                 <input hidden="true" type="text" name="idstatus" id="idstatus" class="idstatus">
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="desactiveCuenta()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -333,7 +356,8 @@
         var label="";
         var msgg="";
         var icon="";
-       
+         var min=0;
+         var max=0;
         $("#table tbody tr").remove();        
         $.each(Resp, function(i, item) {
          var Serv="";
@@ -352,13 +376,15 @@
                { label="danger";
                      msgg="Inactiva"; 
                      icon="green";  }
+                     max=item.monto_max;
+                     min=item.monto_min;
             $('#table tbody').append("<tr>"
             +"<td>"+Cuent+"</td>"
             +"<td >"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
             +"<td>"+item.metodopago+"</td>"
-            +"<td>$"+item.monto_min+"</td>"
-            +"<td>$"+item.monto_max+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='editarCuenta("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' onclick='desactivarCuenta("+item.id+","+item.status+")'><i class='fa fa-power-off'></i></a></td>"
+            +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
+            +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
+            +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='editarCuenta("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#static2' onclick='desactivarCuenta("+item.id+","+item.status+")'><i class='fa fa-power-off'></i></a></td>"
             +"</tr>");
         });
     }
@@ -429,7 +455,14 @@
     }
     function desactivarCuenta(id_,status_)
     {
-        var estatus="";
+        document.getElementById('idregistro').value=id_;
+        document.getElementById('idstatus').value=status_;
+    }
+    function desactiveCuenta()
+    {
+      var id_=$("#idregistro").val();
+      var status_=$("#idstatus").val();
+      var estatus="";
         if(status_==1)
             {
                 estatus=0;
@@ -444,10 +477,12 @@
             {
                  Command: toastr.warning("No Success", "Notifications")
             }
-            else{CuentasBanco();}
+            else{
+              Command: toastr.success("Success", "Notifications")
+              CuentasBanco();}
         })
         .fail(function( msg ) {
-         console.log("Error al Cargar items");  }); 
+         console.log("Error al Cargar items");  });
     }
     function editarCuenta(id_)
     {
