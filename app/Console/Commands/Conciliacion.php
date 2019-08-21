@@ -105,7 +105,15 @@ class Conciliacion extends Command
                 {
                     case 1: // plain text file
                         $response = $this->processFilePositions($av,$config);
-                        
+                        break;
+                    case 2: // american express
+                        $response = $this->processAMEX($av,$config);
+                        break;
+                    case 3: // american express
+                        $response = $this->processBanamex($av,$config);
+                        break;
+                    case 4: // banorte Cheque
+                        $response = $this->processBanorteCheque($av,$config);
                         break;
                     default:
                         // throws an error method undefined
@@ -118,7 +126,7 @@ class Conciliacion extends Command
             }
 
         }
-
+        Log::info('[Conciliacion:ProcessFiles] - Proceso Finalizado');
 
     }
 
@@ -133,7 +141,7 @@ class Conciliacion extends Command
 
     private function processFilePositions($filename,$config)
     {
-        Log::info('[Conciliacion:ProcessFiles] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
+        Log::info('[Conciliacion:ProcessFiles '.$filename.'] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
         // open the file
         
         $positions = $config["config"]["positions"];
@@ -184,17 +192,29 @@ class Conciliacion extends Command
                 if($condition == 1)
                 {
                     $line   = fgets($fo);
+
+                    if($origenStart == 0 && $origenLength == 0 && $referenciaStart == 0 && $referenciaLength == 0)
+                    {
+                        $origen     = 1;
+                        $referencia = "";
+                        $monto = substr($line, $amountStart, $amountLength);
+                    }else{
+                        $origen     = substr($line, $origenStart, $origenLength);
+                        $referencia = substr($line, $referenciaStart, $referenciaLength);
+                        $monto = (int)substr($line, $amountStart, $amountLength) / 100;
+                    }
+
                     $data =
                         [
                             "day"            => substr($line, $dayStart, $dayLength),
                             "month"          => substr($line, $monthStart, $monthLength),
                             "year"           => substr($line, $yearStart, $yearLength),
-                            "monto"          => (int)substr($line, $amountStart, $amountLength) / 100,
+                            "monto"          => $monto,
                             "transaccion_id" => substr($line, $idStart, $idLength),
                             "status"         => "np",
                             "filename"       => $filename,
-                            "origen"         => substr($line, $origenStart, $origenLength),
-                            "referencia"     => substr($line, $referenciaStart, $referenciaLength),
+                            "origen"         => $origen,
+                            "referencia"     => $referencia,
                         ];
 
                     try{
@@ -223,7 +243,7 @@ class Conciliacion extends Command
                                 "day"            => substr($line, $dayStart, $dayLength),
                                 "month"          => substr($line, $monthStart, $monthLength),
                                 "year"           => substr($line, $yearStart, $yearLength),
-                                "monto"          => (int)substr($line, $amountStart, $amountLength) / 100,
+                                "monto"          => str_replace(".","",substr($line, $amountStart, $amountLength)) / 100,
                                 "transaccion_id" => substr($line, $idStart, $idLength),
                                 "status"         => "np",
                                 "filename"       => $filename,
@@ -247,6 +267,256 @@ class Conciliacion extends Command
                 }
 
 
+                
+                $current_line++;
+            }
+        }
+
+        unlink(storage_path("app/".$filename));
+
+        return true;
+
+    }
+
+
+    /**
+     * Receives the file and saves the info in a temporary table.
+     *
+     * @param $filename it is the filename upload in the form 
+     *         $config is the file characteristics  
+     *
+     * @return true if all goes fine / else throws an exception code
+     */ 
+
+    private function processAMEX($filename,$config)
+    {
+        Log::info('[Conciliacion:ProcessFiles '.$filename.'] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
+        // open the file
+        
+        $positions = $config["config"]["positions"];
+
+        $startFrom = $config["config"]["startFrom"];
+
+        $current_line = 0;
+
+        $condition = 0;
+
+        // Lengths
+        $month    = $positions['month'];
+        $day      = $positions['day'];
+        $year     = $positions['year'];
+        $amount   = $positions['amount'];
+        $id       = $positions['id'];
+
+        if($fo = fopen(storage_path("app/".$filename),"r"))
+        {
+
+            while( !feof($fo))
+            {
+                $line   = fgets($fo);
+                // checar si la linea comienza con AMEXGWS
+                if(strcmp(substr($line, 0,7), "AMEXGWS") == 0 )
+                {
+                    $info = explode(",",$line);
+
+                    $date = explode("/", $info[$year]);
+
+                    $data =
+                        [
+                            "day"            => $date[0],
+                            "month"          => $date[1],
+                            "year"           => $date[2],
+                            "monto"          => $info[$amount],
+                            "transaccion_id" => $info[$id],
+                            "status"         => "np",
+                            "filename"       => $filename,
+                            "origen"         => 1
+                        ];
+
+                    try{
+
+                        if((int)$data["transaccion_id"] > 0)
+                        {
+                            $this->ps->create( $data );
+                        }
+
+                    }catch( \Exception $e ){
+                        Log::info('[Conciliacion:ProcessFiles] - Error(3) al guardar registros en oper_processedregisters');    
+                    } 
+
+                }
+ 
+                $current_line++;
+            }
+        }
+
+        unlink(storage_path("app/".$filename));
+
+        return true;
+
+    }
+
+    /**
+     * Receives the file and saves the info in a temporary table.
+     *
+     * @param $filename it is the filename upload in the form 
+     *         $config is the file characteristics  
+     *
+     * @return true if all goes fine / else throws an exception code
+     */ 
+
+    private function processBanamex($filename,$config)
+    {
+        Log::info('[Conciliacion:ProcessFiles '.$filename.'] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
+        // open the file
+        
+        $positions = $config["config"]["positions"];
+
+        $startFrom = $config["config"]["startFrom"];
+
+        $current_line = 0;
+
+        $condition = 0;
+
+        // Lengths
+        $month    = $positions['month'];
+        $day      = $positions['day'];
+        $year     = $positions['year'];
+        $amount   = $positions['amount'];
+        $id       = $positions['id'];
+
+        if($fo = fopen(storage_path("app/".$filename),"r"))
+        {
+
+            while( !feof($fo))
+            {
+                $line   = fgets($fo);
+                // checar si la linea comienza con AMEXGWS
+                $info = explode ("|",$line);
+
+                if( count($info) == 10 )
+                {
+                    if(strcmp($info[7],'A') == 0)
+                    {
+                        $date = explode("/", $info[$year]);
+                        
+                        $monto = str_replace(",", "", $info[$amount]);
+
+                        $monto = str_replace(".", "", $monto);
+
+
+                        $data =
+                            [
+                                "day"            => $date[0],
+                                "month"          => $date[1],
+                                "year"           => $date[2],
+                                "monto"          => $monto / 100,
+                                "transaccion_id" => substr($info[$id],0,8),
+                                "status"         => "np",
+                                "filename"       => $filename,
+                                "origen"         => 1
+                            ];
+
+                        try{
+
+                            if((int)$data["transaccion_id"] > 0)
+                            {
+                                $this->ps->create( $data );
+                            }
+
+                        }catch( \Exception $e ){
+                            Log::info('[Conciliacion:ProcessFiles] - Error(4) al guardar registros en oper_processedregisters');    
+                        }     
+                    }
+                    
+
+                }
+ 
+                $current_line++;
+            }
+        }
+
+        unlink(storage_path("app/".$filename));
+
+        return true;
+
+    }
+
+    /**
+     * Receives the file and saves the info in a temporary table.
+     *
+     * @param $filename it is the filename upload in the form 
+     *         $config is the file characteristics  
+     *
+     * @return true if all goes fine / else throws an exception code
+     */ 
+
+    private function processBanorteCheque($filename,$config)
+    {
+        Log::info('[Conciliacion:ProcessFiles '.$filename.'] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
+        // open the file
+        
+        $positions = $config["config"]["positions"];
+
+        $startFrom = $config["config"]["startFrom"];
+
+        $current_line = 0;
+
+        $condition = 0;
+
+        // Lengths
+        $month    = $positions['month'];
+        $day      = $positions['day'];
+        $year     = $positions['year'];
+        $amount   = $positions['amount'];
+        $id       = $positions['id'];
+
+        if($fo = fopen(storage_path("app/".$filename),"r"))
+        {
+
+            while( !feof($fo))
+            {
+                $line   = fgets($fo);
+                // checar si la linea comienza con AMEXGWS
+                $info = explode ("|",$line);
+
+                if(count($info) > 1)
+                {
+                    if((int)$info[2] > 0)
+                    {
+                        $date = explode("/", $info[$year]);
+                        
+                        $monto = str_replace("$", "", $info[$amount]);
+
+                        $monto = str_replace(",", "", $monto);
+
+                        $monto = str_replace(".", "", $monto);
+
+
+                        $data =
+                            [
+                                "day"            => $date[0],
+                                "month"          => $date[1],
+                                "year"           => $date[2],
+                                "monto"          => $monto / 100,
+                                "transaccion_id" => $info[$id],
+                                "status"         => "np",
+                                "filename"       => $filename,
+                                "origen"         => 1
+                            ];
+
+                        try{
+
+                            if((int)$data["transaccion_id"] > 0)
+                            {
+                                $this->ps->create( $data );
+                            }
+
+                        }catch( \Exception $e ){
+                            Log::info('[Conciliacion:ProcessFiles] - Error(4) al guardar registros en oper_processedregisters');    
+                        }     
+                    }        
+                }
                 
                 $current_line++;
             }
