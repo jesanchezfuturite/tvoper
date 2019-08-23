@@ -80,6 +80,15 @@ Route::post('/entidad-tramite-find-where','MotorpagosController@findtramiteEntid
 Route::post('/entidad-tramite-find-id','MotorpagosController@findtramiteEntidadWhereID');
 /*/ Tipo Servicio/*/
 Route::get('/tipo-servicio','MotorpagosController@tiposervicio');
+Route::get('/tipo-referencia-Find','MotorpagosController@tiporeferenciaFindAll');
+Route::post('/tipo-servicio-Find-where','MotorpagosController@findTipoServicio_whereId');
+Route::post('/tipo-servicio-insert','MotorpagosController@insertTipoServicio');
+
+Route::post('/tipo-servicio-update','MotorpagosController@updateTipoServicio');
+Route::get('/tipo-servicio-find-all','MotorpagosController@findTipoServicioWhere');
+Route::post('/tipo-servicio-delete','MotorpagosController@deleteTipoServicio');
+
+/*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');

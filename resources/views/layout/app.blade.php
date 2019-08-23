@@ -50,6 +50,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css"/>
 
 
+
 <!-- ENDTABLE STYLES -->
 <link rel="shortcut icon" href="favicon.ico"/>
 </head>
@@ -1674,7 +1675,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="assets/admin/pages/scripts/table-advanced.js"></script>
 <!-- END TABLE SCRIPT -->
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
-
+<script src="../../assets/admin/pages/scripts/table-managed.js"></script>
 <script>
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components

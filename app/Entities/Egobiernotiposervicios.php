@@ -22,8 +22,8 @@ class Egobiernotiposervicios extends Model implements Transformable
      */
     protected $connection = "mysql3";
 
-    protected $fillable = ['Tipo_Code','Tipo_Descripcion','Origen_URL','GpoTrans_Num','id_gpm','descripcion_gpm','tiporeferencia_id'];
+    protected $fillable = ['Tipo_Code','Tipo_Descripcion','Origen_URL','GpoTrans_Num','id_gpm','descripcion_gpm','tiporeferencia_id','limitereferencia_id'];
 
     protected $table = "tipo_servicios";
-
+    public $timestamps = false;
 }

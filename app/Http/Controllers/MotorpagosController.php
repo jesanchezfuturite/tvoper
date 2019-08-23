@@ -1006,19 +1006,34 @@ return json_encode($response);
 
     public function tiposervicio()
     {
-        
-        return view('motorpagos/tiposervicio');
-
-    }
-
-    public function findTipoServicioWhere(Request $request)
-    {
-        $idlimite=$request->idlimite;
-
-        $info=$this->tiposerviciodb->findWhere(['limitereferencia_id'=>$idlimite]);
+        $info=$this->tiposerviciodb->all();
         $response = array();
+        $limitereferencia= "";
+        $tiporeferencia="";
         foreach ($info as $i) 
         {
+            $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
+             if($infotiporeferencia->count() == 0)
+            {
+                 $tiporeferencia="Sin Registro";
+            }
+            else{
+                foreach ($infotiporeferencia as $ii) 
+                {
+                   $tiporeferencia=$ii->fecha_condensada;
+                }
+            }
+            $infolimitereferencia=$this->limitereferenciadb->findWhere(['id'=>$i->limitereferencia_id]);
+             if($infolimitereferencia->count() == 0)
+            {
+                $limitereferencia="Sin Registro";
+            }
+            else{
+                foreach ($infolimitereferencia as $iii) 
+                {
+                    $limitereferencia=$iii->descripcion." ".$iii->periodicidad." ".$iii->vencimiento;
+                }
+            }
              $response []= array(
                "Tipo_Code" => $i->Tipo_Code,
                 "Tipo_Descripcion" => $i->Tipo_Descripcion,
@@ -1026,13 +1041,85 @@ return json_encode($response);
                 "GpoTrans_Num" => $i->GpoTrans_Num,
                 "id_gpm" => $i->id_gpm,
                 "descripcion_gpm" => $i->descripcion_gpm,
-                "tiporeferencia_id" => $i->tiporeferencia_id,
-                "limitereferencia_id" => $i->limitereferencia_id
+                "tiporeferencia_id" => $tiporeferencia,
+                "limitereferencia_id" => $limitereferencia
+            );
+        }
+
+
+        return view('motorpagos/tiposervicio',['response'=>$response]);
+
+    }
+
+    public function findTipoServicioWhere(Request $request)
+    {
+       
+        $info=$this->tiposerviciodb->all();
+        $response = array();
+        $limitereferencia;
+        $tiporeferencia;
+        $descripcion;
+        $url;
+        $gpoTrans;
+        $id_gpm;
+        $descripcion_gpm;
+        foreach ($info as $i) 
+        {
+           $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
+             if($infotiporeferencia->count() == 0)
+            {
+                 $tiporeferencia="Sin Registro";
+            }
+            else{
+                foreach ($infotiporeferencia as $ii) 
+                {
+                   $tiporeferencia=$ii->fecha_condensada;
+                }
+            }
+            $infolimitereferencia=$this->limitereferenciadb->findWhere(['id'=>$i->limitereferencia_id]);
+             if($infolimitereferencia->count() == 0)
+            {
+                $limitereferencia="Sin Registro";
+            }
+            else{
+                foreach ($infolimitereferencia as $iii) 
+                {
+                    $limitereferencia=$iii->descripcion." ".$iii->periodicidad." ".$iii->vencimiento;
+                }
+            }
+             $response []= array(
+               "id" => $i->Tipo_Code,
+                "descripcion" => $i->Tipo_Descripcion,
+                "origen" => $i->Origen_URL,
+                "gpo" => $i->GpoTrans_Num,
+                "id_gpm" => $i->id_gpm,
+                "descripcion_gpm" => $i->descripcion_gpm,
+                "tiporeferencia" => $tiporeferencia,
+                "limitereferencia" => $limitereferencia
             );
         }
 
         return json_encode($response);
 
+    }
+    public function findTipoServicio_whereId(Request $request)
+    {
+         $id=$request->id;
+        $info=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$id]);
+        foreach ($info as $i) 
+        {
+             $response []= array(
+               "Tipo_Code" => $i->Tipo_Code,
+                "descripcion" => $i->Tipo_Descripcion,
+                "origen" => $i->Origen_URL,
+                "gpo" => $i->GpoTrans_Num,
+                "gpm" => $i->id_gpm,
+                "descripcion_gpm" => $i->descripcion_gpm,
+                "tiporeferencia" => $i->tiporeferencia_id,
+                "limitereferencia" => $i->limitereferencia_id
+            );
+        }
+        return json_encode($response);
     }
     public function insertTipoServicio(Request $request)
     {
@@ -1041,18 +1128,45 @@ return json_encode($response);
         $gpoTrans=$request->gpoTrans;
         $id_gpm=$request->id_gpm;
         $descripcion_gpm=$request->descripcion_gpm;
-        $tiporeferencia_id=$request->tiporeferencia_id;
-        $limitereferencia_id=$request->limitereferencia_id;
+        $tiporeferencia=$request->tiporeferencia;
+        $limitereferencia=$request->limitereferencia;
         $response="false";
-        try{
+       
 
-             $info=$this->tiposerviciodb->create(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia_id,'limitereferencia_id'=>limitereferencia_id]);
+             $info=$this->tiposerviciodb->create(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia]);
              $response="true";
+        
+        return  $response;
+    }
+    public function updateTipoServicio(Request $request)
+    {
+        $descripcion=$request->descripcion;
+        $url=$request->url;
+        $gpoTrans=$request->gpoTrans;
+        $id_gpm=$request->id_gpm;
+        $descripcion_gpm=$request->descripcion_gpm;
+        $tiporeferencia=$request->tiporeferencia;
+        $limitereferencia=$request->limitereferencia;
+        $id=$request->id;
+        $response="false";
+    
+             $info=$this->tiposerviciodb->updateMenuByName(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$id]);
+             $response="true";
+      
+        return  $response;
+    }public function deleteTipoServicio(Request $request) 
+    {
+        $id=$request->id;
+        $response="false";
+        try
+        {            
+            $info2 = $this->tiposerviciodb->deleteWhere(['Tipo_Code'=>$id]);
+            $response="true";
         }catch( \Exception $e ){
+            Log::info('Error Method deleteTipoServicio: '.$e->getMessage());
             $response="false";
-            Log::info('Error Method insertCuentasBanco: '.$e->getMessage());
-        }       
-
+        }
+        return $response;
     }
     public function limitereferenciaFindAll()
     {
@@ -1072,7 +1186,7 @@ return json_encode($response);
        }
         return json_encode($response);
     }
-    public function limitereferenciaFindAll()
+    public function tiporeferenciaFindAll()
     {
        
         $response = array();
@@ -1081,12 +1195,12 @@ return json_encode($response);
         {
             $response []= array(
                 "id" => $i->id,
-                "fecha_condensada" => $i->descripcion,
-                "digito_verificador" => $i->periodicidad,
-                "longitud" => $i->vencimiento,
-                "origen" => $i->created_at,
-                "created_at" => $i->updated_a,
-                "dias_vigencia" => $i->updated_att);
+                "fecha_condensada" => $i->fecha_condensada,
+                "digito_verificador" => $i->digito_verificador,
+                "longitud" => $i->longitud,
+                "origen" => $i->origen,
+                "dias_vigencia" => $i->dias_vigencia
+            );
        }
         return json_encode($response);
     }
