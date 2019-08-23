@@ -40,7 +40,7 @@ return array (
 			para american express se separa todo en un arreglo con explode
 			el valor del arreglo positions esta en relacion a los datos en lineExample
 			*/
-		"american"				=> //pendiente
+		"american"				=> 
 			array(
 				"extension"	=> "csv",
 				"lineExample"	=> "AMEXGWS,12141757,27/06/2019 11:01,American Express,Captura,338.00,Aprobadas,376689xxxxx2009,MANUEL GARCIA GARZA,207799,0,660,Internet,No evaluado,No se requiere,Coincidencia parcial,Coincidencia,19062768696",
@@ -52,9 +52,10 @@ return array (
 					"amount"	=> 5,
 					"id"		=> 1
 					),
-				"startFrom"		=> 1
+				"startFrom"		=> 'AMEXGWS',
+				"method"		=> 2,
 			),
-		"banamex"				=> // pendiente
+		"banamex"				=> 
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "1|28/06/19|A|15|00|519|1214381327|A|64,793.00|00092946",
@@ -66,7 +67,8 @@ return array (
 					"amount"	=> 8,
 					"id"		=> 6 /* se descartan los ultimos dos digitos del id */ 
 					),
-				"startFrom"		=> 7 /* los movimientos comienzan con 1 en todos los archivos */
+				"startFrom"		=> "", /* los movimientos comienzan con numero*/
+				"method"		=> 3,
 			),
 		"banamexVentanilla"		=>
 			array(
@@ -85,7 +87,7 @@ return array (
 				"startFrom"		=> 1, /* los movimientos 1 al inicio de la linea se refiere a ingresos */
 				"method"		=> 1
 			),
-		"bancomer"				=> // pendiente
+		"bancomer"				=> 
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "00000000000012141368000000000STU34562019  1               3390.0000923934530000000000005052392019-06-27 07:29:01.770000 1         ************66292019-06-28 07:50:08.529901                            0.00 0",
@@ -96,6 +98,8 @@ return array (
 					"year"			=> [93,4],
 					"amount"		=> [43,22],
 					"id"			=> [0,20], /* 20 posiciones a partir de 0 */ 
+					"referencia"	=> [0,0],
+					"origen"		=> [0,0],
 					),
 				"startFrom"		=> 0, /*el archivo no tiene encabezados*/
 				"method"		=> 1,
@@ -130,7 +134,8 @@ return array (
 					"amount"	=> 6, /* si la posicion 6 del arreglo es 0 entonces es otro tipo de movimiento diferente al ingreso*/
 					"id"		=> 2 /* 20 posiciones a partir de 0, si este valor es igual a cero se descarta el registro */ 
 					),
-				"startFrom"		=> 0 /* todos los movimientos que comiencen con 0*/
+				"startFrom"		=> 0, /* todos los movimientos que comiencen con 0*/
+				"method"		=> 4,
 			),
 		"banorteNominas"		=>
 			array(
@@ -166,19 +171,22 @@ return array (
 				"startFrom"		=> 0, /* el archivo no tiene condiciones especiales o delimitadores */
 				"method"		=> 1
 			),
-		"bazteca"				=> // pendiente
+		"bazteca"				=> 
 			array(
 				"extension"		=> "txt",
-				"lineExample"	=> "",
+				"lineExample"	=> "D010000000000121932640724349217019435206000000782.00201907171128270E",
 				"positions"		=> array
 					(
-					"month"		=> [56,2],
-					"day" 		=> [58,2],
-					"year"		=> [52,4],
-					"amount"	=> [40,12], /* incluye un punto decimal en la formula original se elimina el punto y se divide entre 100*/
-					"id"		=> [13,8] /* 8 posiciones a partir de 91 */ 
+					"month"			=> [56,2],
+					"day" 			=> [58,2],
+					"year"			=> [52,4],
+					"amount"		=> [40,12], /* incluye un punto decimal en la formula original se elimina el punto y se divide entre 100*/
+					"id"			=> [13,8], /* 8 posiciones a partir de 91 */ 
+					"referencia"	=> [1,30],
+					"origen"		=> [1,2],
 					),
-				"startFrom"		=> 'D' /* considerar los movimientos que inicien con la letra D (depositos) */
+				"startFrom"		=> 'D', /* considerar los movimientos que inicien con la letra D (depositos) */
+				"method"		=> 1
 			),
 		"hsbc"					=> 
 			array(
