@@ -30,11 +30,12 @@
 			</div>
 		<div class="portlet-body" id="tabla_2">
 			 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
-			<table  class="table table-hover"  id="sample_6">
+       <span class="help-block">&nbsp;</span>
+			<table  class="table table-hover"  id="sample_2">
 				<thead>
 					<tr>						
-						<th>Descripción</th>
-						<th class="text-center">Periodicidad</th>							
+						<th>Descripcion</th>
+						<th>Periodicidad</th>							
 						<th class="text-center">Vencimiento</th>
 						<th class="text-center">Operacion</th>							
 					</tr>
@@ -43,9 +44,9 @@
 					 @foreach( $saved_days as $sd)
                         <tr>
                             <td>{{$sd["descripcion"]}}</td>
-                            <td class="text-center">{{$sd["periodicidad"]}}</td>
+                            <td>{{$sd["periodicidad"]}}</td>
                             <td class="text-center">{{$sd["vencimiento"]}}</td>
-                            <td class="text-right" width="20%"><button type="button" class="btn btn-primary" data-toggle="modal" href="#static2" onclick="update({{$sd['id']}})""><i class="fa fa-edit"></i>&nbsp;Editar</button><button type="button" class="btn btn-danger" data-toggle="modal" href="#static" onclick="deleted({{$sd['id']}}) "><i class="fa fa-trash-o"></i>&nbsp;Borrar</button></td>
+                           <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='update({{$sd["id"]}})'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted({{$sd["id"]}})'><i class='fa fa-minus'></i></a></td>
                         </tr>
                         @endforeach
 				</tbody>
@@ -152,8 +153,7 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {       
        ComponentsPickers.init();
-       TableAdvanced.init();
-        
+           TableManaged.init();       
     });
 function verificaMes()
 {
@@ -173,12 +173,27 @@ function ChangePeriodicidad()
   var periodicidad=$("#periodicidad").val();
   if(periodicidad=="Mensual")
   {
+     $("#Removecheck").remove();
     $("#AddCheck").append("<div class='col-md-4' id='Removecheck'><span class='help-block'>Obligatorio si es fin de Mes</span> <div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='verificaMes()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>  Fin de Mes. </label> </div><span class='help-block'>Marque</span> </div> </div>");
-  }
-  else{
+    document.getElementById("vencimiento").disabled=false;
+    document.getElementById("vencimiento").value="";
+  }else if(periodicidad=="Anual")
+  {
+     $("#Removecheck").remove();
+    $("#AddCheck").append("<div class='col-md-4' id='Removecheck'><span class='help-block'>Seleccione el Mes</span> <div class='form-group'> <select id='idmes' class='select2me form-control' onchange='ChangeMes()'> <option value='1'>Enero</option> <option value='2'>Febrero</option>  <option value='3'>Marzo</option><option value='4'>Abril</option> <option value='5'>Mayo</option> <option value='6'>Junio</option> <option value='7'>Julio</option><option value='8'>Agosto</option> <option value='9'>Septiembre</option><option value='10'>Octubre</option> <option value='11'>Noviembre</option><option value='12'>Diciembre</option></select></div> </div>");
+      document.getElementById("vencimiento").disabled=true;
+       var mes=$("#idmes").val();
+  document.getElementById('vencimiento').value=mes;
+  }else{
     $("#Removecheck").remove();
     document.getElementById("vencimiento").disabled=false;
     document.getElementById("vencimiento").value="";}
+}
+function ChangeMes()
+{
+  var mes=$("#idmes").val();
+  document.getElementById('vencimiento').value=mes;
+  document.getElementById("vencimiento").disabled=true;
 }
 function metodo()
 {
@@ -288,13 +303,16 @@ function update(id_)
         $.each(Resp, function(i, item) {  
                document.getElementById('idupdate').value=item.id;
                document.getElementById('descripcion').value=item.descripcion;
-        document.getElementById('vencimiento').value=item.vencimiento;
         $("#periodicidad").val(item.periodicidad).change();
         if(parseFloat(item.vencimiento)==0)
         {
           $("#checkbox30").prop("checked", true);
          document.getElementById("vencimiento").disabled=true;
         }
+        if(item.periodicidad=="Anual"){
+        document.getElementById('idmes').value=item.vencimiento;
+        }
+         document.getElementById('vencimiento').value=item.vencimiento;
         //document.getElementById('periodicidad').value=item.periodicidad;
        
         });
@@ -331,16 +349,16 @@ function actualizatabla(Resp)
 var item = '';
 	$("#tabla_2").remove();
             /*agrega tabla*/
-             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><table  class='table table-striped table-bordered table-hover' id='sample_6'><thead><tr><th>Descripción</th><th>Periodicidad</th><th>Vencimiento</th><th>Operacion</th></tr></thead><tbody></tbody></table></div>");
+             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><span class='help-block'>&nbsp;</span><table  class='table table-striped table-bordered table-hover' id='sample_2'><thead><tr><th>Descripción</th><th>Periodicidad</th><th class='text-center'>Vencimiento</th><th class='text-center'>Operacion</th></tr></thead><tbody></tbody></table></div>");
                 $.each(Resp, function(i, item) {                
-                 $('#sample_6 tbody').append("<tr>"  
+                 $('#sample_2 tbody').append("<tr>"  
                  +"<td>"+ item.descripcion + "</td>"                 
-                 + "<td class='text-center'>"+ item.periodicidad + "</a></td>"                 
+                 + "<td>"+ item.periodicidad + "</a></td>"                 
                  + "<td class='text-center'>"+ item.vencimiento + "</a></td>"                 
-                 + "<td class='text-center' width='20%'><button type='button' class='btn btn-primary' data-toggle='modal' href='#static2' onclick='update("+item.id+")'><i class='fa fa-edit'></i>&nbsp;Editar</button><button type='button' class='btn btn-danger' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-trash-o'></i>&nbsp;Borrar</button></td>"
+                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='update("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                  + "</tr>");
                 });  
-     TableAdvanced.init();
+         TableManaged.init(); 
 }
 function limpiar()
 {
