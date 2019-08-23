@@ -118,36 +118,65 @@ class CorreccioncfdiController extends Controller
     {
         if($request->isMethod('post'))
         {
-            if($request->post('edit') == 'header')
-            {
+            if($request->edit == 'header') {
+
+                if(!$request->post('id') || !$request->post('metodo_pago'))
+                    return json_encode([]);
+                
                 try {
-                    
-                    if(!$request->post('id') || !$request->post('metodo_pago'))
-                        return json_encode([]);
 
-                    $up = $this->encabezado->updateByIDCFDI(['idcfdi_encabezados'=>$request->post('id')],['metodo_de_pago'=>$request->post('metodo_pago')]);
+                    $up = $this->encabezado->updateByIdCFDI(['idcfdi_encabezados'=>$request->id],['metodo_de_pago'=>$request->metodo_pago]);
 
-                    return json_encode($request->post());                
+                    return json_encode($request);                
                 } 
                 catch (\Exception $e) 
                 {
                     return json_encode($e);
                 }
-
             }
-            elseif($request->post('edit') == 'detail')
-            {
-                try {
-                    return json_encode($request->post());                
-                } 
-                catch (\Exception $e) 
-                {
-                    return json_encode($e);
+            elseif($request->edit == 'detail') {
+                
+                if(!$request->post('ids'))
+                    return false;
+
+                foreach ($request->ids as $k => $v) {
+
+                    if((int)$v < 0){
+                        $data = [
+                            "folio_unico"=>$request->fun[$k],
+                            "cantidad"=>$request->can[$k],
+                            "unidad"=>$request->uni[$k],
+                            "concepto"=>$request->con[$k],
+                            "precio_unitario"=>$request->pre[$k],
+                            "importe"=>$request->imp[$k],
+                            "partida"=>$request->par[$k],
+                            "fecha_registro"=>$request->fec[$k]
+                        ];
+
+                        try {
+                            $info = $this->detalle->create($data);
+                            
+                        } catch (\Exception $e) {
+                            Log::info('Error(1) al guardar registros en cfdi_detalle_t '.$e->getMessage());
+                        }
+                    }
+                    elseif((int)$v > 0){
+
+                        try {
+                            $upd = $this->detalle->updateByIdCFDI(
+                                ['idcfdi_detalle'=>$request->ids[$k]],
+                                ['concepto'=>$request->con[$k],'precio_unitario'=>$request->pre[$k],'importe'=>$request->imp[$k],'partida'=>$request->par[$k]]
+                            );
+                            
+                        } catch (\Exception $e) {
+                            Log::info('Error(2) al actualizar registros en cfdi_detalle_t '.$e->getMessage());
+                        }
+                    }
                 }
             }
             else
             {
-                return json_encode([]);                
+                return false;                
             }
             
         }
