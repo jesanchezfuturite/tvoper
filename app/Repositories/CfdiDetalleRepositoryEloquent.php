@@ -35,4 +35,19 @@ class CfdiDetalleRepositoryEloquent extends BaseRepository implements CfdiDetall
         $this->pushCriteria(app(RequestCriteria::class));
     }
     
+    
+    /**
+     * Update by idcfdi_detalle,
+     */
+    public function updateByIdCFDI($idcfdi,$metodo)
+    {
+        try {
+            
+            return CfdiDetalle::where( $idcfdi )->update($metodo);
+
+        } catch (Exception $e) {
+            
+            Log::info('[CfdiDetalleRepositoryEloquent@updateByIdCFDI] Error ' . $e->getMessage());
+        }
+    }
 }
