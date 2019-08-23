@@ -22,7 +22,7 @@ class CfdiDetalle extends Model implements Transformable
      */
  	protected $connection = "mysql2";
 
-    protected $fillable = ['concepto','precio_unitario','importe','partida'];
+    protected $fillable = ['folio_unico','cantidad','unidad','concepto','precio_unitario','importe','partida','fecha_registro'];
 
     protected $table = "cfdi_detalle_t";
 

@@ -34,5 +34,17 @@ class EgobiernotiposerviciosRepositoryEloquent extends BaseRepository implements
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+    public function updateMenuByName($Tipo_Descripcion,$Tipo_Code)
+    {
+        try{
+
+            return Egobiernotiposervicios::where( $Tipo_Code )->update($Tipo_Descripcion);    
+        
+         }catch( \Exception $e){
+            Log::info('[EgobiernotiposerviciosRepositoryEloquent@updateMenuByName] Error ' . $e->getMessage());
+        }
+        
+
+    }
     
 }

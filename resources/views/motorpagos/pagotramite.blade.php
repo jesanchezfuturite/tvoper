@@ -383,6 +383,8 @@
           var Cuenta="";
           var item="";
           var item2="";
+          var max=0;
+          var min=0;
           $("#table"+titlebanco+" tbody tr").remove();
         $.each(Resp, function(i, item) {
                  var benef=$.parseJSON(item.beneficiario);
@@ -390,13 +392,14 @@
                         Servicio=item2.servicio;
                         Cuenta=item2.cuenta;
                   });
-
+                  max=item.monto_max;
+                  min=item.monto_min;
                  $("#table"+titlebanco+"").append("<tr>"
                     +"<td>"+Cuenta+"</td>"
                     +"<td>"+Servicio+"</td>"
-                    +"<td>"+item.metodopago+"</td>"                    
-                    +"<td>"+item.monto_min+"</td>"
-                    +"<td>"+item.monto_max+"</td>"
+                    +"<td>"+item.metodopago+"</td>"                     
+                    +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
+                    +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
                     +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\',\'"+titlebanco+"\',\'"+IdBanc+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\',\'"+titlebanco+"\',\'"+IdBanc+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>"
                    );
@@ -580,13 +583,15 @@ function ActualizarTabla(banco_,idbanco_)
            url: "{{ url('/pagotramite-find') }}",
            data: {idBanco:idbanco_,idTiposervicio:TipoServ,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
-            console.log(responseTipoServicio);
+            //console.log(responseTipoServicio);
             var Resp=$.parseJSON(responseTipoServicio);          
           var item="";
           var Servicio="";
           var Cuenta="";
           var item="";
           var item2="";
+          var max=0;
+          var min=0;
           $("#table"+banco_+" tbody tr").remove();
         $.each(Resp, function(i, item) {
                  var benef=$.parseJSON(item.beneficiario);
@@ -594,13 +599,14 @@ function ActualizarTabla(banco_,idbanco_)
                         Servicio=item2.servicio;
                         Cuenta=item2.cuenta;
                   });
-
-                 $("#table"+banco_+"").append("<tr>"
+                  max=item.monto_max;
+                  min=item.monto_min;
+                 $("#table"+banco_+" tbody").append("<tr>"
                     +"<td>"+Cuenta+"</td>"
                     +"<td>"+Servicio+"</td>"
                     +"<td>"+item.metodopago+"</td>"                    
-                    +"<td>"+item.monto_min+"</td>"
-                    +"<td>"+item.monto_max+"</td>"
+                    +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
+                    +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
                     +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\',\'"+banco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\',\'"+banco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>"
                    );
