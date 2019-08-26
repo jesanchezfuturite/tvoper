@@ -121,7 +121,7 @@ class HomeController extends Controller
 
         foreach($menu as $m => $values)
         {
-            $response [$values->info->id]= $values->info->title;
+            $response [(string)$values->info->id]= $values->info->title;
         }
 
         return $response;
