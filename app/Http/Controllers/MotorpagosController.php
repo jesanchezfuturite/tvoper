@@ -19,6 +19,9 @@ use App\Repositories\PagotramiteRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
 use App\Repositories\EntidadtramiteRepositoryEloquent;
 use App\Repositories\TiporeferenciaRepositoryEloquent;
+use App\Repositories\EgobiernostatusRepositoryEloquent;
+use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
 
 class MotorpagosController extends Controller
 {
@@ -33,6 +36,9 @@ class MotorpagosController extends Controller
     protected $entidaddb;
     protected $entidadtramitedb;
     protected $tiporeferenciadb;
+    protected $statusdb;
+    protected $transaccionesdb;
+    protected $oper_transaccionesdb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -46,8 +52,12 @@ class MotorpagosController extends Controller
         PagotramiteRepositoryEloquent $pagotramitedb,
         EntidadRepositoryEloquent $entidaddb,
         EntidadtramiteRepositoryEloquent $entidadtramitedb,
-        TiporeferenciaRepositoryEloquent $tiporeferenciadb
-     )
+        TiporeferenciaRepositoryEloquent $tiporeferenciadb,
+        EgobiernostatusRepositoryEloquent $statusdb,
+        EgobiernotransaccionesRepositoryEloquent $transaccionesdb,
+     TransaccionesRepositoryEloquent $oper_transaccionesdb
+
+    )
     {
         $this->middleware('auth');
 
@@ -61,6 +71,9 @@ class MotorpagosController extends Controller
         $this->entidaddb=$entidaddb;
         $this->entidadtramitedb=$entidadtramitedb;
         $this->tiporeferenciadb=$tiporeferenciadb;
+        $this->statusdb=$statusdb;
+        $this->transaccionesdb=$transaccionesdb;
+        $this->oper_transaccionesdb=$oper_transaccionesdb;
     }
 
     /**
@@ -831,11 +844,7 @@ return json_encode($response);
 	 *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function cambiarstatustransaccion()
-    {
-    	
-    	return view('motorpagos/statustransaccion');
-    }
+  
 
 
     public function limitereferencia()
@@ -1203,5 +1212,144 @@ return json_encode($response);
             );
        }
         return json_encode($response);
+    }
+
+    /**----------------------------ESTATUS TRANSACCION---------------------------**/
+
+      public function cambiarstatustransaccion()
+    {
+        return view('motorpagos/statustransaccion');
+    }
+    public function statusFindAll()
+    {
+       
+        $response = array();
+        $info = $this->statusdb->all();
+        foreach($info as $i)
+        {
+            $response []= array(
+                "id" => $i->Status,
+                "nombre" => $i->Descripcion
+                );
+       }
+        return json_encode($response);
+    }
+    public function transaccionesFindWhere(Request $request)
+    {
+       
+        $folio=$request->folio;
+        $response = array();
+        $info = $this->transaccionesdb->findWhere(['idTrans'=>$folio]);
+        $Status;
+        foreach($info as $i)
+        {
+            $infoStatus = $this->statusdb->findWhere(['Status'=>$i->Status]);
+            foreach($infoStatus as $ii)
+            {
+                $Status=$ii->Descripcion;
+            }
+            if($infoStatus->count() == 0)
+            {
+                $Status="Sin Estatus";
+            }
+            $response []= array(
+                "id" => $i->idTrans,
+                "status" => $Status,
+                "envio" => $i->NombreEnvio,
+                "pais" => $i->PaisEnvio,
+                "fecha" => $i->fechatramite
+            );
+       }
+        return json_encode($response);
+    }
+    public function transaccionesFindWhereStatus(Request $request)
+    {
+       
+        $folio=$request->folio;
+        $response = array();
+        $info = $this->transaccionesdb->findWhere(['idTrans'=>$folio]);
+        $Status;
+        foreach($info as $i)
+        {            
+            $response []= array(
+                "status" => $i->Status
+                
+            );
+       }
+        return json_encode($response);
+    }
+    public function updateTransaccionStatus(Request $request)
+    {
+        $folio=$request->folio;
+        $status=$request->status;      
+        $response = "false";
+        try{   
+         $info = $this->transaccionesdb->updateStatus(['Status'=>$status],['idTrans'=>$folio]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+    public function transaccionesFindWhereStatus_oper(Request $request)
+    {
+        $id=$request->id;       
+        $response=array();
+       
+         $info = $this->oper_transaccionesdb->findWhere(['id_transaccion_motor'=>$id]);
+        foreach ($info as $i)
+        {                 
+               $response []= array(
+                "id" => $i->id_transaccion_motor,                
+                "status"=>$i->estatus
+                
+            );
+        }
+        
+        return json_encode($response);
+    }
+    public function transaccionesFindWhereReferencia_oper(Request $request)
+    {
+        $folio=$request->folio;       
+        $response=array();
+        $Status;
+         $info = $this->oper_transaccionesdb->findWhere(['referencia'=>$folio]);
+        foreach ($info as $i)
+        { 
+                $infoStatus = $this->statusdb->findWhere(['Status'=>$i->estatus]);
+            foreach($infoStatus as $ii)
+            {
+                $Status=$ii->Descripcion;
+            }
+            if($infoStatus->count() == 0)
+            {
+                $Status="Sin Estatus";
+            }
+               $response []= array(
+                "id" => $i->id_transaccion_motor,
+                "referencia"=>$i->referencia,
+                "status"=>$Status,
+                "importe"=>$i->importe_transaccion,
+                "fecha"=>$i->fecha_transaccion
+                
+            );
+        }
+        
+        return json_encode($response);
+    }
+    public function updateTransaccionStatus_oper(Request $request)
+    {
+        $folio=$request->folio;
+        $status=$request->status;      
+        $response = "false";
+        try{   
+         $info = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>$status],['id_transaccion_motor'=>$folio]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
     }
 }
