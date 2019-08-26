@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<h3 class="page-title">Motor de pagos <small>Tipo Tramite</small></h3>
+<h3 class="page-title">Motor de pagos <small>Configuación de Trámite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -14,7 +14,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Tipo Tramite</a>
+            <a href="#">Configuación de Trámite</a>
         </li>
     </ul>
 </div>
@@ -52,7 +52,7 @@
                             <td>{{$sd["descripcion_gpm"]}}</td>
                             <td>{{$sd["tiporeferencia_id"]}}</td>
                             <td>{{$sd["limitereferencia_id"]}}</td>
-                             <td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='OperacionTramite({{$sd["Tipo_Code"]}})'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deletetramite({{$sd["Tipo_Code"]}})'><i class='fa fa-minus'></i></a></td>
+                             <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='OperacionTramite({{$sd["Tipo_Code"]}})'><i class='fa fa-pencil'></i></a></td>
                         </tr>
                     @endforeach                  
                     </tbody>
@@ -428,8 +428,9 @@
             +"<td>"+desc+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a></td>"
+            +"<td class='text-center'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a></td>"
             +"</tr>");
+            /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
           });
             TableManaged.init(); 
