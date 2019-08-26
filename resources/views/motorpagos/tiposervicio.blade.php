@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<h3 class="page-title">Motor de pagos <small>Configuación de Trámite</small></h3>
+<h3 class="page-title">Motor de pagos <small>Configuración de Trámite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -14,7 +14,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Configuación de Trámite</a>
+            <a href="#">Configuración de Trámite</a>
         </li>
     </ul>
 </div>
