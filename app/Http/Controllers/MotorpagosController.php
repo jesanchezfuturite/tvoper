@@ -1236,14 +1236,43 @@ return json_encode($response);
     }
     public function transaccionesFindWhere(Request $request)
     {
-       
+       //egob_transaccion
         $folio=$request->folio;
         $response = array();
-        $info = $this->transaccionesdb->findWhere(['idTrans'=>$folio]);
+        $find_egob = $this->transaccionesdb->findWhere(['idTrans'=>$folio]);
         $Status;
-        foreach($info as $i)
+        $bd_tabla;
+        if($find_egob->count() >0)
         {
+            $bd_tabla="egob_transaccion";
+            foreach($find_egob as $i)
+            {
             $infoStatus = $this->statusdb->findWhere(['Status'=>$i->Status]);
+                foreach($infoStatus as $ii)
+                {
+                $Status=$ii->Descripcion;
+                }
+                if($infoStatus->count() == 0)
+                {
+                $Status="Sin Estatus";
+                }
+                $response []= array(
+                "id" => $i->idTrans,
+                "referencia" =>$i->idTrans,
+                "status" => $Status,
+                "importe" => $i->TotalTramite,
+                "fecha" => $i->fechatramite." ".$i->HoraTramite,
+                "bd_tb" =>$bd_tabla
+                );
+            }
+        }
+        $find_oper_referencia = $this->oper_transaccionesdb->findWhere(['referencia'=>$folio]);
+        if($find_oper_referencia->count() >0)
+        {
+            $bd_tabla="oper_transaccion";
+            foreach ($find_oper_referencia as $i)
+            { 
+            $infoStatus = $this->statusdb->findWhere(['Status'=>$i->estatus]);
             foreach($infoStatus as $ii)
             {
                 $Status=$ii->Descripcion;
@@ -1252,14 +1281,70 @@ return json_encode($response);
             {
                 $Status="Sin Estatus";
             }
-            $response []= array(
-                "id" => $i->idTrans,
-                "status" => $Status,
-                "envio" => $i->NombreEnvio,
-                "pais" => $i->PaisEnvio,
-                "fecha" => $i->fechatramite
-            );
-       }
+               $response []= array(
+                "id" => $i->id_transaccion_motor,
+                "referencia"=>$i->referencia,
+                "status"=>$Status,
+                "importe"=>$i->importe_transaccion,
+                "fecha"=>$i->fecha_transaccion,
+                "bd_tb" =>$bd_tabla
+                
+                );
+            }
+        }
+         $find_oper_idmotor = $this->oper_transaccionesdb->findWhere(['id_transaccion_motor'=>$folio]);
+        if($find_oper_idmotor->count() >0)
+        {
+            $bd_tabla="oper_transaccion";
+            foreach ($find_oper_idmotor as $i)
+            { 
+            $infoStatus = $this->statusdb->findWhere(['Status'=>$i->estatus]);
+            foreach($infoStatus as $ii)
+            {
+                $Status=$ii->Descripcion;
+            }
+            if($infoStatus->count() == 0)
+            {
+                $Status="Sin Estatus";
+            }
+               $response []= array(
+                "id" => $i->id_transaccion_motor,
+                "referencia"=>$i->id_transaccion_motor,
+                "status"=>$Status,
+                "importe"=>$i->importe_transaccion,
+                "fecha"=>$i->fecha_transaccion,
+                "bd_tb" =>$bd_tabla
+                
+                );
+            }
+        }
+        $find_oper_idtransaccion = $this->oper_transaccionesdb->findWhere(['id_transaccion'=>$folio]);
+        if($find_oper_idtransaccion->count() >0)
+        {
+            $bd_tabla="oper_transaccion";
+            foreach ($find_oper_idtransaccion as $i)
+            { 
+            $infoStatus = $this->statusdb->findWhere(['Status'=>$i->estatus]);
+            foreach($infoStatus as $ii)
+            {
+                $Status=$ii->Descripcion;
+            }
+            if($infoStatus->count() == 0)
+            {
+                $Status="Sin Estatus";
+            }
+               $response []= array(
+                "id" => $i->id_transaccion_motor,
+                "referencia"=>$i->id_transaccion,
+                "status"=>$Status,
+                "importe"=>$i->importe_transaccion,
+                "fecha"=>$i->fecha_transaccion,
+                "bd_tb" =>$bd_tabla
+                
+                );
+        
+            }    
+        }
         return json_encode($response);
     }
     public function transaccionesFindWhereStatus(Request $request)
