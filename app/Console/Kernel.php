@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         //
         Commands\Conciliacion::class,
+        Commands\Egobtransacciones::class,
     ];
 
     /**
@@ -25,9 +26,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('conciliacion:processFiles')
-                  ->everyMinute();
-    }
+        /* carga las tablas con los procesos de archivos */
+        $schedule->command('conciliacion:processFiles')
+                  ->everyFiveMinutes();
+
+        /* revisa que no existan anomalías en el proceso de conciliacion */
+        $schedule->command('conciliacion:egobt')
+                  ->everyFiveMinutes();
+    }   
 
     /**
      * Register the commands for the application.
