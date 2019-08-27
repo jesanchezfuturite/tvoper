@@ -20,8 +20,8 @@
     </ul>
 </div>
 <div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-4">
-        <div class="portlet light bordered">
+    <div class="col-md-6 col-sm-6 col-xs-6">
+        <!-- <div class="portlet light bordered">
             <div class="portlet-title">
                 <div class="caption font-red-sunglo"><i class="fa fa-gear"></i>Información Solicitada</div>
                 <div class="actions"><a href="" class="collapse" data-original-title="" title=""></a></div>
@@ -43,8 +43,110 @@
                     </div>
                 </form>
             </div>
+        </div> -->
+        <!-- <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption"><i class="fa fa-gear"></i>Información Solicitada</div>
+            </div>
+            <div class="portlet-body">
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-xs-3">
+                        <ul class="nav nav-tabs tabs-left">
+                            <li><a href="#tab_2_1" data-toggle="tab" aria-expanded="true">RFC</a></li>
+                            <li><a href="#tab_2_2" data-toggle="tab" aria-expanded="true">FOLIO UNICO</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-9 col-sm-9 col-xs-9">
+                        <div class="tab-content">
+                            <div class="tab-pane" id="tab_2_1">
+                                <form role="form" id="myform" method="post">
+                                    <div class="form-body">
+                                        <div class="form-group form-md-line-input has-success form-md-floating-label">
+                                            <div class="input-icon right">
+                                                <input type="text" class="form-control" id="rfc" name="rfc" onkeyup="this.value = this.value.toUpperCase();">
+                                                <label for="form_control_1"></label>
+                                                <span class="help-block">12 o 13 posiciones</span>
+                                                <i class="icon-user"></i>
+                                            </div>
+                                        </div>                        
+                                    </div>
+                                    <div class="form-actions noborder">
+                                        <button type="submit" class="btn blue" id="buscar">Buscar <i class="fa fa-search"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="tab_2_2">
+                                <form role="form" id="myform2" method="post">
+                                    <div class="form-body">
+                                        <div class="form-group form-md-line-input has-success form-md-floating-label">
+                                            <div class="input-icon right">
+                                                <input type="text" class="form-control" id="foliounico" name="foliounico">
+                                                <label for="form_control_1"></label>
+                                                <span class="help-block">30 posiciones maximo</span>
+                                                <i class="icon-tag"></i>
+                                            </div>
+                                        </div>                        
+                                    </div>
+                                    <div class="form-actions noborder">
+                                        <button type="submit" class="btn blue" id="buscarfolio">Buscar <i class="fa fa-search"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="portlet light bordered" style="height:250px;">
+            <div class="portlet-title tabbable-line">
+                <div class="caption"><i class="fa fa-gear"></i>Información Solicitada</div>
+                <ul class="nav nav-tabs">
+                    <li><a href="#portlet_tab2" data-toggle="tab" aria-expanded="true">FOLIO UNICO</a></li>
+                    <li><a href="#portlet_tab1" data-toggle="tab" aria-expanded="true">RFC</a></li>
+                </ul>
+            </div>
+            <div class="portlet-body">
+                <div class="tab-content">
+                    <div class="tab-pane" id="portlet_tab1">
+                        <form role="form" id="myform" method="post">
+                            <div class="form-body">
+                                <div class="form-group form-md-line-input has-success form-md-floating-label">
+                                    <div class="input-icon right">
+                                        <input type="text" class="form-control" id="rfc" name="rfc" onkeyup="this.value = this.value.toUpperCase();">
+                                        <label for="form_control_1"></label>
+                                        <span class="help-block">12 o 13 posiciones</span>
+                                        <i class="icon-user"></i>
+                                    </div>
+                                </div>                        
+                            </div>
+                            <div class="form-actions noborder">
+                                <button type="submit" class="btn blue" id="buscar">Buscar <i class="fa fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="portlet_tab2">
+                        <form role="form" id="myform2" method="post">
+                            <div class="form-body">
+                                <div class="form-group form-md-line-input has-success form-md-floating-label">
+                                    <div class="input-icon right">
+                                        <input type="text" class="form-control" id="foliounico" name="foliounico">
+                                        <label for="form_control_1"></label>
+                                        <span class="help-block">30 posiciones maximo</span>
+                                        <i class="icon-tag"></i>
+                                    </div>
+                                </div>                        
+                            </div>
+                            <div class="form-actions noborder">
+                                <button type="submit" class="btn blue" id="buscarfolio">Buscar <i class="fa fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
+
     <div class="col-md-12">
         <div class="alert alert-secondary" id="imageloading" style="display: none" role="alert"></div>
         <div class="portlet" style="display: none" id="result-query">
@@ -60,6 +162,8 @@
                                 <th> Folio Unico</th>
                                 <th>Folio Pago</th>
                                 <th>Fecha de Transacción</th>
+                                <th>Timbrado</th>
+                                <th>Vigencia</th>
                                 <th>Monto</th>
                                 <th>Encabezado</th>
                                 <th>Detalle</th>
@@ -110,6 +214,29 @@
             return false;
         }
     }, "Ingrese un RFC valido");
+
+    $.validator.addMethod("FOLIO",function(value, element){
+        if(value !== ''){
+            var patt = new RegExp("^[0-9]{1,30}$");
+            return patt.test(value);
+        } else {
+            return false;
+        }
+    }, "Ingrese Folio Unico valido");
+
+    var sg = [];
+    sg[-1] = "Error al solicitar CFDI";
+    sg[0] = "Sin Solicitar";
+    sg[1] = "CFDI Solicitado";
+    sg[2] = "CFDI Generado";
+    sg[3] = "CFDI Cancelado";
+    sg[4] = "En Proceso de Cancelacion";
+
+    var sd = [];
+    sd[0] = "Vigente";
+    sd[2] = "Cancelado";
+    sd[3] = "Por Cancelar";
+    
         
     $("#myform").validate({
         rules: {
@@ -167,6 +294,8 @@
                             .append($('<td>').text(value.folio_unico))
                             .append($('<td>').text(value.folio_pago))
                             .append($('<td>').text(value.fecha_transaccion))
+                            .append($('<td>').text(sg[value.estatus_generacion]))
+                            .append($('<td>').text(sd[value.estatus_documento]))
                             .append($('<td>').text(value.total))
                             .append($('<td>').append(btn_head))
                             .append($('<td>').append(btn_detail))
@@ -182,6 +311,82 @@
                     $('#result-query').html('<div class="alert alert-warning" role="alert">NO SE ENCONTRO INFORMACIÓN DEL RFC</div>').show();
                 }                    
             });       
+        }
+    });
+
+    $("#myform2").validate({
+        rules: {
+            foliounico:{    
+                required: true,
+                FOLIO: true
+            }
+        },
+        messages:{
+            foliounico: "Proporcione folio unico"
+        },
+        submitHandler: function(){
+
+            var foliounico = $('#foliounico').val();
+
+            $.ajax({
+                method: "post",
+                beforeSend:  function(){
+                    
+                    $('#result-query').hide();
+                    $('#imageloading').html('UBICANDO INFORMACION.......').show();
+                },
+                url: "{{ url('/cfdi-correccion/busca-foliounico') }}",
+                data: { fu: foliounico, _token: '{{ csrf_token() }}' }
+            })
+            .done(function(data){
+                var tb = $('#ops-cont').find("tbody");
+                var d = JSON.parse(data);
+
+                if(d && typeof d === "object")
+                {
+                    tb.html('');
+                
+                    $.each(d,function(key,value){
+
+                        var btn_head = $('<button>')
+                            .addClass('btn default btn-xs green')
+                            .append($('<i>').addClass('fa fa-edit'))
+                            .append(' Editar')
+                            .on('click',
+                                function(){
+                                    loadHeader(value.folio_unico)
+                                });
+                        
+                        var btn_detail = $('<button>')
+                            .addClass('btn default btn-xs blue')
+                            .append($('<i>').addClass('fa fa-edit'))
+                            .append(' Editar')
+                            .on('click',
+                                function(){
+                                    loadDetail(value.folio_unico)
+                                });
+
+                        tb.append($('<tr>').addClass('row')
+                            .append($('<td>').text(value.folio_unico))
+                            .append($('<td>').text(value.folio_pago))
+                            .append($('<td>').text(value.fecha_transaccion))
+                            .append($('<td>').text(sg[value.estatus_generacion]))
+                            .append($('<td>').text(sd[value.estatus_documento]))
+                            .append($('<td>').text(value.total))
+                            .append($('<td>').append(btn_head))
+                            .append($('<td>').append(btn_detail))
+                        );                        
+                    });
+
+                    $('#imageloading').html('');
+                    $('#result-query').show();
+                }
+                else
+                {   
+                    $('#imageloading').html('');
+                    $('#result-query').html('<div class="alert alert-warning" role="alert">NO SE ENCONTRO INFORMACIÓN DEL RFC</div>').show();
+                }                    
+            });
         }
     });
 
