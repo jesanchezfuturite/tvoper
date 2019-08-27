@@ -18,13 +18,16 @@
         </li>
     </ul>
 </div>
-
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info:</strong> Esta consulta te permite buscar y cambiar el estatus de una transacción.
+</div>
 <div class="row">
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue"id="table_1">
             <div class="portlet-title" >
                 <div class="caption" id="headerTabla">
-                  <div id="borraheader">  <i class="fa fa-cogs">&nbsp; </i>Tipos Tramite</div>
+                  <div id="borraheader"> <a class=" popovers" data-container="body" data-trigger="hover" data-placement="top" data-content="Esta consulta te permite buscar y cambiar el estatus de una transacciónDismissable " data-original-title="Tip"> <i class="fa fa-cogs" style="color:white;">&nbsp; </i></a>Tipos Tramite</div>
                   </div>
                   <div class="tools" hidden="true">
               </div>             
@@ -157,25 +160,22 @@
      function findTransaccionesWhere()
     {
         var numero=$("#folio").val();
-        if(numero.length<=5)
+       if(numero.length>=4 && numero.length<=15){            
+              document.getElementById("MetodoBusqueda").value="egob_transaccion";
+            findEgob_Transacciones();
+        }else if(numero.length<=29)
         {
             document.getElementById("MetodoBusqueda").value="egob_transaccion";
             $("#RemoveTable table").remove();
             $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Transaccion</th>   <th>Nombre de Envio</th><th>Estatus</th><th>Importe</th> <th>Fecha Transaccion</th><th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
-        }else if(numero.length>=7 && numero.length<=29){
-            $("#RemoveTable table").remove();
-            $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
-        }else if(numero.length>=31){
-            $("#RemoveTable table").remove();
-            $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
-
-        }else if(numero.length==30){
+        }else if(numero.length>=30 && numero.length<=40){
 
             document.getElementById("MetodoBusqueda").value="oper_transaccion";
             findOper_Transacciones();
         }else{
-            document.getElementById("MetodoBusqueda").value="egob_transaccion";
-            findEgob_Transacciones();
+          
+            $("#RemoveTable table").remove();
+            $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         }
     }
     function findOper_Transacciones()
