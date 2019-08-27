@@ -19,6 +19,15 @@
         </li>
     </ul>
 </div>
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Importante:</strong> Para esta configuración es necesario tener el alta del trámite.
+   
+</div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info: </strong>Esta configuración te permite relacionar un trámite a una entidad. También puedes eliminar o editar el registro.
+</div>
 <div class="row">
     <div class="portlet box blue">
         <div class="portlet-title">

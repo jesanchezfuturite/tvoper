@@ -18,6 +18,10 @@
         </li>
     </ul>
 </div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info:</strong> Esta configuración te permite dar de alta un día feriado o inhábil para el cálculo de impuestos, o asignación de las fechas de vencimiento para una referencia.
+</div>
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">

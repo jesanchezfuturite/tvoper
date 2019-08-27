@@ -18,6 +18,15 @@
         </li>
     </ul>
 </div>
+
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Importante: </strong>Esta configuración es posterior al alta de un trámite y banco.
+</div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info: </strong>Esta configuración te permite asignar para una entidad y/o trámites en particular, la cuenta de pago donde deseas se realice el depósito. También permite activar o desactivar esta funcionalidad, además de programar un tiempo de vencimiento para esa configuración.
+</div>
 <div class="row">
     <div class="portlet box blue">
         <div class="portlet-title">

@@ -18,7 +18,14 @@
         </li>
     </ul>
 </div>
-
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Importante:</strong> Para esta configuración debe existir un tipo de referencia y límite de referencia para llevar acabo el alta.
+</div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info: </strong>Esta configuración te permite dar de alta un trámite al sistema, editar o eliminar su registro. Así como también asignar el tipo de referencia y tipo de límite.
+</div>
 <div class="row">
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue"id="table_1">
