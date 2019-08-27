@@ -39,7 +39,7 @@ class Conciliacion extends Command
      */ 
     protected $files;
 
-    protected $pr;
+    protected $ps;
 
     /**
      * Create a new command instance.
@@ -72,8 +72,8 @@ class Conciliacion extends Command
         Log::info('[Conciliacion:ProcessFiles] - Leer los archivos que estan guardados');
         $this->readSavedFiles();
 
-
-        Log::info('[Conciliacion:ProcessFiles] - Actualización de Egobierno.Transacciones');        
+        Log::info('[Conciliacion:ProcessFiles] - Proceso Finalizado');
+    
     }
 
 
@@ -123,10 +123,11 @@ class Conciliacion extends Command
 
             }else{
                 // write an Error log with the FileData
+                Log::info('[Conciliacion:ProcessFiles] - FATAL ERROR - Procesando un archivo no configurado, Por favor verificar la carpeta storage/app/toProcess');
             }
 
         }
-        Log::info('[Conciliacion:ProcessFiles] - Proceso Finalizado');
+        
 
     }
 
