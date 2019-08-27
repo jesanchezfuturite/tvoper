@@ -33,7 +33,7 @@
                     <div class="form-body">
                         <div class="form-group">
                             <label for="exampleInputFile1">Cargar Archivo</label>
-                            <input type="file" id="file" name="file">
+                            <input multiple="multiple" type="file" id="files[]" name="files[]">
                             <p class="help-block">
 
                                 @if($valid == 1)

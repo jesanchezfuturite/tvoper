@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<h3 class="page-title">Motor de pagos <small>Tipo Tramite</small></h3>
+<h3 class="page-title">Motor de pagos <small>Configuración de Trámite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -14,11 +14,18 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Tipo Tramite</a>
+            <a href="#">Configuración de Trámite</a>
         </li>
     </ul>
 </div>
-
+<div class="alert alert-warning alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Importante:</strong> Para esta configuración debe existir un tipo de referencia y límite de referencia para llevar acabo el alta.
+</div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info: </strong>Esta configuración te permite dar de alta un trámite al sistema, editar o eliminar su registro. Así como también asignar el tipo de referencia y tipo de límite.
+</div>
 <div class="row">
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue"id="table_1">
@@ -52,7 +59,7 @@
                             <td>{{$sd["descripcion_gpm"]}}</td>
                             <td>{{$sd["tiporeferencia_id"]}}</td>
                             <td>{{$sd["limitereferencia_id"]}}</td>
-                             <td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='OperacionTramite({{$sd["Tipo_Code"]}})'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deletetramite({{$sd["Tipo_Code"]}})'><i class='fa fa-minus'></i></a></td>
+                             <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='OperacionTramite({{$sd["Tipo_Code"]}})'><i class='fa fa-pencil'></i></a></td>
                         </tr>
                     @endforeach                  
                     </tbody>
@@ -428,8 +435,9 @@
             +"<td>"+desc+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a></td>"
+            +"<td class='text-center'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a></td>"
             +"</tr>");
+            /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
           });
             TableManaged.init(); 

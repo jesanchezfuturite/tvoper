@@ -18,7 +18,10 @@
         </li>
     </ul>
 </div>
-
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info: </strong>Esta configuración te permite asignar los tipos de vencimiento que podría tener una transacción de pago referenciado permite la edición y eliminación de los parámetros ingresados.
+</div>
 <!----  #tabla -->
 <div class="row">
 	<div class="col-md-12">				

@@ -34,5 +34,18 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+     public function updateStatus($Status,$idTrans)
+    {
+        try{
+
+            return Egobiernotransacciones::where( $idTrans )->update($Status);    
+        
+         }catch( \Exception $e){
+            Log::info('[EgobiernotransaccionesRepositoryEloquent@updateStatus] Error ' . $e->getMessage());
+        }
+        
+
+    }
     
 }

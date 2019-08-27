@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\EgobiernostatusRepository;
-use App\Entities\Egobiernostatus;
-use App\Validators\EgobiernostatusValidator;
+use App\Repositories\TransaccionesRepository;
+use App\Entities\Transacciones;
+use App\Validators\TransaccionesValidator;
 
 /**
- * Class EgobiernostatusRepositoryEloquent.
+ * Class TransaccionesRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class EgobiernostatusRepositoryEloquent extends BaseRepository implements EgobiernostatusRepository
+class TransaccionesRepositoryEloquent extends BaseRepository implements TransaccionesRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class EgobiernostatusRepositoryEloquent extends BaseRepository implements Egobie
      */
     public function model()
     {
-        return Egobiernostatus::class;
+        return Transacciones::class;
     }
 
     
@@ -34,17 +34,18 @@ class EgobiernostatusRepositoryEloquent extends BaseRepository implements Egobie
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    public function updateDescripcion($Status,$Descripcion)
+    public function updateTransacciones($estatus,$id_transaccion_motor)
     {
         try{
 
-            return Egobiernostatus::where( $Status )->update($Descripcion);    
+            return Transacciones::where( $id_transaccion_motor )->update($estatus);    
         
          }catch( \Exception $e){
-            Log::info('[EgobiernostatusRepositoryEloquent@updateDescripcion] Error ' . $e->getMessage());
+            Log::info('[TransaccionesRepositoryEloquent@updateTransacciones] Error ' . $e->getMessage());
         }
         
 
     }
+    
     
 }

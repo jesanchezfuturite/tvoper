@@ -50,29 +50,33 @@ class ConciliacionController extends Controller
     {
 
     	// identify the name of the file 
-    	$uploadedFile = $request->file('file');
+    	$uF = $request->file('files');
 
-    	// get the filename 
-    	$fileName = $uploadedFile->getClientOriginalName();	
 
-    	// check if is a valid file
-    	if(!$this->checkValidFilename($fileName))
-    	{
-			// Throws an error with the file invalid status file code 
-			return view('conciliacion/loadFile', [ "valid" => 0 ]);   			
-    	}else{
-    		// save the file in the storage folder
-	    	try
-	    	{
-	    		$response = $uploadedFile->storeAs('toProcess',$fileName);
-	  	
-	    	}catch( \Exception $e ){
-	    		dd($e->getMessage());
-	    	}
-	    	# return to the view with the status file uploaded
-	    	return view('conciliacion/loadFile', [ "valid" => 3 ]);
-    	}
+        foreach( $uF as $uploadedFile )
+        {
+            // get the filename 
+            $fileName = $uploadedFile->getClientOriginalName(); 
 
+            // check if is a valid file
+            if(!$this->checkValidFilename($fileName))
+            {
+                // Throws an error with the file invalid status file code 
+                return view('conciliacion/loadFile', [ "valid" => 0 ]);             
+            }else{
+                // save the file in the storage folder
+                try
+                {
+                    $response = $uploadedFile->storeAs('toProcess',$fileName);
+            
+                }catch( \Exception $e ){
+                    dd($e->getMessage());
+                }
+            }    
+        }
+    	
+        # return to the view with the status file uploaded
+        return view('conciliacion/loadFile', [ "valid" => 3 ]);
     }
 
     /**

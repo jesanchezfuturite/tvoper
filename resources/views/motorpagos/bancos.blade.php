@@ -19,6 +19,10 @@
         </li>
     </ul>
 </div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info:</strong> Esta configuración te permite la activación de un banco incluyendo el logo con el que ira a mostrarse en las fichas, asignar la cuenta o claves, método de pago y sus montos mínimo o máximo para pago. Esta misma es posible activar o desactivar en el momento que el usuario le solicite además de su edición.
+</div>
 <div class="row">
     <div class="portlet box blue">
         <div class="portlet-title">
