@@ -389,7 +389,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				<li class="dropdown dropdown-user">
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<!--<img alt="" class="img-circle" src="assets/admin/layout/img/avatar3_small.jpg"/>-->
-					<span class="username username-hide-on-mobile">{{ Auth::user()->name }} </span>
+					<span class="username username-hide-on-mobile"> {{ Auth::user()->name }} </span>
 					<i class="fa fa-angle-down"></i>
 					</a>
 					<ul class="dropdown-menu dropdown-menu-default">
@@ -433,6 +433,10 @@ License: You must have a valid license purchased only from themeforest(the above
                         </form>
 					</ul>
 				</li>
+				<li class="dropdown dropdown-user">
+					
+							
+				</li>
 				<!-- END USER LOGIN DROPDOWN -->
 				<!-- BEGIN QUICK SIDEBAR TOGGLER -->
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
@@ -471,7 +475,8 @@ License: You must have a valid license purchased only from themeforest(the above
 				<!-- DOC: To remove the search box from the sidebar you just need to completely remove the below "sidebar-search-wrapper" LI element -->
 				
 				<li class="sidebar-search-wrapper"><br /><br />
-					<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
+					
+							<!-- BEGIN RESPONSIVE QUICK SEARCH FORM -->
 					<!-- DOC: Apply "sidebar-search-bordered" class the below search form to have bordered search box -->
 					<!-- DOC: Apply "sidebar-search-bordered sidebar-search-solid" class the below search form to have bordered & solid search box --
 					<form class="sidebar-search sidebar-search-bordered" action="extra_search.html" method="POST">
@@ -1668,7 +1673,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
 <!-- TABLE SCRIPT -->
 <script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="assets/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js"></script>
+
 <script type="text/javascript" src="assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>

@@ -199,8 +199,10 @@ class Egobtransacciones extends Command
         {
             if( $encontrados[$r->transaccion_id] != $r->monto )
             {
+
                 // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
                 $this->ad []= $r->transaccion_id; 
+
                 $this->discarted [] = $r->transaccion_id;
             }
         }

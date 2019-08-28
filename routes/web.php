@@ -90,11 +90,11 @@ Route::post('/tipo-servicio-delete','MotorpagosController@deleteTipoServicio');
 
 /*----------Estatus Transaccion--------*/
 Route::get('/status-find-all','MotorpagosController@statusFindAll');
-Route::post('/transaccion-find-where','MotorpagosController@transaccionesFindWhere');
+Route::post('/transaccion-find-referencia','MotorpagosController@transaccionesFindWhere');
 Route::post('/transaccion-find-status','MotorpagosController@transaccionesFindWhereStatus');
 Route::post('/transaccion-update-status','MotorpagosController@updateTransaccionStatus');
 Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesFindWhereStatus_oper');
-Route::post('/transaccion-find-referencia-oper','MotorpagosController@transaccionesFindWhereReferencia_oper');
+//Route::post('/transaccion-find-referencia-oper','MotorpagosController@transaccionesFindWhereReferencia_oper');
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
 
@@ -116,6 +116,7 @@ Route::group(['middleware' => 'permissions'], function () {
 /* herramienta de cfdi */
 Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
 Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
+Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@searchfoliounico');
 Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');

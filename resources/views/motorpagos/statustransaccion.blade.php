@@ -51,10 +51,9 @@
                     <table class="table table-hover" id="sample_2">
                     <thead>
                     <tr> 
-                        <th>Transaccion</th>
-                        <th>Nombre de Envio</th>
+                        <th>Referencia</th>
                         <th>Estatus</th>                        
-                        <th>Pais</th>
+                        <th>Importe</th>
                         <th>Fecha Transaccion</th>
                         <th>&nbsp;Operacion&nbsp; </th>
                     </tr>
@@ -63,8 +62,7 @@
                     
                         <tr>
                             <td><span class="help-block">No Found</span></td>
-                            <td></td>
-                            <td></td>
+                            <td></td>                         
                             <td></td>
                             <td></td>
                              <td></td>
@@ -160,22 +158,14 @@
      function findTransaccionesWhere()
     {
         var numero=$("#folio").val();
-       if(numero.length>=4 && numero.length<=15){            
-              document.getElementById("MetodoBusqueda").value="egob_transaccion";
-            findEgob_Transacciones();
-        }else if(numero.length<=29)
-        {
-            document.getElementById("MetodoBusqueda").value="egob_transaccion";
+       if(numero.length<=2){
+            document.getElementById("MetodoBusqueda").value="";
             $("#RemoveTable table").remove();
-            $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Transaccion</th>   <th>Nombre de Envio</th><th>Estatus</th><th>Importe</th> <th>Fecha Transaccion</th><th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
-        }else if(numero.length>=30 && numero.length<=40){
-
-            document.getElementById("MetodoBusqueda").value="oper_transaccion";
-            findOper_Transacciones();
+             $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         }else{
-          
-            $("#RemoveTable table").remove();
-            $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
+
+            document.getElementById("MetodoBusqueda").value="";
+            findOper_Transacciones();
         }
     }
     function findOper_Transacciones()
@@ -185,9 +175,10 @@
         $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-referencia-oper') }}",
+           url: "{{ url('/transaccion-find-referencia') }}",
            data: {folio:numero,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
+           
           var Resp=$.parseJSON(response);
            $("#sample_2 tbody tr").remove();
          if(response=='[]')
@@ -210,7 +201,7 @@
                 +"<td>"+item.status+"</td>"
                 +"<td>$"+impor.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
                 +"<td>"+item.fecha+"</td>"
-                +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='updateTransaccion("+item.id+")'><i class='fa fa-pencil'></i></a></td>"
+                +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"updateTransaccion("+item.id+",\'"+item.bd_tb+"\')\"><i class='fa fa-pencil'></i></a></td>"
                 + "</tr>"
                     );
                 });
@@ -219,14 +210,14 @@
         .fail(function( msg ) {
          console.log("Error al Cargar select Option Limite Referencia");  });
     }
-    function findEgob_Transacciones()
+   /* function findEgob_Transacciones()
     {
          var numero=$("#folio").val();
         $("#RemoveTable table").remove();
         $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Transaccion</th>   <th>Nombre de Envio</th><th>Estatus</th><th>Importe</th> <th>Fecha Transaccion</th><th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-where') }}",
+           url: "{{ url('/transaccion-find-referencia') }}",
            data: {folio:numero,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -259,13 +250,14 @@
         })
         .fail(function( msg ) {
          console.log("Error al Cargar select Option Limite Referencia");  });
-    }
-    function updateTransaccion(id_)
-    {
-       var busca= $("#MetodoBusqueda").val(); 
-       document.getElementById('idupdate').value=id_;
-
-       if(busca=="egob_transaccion"){
+    }*/
+    function updateTransaccion(id_,bd_tb)
+    {   
+        document.getElementById("MetodoBusqueda").value=bd_tb;
+        //var busca= $("#MetodoBusqueda").val(); 
+        document.getElementById('idupdate').value=id_;
+       
+       if(bd_tb=="egob_transaccion"){
        
         $.ajax({
            method: "POST",           
