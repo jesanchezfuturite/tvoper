@@ -74,7 +74,8 @@
     <div class="portlet box blue">
         <div class="portlet-title" id="TitleBanco">
             <div class="caption" id="RemoveTitle">
-                <i class="fa fa-cogs"></i>Registros Entidad Tramite
+                <i class="fa fa-cogs"></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class="label label-sm label-danger">
+                            <strong>Clave: </strong>Sin Clave</span> @endif
             </div>
         </div>
         <div class="portlet-body">
@@ -491,6 +492,8 @@
         var id_=$("#OptionEntidad").val();
         if(id_=="limpia")
             {
+              $("#RemoveTitle").remove();
+               $("#TitleBanco").append("<div class='caption' id='RemoveTitle'>        <i class='fa fa-cogs'></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class='label label-sm label-danger'> <strong>Clave: </strong>Sin Clave</span> @endif </div>");
                 $("#table tbody tr").remove();
                 $('#table').append("<tr>"
                     +"<td> <span class='help-block'>No Found</span></td>"
@@ -502,19 +505,54 @@
            url: "{{ url('/entidad-tramite-find') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
+          findClave();
         $("#table tbody tr").remove();
         var Resp=$.parseJSON(responseinfo);
           var item="";
-        $.each(Resp, function(i, item) {                
+          if(responseinfo=="[]")
+            {
+               $('#table').append("<tr>"
+                    +"<td> <span class='help-block'>No Found</span></td>"
+                    +"<td></td>"
+                    +"</tr>");
+            }else{
+                $.each(Resp, function(i, item) {                
                  $('#table').append("<tr>"
                     +"<td>"+item.tiposervicio+"</td>"
                     +"<td class='text-right'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar Registro' onclick=\"updateTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-edit'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar Registro' onclick=\"DeleteTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>");    });
+              }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             }
          
+    }
+    function findClave()
+    {
+       var id_=$("#OptionEntidad").val();
+       $.ajax({
+           method: "POST",            
+           url: "{{ url('/entidad-find-where') }}",
+           data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) { 
+           
+          $("#RemoveTitle").remove();
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+         
+        $.each(Resp, function(i, item) {
+           if(item.clave=="")
+            {
+              $("#TitleBanco").append("<div class='caption' id='RemoveTitle'>        <i class='fa fa-cogs'></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class='label label-sm label-danger'> <strong>Clave: </strong>Sin Clave</span> @endif </div>");
+            }else{
+              $("#TitleBanco").append("<div class='caption' id='RemoveTitle'>        <i class='fa fa-cogs'></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class='label label-sm label-danger'> <strong>Clave: </strong>"+item.clave+"</span> @endif </div>");
+            }
+          });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });  
+
     }
     function Limpiar()
     {

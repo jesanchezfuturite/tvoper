@@ -196,7 +196,7 @@ class Egobtransacciones extends Command
                 $this->ane [$r->transaccion_id]= array( 
                         "message"           => "Montos diferentes", 
                         "monto_egobierno"   =>  $encontrados[$r->transaccion_id],
-                        "monto_archivos"    =>  $r->amount; 
+                        "monto_archivos"    =>  $r->amount 
                 ); 
                 $this->discarted [] = $r->transaccion_id;
             }
