@@ -58,6 +58,71 @@
         <!-- END SAMPLE FORM PORTLET-->
     </div>
 </div>
+
+<div class="row">
+    <!-- BEGIN SAMPLE TABLE PORTLET-->
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption" id="headerTabla">
+              <div id="borraheader">  Resultados de conciliación &nbsp;
+                 @if($report == false)
+                <span class="label label-sm label-danger">Sin resultados </span>
+                @endif
+            </div>
+        </div>
+            
+        </div>
+        <div class="portlet-body">
+            <div class="table-scrollable">
+                <table class="table table-hover" id="table">
+                <thead>
+                <tr>
+                    <th>Banco</th>
+                    <th colspan="4" align="center">Internet</th>
+                    <th colspan="4" align="center">Medios de pagos</th>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Total de tramites</th>
+                    <th>Procesado</th>
+                    <th>No Procesado</th>
+                    <th>Monto</th>
+                    <th>Total de tramites</th>
+                    <th>Procesado</th>
+                    <th>No Procesado</th>
+                    <th>Monto</th>
+                </tr>
+                </thead>
+                <tbody>                   
+                @if($report == false)
+                <tr>
+                <td>
+                    <span class="help-block">No Found</span>
+                </td>
+                </tr>                    
+                @else
+                    @foreach($report as $r => $values )
+
+                    <tr>
+                    <td>{{$r}}</td>
+                    <td>{{number_format($values["total_egob"])}}</td>
+                    <td>{{number_format($values["total_egobp"])}}</td>
+                    <td>{{number_format($values["total_egobnp"])}}</td>
+                    <td>${{number_format($values["total_egobmonto"],2)}}</td>
+                    <td>{{number_format($values["total_motor"])}}</td>
+                    <td>{{number_format($values["total_motorp"])}}</td>
+                    <td>{{number_format($values["total_motornp"])}}</td>
+                    <td>${{number_format($values["total_motormonto"],2)}}</td>
+                    </tr>
+                    @endforeach
+                @endif
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- END SAMPLE TABLE PORTLET-->
+</div>
 @endsection
 
 @section('scripts')
