@@ -40,7 +40,7 @@
 
             	 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
                 <span class="help-block">&nbsp;</span>
-                    <table class="table table-hover" id="sample_2">
+                    <table class="table table-hover" id="sample_1">
                     <thead>
                     <tr>
                         <th>Servicio</th>
@@ -195,7 +195,8 @@
 	jQuery(document).ready(function() {
         findLimiteReferencia();
         findTipoReferencia();
-           TableManaged.init(); 
+        //TableManaged.init(); 
+       TableAdvanced.init()
         
     });
 	function findLimiteReferencia()
@@ -419,7 +420,7 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>        <tr> <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_1'>   <thead>        <tr> <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
         $.each(Resp, function(i, item) {
             if(item.origen==null)
             {
@@ -429,7 +430,7 @@
             {
               desc="";
             }else{desc=item.descripcion_gpm;  }
-            $("#sample_2 tbody").append("<tr>"
+            $("#sample_1 tbody").append("<tr>"
             +"<td>"+item.descripcion+"</td>"
             +"<td>"+orig+"</td>"
             +"<td>"+desc+"</td>"
@@ -440,7 +441,8 @@
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
           });
-            TableManaged.init(); 
+            //TableManaged.init();
+           TableAdvanced.init() 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });

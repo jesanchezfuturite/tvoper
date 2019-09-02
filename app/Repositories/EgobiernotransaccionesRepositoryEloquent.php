@@ -8,6 +8,8 @@ use App\Repositories\EgobiernotransaccionesRepository;
 use App\Entities\Egobiernotransacciones;
 use App\Validators\EgobiernotransaccionesValidator;
 
+use Illuminate\Support\Facades\Log;
+
 /**
  * Class EgobiernotransaccionesRepositoryEloquent.
  *
@@ -46,6 +48,19 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
         }
         
 
+    }
+
+    public function updateStatusInArray($ids)
+    {
+        try
+        {
+            
+            $data = Egobiernotransacciones::whereIn('idTrans', $ids)->update( ['Status' => 0]);
+
+        }catch( \Exception $e ){
+            Log::info("[EgobiernotransaccionesRepositoryEloquent @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            return false;
+        }
     }
     
 }

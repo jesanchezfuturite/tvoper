@@ -274,6 +274,15 @@
 
       }
       else{
+        $("#itemsTipoServicio option").remove();
+          $("#itemsTipoServicio").append("<option value='limpia'>-------</option>"
+            );
+           $("#itemsTipoServicio").val("limpia").change();
+             $("#tituloTamite h3").remove();
+        $("#tituloTamite").append("<h3 class='page-title'>TRAMITE NO SELECCIONADA: </h3>");
+       //document.getElementById('itemsBancos').value="limpia"; 
+         $("#itemsBancos").val("limpia").change();
+       $("#addTables div").remove();
         AddOptionTipoServicio();
       }
     }
@@ -349,7 +358,7 @@
     function existeID()
     {
          var titleServicio=$("#itemsTipoServicio option:selected").text();
-         var titlebanco=$("#itemsBancos option:selected").text();
+         var titlebanco=$("#itemsBancos").text();
         if ( $("#Add"+titlebanco+"").length > 0 ) 
         {
             Command: toastr.warning("Ya se Encuentra Agregado", "Notifications")
@@ -377,7 +386,7 @@
         }else
         {
             addTablaVacio(titlebanco,valueBanco);
-            FindCuentasBancarias(titlebanco);
+            FindCuentasBancarias(valueBanco);
 
         var TipoServ=$("#itemsTipoServicio").val();
         var IdBanc=$("#itemsBancos").val();
@@ -483,23 +492,58 @@ function updatePagoTramite(banco_,idbanco_)
     var descripcion_=$("#descripcion").val();
     var fechaInicio=$("#datetime1").val();
     var fechaFin=$("#datetime2").val();
-    if(descripcion_.length==0)
-    {
+    //console.log(fechaInicio);
+    if(descripcion_.length==0){
         Command: toastr.warning("Descripción Obligatorio", "Notifications")
-    } else if(fechaInicio.length==0)
-        {
+    } else if(fechaInicio.length==0){
         Command: toastr.warning("Fecha Inicio Obligatorio", "Notifications")
-    }else if(fechaFin.length==0)
-        {
+    }else if(fechaFin.length==0){
         Command: toastr.warning("Fecha Fin Obligatorio", "Notifications")
+    }else{
+
+     if(fechaFin!=="30/11/1"){
+           
+      if(fechaInicio=="30/11/1")
+      {
+            Command: toastr.warning("Cambiar Fecha Inicio!", "Notifications")
+          }else{
+            actualizaPagoTramite(idbanco_,idbanco_);
+        }
+      }else{
+        
+        if(fechaInicio!=="30/11/1")
+        {
+             if(fechaFin=="30/11/1")
+            {
+            Command: toastr.warning("Cambiar Fecha Fin!", "Notifications")
+            }else{
+            actualizaPagoTramite(idbanco_,idbanco_);
+            }
+        }else{
+          actualizaPagoTramite(idbanco_,idbanco_);
+        }
+      }
     }
-    else{
-    fechaInicio=fechaInicio.replace("/","-");
-    fechaInicio=fechaInicio.replace("/","-");
-    
+
+}
+function actualizaPagoTramite(banco_,idbanco_)
+{
+   var id_=$("#idTramite").val();
+    var descripcion_=$("#descripcion").val();
+    var fechaInicio=$("#datetime1").val();
+    var fechaFin=$("#datetime2").val();
+  fechaInicio=fechaInicio.replace("/","-");
+    fechaInicio=fechaInicio.replace("/","-");    
     fechaFin=fechaFin.replace("/","-");
     fechaFin=fechaFin.replace("/","-");
-    
+     if(fechaInicio=="30-11-1")
+     {
+      fechaInicio="00-00-0000";
+     }
+    if(fechaFin=="30-11-1")
+    {
+      fechaFin="00-00-0000";
+    }
     $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-update') }}",
@@ -507,7 +551,7 @@ function updatePagoTramite(banco_,idbanco_)
         .done(function (responseinfo) {
             if(responseinfo=="true")
                 {Command: toastr.success("Success", "Notifications")
-             ActualizarTabla(banco_,idbanco_);
+             ActualizarTabla(idbanco_);
 
         }
             else{Command: toastr.warning("No Success", "Notifications")}
@@ -515,8 +559,6 @@ function updatePagoTramite(banco_,idbanco_)
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
-        }
-
 }
 function deletedPagoTramite(id_,banco_,idbanco_)
 {    
@@ -535,7 +577,7 @@ function eliminarRegistro(banco_,idbanco_)
         .done(function (responseinfo) {
             if(responseinfo=="true")
                 {Command: toastr.success("Success", "Notifications")
-            ActualizarTabla(banco_,idbanco_);
+            ActualizarTabla(idbanco_);
         }
             else{Command: toastr.warning("No Success", "Notifications")}
         })
@@ -547,18 +589,18 @@ function eliminarRegistro(banco_,idbanco_)
 function addTablaVacio(banco,idbanco_)
 {
 
-    $("#addTables").append("<div id='Add"+banco+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'>            <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> </div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+banco+"'>                <option value='limpia'>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite(\'"+banco+"\',"+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+banco+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
+    $("#addTables").append("<div id='Add"+idbanco_+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'>            <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> </div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+idbanco_+"'>                <option value='limpia'>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite("+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+idbanco_+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
 }
-function InsertPagoTramite(banco_,id_)
+function InsertPagoTramite(id_)
 {
     $("#Addbutton button").remove();
-            $("#Addbutton").append("<button type='button' data-dismiss='modal' class='btn default'>Cancelar</button>          <button type='button' data-dismiss='modal' class='btn green' onclick=\"PagoTramite(\'"+banco_+"\',\'"+id_+"\')\">Confirmar</button>");
+            $("#Addbutton").append("<button type='button' data-dismiss='modal' class='btn default'>Cancelar</button>          <button type='button' data-dismiss='modal' class='btn green' onclick=\"PagoTramite(\'"+id_+"\')\">Confirmar</button>");
           
 }
-function PagoTramite(banco_,id_)
+function PagoTramite(id_)
 {
      var Serv=$("#itemsTipoServicio").val();
-     var CuentaB=$("#CuentasOption"+banco_+"").val();
+     var CuentaB=$("#CuentasOption"+id_+"").val();
      if(Serv=="limpia")
      {
         Command: toastr.warning("No Success, No Selected Tipo Tramite", "Notifications")
@@ -567,7 +609,7 @@ function PagoTramite(banco_,id_)
         Command: toastr.warning("Cuenta Banco Sin Seleccionar, Requerido!", "Notifications")
      }else{
      var TipoServ=$("#itemsTipoServicio").val();
-     var idcuentaBanco=$("#CuentasOption"+banco_+"").val();       
+     var idcuentaBanco=$("#CuentasOption"+id_+"").val();       
 
          $.ajax({
            method: "POST",            
@@ -576,7 +618,7 @@ function PagoTramite(banco_,id_)
         .done(function (responseTipoServicio) {           
           if(responseTipoServicio=="true")        
          {
-            ActualizarTabla(banco_,id_);
+            ActualizarTabla(id_);
          }
        
         })
@@ -584,7 +626,7 @@ function PagoTramite(banco_,id_)
          Command: toastr.warning("No Success", "Notifications")  });
     }
 }
-function ActualizarTabla(banco_,idbanco_)
+function ActualizarTabla(idbanco_)
 {
     var TipoServ=$("#itemsTipoServicio").val();
       $.ajax({
@@ -601,7 +643,7 @@ function ActualizarTabla(banco_,idbanco_)
           var item2="";
           var max=0;
           var min=0;
-          $("#table"+banco_+" tbody tr").remove();
+          $("#table"+idbanco_+" tbody tr").remove();
         $.each(Resp, function(i, item) {
                  var benef=$.parseJSON(item.beneficiario);
                   $.each(benef, function(ii, item2) {
@@ -610,13 +652,13 @@ function ActualizarTabla(banco_,idbanco_)
                   });
                   max=item.monto_max;
                   min=item.monto_min;
-                 $("#table"+banco_+" tbody").append("<tr>"
+                 $("#table"+idbanco_+" tbody").append("<tr>"
                     +"<td>"+Cuenta+"</td>"
                     +"<td>"+Servicio+"</td>"
                     +"<td>"+item.metodopago+"</td>"                    
                     +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
                     +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
-                    +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\',\'"+banco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\',\'"+banco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-minus'></i> </a></td>"
+                    +"<td><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\',\'"+idbanco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\',\'"+idbanco_+"\',\'"+idbanco_+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>"
                    );
                 });

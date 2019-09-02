@@ -640,7 +640,8 @@ return json_encode($response);
             {                
                 $response []= array(              
                 "id" => $i->id,
-                "nombre" =>$i->nombre
+                "nombre" =>$i->nombre,
+                "clave"=>$i->clave
                 );
             }
        return json_encode($response);
@@ -673,9 +674,10 @@ return json_encode($response);
 
         $fechaActual=Carbon::now();
         $date=$fechaActual->format('Y-m-d h:i:s');
+        $clave=str_random(40);
         $response = "false";
         try{   
-       $info = $this->entidaddb->create(['nombre'=>$nombre,'created_at'=>$date,'updated_at'=>$date]);
+       $info = $this->entidaddb->create(['nombre'=>$nombre,'clave'=>$clave,'created_at'=>$date,'updated_at'=>$date]);
          $response = "true";
         } catch( \Exception $e ){
             Log::info('Error Method limitereferencia: '.$e->getMessage());
@@ -755,7 +757,7 @@ return json_encode($response);
         //try{
             foreach($checkedsAll as $i) 
             {             
-                log::info($i);
+                //log::info($i);
                 $info2 = $this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad,'tipo_servicios_id'=>$i]);
                 
                 if($info2->count() == 0)

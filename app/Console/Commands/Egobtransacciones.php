@@ -40,7 +40,7 @@ class Egobtransacciones extends Command
     protected $registers;
 
     // arrays to process 
-    protected $valid, $ad, $ane, $transacciones_relacionadas, $temporal, $discarted;
+    protected $valid, $ad = array(), $ane = array(), $transacciones_relacionadas, $temporal, $discarted = array();
 
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
@@ -65,6 +65,7 @@ class Egobtransacciones extends Command
         // 
         Log::info('[Conciliacion:EgobTransacciones] - Inicia el proceso para revisar las transacciones np');
 
+        // obtener todos los registros para realizar las comparaciones
         $this->loadRegisters();
 
         $this->checkBalanceRegisters();
@@ -77,6 +78,12 @@ class Egobtransacciones extends Command
 
         // obtener los registros que van actualizar la tabla de transacciones con estatus 0
         $reponseValidated = $this->getValidated();
+
+        // actualizar los registros en la tabla de egobierno Transacciones
+        $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();
+
+        // actualizar los errores en la tabla de process
+
 
         Log::info('[Conciliacion:EgobTransacciones] - Proceso Finalizado');
     }
@@ -161,8 +168,8 @@ class Egobtransacciones extends Command
         {
             if(!in_array($tm, $encontrados))
             {
-                $this->ad []        = $tm;
-                $this->discarted [] = $tm;
+                $this->ane []        = $tm; // ANE => anomalia no existe
+                $this->discarted []  = $tm;
             }
         }
 
@@ -190,17 +197,14 @@ class Egobtransacciones extends Command
         // revisar los montos en registers
         foreach($this->registers as $r)
         {
-            if( $encontrados[$r->transaccion_id] != $r->amount )
+            if( $encontrados[$r->transaccion_id] != $r->monto )
             {
-                // esta es la anomalia de los montos
-                $this->ane [$r->transaccion_id]= array( 
-                        "message"           => "Montos diferentes", 
-                        "monto_egobierno"   =>  $encontrados[$r->transaccion_id],
-                        "monto_archivos"    =>  $r->amount; 
-                ); 
+
+                // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
+                $this->ad []= $r->transaccion_id; 
+
                 $this->discarted [] = $r->transaccion_id;
             }
-
         }
 
         return true;
@@ -218,15 +222,58 @@ class Egobtransacciones extends Command
 
     private function getValidated()
     { 
+    
         Log::info('[Conciliacion:EgobTransacciones] @getValidated - Obtener todos los registros que son validos en los archivos de conciliacion');
         foreach($this->registers as $r)
-        {
-            if(!in_array($r->transaccion_id, $discarted))
+        {   
+            if(count($this->discarted))
             {
+
+                if(!in_array($r->transaccion_id, $this->discarted))
+                {
+                    $this->valid []= $r->transaccion_id;
+                }    
+            }else{
+                dd("1",$r);
                 $this->valid []= $r->transaccion_id;
             }
         }
-
         return true;
+    
     } 
+
+    /**
+     * Actualizar la tabla de transacciones como procesado .
+     *
+     * @param null
+     *
+     *
+     * @return true
+     */
+
+    private function udpdateTransactionsAsProcessed()
+    { 
+        // actualizar la tabla egobierno
+        Log::info('[Conciliacion:EgobTransacciones] @udpdateTransactionsAsProcessed - Actualizar egobierno');
+
+
+        $egob = $this->tr->updateStatusInArray($this->valid);
+        // actualizar con los registros que se procesaron correctamente
+        Log::info('[Conciliacion:EgobTransacciones] @udpdateTransactionsAsProcessed - Actualizar operacion');
+        $oper = $this->pr->updateStatusTo($this->valid,"p");
+        
+        if(count($this->ad))
+        {
+            // actualizar con los registros que tienen error diferencia de montos
+            $oper = $this->pr->updateStatusTo($this->ad,"ad");   
+        }
+
+        if(count($this->ane))
+        {
+            // actualizar con los registros que tienen error no existen en transacciones de egobierno
+            $oper = $this->pr->updateStatusTo($this->ane,"ane");   
+        }
+
+        
+    }
 }
