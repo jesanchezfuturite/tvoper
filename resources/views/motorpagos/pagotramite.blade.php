@@ -358,7 +358,7 @@
     function existeID()
     {
          var titleServicio=$("#itemsTipoServicio option:selected").text();
-         var titlebanco=$("#itemsBancos").text();
+         var titlebanco=$("#itemsBancos").val();
         if ( $("#Add"+titlebanco+"").length > 0 ) 
         {
             Command: toastr.warning("Ya se Encuentra Agregado", "Notifications")
@@ -403,7 +403,7 @@
           var item2="";
           var max=0;
           var min=0;
-          $("#table"+titlebanco+" tbody tr").remove();
+          $("#table"+IdBanc+" tbody tr").remove();
         $.each(Resp, function(i, item) {
                  var benef=$.parseJSON(item.beneficiario);
                   $.each(benef, function(ii, item2) {
@@ -412,7 +412,7 @@
                   });
                   max=item.monto_max;
                   min=item.monto_min;
-                 $("#table"+titlebanco+"").append("<tr>"
+                 $("#table"+IdBanc+"").append("<tr>"
                     +"<td>"+Cuenta+"</td>"
                     +"<td>"+Servicio+"</td>"
                     +"<td>"+item.metodopago+"</td>"                     
@@ -507,7 +507,7 @@ function updatePagoTramite(banco_,idbanco_)
       {
             Command: toastr.warning("Cambiar Fecha Inicio!", "Notifications")
           }else{
-            actualizaPagoTramite(idbanco_,idbanco_);
+            actualizaPagoTramite(idbanco_);
         }
       }else{
         
@@ -517,16 +517,16 @@ function updatePagoTramite(banco_,idbanco_)
             {
             Command: toastr.warning("Cambiar Fecha Fin!", "Notifications")
             }else{
-            actualizaPagoTramite(idbanco_,idbanco_);
+            actualizaPagoTramite(idbanco_);
             }
         }else{
-          actualizaPagoTramite(idbanco_,idbanco_);
+          actualizaPagoTramite(idbanco_);
         }
       }
     }
 
 }
-function actualizaPagoTramite(banco_,idbanco_)
+function actualizaPagoTramite(idbanco_)
 {
    var id_=$("#idTramite").val();
     var descripcion_=$("#descripcion").val();
