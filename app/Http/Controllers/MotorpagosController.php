@@ -673,9 +673,18 @@ return json_encode($response);
         $nombre=$request->nombre;
 
         $fechaActual=Carbon::now();
-        $date=$fechaActual->format('Y-m-d h:i:s');
-        $clave=str_random(40);
+        $date=$fechaActual->format('Y-m-d h:i:s');        
+        $clave;
         $response = "false";
+        $variable=true;
+        while ($variable) {
+            $clave=str_random(40);
+            $entidadFind=$this->entidaddb->findWhere(['clave'=>$clave]);
+            if($entidadFind->count() == 0)
+            {
+                $variable=false;
+            }
+        }  
         try{   
        $info = $this->entidaddb->create(['nombre'=>$nombre,'clave'=>$clave,'created_at'=>$date,'updated_at'=>$date]);
          $response = "true";

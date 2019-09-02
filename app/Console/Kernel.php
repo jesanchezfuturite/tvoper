@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         //
         Commands\Conciliacion::class,
         Commands\Egobtransacciones::class,
+        Commands\updateStatus::class,
     ];
 
     /**
@@ -27,12 +28,17 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         /* carga las tablas con los procesos de archivos */
-        $schedule->command('conciliacion:processFiles')
+       $schedule->command('conciliacion:processFiles')
                   ->everyFiveMinutes();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
         $schedule->command('conciliacion:egobt')
-                  ->everyFiveMinutes();
+                 ->everyFiveMinutes();
+
+        /*cambia el estatus de la transaccion todos los dias a las 21:00:00 hrs*/
+       // $schedule->command('updateStatus:status')
+                //->everyMinute();
+                  //->dailyAt('21:00');
     }   
 
     /**
