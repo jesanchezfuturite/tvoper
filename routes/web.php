@@ -120,3 +120,4 @@ Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@search
 Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
+Route::get('/cfdi-manual','ManualcfdiController@index')->name('cfdi-captura');
