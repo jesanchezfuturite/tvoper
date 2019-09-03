@@ -35,10 +35,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('conciliacion:egobt')
                  ->everyFiveMinutes();
 
-        /*cambia el estatus de la transaccion todos los dias a las 21:00:00 hrs*/
-       // $schedule->command('updateStatus:status')
+        /*cambia el estatus de la transaccion todos los dias a las 03:00:00 hrs*/
+       $schedule->command('updateStatus:status')
                 //->everyMinute();
-                  //->dailyAt('21:00');
+               ->dailyAt('03:00');
     }   
 
     /**

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 
 class updateStatus extends Command
 {
@@ -48,22 +48,21 @@ class updateStatus extends Command
      */
     public function handle()
     {
-        $this->logPrueba();
+        $this->UpdateStatusTransaccion();
         //log::info('---------------------Prueba Status--------------');
     }
-    public function logPrueba()
+    public function UpdateStatusTransaccion()
     {
-        $fechaActual=Carbon::now();
+        $fechaActual=Carbon::now()->subDay(1);
         $date=$fechaActual->format('Y-m-d');
         $limite=$date." "."00:00:00";
-        //$find_oper = $this->oper_transaccionesdb->findWhere(['estatus'=>'60','fecha_limite_referencia'=>'2019-09-02 00:00:00']);
-        $find_oper=;
-        $countfind=$find_oper->count(); 
-        log::info($countfind);
-        log::info($limite);
+        try{  
+        $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite]);
+        } catch( \Exception $e ){
+            Log::info('Error console/updateStatus-> Method UpdateStatusTransaccion: '.$e->getMessage());
+       
+        }
+        //log::info($limite);
 
-       /*foreach ($find_oper as $i ) {
-           $update_oper=$this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['id_transaccion_motor'=>$i->id_transaccion_motor])
-       }*/
     }
 }
