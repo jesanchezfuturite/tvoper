@@ -203,13 +203,14 @@ return json_encode($response);
         $status = $request->estatus; 
         // get the filename 
         $fileName = $uploadedFile->getClientOriginalName(); 
+         $imageData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
         // check if is a valid file
        // save the file in the storage folder
         try
             { 
                 
                $response = $uploadedFile->storeAs('Image_Banco/',$fileName);
-                $info2 = $this->bancodb->create(['nombre' => $nombre,'url_logo' => 'Image_Banco/'.$fileName,'status' => $status,'created_at'=>$fecha,'updated_at'=>$fecha] ); 
+                $info2 = $this->bancodb->create(['nombre' => $nombre,'imagen'=>$imageData,'url_logo' => 'Image_Banco/'.$fileName,'status' => $status,'created_at'=>$fecha,'updated_at'=>$fecha] ); 
                
         
             }catch( \Exception $e ){
