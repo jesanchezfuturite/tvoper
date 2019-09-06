@@ -98,6 +98,12 @@ Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesF
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
 
+/************detalle de pago tramite***********/
+
+Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
+Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
+
+
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {

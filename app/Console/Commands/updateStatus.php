@@ -58,6 +58,8 @@ class updateStatus extends Command
         $limite=$date." "."00:00:00";
         try{  
         $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite]);
+
+        Log::info("update from oper_transacciones set estatus=65 where estatus=60 and fecha_limite_referencia=".$limite);Log::info("Resgitros Actualizados: ".$find_oper);
         } catch( \Exception $e ){
             Log::info('Error console/updateStatus-> Method UpdateStatusTransaccion: '.$e->getMessage());
        
