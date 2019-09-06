@@ -203,7 +203,7 @@ return json_encode($response);
         $status = $request->estatus; 
         // get the filename 
         $fileName = $uploadedFile->getClientOriginalName(); 
-         $imageData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
+         $imageData = Byte_encode(file_get_contents($uploadedFile->getRealPath()));
         // check if is a valid file
        // save the file in the storage folder
         try
@@ -1448,5 +1448,55 @@ return json_encode($response);
         $response = "false";
         }
        return $response;
+    }
+    /************ DETALLE PAGO TRMAITE *************/
+    public function detallepagotramite()
+    {
+        return view('motorpagos/detallepagotramite');
+    }
+    public function findCuentasBancoAll(Request $request)
+    {
+        $Id_entidad=$request->Id_entidad;
+        $servicio;
+        $idpagotramite;
+        $nombrebanco;
+        $metodopago;
+        $response=array(); 
+        $oper_entidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad]);
+        foreach ($oper_entidadtramite as $i) {
+           
+            $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
+            foreach ($tiposervicio as $ii) {
+               $servicio=$ii->Tipo_Descripcion;
+            }
+            $oper_pagotramite=$this->pagotramitedb->findWhere(['tramite_id'=>$i->tipo_servicios_id]);
+            foreach ($oper_pagotramite as $key) {
+                 $idpagotramite=$key->id;
+                $oper_cuentasbanco=$this->cuentasbancodb->findWhere(['id'=>$key->cuentasbanco_id]);
+
+                foreach ($oper_cuentasbanco as $cuenta) {
+                    $oper_banco=$this->bancodb->findWhere(['id'=>$cuenta->banco_id]);
+                        foreach ($oper_banco as $ban) {
+                        $nombrebanco=$ban->nombre;
+                        }
+                    $oper_metodopago=$this->metodopagodb->findWhere(['id'=>$cuenta->metodopago_id]);
+                        foreach ($oper_metodopago as $metodo) {
+                          $metodopago=$metodo->nombre;
+                        }
+                    $response []= array(
+                    "id"=> $idpagotramite,                    
+                    "servicio" => $servicio,
+                    "banco"=>$nombrebanco,
+                    "beneficiario"=>$cuenta->beneficiario,
+                    "metodopago"=>$metodopago,
+                    "monto_max"=>$cuenta->monto_max,
+                    "monto_min"=>$cuenta->monto_min                
+                    );
+                }
+                
+            }
+            
+        }
+        return json_encode($response);
     }
 }
