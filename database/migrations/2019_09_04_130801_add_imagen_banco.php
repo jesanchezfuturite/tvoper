@@ -14,7 +14,7 @@ class AddImagenBanco extends Migration
     public function up()
     {
        Schema::table('oper_banco', function (Blueprint $table) {
-            $table->longblob('imagen', 100)->after('nombre');
+            $table->longText('imagen', 100)->after('nombre');
         });
     }
 
