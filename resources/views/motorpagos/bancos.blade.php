@@ -143,7 +143,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Servicio / CIE / CLABE</label>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio">
+                                <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio" maxlength="18">
                             </div>
                         </div>
                         <div class="form-group">
@@ -578,8 +578,8 @@
             }else if(cuenta.length<8){
               Command: toastr.warning("Campo Cuenta Requerido! 8 Caracteres Min.", "Notifications")
               document.getElementById("cuenta").focus();
-            }else if(servicio.length<8){
-               Command: toastr.warning("Campo Servicio Requerido! 8 Caracteres Min.", "Notifications")
+            }else if(servicio.length<1 ){
+               Command: toastr.warning("Campo Servicio Requerido! 1 a 18 Caracteres.", "Notifications")
                document.getElementById("servicio").focus();
             }else if(monto_min.length<1){
               Command: toastr.warning("Campo Monto Min. Requerido! 1 Caracteres Min.", "Notifications")

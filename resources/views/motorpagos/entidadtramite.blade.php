@@ -489,6 +489,8 @@
 
     function TableTramiteEntidad()
     {
+      AddOptionTipoServicio();
+      FindEntidadTable();
         var id_=$("#OptionEntidad").val();
         if(id_=="limpia")
             {
