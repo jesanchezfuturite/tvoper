@@ -43,6 +43,7 @@
                     <table class="table table-hover" id="sample_1">
                     <thead>
                     <tr>
+                        <th>&nbsp;Entidad&nbsp;</th>
                         <th>Servicio</th>
                         <th>Origen URL</th>
                         <th>Descripcion gpm</th>
@@ -54,6 +55,7 @@
                     <tbody>                   
                     @foreach( $response as $sd)
                         <tr>
+                          <td>{{$sd["entidad"]}}</td>
                             <td>{{$sd["Tipo_Descripcion"]}}</td>
                             <td>{{$sd["Origen_URL"]}}</td>
                             <td>{{$sd["descripcion_gpm"]}}</td>
@@ -420,7 +422,7 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_1'>   <thead>        <tr> <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_1'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
         $.each(Resp, function(i, item) {
             if(item.origen==null)
             {
@@ -431,6 +433,7 @@
               desc="";
             }else{desc=item.descripcion_gpm;  }
             $("#sample_1 tbody").append("<tr>"
+            +"<td>"+item.entidad+"</td>"
             +"<td>"+item.descripcion+"</td>"
             +"<td>"+orig+"</td>"
             +"<td>"+desc+"</td>"

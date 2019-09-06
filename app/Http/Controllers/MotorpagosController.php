@@ -444,8 +444,15 @@ return json_encode($response);
 
     public function findTipoServicioAll()
     {       
-        $response = array();  
-        $info = $this->tiposerviciodb->all();
+        $responseentidad = array();  
+        $entidadtramite=$this->entidadtramitedb->all();
+         foreach($entidadtramite as $ii)
+        {
+            $responseentidad []= array(
+                $ii->tipo_servicios_id
+            );
+        }
+        $info = $this->tiposerviciodb->findWhereNotIn('Tipo_Code',$responseentidad);
         foreach($info as $i)
         {
             $response []= array(
@@ -512,9 +519,14 @@ return json_encode($response);
         $date=$fechaActual->format('Y-m-d h:i:s');
         $response = "false";
         try{  
-        $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>'----','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
-            $response="true";
+            $buscapagotramite=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio]);
+            if($buscapagotramite->count()==0){
+                $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>'----','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
+                $response="true";
+            }else{
+                $response="false";
             }
+        }
             catch( \Exception $e ){
             Log::info('Error Method limitereferencia: '.$e->getMessage());
             $response="false";            
@@ -1031,6 +1043,7 @@ return json_encode($response);
         $response = array();
         $limitereferencia= "";
         $tiporeferencia="";
+        $nombreentidad="";
         foreach ($info as $i) 
         {
             $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
@@ -1055,7 +1068,23 @@ return json_encode($response);
                     $limitereferencia=$iii->descripcion." ".$iii->periodicidad." ".$iii->vencimiento;
                 }
             }
+            $infoentidadtramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$i->Tipo_Code]);
+             if($infoentidadtramite->count() == 0)
+            {
+                 $nombreentidad="Sin / Asignar";
+            }
+            else{
+                foreach ($infoentidadtramite as $key) 
+                {
+                     $infoentidad=$this->entidaddb->findWhere(['id'=>$key->entidad_id]);
+                      foreach ($infoentidad as $ent) 
+                    {
+                        $nombreentidad=$ent->nombre;
+                    }
+                }
+            }
              $response []= array(
+                "entidad"=>$nombreentidad,
                "Tipo_Code" => $i->Tipo_Code,
                 "Tipo_Descripcion" => $i->Tipo_Descripcion,
                 "Origen_URL" => $i->Origen_URL,
@@ -1084,6 +1113,7 @@ return json_encode($response);
         $gpoTrans;
         $id_gpm;
         $descripcion_gpm;
+        $nombreentidad="";
         foreach ($info as $i) 
         {
            $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
@@ -1108,7 +1138,23 @@ return json_encode($response);
                     $limitereferencia=$iii->descripcion." ".$iii->periodicidad." ".$iii->vencimiento;
                 }
             }
+            $infoentidadtramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$i->Tipo_Code]);
+             if($infoentidadtramite->count() == 0)
+            {
+                 $nombreentidad="Sin / Asignar";
+            }
+            else{
+                foreach ($infoentidadtramite as $key) 
+                {
+                     $infoentidad=$this->entidaddb->findWhere(['id'=>$key->entidad_id]);
+                      foreach ($infoentidad as $ent) 
+                    {
+                        $nombreentidad=$ent->nombre;
+                    }
+                }
+            }
              $response []= array(
+                "entidad"=>$nombreentidad,
                "id" => $i->Tipo_Code,
                 "descripcion" => $i->Tipo_Descripcion,
                 "origen" => $i->Origen_URL,

@@ -620,6 +620,9 @@ function PagoTramite(id_)
          {
             ActualizarTabla(id_);
          }
+         else{
+          Command: toastr.warning("Ya se Encuentra Agregada", "Notifications")
+         }
        
         })
         .fail(function( msg ) {
