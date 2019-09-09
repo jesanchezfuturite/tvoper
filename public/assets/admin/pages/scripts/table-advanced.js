@@ -90,13 +90,13 @@ var TableAdvanced = function () {
 
         /* Set tabletools buttons and button container */
 
-        $.extend(true, $.fn.DataTable.TableTools.classes, {
+       /* $.extend(true, $.fn.DataTable.TableTools.classes, {
             "container": "btn-group tabletools-btn-group pull-right",
             "buttons": {
                 "normal": "btn btn-sm default",
                 "disabled": "btn btn-sm default disabled"
             }
-        });
+        });*/
 
         var oTable = table.dataTable({
 
@@ -426,16 +426,16 @@ var TableAdvanced = function () {
                 return;
             }
 
-            console.log('me 1');
+            //console.log('me 1');
 
             initTable1();
             initTable2();
             initTable3();
             initTable4();
             initTable5();
-            initTable6();
+            //initTable6();
 
-            console.log('me 2');
+            //console.log('me 2');
         }
 
     };
