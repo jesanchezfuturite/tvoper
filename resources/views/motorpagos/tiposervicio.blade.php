@@ -198,7 +198,7 @@
         findLimiteReferencia();
         findTipoReferencia();
         //TableManaged.init(); 
-       TableAdvanced.init()
+       TableAdvanced.init();
         
     });
 	function findLimiteReferencia()
