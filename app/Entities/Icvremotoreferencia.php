@@ -24,7 +24,7 @@ class Icvremotoreferencia extends Model implements Transformable
     
     protected $fillable = [];
 
-    protected $table = "";
+    protected $table = "encabezado";
 	
 	public $timestamps = false;
 
