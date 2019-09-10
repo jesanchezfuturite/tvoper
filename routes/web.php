@@ -105,7 +105,7 @@ Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
 
 /* ws estado de cuenta icv */
-Route::get('/icv-consulta-placa','IcvrestserviceController@icvconsultaplaca');
+Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
 
 
 /*/*******************************************************************************/
