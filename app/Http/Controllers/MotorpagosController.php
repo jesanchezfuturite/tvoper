@@ -203,7 +203,8 @@ return json_encode($response);
         $status = $request->estatus; 
         // get the filename 
         $fileName = $uploadedFile->getClientOriginalName(); 
-         $imageData = Byte_encode(file_get_contents($uploadedFile->getRealPath()));
+         $imageData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
+        // $string = implode(array_map("string", $imageData));
         // check if is a valid file
        // save the file in the storage folder
         try
