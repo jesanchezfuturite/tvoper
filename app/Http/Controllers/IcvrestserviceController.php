@@ -46,7 +46,7 @@ class IcvrestserviceController extends Controller
 				
     			$placa = $request->info;
 
-    			$data = $this->icv->findWhere( ['placa' => $placa] );
+    			$data = $this->icv->findWhere( ['PLACA' => $placa." "] );
 
     			if($data->count() > 1)
     			{

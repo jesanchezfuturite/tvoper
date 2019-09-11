@@ -139,10 +139,10 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-        */
+        
         'oracle' => [
             'driver'         => 'oracle',
-            'tns'            => env('DB_TNS', 'icvtrn01'), // xe
+            'tns'            => env('DB_TNS', ''), // xe
             'host'           => env('DB_HOST', '10.80.100.205'),
             'port'           => env('DB_PORT', '1521'),
             'database'       => env('DB_DATABASE', 'icvtrn01'),
@@ -154,6 +154,18 @@ return [
             'edition'        => env('DB_EDITION', 'ora$base'),
             'server_version' => env('DB_SERVER_VERSION', '11g'),
         ],
+	*/
+	'oracle' => [
+    		'driver' => 'oracle',
+    		'host' => '10.80.100.205',
+    		'port' => '1521',
+    		'database' => 'icvtrn01',
+    		'service_name' => 'icvtrn01',
+    		'username' => 'ICV_REPOSITORIO',
+    		'password' => 'repositorio19!',
+    		'charset' => '',
+    		'prefix' => '',
+	]
 
        
     ],
