@@ -22,7 +22,18 @@ class Transacciones extends Model implements Transformable
      */
    protected $connection = "mysql";
 
-    protected $fillable = ['id_transaccion_motor','estatus','referencia','importe_transaccion','fecha_transaccion'];
+    protected $fillable = [
+        'id_transaccion_motor',
+        'estatus',
+        'referencia',
+        'importe_transaccion',
+        'fecha_transaccion',
+        'id_transaccion',
+        'fecha_limite_referencia',
+        'entidad',
+        'tipo_pago',
+        'id_transaccion'
+    ];
 
     protected $table = "oper_transacciones";
     public $timestamps = false;
