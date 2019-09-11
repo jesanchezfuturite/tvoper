@@ -127,7 +127,7 @@ class IcvrestserviceController extends Controller
             return false;
         }
 
-        return array( "referencia" => $info->referencia , "monto" => $info->total );
+        return array( "referencia" => $info->linea_referencia , "monto" => $info->total );
 
     }
 
