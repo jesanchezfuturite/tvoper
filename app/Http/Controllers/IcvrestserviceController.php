@@ -21,7 +21,7 @@ class IcvrestserviceController extends Controller
 
     public function __construct(
         IcvremotoreferenciaRepositoryEloquent $icv,
-        TransaccionesRepositoryEloquent $transacciones,        
+        TransaccionesRepositoryEloquent $transacciones        
     )
     {
 
@@ -99,7 +99,7 @@ class IcvrestserviceController extends Controller
      * @return true / false si sucede algún error
      *
      */
-    private function insertarReferencia($data)
+    public function insertarReferencia($data)
     {
         $insert = array();
 
@@ -123,9 +123,7 @@ class IcvrestserviceController extends Controller
             );
 
         }catch( \Exception $e ){
-            Log::info( 
-                "[ IcvrestserviceController@insertarReferencia ] - " . $e->getMessage() );
-
+            
             return false;
         }
 
