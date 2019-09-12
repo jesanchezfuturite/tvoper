@@ -11,14 +11,56 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
-
+/*************/
+use Carbon\Carbon;
+use App\Repositories\BancoRepositoryEloquent;
+use App\Repositories\CuentasbancoRepositoryEloquent;
+use App\Repositories\MetodopagoRepositoryEloquent;
+use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+use App\Repositories\PagotramiteRepositoryEloquent;
+use App\Repositories\EntidadRepositoryEloquent;
+use App\Repositories\EntidadtramiteRepositoryEloquent;
+use App\Repositories\TiporeferenciaRepositoryEloquent;
+use App\Repositories\EgobiernostatusRepositoryEloquent;
+use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\TramiteRepositoryEloquent;
+use App\Repositories\TramitedetalleRepositoryEloquent;
+use Mail;
 class ConciliacionController extends Controller
 {
     //
     protected $files, $pr;
 
+    protected $bancodb;
+    protected $cuentasbancodb;
+    protected $metodopagodb;
+    protected $tiposerviciodb;
+    protected $pagotramitedb;
+    protected $entidaddb;
+    protected $entidadtramitedb;
+    protected $tiporeferenciadb;
+    protected $statusdb;
+    protected $transaccionesdb;
+    protected $oper_transaccionesdb;
+    protected $tramitedb;
+    protected $tramite_detalledb;
     public function __construct(
-        ProcessedregistersRepositoryEloquent $pr
+        ProcessedregistersRepositoryEloquent $pr,
+        BancoRepositoryEloquent $bancodb,
+        MetodopagoRepositoryEloquent $metodopagodb,
+        CuentasbancoRepositoryEloquent $cuentasbancodb,
+        EgobiernotiposerviciosRepositoryEloquent $tiposerviciodb,
+        PagotramiteRepositoryEloquent $pagotramitedb,
+        EntidadRepositoryEloquent $entidaddb,
+        EntidadtramiteRepositoryEloquent $entidadtramitedb,
+        TiporeferenciaRepositoryEloquent $tiporeferenciadb,
+        EgobiernostatusRepositoryEloquent $statusdb,
+        EgobiernotransaccionesRepositoryEloquent $transaccionesdb,
+        TransaccionesRepositoryEloquent $oper_transaccionesdb,
+        TramiteRepositoryEloquent $tramitedb,
+        TramitedetalleRepositoryEloquent $tramite_detalledb
+
     )
     {
     	$this->middleware('auth');
@@ -27,6 +69,21 @@ class ConciliacionController extends Controller
 
         $this->pr = $pr;
 
+
+        /******///
+        $this->bancodb=$bancodb;
+        $this->metodopagodb=$metodopagodb;
+        $this->cuentasbancodb=$cuentasbancodb;
+        $this->tiposerviciodb=$tiposerviciodb;
+        $this->pagotramitedb=$pagotramitedb;
+        $this->entidaddb=$entidaddb;
+        $this->entidadtramitedb=$entidadtramitedb;
+        $this->tiporeferenciadb=$tiporeferenciadb;
+        $this->statusdb=$statusdb;
+        $this->transaccionesdb=$transaccionesdb;
+        $this->oper_transaccionesdb=$oper_transaccionesdb;
+        $this->tramitedb=$tramitedb;
+        $this->tramite_detalledb=$tramite_detalledb;
     }
 
 
@@ -212,5 +269,84 @@ class ConciliacionController extends Controller
         );
 
         return $response;
+    }
+
+    
+    public function generaarchivo()
+    {
+
+        
+        $nombreArchivo=Carbon::now();
+        $nombreArchivo=$nombreArchivo->format('Y_m_d'); 
+        $txt='Corte_'.$nombreArchivo.'.txt';
+        log::info($txt);
+        $response = array();
+        $medio_pago;
+        $clave_tramite;
+        $partida;
+        $consepto;
+        $fecha_disp;
+        $hora_disp;
+        $fecha_pago;
+        $hora_pago;
+        $cuentas_cobro;
+        //$Archivo=fopen(storage_path('app/txt/'.$txt),"a");
+        $conciliacion=$this->pr->findwhere(['status'=>'p']);        
+        foreach ($conciliacion as $concilia) {
+            $tramite=$this->tramitedb->findwhere(['id_transaccion_motor'=>$concilia->id_transacccion]);
+            foreach ($tramite as $tram) {
+                $tamite_detalle=$this->tramite_detalledb->findwhere([''=>$tram->id_tramite_motor]);
+                foreach ($tamite_detalle as $tram_detalle) {
+                    $partida=$tram_detalle->partida;
+                    $consepto=$tram_detalle->consepto;
+                }               
+                
+            }
+            $oper_transacciones=$this->oper_transaccionesdb->findwhere(['id_transaccion_motor'=>$concilia->transaccion_id]);
+            foreach ($oper_transacciones as $trans) {
+                 $cuentas_cobro=$trans->referencia;
+             }
+            if($oper_transacciones->count() == 0)
+            {
+
+            }else{
+                $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);
+            }         
+            //$tramite=$this->tramitedb->findwhere([]);
+            $response=array(
+                'referencia'=>$concilia->referencia,
+                'foliopago'=>$concilia->transaccion_id,
+                'origen'=>$concilia->origen,
+                'medio_pago'=>$medio_pago,
+                'total_pago'=>$concilia->monto,
+                'clave_tramite'=>$clave_tramite,
+                'partida'=>$partida,
+                'consepto'=>$consepto,
+                'fecha_disp'=>$fecha_disp,
+                'hora_disp'=>$hora_disp,
+                'fecha_pago'=>$fecha_pago,
+                'hora_pago'=>$hora_pago,
+                'cuentas_cobro'=>$cuentas_cobro
+            );
+        }
+        //fputs($Archivo,$conciliacion);
+        //fclose($Archivo); 
+        //$this->enviacorreo($txt);
+    }
+    private function enviacorreo($txt)
+    {   
+        log::info($txt);               
+        $Archivo=$txt;
+        $subject = "Prueba Correo/Archivo";
+        $data = [ 'link' => 'https' ];
+        $for = "juancarlos96.15.02@gmail.com";
+        Mail::send('email',$data, function($msj) use($subject,$for,$Archivo){
+            $msj->from("juan.carlos.cruz.bautista@hotmail.com","Juan Carlos CB");
+            $msj->subject($subject);
+            $msj->to($for);
+                
+            $msj->attach(storage_path('app/txt/'.$Archivo));
+        });
+
     }
 }

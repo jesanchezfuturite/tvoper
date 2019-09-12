@@ -155,7 +155,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Máximo</label>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max">
+                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max" oninput="prueba(this);">
                             </div>
                         </div>
                         <div class="form-actions">
@@ -612,9 +612,9 @@
         var cuenta="";
         var max="";
         var min="";
-        var contadorCuenta=0;
-        var ContadorMonto=0;
-        $.each(Resp, function(i, item) {                
+        //var contadorCuenta=0;
+        //var ContadorMonto=0;
+       /* $.each(Resp, function(i, item) {                
               var beneficiario=$.parseJSON(item.beneficiario);
               max=item.monto_max;
               min=item.monto_min;
@@ -634,16 +634,16 @@
                 ContadorMonto=ContadorMonto+1;
                }
              }
-              console.log(parseFloat(min)+"  "+parseFloat(max) +" -- " + parseFloat(monto_min)+"  "+parseFloat(monto_max) );
+              //console.log(parseFloat(min)+"  "+parseFloat(max) +" -- " + parseFloat(monto_min)+"  "+parseFloat(monto_max) );
 
-          });
-        console.log(" contador:"+ContadorMonto);
-        if(contadorCuenta>0)
-        {
-           Command: toastr.warning("La Cuenta Ya Existe A Un Tipo de Metodo de Pago!", "Notifications") 
-        }else if(ContadorMonto>0){
-          Command: toastr.warning("El Monto Minimo y Maximo se Cruza Con Otra Cuenta", "Notifications")
-        }else{
+          });*/
+        //console.log(" contador:"+ContadorMonto);
+       // if(contadorCuenta>0)
+       // {
+        //   Command: toastr.warning("La Cuenta Ya Existe A Un Tipo de Metodo de Pago!", "Notifications") 
+       // }else if(ContadorMonto>0){
+        //  Command: toastr.warning("El Monto Minimo y Maximo se Cruza Con Otra Cuenta", "Notifications")
+        //}else{
           if(idcuenta=="")
             {
             insertCuentaB();
@@ -652,7 +652,7 @@
             {
             updatecuenta();
             }
-        }
+       // }
         })
         .fail(function( msg ) {
          console.log(msg);  });
@@ -745,7 +745,19 @@
         "hideDuration": "1000",
         "timeOut": "4000",
          "extendedTimeOut": "1000"
-        }     
+        }  
+
+    function prueba(n) {
+       var num = n.value;
+        var vew;
+       if (parseFloat(num) >= 1&& parseFloat(num) <= 999999999.99) {
+         
+       } else {  
+            vew= num.substring(0,num.length-1)    
+           document.getElementById('monto_max').value=vew;
+ 
+       }
+    }
 </script>
 
 @endsection
