@@ -103,11 +103,14 @@ Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransa
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
 Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
+/*************   envio correo    **************/
+
+//Route::get('/envia-correo','ConciliacionController@enviacorreo');
+Route::get('/genera-archivo','ConciliacionController@generaarchivo');
 
 /* ws estado de cuenta icv */
-Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
 
-
+Route::get('/icv-consulta-placa/{info}','@icvconsultaplaca');
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
@@ -131,3 +134,5 @@ Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
 Route::get('/cfdi-manual','ManualcfdiController@index')->name('cfdi-captura');
+Route::post('/cfdi-manual/busca-rfc','ManualcfdiController@searchrfc');
+Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');

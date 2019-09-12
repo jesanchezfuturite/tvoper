@@ -12,14 +12,18 @@ use App\Repositories\CfdiEncabezadosRepositoryEloquent;
 
 use App\Repositories\CfdiDetalleRepositoryEloquent;
 
+use App\Repositories\CfdiDatosfiscalesRepositoryEloquent;
+
 class ManualcfdiController extends Controller 
 {
-	public function __construct(CfdiEncabezadosRepositoryEloquent $encabezado,CfdiDetalleRepositoryEloquent $detalle)
+	public function __construct(CfdiEncabezadosRepositoryEloquent $encabezado,CfdiDetalleRepositoryEloquent $detalle, CfdiDatosfiscalesRepositoryEloquent $datosfiscales)
 	{
 		$this->middleware('auth');
 
     	$this->encabezado = $encabezado;
         $this->detalle = $detalle;
+        $this->datosfiscales = $datosfiscales;
+
 	}
 
 
@@ -55,5 +59,29 @@ class ManualcfdiController extends Controller
     		'99' => 'Por definir'
     	];
     	return view('cfditool/cfdimanual',$data);
+    }
+
+    /**
+     *
+     * @param POST request RFC
+     * Return result from RFC query.
+     *
+     * @return table with data.
+     */
+    public function datosfiscales(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            try {
+                $reg = $this->datosfiscales->findWhere(['rfc_receptor'=>$request->rfc]);
+                // print_r($reg);
+                return json_encode($reg[0]);
+                
+            } 
+            catch (\Exception $e) 
+            {
+                return json_encode($e);
+            }
+        }
     }
 }
