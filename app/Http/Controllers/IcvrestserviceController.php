@@ -11,18 +11,22 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\IcvremotoreferenciaRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
 
 class IcvrestserviceController extends Controller
 {
     //
     protected $icv;
+    protected $transacciones;
 
     public function __construct(
-        IcvremotoreferenciaRepositoryEloquent $icv
+        IcvremotoreferenciaRepositoryEloquent $icv,
+        TransaccionesRepositoryEloquent $transacciones        
     )
     {
 
-        $this->icv = $icv;
+        $this->icv              = $icv;
+        $this->transacciones    = $transacciones;
 
     }
 
@@ -46,40 +50,84 @@ class IcvrestserviceController extends Controller
 				
     			$placa = $request->info;
 
-    			$data = $this->icv->findWhere( ['placa' => $placa] );
+    			$data = $this->icv->findWhere( ['PLACA' => $placa . " "] );
 
     			if($data->count() > 1)
     			{
     				$message = "Existe más de un registro en ICV";
     				$response ["E01"]= $message ;
-    				Log::info('[WS-icvconsultaplaca] - E01 - ' . $placa);
-  					return response()->json($response);
+    				Log::info('[WS-icvconsultaplaca] - Más de una placa en Oracle ICV - ' . $placa);
+  	
     			}elseif($data->count() == 1){
-    				$message = "No existe información de la placa";
-    				//$response ["E01"]= $message ;
+    				$message = array();
     				Log::info('[WS-icvconsultaplaca] - Placa - ' . $placa);
-    				dd($data);
+    				// insertar referencia en 
+                    $answer = $this->insertarReferencia($data);
+                    if( is_array($answer) )
+                    {
+                        // aqui recibo la referencia, monto
+                        $response = $answer;
+                    }else{
+                        // aqui genero el mensaje de error 
+                        $response ["E04"]= "Error al insertar referencia en el repositorio";
+                    }
     			}else{
     				$message = "No existe información de la placa";
     				$response ["E02"]= $message;
     				Log::info('[WS-icvconsultaplaca] - E02 - ' . $placa);
-  					return response()->json($response);
     			}
-    			
-
 			} catch ( \Exception $e) {
 				$response ["FE-R"]= "Error al intentar obtener información de ICV";
 				return response()->json($response,200,['Content-Type' => "json", 'charset' => 'utf-8'],JSON_UNESCAPED_UNICODE);			
 			}			
 
+            return response()->json($response);
 
 		}else{
-			$response ["E01"]= "No es una placa valida";
+			$response ["E03"]= "No es una placa valida";
   			return response()->json($response);
 		}
 
+    }
 
-    	dd($data);
+    /**
+     * Guardo la informacion de la referencia en el repositorio
+     *
+     * @param $data = objeto que tiene la información ICV y guarda en oper_transacciones
+     *
+     *
+     * @return true / false si sucede algún error
+     *
+     */
+    public function insertarReferencia($data)
+    {
+        $insert = array();
+
+        foreach($data as $info)
+        {
+            $insert = array (
+                "id_transaccion"            => 0,
+                "fecha_limite_referencia"   => date("Y-m-t"),
+                "fecha_transaccion"         => date("Y-m-d H:i:s"),
+                "entidad"                   => 0,
+                "estatus"                   => 60,
+                "tipo_pago"                 => 12,
+                "referencia"                => $info->linea_referencia,
+                "importe_transaccion"       => $info->total
+            );
+        }
+
+        try{
+            $this->transacciones->create(
+                $insert
+            );
+
+        }catch( \Exception $e ){
+            
+            return false;
+        }
+
+        return array( "referencia" => $info->linea_referencia , "monto" => $info->total );
 
     }
 
