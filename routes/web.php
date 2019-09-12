@@ -98,6 +98,16 @@ Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesF
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
 
+/************detalle de pago tramite***********/
+
+Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
+Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
+
+
+/* ws estado de cuenta icv */
+Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
+
+
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {

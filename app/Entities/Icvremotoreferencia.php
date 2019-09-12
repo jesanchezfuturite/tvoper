@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Banco.
+ * Class Icvremotoreferencia.
  *
  * @package namespace App\Entities;
  */
-class Banco extends Model implements Transformable
+class Icvremotoreferencia extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,11 +20,12 @@ class Banco extends Model implements Transformable
      *
      * @var array
      */
-    protected $connection = "mysql";
+    protected $connection = "oracle";
+    
+    protected $fillable = [];
 
-    protected $fillable = ['id','nombre','imagen','url_logo','status','created_at','updated_at'];
+    protected $table = "encabezado";
+	
+	public $timestamps = false;
 
-    protected $table = "oper_banco";
-
-    public $timestamps = false;
 }
