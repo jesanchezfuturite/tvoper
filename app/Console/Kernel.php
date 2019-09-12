@@ -17,7 +17,6 @@ class Kernel extends ConsoleKernel
         Commands\Conciliacion::class,
         Commands\Egobtransacciones::class,
         Commands\updateStatus::class,
-        Commands\enviarcorreo::class
     ];
 
     /**
@@ -37,12 +36,9 @@ class Kernel extends ConsoleKernel
                  ->everyFiveMinutes();
 
         /*cambia el estatus de la transaccion todos los dias a las 03:00:00 hrs*/
-        $schedule->command('updateStatus:status')
+       $schedule->command('updateStatus:status')
                 //->everyMinute();
                ->dailyAt('03:00');
-        //$schedule->command('enviarcorreo:correo')
-                //->everyMinute();
-               
     }   
 
     /**
