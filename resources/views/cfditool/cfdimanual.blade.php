@@ -31,113 +31,95 @@
 		<div class="portlet-body form">
 			<form action="#" class="form-horizontal" method="POST" id="formCFDI">
 				<div class="form-body">
-					<h3 class="form-section">Datos del Contribuyente</h3>
-					<div class="form-group">						
-						<label for="" class="col-md-3 control-label">RFC</label>
-						<div class="col-md-4">
-							<div class="input-group" style="text-align: left;">
-								<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
-								<input name="rfc" id="rfc" type="text" class="form-control" placeholder="Contribuyente" onkeyup="this.value = this.value.toUpperCase();">		
-								<span class="input-group-btn"><a class="btn blue" id="btnVrfc"><i class="fa fa-search"></i> Verificar </a></span>					
-							</div>					
-							<span class="help-block">Este dato es requerido.</span>
-						</div>								
-					</div>
-					<div class="form-group">						
-						<label for="" class="col-md-3 control-label">Nombre</label>
-						<div class="col-md-4">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-user"></i></span>
-								<input id="nombre" name="nombre" type="text" class="form-control" placeholder="Contribuyente">								
-							</div>
-						</div>
-					</div>
-					<div class="form-group">						
-						<label for="" class="col-md-3 control-label">Apellido Paterno</label>
-						<div class="col-md-4">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-user"></i></span>
-								<input id="apaterno" name="apaterno" type="text" class="form-control" placeholder="Contribuyente">								
-							</div>
-						</div>
-					</div>
-					<div class="form-group">						
-						<label for="" class="col-md-3 control-label">Apellido Materno</label>
-						<div class="col-md-4">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-user"></i></span>
-								<input id="amaterno" name="amaterno" type="text" class="form-control" placeholder="Contribuyente">								
-							</div>
-						</div>
-					</div>
-					<div class="form-group">						
-						<label for="" class="col-md-3 control-label">Email</label>
-						<div class="col-md-4">
-							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-								<input id="email" name="email" type="text" class="form-control" placeholder="Contribuyente" readonly="true">
-							</div>
-						</div>
-					</div>
-					<h3 class="form-section">Datos del CFDI</h3>
 					<div class="row">
 						<div class="col-md-6">
-							<div class="form-group">						
+							<h3 class="form-section">Datos del Contribuyente</h3>
+							<div class="form-group" style="text-align: center;">
+								<label for="" class="col-md-3 control-label">RFC</label>
+								<div class=" col-md-8 input-group" >
+									<span class="input-group-addon"><i class="fa fa-user"></i></span>
+									<input name="rfc" id="rfc" type="text" class="form-control" placeholder="Contribuyente" onkeyup="this.value = this.value.toUpperCase();">
+									<span class="input-group-btn"><a class="btn blue" id="btnVrfc"><i class="fa fa-search"></i> Verificar </a></span>
+								</div>
+								<span class="help-block">Este dato es requerido.</span>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">Nombre</label>
+								<div class=" col-md-8 input-group">
+									<span class="input-group-addon"><i class="fa fa-user"></i></span>
+									<input name="nombre" id="nombre" type="text" class="form-control" placeholder="Contribuyente">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">Apellido Paterno</label>
+								<div class=" col-md-8 input-group">
+									<span class="input-group-addon"><i class="fa fa-user"></i></span>
+									<input name="apaterno" id="apaterno" type="text" class="form-control" placeholder="Contribuyente">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">Apellido Materno</label>
+								<div class=" col-md-8 input-group">
+									<span class="input-group-addon"><i class="fa fa-user"></i></span>
+									<input name="amaterno" id="amaterno" type="text" class="form-control" placeholder="Contribuyente">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">E-mail</label>
+								<div class=" col-md-8 input-group">
+									<span class="input-group-addon"><i class="fa fa-at"></i></span>
+									<input name="email" id="email" type="text" class="form-control" placeholder="Contribuyente">
+								</div>
+							</div>
+
+						</div>
+						<div class="col-md-6">
+							<h3 class="form-section">Datos del CFDI</h3>
+							<div class="form-group">
 								<label for="" class="col-md-3 control-label">Calle</label>
-								<div class="input-group">
+								<div class=" col-md-8 input-group">
 									<span class="input-group-addon"><i class="fa fa-road"></i></span>
-									<input id="calle" name="calle" type="text" class="form-control" placeholder="Contribuyente" readonly="true">
+									<input name="calle" id="calle" type="text" class="form-control" placeholder="Contribuyente">
 								</div>
 							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">						
-								<label for="" class="col-md-3 control-label">No. Exterior</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-bell"></i></span>
-									<input id="noext" name="noext" type="text" class="form-control" placeholder="Contribuyente" readonly="true">
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">Numero</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-bell"></i></span>
+										<input name="noext" id="noext" type="text" class="form-control" placeholder="Exterior">
+									</div>								
+								</div>
+								<div class="col-md-4">									
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-bell"></i></span>
+										<input name="noint" id="noint" type="text" class="form-control" placeholder="Interior">
+									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">						
+							<div class="form-group">
 								<label for="" class="col-md-3 control-label">Colonia</label>
-								<div class="input-group">
+								<div class=" col-md-8 input-group">
 									<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-									<input id="colonia" name="colonia" type="text" class="form-control" placeholder="Contribuyente" readonly="true">
+									<input name="colonia" id="colonia" type="text" class="form-control" placeholder="Contribuyente">
 								</div>
 							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">						
-								<label for="" class="col-md-3 control-label">No. Interior</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-bell"></i></span>
-									<input id="noint" name="noint" type="text" class="form-control" placeholder="Contribuyente" readonly="true">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">						
+							<div class="form-group">
 								<label for="" class="col-md-3 control-label">Metodo de Pago</label>
-								<div class="input-group">
+								<div class=" col-md-8 input-group">
 									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
-									<select id="mp" name="mp" class="form-control" placeholder="Contribuyente">
-										@foreach($formaspago as $fpk => $fp)
-										<option value="{{ $fpk }}">{{ $fp }}</option>
-										@endforeach
-									</select>
+									<select id="mp" name="mp" class="form-control" placeholder="Contribuyente" >
+                                        @foreach($formaspago as $fpk => $fp)
+                                        <option value="{{ $fpk }}">{{ '[ '.$fpk.' ]  -- ' . strtoupper($fp) }}</option>
+                                        @endforeach
+                                    </select>
+                                    <!-- <span class="input-group-addon" id="sp-mp"></span>    -->
 								</div>
+								
 							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">						
-								<label for="" class="col-md-3 control-label">Formas de Pago</label>
-								<div class="input-group">
+							<div class="form-group">
+								<label for="" class="col-md-3 control-label">Forma de Pago</label>
+								<div class=" col-md-8 input-group">
 									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
 									<input id="fp" name="fp" type="text" class="form-control" value="PAGO EN UNA SOLA EXHIBICION" readonly="true">
 								</div>
@@ -145,48 +127,28 @@
 						</div>
 					</div>
 					<h3 class="form-section">Detalle del CFDI</h3>
-					<div class="row" id="details">
-						
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="" class="col-md-3 control-label">Cantidad</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
-									<input name="qty[]" type="text" class="form-control" value="1" readonly="true">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="col-md-3 control-label">Unidad</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
-									<input name="uni[]" type="text" class="form-control" value="Servicio" readonly="true">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="col-md-3 control-label">Precio Unitario</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-usd"></i></span>
-									<input name="pru[]" type="text" class="form-control">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="col-md-3 control-label">Total</label>
-								<div class="input-group">
-									<span class="input-group-addon"><i class="fa fa-usd"></i></span>
-									<input name="ttl[]" type="text" class="form-control">
-								</div>
-							</div>							
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="" class="col-md-3 control-label">Concepto</label>
-								<div class="input-group">
-									<textarea class="form-control" name="con[]" maxlength="255" rows="10" cols="80"></textarea>
-								</div>
-							</div>
-						</div>
-
-					</div>
+					<div class="table-scrollable">
+	                    <table class="table table-striped table-bordered table-hover" id="details">
+	                        <thead>
+	                            <tr class="row">
+	                                <th>Cantidad</th>
+	                                <th>Unidad</th>
+	                                <th>Precio Unitario</th>
+	                                <th>Total</th>
+	                                <th>Concepto</th>
+	                            </tr>
+	                        </thead>
+	                        <tbody>
+	                        	<tr class="row">
+	                        		<td><input name="qty[]" type="text" class="form-control" value="1" readonly="true"></td>
+	                        		<td><input name="uni[]" type="text" class="form-control" value="SERVICIO" readonly="true"></td>
+	                        		<td><input name="pru[]" type="text" class="form-control currency"></td>
+	                        		<td><input name="ttl[]" type="text" class="form-control currency"></td>
+	                        		<td><input name="con[]" type="text" class="form-control"></td>
+	                        	</tr>
+	                        </tbody>
+	                    </table>
+	                </div>
 					<br><br>
 					<div class="col text-center">
 						<button class="btn btn-success" id="btnAdd" type="button">Agregar</button>								
@@ -211,6 +173,17 @@
             return false;
         }
     }, "Ingrese un RFC valido");
+
+    $('.currency').on('keypress',function(event) {
+
+	    if(event.which < 46 || event.which > 59) {
+	        event.preventDefault();
+	    } // prevent if not number/dot
+
+	    if(event.which == 46 && $(this).val().indexOf('.') != -1) {
+	        event.preventDefault();
+	    } // prevent if already dot
+	});
 
 	$('#formCFDI').validate({
 		rules: {
@@ -248,6 +221,14 @@
 	$('#btnVrfc').on('click',function(){
 
 		var rfc = $('#rfc').val();
+		$('#nombre').val();
+		$('#apaterno').val();
+		$('#amaterno').val();
+		$('#email').val();
+		$('#calle').val();
+		$('#noint').val();
+		$('#noext').val();
+		$('#colonia').val();
 
 		if(rfc.length>0){
 			$.ajax({
@@ -293,39 +274,17 @@
 
 	$('#btnAdd').on('click',function(){
 
-		$('#details')
-			.append($('<div>').addClass('col-md-6').css({'margin-bottom':'20px','margin-top':'15px','width':'100%','height':'1px','border-top':'1px solid #B2B2B2'}))
-			.append($('<div>').addClass('col-md-6')
-				.append($('<div>').addClass('form-group	')
-					.append($('<label>').addClass('col-md-3 control-label').html('Cantidad'))
-					.append($('<div>').addClass('input-group')
-						.append($('<span>').addClass('input-group-addon')
-							.append($('<i>').addClass('fa fa-bookmark')))
-						.append($('<input>').addClass('form-control').attr({name:'qty[]',readonly:true}).val('1'))))
-				.append($('<div>').addClass('form-group')
-					.append($('<label>').addClass('col-md-3 control-label').html('Unidad'))
-					.append($('<div>').addClass('input-group')
-						.append($('<span>').addClass('input-group-addon')
-							.append($('<i>').addClass('fa fa-bookmark')))
-						.append($('<input>').addClass('form-control').attr({name:'uni[]',readonly:true}).val('Servicio'))))
-				.append($('<div>').addClass('form-group')
-					.append($('<label>').addClass('col-md-3 control-label').html('Precio Unitario'))
-					.append($('<div>').addClass('input-group')
-						.append($('<span>').addClass('input-group-addon')
-							.append($('<i>').addClass('fa fa-usd')))
-						.append($('<input>').addClass('form-control').attr({name:'pru[]'}))))
-				.append($('<div>').addClass('form-group')
-					.append($('<label>').addClass('col-md-3 control-label').html('Total'))
-					.append($('<div>').addClass('input-group')
-						.append($('<span>').addClass('input-group-addon')
-							.append($('<i>').addClass('fa fa-usd')))
-						.append($('<input>').addClass('form-control').attr({name:'ttl[]'}))))
-			)
-			.append($('<div>').addClass('col-md-6')
-				.append($('<div>').addClass('form-group')
-					.append($('<label>').addClass('col-md-3 control-label').html('Concepto'))
-					.append($('<div>').addClass('input-group')
-						.append($('<textarea>').addClass('form-control').attr({maxlength:"255",rows:"10",cols:"80",name:'con[]'})))));
+		var row = $('<tr>').addClass('row')
+			.append($('<td>').append($('<input>').attr({readonly:true,value:1,name:'qty[]'}).addClass('form-control')))
+			.append($('<td>').append($('<input>').attr({readonly:true,value:'SERVICIO',name:'uni[]'}).addClass('form-control')))
+			.append($('<td>').append($('<input>').attr({name:'pru[]'}).addClass('form-control')))
+			.append($('<td>').append($('<input>').attr({name:'ttl[]'}).addClass('form-control')))
+			.append($('<td>').append($('<input>').attr({name:'con[]'}).addClass('form-control')))
+			
+
+
+		$('#details > tbody').append(row);
+			
 	});
 
 </script>
