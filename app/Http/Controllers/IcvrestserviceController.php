@@ -133,10 +133,10 @@ class IcvrestserviceController extends Controller
                 $insert
             );
 
-            $first_level = $this->insertTramite($info,$i->id());
+            $first_level = $this->insertTramite($info,$i->id);
 
         }catch( \Exception $e ){
-            
+            dd($e->getMessage());
             return false;
         }
 
@@ -181,7 +181,7 @@ class IcvrestserviceController extends Controller
             "email_factura"             => $info->email,
             "calle_factura"             => $info->calle,
             "colonia_factura"           => $info->colonia,
-            "numexterior_factura"       => $info->numero_ext,
+            "numexteior_factura"       => $info->numero_ext,
             "numinterior_factura"       => $info->numero_int,
             "colonia_factura"           => $info->colonia,
             "codigopostal_factura"      => $info->codigo_postal,

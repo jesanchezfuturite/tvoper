@@ -50,10 +50,12 @@ class Tramites extends Model implements Transformable
     	'email_factura',
     	'calle_factura',
     	'colonia_factura',
-    	'numexterior_factura',
+    	'numexteior_factura',
     	'numinterior_factura',
     	'municipio_factura',
     	'codigopostal_factura'
     ];
+
+    public $timestamps = false;
 
 }
