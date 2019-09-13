@@ -48,14 +48,25 @@ class IcvrestserviceController extends Controller
 	 *
 	 */
 
+
     public function icvconsultaplaca(Request $request)
     {
+        /* check keys */
+        $constant = "tesoreria_" . date("Ymd");
+        $k = base64_decode($request->key);
+
+        if(strcmp($k,$constant) != 0)
+        {
+            return response()->json(["E05" => "Llave no valida"]);
+        }
+
 
     	if(
     		preg_match('/^[a-zA-Z]+[a-zA-Z0-9._]+$/', $request->info)
     		&& ( strlen($request->info) == 7 || strlen($request->info) == 8 )
     	)
 		{
+
 			// buscar en ICV la placa solicitada
 			try {
 				
