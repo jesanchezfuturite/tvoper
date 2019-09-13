@@ -111,7 +111,8 @@ Route::get('/genera-archivo','ConciliacionController@generaarchivo');
 
 /* ws estado de cuenta icv */
 
-Route::get('/icv-consulta-placa/{info}','@icvconsultaplaca');
+Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
+
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {

@@ -11,23 +11,34 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\IcvremotoreferenciaRepositoryEloquent;
+use App\Repositories\IcvremotodetalleRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\TramitesRepositoryEloquent;
+use App\Repositories\DetalletramiteRepositoryEloquent;
 
 class IcvrestserviceController extends Controller
 {
     //
     protected $icv;
     protected $transacciones;
+    protected $tramites;
+    protected $detalleIcv;
+    protected $detalleTramite;
 
     public function __construct(
         IcvremotoreferenciaRepositoryEloquent $icv,
-        TransaccionesRepositoryEloquent $transacciones        
+        TransaccionesRepositoryEloquent $transacciones,
+        TramitesRepositoryEloquent $tramites,
+        IcvremotodetalleRepositoryEloquent $detalleIcv,
+        DetalletramiteRepositoryEloquent $detalleTramite        
     )
     {
 
         $this->icv              = $icv;
         $this->transacciones    = $transacciones;
-
+        $this->tramites         = $tramites;
+        $this->detalleIcv       = $detalleIcv;
+        $this->detalleTramite   = $detalleTramite;
     }
 
     /**
@@ -99,7 +110,7 @@ class IcvrestserviceController extends Controller
      * @return true / false si sucede algún error
      *
      */
-    public function insertarReferencia($data)
+    private function insertarReferencia($data)
     {
         $insert = array();
 
@@ -118,12 +129,13 @@ class IcvrestserviceController extends Controller
         }
 
         try{
-            $this->transacciones->create(
+            $i = $this->transacciones->create(
                 $insert
             );
+            $first_level = $this->insertTramite($info,$i->id);
 
         }catch( \Exception $e ){
-            
+            dd($e->getMessage());
             return false;
         }
 
@@ -131,5 +143,93 @@ class IcvrestserviceController extends Controller
 
     }
 
+    /**
+     * Insertar el registro en oper_tramites
+     *
+     * @param $info info from oracle / $id inserted in motor
+     *
+     *
+     * @return true / false si sucede algún error
+     *
+     */
+    private function insertTramite($info, $id)
+    {
+        $d = array(
+            "id_transaccion_motor"      => $id,
+            // "id_tipo_servicio"          => $info->,
+            "nombre"                    => $info->nombre,
+            "apellido_paterno"          => $info->apellido_paterno,
+            "apellido_materno"          => $info->apellido_materno,
+            //"razon_social"      => $info->, /* no hay datos */
+            "rfc"                       => $info->rfc,
+            "curp"                      => $info->curp,
+            "email"                     => $info->email,
+            "calle"                     => $info->calle,
+            "colonia"                   => $info->colonia,
+            "numexterior"               => $info->numero_ext,
+            "numinterior"               => $info->numero_int,
+            "colonia"                   => $info->colonia,
+            "codigopostal"              => $info->codigo_postal,
+            "municipio"                 => $info->municipio,
+            //"razon_social"      => $info->, /* no hay datos */
+            "nombre_factura"            => $info->nombre,
+            "apellido_paterno_factura"  => $info->apellido_paterno,
+            "apellido_materno_factura"  => $info->apellido_materno,
+            "rfc_factura"               => $info->rfc,
+            "curp_factura"              => $info->curp,
+            "email_factura"             => $info->email,
+            "calle_factura"             => $info->calle,
+            "colonia_factura"           => $info->colonia,
+            "numexteior_factura"       => $info->numero_ext,
+            "numinterior_factura"       => $info->numero_int,
+            "colonia_factura"           => $info->colonia,
+            "codigopostal_factura"      => $info->codigo_postal,
+            "municipio_factura"         => $info->municipio,
+        );
+
+        try {
+            $i = $this->tramites->create ( $d );
+            $this->insertDetalles($info,$i->id);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
+        return true;
+    }
+
+    /**
+     * Insertar el registro en oper_detalle_tramite
+     *
+     * @param $info info from oracle / $id inserted in motor
+     *
+     *
+     * @return true / false si sucede algún error
+     *
+     */
+    private function insertDetalles($info,$id)
+    {
+
+        try {
+            
+            $detalle = $this->detalleIcv->findWhere( [ "guid" => $info->guid ] );
+
+            foreach($detalle as $d)
+            {
+                $insert = array(
+                    "id_tramite_motor"  => $id,
+                    "concepto"          => $detalle->concepto,
+                    "importe_concepto"  => $detalle->importe,
+                    "partida"           => $detalle->partida 
+                );
+
+                $i = $this->detalleTramite->create( $insert );
+
+            }
+
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+
+        return true;
+    }
 
 }
