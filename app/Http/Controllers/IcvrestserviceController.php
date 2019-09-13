@@ -134,7 +134,10 @@ class IcvrestserviceController extends Controller
             );
 
             $first_level = $this->insertTramite($info,$i->id);
-
+            if($first_level == false){
+                dd("Error no existen detalles del tramite en ICV");
+                return false;
+            }
         }catch( \Exception $e ){
             dd($e->getMessage());
             return false;
@@ -190,7 +193,10 @@ class IcvrestserviceController extends Controller
 
         try {
             $i = $this->tramites->create ( $d );
-            $this->insertDetalles($info,$i->id);
+            $r = $this->insertDetalles($info,$i->id);
+            if($r == false){
+                return false;
+            }
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -213,19 +219,24 @@ class IcvrestserviceController extends Controller
             
             $detalle = $this->detalleIcv->findWhere( [ "guid" => $info->guid ] );
 
-            foreach($detalle as $d)
+            if($detalle->count() > 0)
             {
-		dd("buscar",$info->guid,"datos",$detalle);
-                $insert = array(
-                    "id_tramite_motor"  => $id,
-                    "concepto"          => $detalle->detalle,
-                    "importe_concepto"  => $detalle->importe,
-                    "partida"           => $detalle->partida 
-                );
+                foreach($detalle as $d)
+                {
+                    $insert = array(
+                        "id_tramite_motor"  => $id,
+                        "concepto"          => $detalle->detalle,
+                        "importe_concepto"  => $detalle->importe,
+                        "partida"           => $detalle->partida 
+                    );
 
-                $i = $this->detalleTramite->create( $insert );
+                    $i = $this->detalleTramite->create( $insert );
 
+                }    
+            }else{
+                return false;
             }
+            
 
         } catch (Exception $e) {
             dd($e->getMessage());
