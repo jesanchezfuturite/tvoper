@@ -225,9 +225,9 @@ class IcvrestserviceController extends Controller
                 {
                     $insert = array(
                         "id_tramite_motor"  => $id,
-                        "concepto"          => $detalle->detalle,
-                        "importe_concepto"  => $detalle->importe,
-                        "partida"           => $detalle->partida 
+                        "concepto"          => $d->detalle,
+                        "importe_concepto"  => $d->importe,
+                        "partida"           => $d->partida 
                     );
 
                     $i = $this->detalleTramite->create( $insert );
