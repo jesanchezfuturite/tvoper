@@ -445,6 +445,27 @@ return json_encode($response);
 
     public function findTipoServicioAll()
     {       
+       
+        $info = $this->tiposerviciodb->all();
+        foreach($info as $i)
+        {
+            $response []= array(
+               "id" => $i->Tipo_Code,
+                "nombre" => $i->Tipo_Descripcion,
+                "Origen_URL" => $i->Origen_URL,
+                "GpoTrans_Num" => $i->GpoTrans_Num,
+                "id_gpm" => $i->id_gpm,
+                "descripcion_gpm" => $i->descripcion_gpm,
+                "tiporeferencia_id" => $i->tiporeferencia_id,
+                "limitereferencia_id" => $i->limitereferencia_id
+            );
+        }
+
+        return json_encode($response);
+        
+    }
+     public function findTipoServicioAllWhere()
+    {       
         $responseentidad = array();  
         $entidadtramite=$this->entidadtramitedb->all();
          foreach($entidadtramite as $ii)
