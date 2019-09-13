@@ -215,9 +215,10 @@ class IcvrestserviceController extends Controller
 
             foreach($detalle as $d)
             {
+		dd("buscar",$info->guid,"datos",$detalle);
                 $insert = array(
                     "id_tramite_motor"  => $id,
-                    "concepto"          => $detalle->concepto,
+                    "concepto"          => $detalle->detalle,
                     "importe_concepto"  => $detalle->importe,
                     "partida"           => $detalle->partida 
                 );
