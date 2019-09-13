@@ -132,7 +132,6 @@ class IcvrestserviceController extends Controller
             $i = $this->transacciones->create(
                 $insert
             );
-
             $first_level = $this->insertTramite($info,$i->id);
 
         }catch( \Exception $e ){
@@ -156,7 +155,7 @@ class IcvrestserviceController extends Controller
     private function insertTramite($info, $id)
     {
         $d = array(
-            "id_transaccion"            => $id,
+            "id_transaccion_motor"      => $id,
             // "id_tipo_servicio"          => $info->,
             "nombre"                    => $info->nombre,
             "apellido_paterno"          => $info->apellido_paterno,
@@ -190,7 +189,7 @@ class IcvrestserviceController extends Controller
 
         try {
             $i = $this->tramites->create ( $d );
-
+            $this->insertDetalles($info,$i->id);
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
