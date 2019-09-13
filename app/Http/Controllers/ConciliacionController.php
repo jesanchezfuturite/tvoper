@@ -308,7 +308,7 @@ class ConciliacionController extends Controller
              }
             if($oper_transacciones->count() == 0)
             {
-
+                
             }else{
                 $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);
             }         

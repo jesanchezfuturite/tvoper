@@ -186,8 +186,10 @@
                 <h4 class="modal-title">Registro Tramite Entidad</h4>
             </div>
             <div class="modal-body">  
-              <label for="search">Buscar:</label>
-                <input type="text" name="search" id="search" class="form-control" placeholder="Escribe...">
+               <div class="col-md-12"><div class='form-group'><label for="search">Buscar:</label></div></div>
+                 <div class="col-md-8"><div class='form-group'><input type="text" name="search" id="search" class="form-control" placeholder="Escribe..."></div></div>
+                <div class="col-md-4"><div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='MostrarTodos()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div><span class='help-block'>Muestra Todo los Registros</span> 
+              </div></div>
                 <br>
                <div  id="demo">
               
@@ -221,11 +223,48 @@
       FindEntidadTable();
       
     });
-    function FindEntidadTable()
+    function MostrarTodos()
+    {
+      var check=$("#checkbox30").prop("checked");
+      if(check==true)
+      {
+          FindEntidadTableAll();
+        
+           //$("#table2 tbody tr").remove();
+      }
+      else{
+        FindEntidadTable();
+      }
+      document.getElementById('search').focus();
+      document.getElementById('search').value="";
+    }
+    function FindEntidadTableAll()
     {
       $.ajax({
         method: "get",            
         url: "{{ url('/tiposervicio-find-all') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#table2 tbody tr").remove();
+        $.each(Resp, function(i, item) {                
+               $("#table2").append("<tr>"
+                +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
+                +"<td >"+item.nombre+"</td>"
+                +"</tr>"
+            );  
+        });
+        sortTable();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function FindEntidadTable()
+    {
+      $.ajax({
+        method: "get",            
+        url: "{{ url('/tiposervicio-find-all-where') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -521,9 +560,10 @@
                 $.each(Resp, function(i, item) {                
                  $('#table').append("<tr>"
                     +"<td>"+item.tiposervicio+"</td>"
-                    +"<td class='text-right'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar Registro' onclick=\"updateTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-edit'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar Registro' onclick=\"DeleteTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
+                    +"<td class='text-right'><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar Registro' onclick=\"DeleteTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>");    });
               }
+              /*<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar Registro' onclick=\"updateTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-edit'></i> </a>*/
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -560,8 +600,9 @@
     {
         //$("#itemsTipoServicio").val('limpia')
         //$("#itemsTipoServicio option[value='limpia']").attr("selected", true);
+        document.getElementById('search').value="";
         document.getElementById('itemsTipoServicio').value="limpia";
-       document.getElementById('idtramiteEntidad').value="";
+        document.getElementById('idtramiteEntidad').value="";
         document.getElementById('idregistro').value="";
        $("#itemsTipoServicio").val("limpia").change();
        document.getElementById('selectedChecks').value="[]";
@@ -619,9 +660,11 @@
        //$("#ch_"+value+" :checkbox").attr('checked', true);
        //$("#ch_"+value+"").removeAttr('checked');
         //});
+        $("#checkbox30").prop("checked", false);
       document.getElementById('selectedChecks').value="[]";
       document.getElementById('search').value="";
        $('input:checkbox').removeAttr('checked');
+       FindEntidadTable();
   }
   function sortTable() {
   var table, rows, switching, i, x, y, shouldSwitch;
