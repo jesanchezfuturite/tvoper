@@ -157,7 +157,7 @@ class IcvrestserviceController extends Controller
     {
         $d = array(
             "id_transaccion"            => $id,
-            "id_tipo_servicio"          => $info->,
+            // "id_tipo_servicio"          => $info->,
             "nombre"                    => $info->nombre,
             "apellido_paterno"          => $info->apellido_paterno,
             "apellido_materno"          => $info->apellido_materno,
