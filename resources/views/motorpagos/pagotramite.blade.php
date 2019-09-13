@@ -75,7 +75,7 @@
             <div class="col-md-5">
                 <div class="form-group">
                                        
-                        <select class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
+                        <select  class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
                             <option>------</option>                           
                     </select>
                 </div>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="col-md-3 col-ms-12">        
                 <div class="form-group">             
-                        <select class=" select2me form-control"name="itemsBancos" id="itemsBancos" >
+                        <select  class=" select2me form-control"name="itemsBancos" id="itemsBancos" >
                            <option value="limpia">------</option>                           
                         </select>            
                 </div>

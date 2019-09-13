@@ -155,7 +155,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Máximo</label>
                             <div class="col-md-6">
-                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max" oninput="prueba(this);">
+                                <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max" oninput="prueba(this);"min="1" max="999999999.99" step="0.01">
                             </div>
                         </div>
                         <div class="form-actions">
