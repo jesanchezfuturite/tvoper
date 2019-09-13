@@ -103,10 +103,14 @@ Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransa
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
 Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
+/*************   envio correo    **************/
+
+//Route::get('/envia-correo','ConciliacionController@enviacorreo');
+Route::get('/genera-archivo','ConciliacionController@generaarchivo');
 
 /* ws estado de cuenta icv */
-Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
 
+Route::get('/icv-consulta-placa/{info}','IcvrestserviceController@icvconsultaplaca');
 
 /*/*******************************************************************************/
 
