@@ -20,7 +20,7 @@ class Detalletramite extends Model implements Transformable
      *
      * @var array
      */
-    protected $table = "oper_tramites";
+    protected $table = "oper_detalle_tramite";
     
     protected $fillable = [
     	'id_detalle_tramite',
