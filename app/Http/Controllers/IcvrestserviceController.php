@@ -48,14 +48,25 @@ class IcvrestserviceController extends Controller
 	 *
 	 */
 
+
     public function icvconsultaplaca(Request $request)
     {
+        /* check keys */
+        $constant = "tesoreria_" . date("Ymd");
+        $k = base64_decode($request->key);
+
+        if(strcmp($k,$constant) != 0)
+        {
+            return response()->json(["E05" => "Llave no valida"]);
+        }
+
 
     	if(
     		preg_match('/^[a-zA-Z]+[a-zA-Z0-9._]+$/', $request->info)
     		&& ( strlen($request->info) == 7 || strlen($request->info) == 8 )
     	)
 		{
+
 			// buscar en ICV la placa solicitada
 			try {
 				
@@ -133,7 +144,10 @@ class IcvrestserviceController extends Controller
                 $insert
             );
             $first_level = $this->insertTramite($info,$i->id);
-
+            if($first_level == false){
+                dd("Error no existen detalles del tramite en ICV");
+                return false;
+            }
         }catch( \Exception $e ){
             dd($e->getMessage());
             return false;
@@ -189,7 +203,10 @@ class IcvrestserviceController extends Controller
 
         try {
             $i = $this->tramites->create ( $d );
-            $this->insertDetalles($info,$i->id);
+            $r = $this->insertDetalles($info,$i->id);
+            if($r == false){
+                return false;
+            }
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
@@ -212,18 +229,25 @@ class IcvrestserviceController extends Controller
             
             $detalle = $this->detalleIcv->findWhere( [ "guid" => $info->guid ] );
 
-            foreach($detalle as $d)
+            if($detalle->count() > 0)
             {
-                $insert = array(
-                    "id_tramite_motor"  => $id,
-                    "concepto"          => $detalle->concepto,
-                    "importe_concepto"  => $detalle->importe,
-                    "partida"           => $detalle->partida 
-                );
+                foreach($detalle as $d)
+                {
 
-                $i = $this->detalleTramite->create( $insert );
+                    $insert = array(
+                        "id_tramite_motor"  => $id,
+                        "concepto"          => $d->detalle,
+                        "importe_concepto"  => $d->importe,
+                        "partida"           => $d->partida 
+                    );
 
+                    $i = $this->detalleTramite->create( $insert );
+
+                }    
+            }else{
+                return false;
             }
+            
 
         } catch (Exception $e) {
             dd($e->getMessage());
