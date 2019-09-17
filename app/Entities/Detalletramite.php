@@ -30,4 +30,6 @@ class Detalletramite extends Model implements Transformable
     	'partida'
     ];
 
+    public $timestamps = false;
+
 }

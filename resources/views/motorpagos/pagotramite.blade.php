@@ -75,8 +75,8 @@
             <div class="col-md-5">
                 <div class="form-group">
                                        
-                        <select class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
-                            <option>------</option>                           
+                        <select  class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
+                            <option value="limpia">------</option>                           
                     </select>
                 </div>
            </div>
@@ -104,15 +104,17 @@
                     <label >&nbsp;&nbsp;Bancos Registrados (Selecciona para ver las cuentas)</label>  
                 </div> 
                 </div>
-                <div class="col-md-3 col-ms-12">        
+                <div class="col-md-4 col-ms-12">        
                 <div class="form-group">             
-                        <select class=" select2me form-control"name="itemsBancos" id="itemsBancos" >
+                        <select multiple class="form-control"name="itemsBancos" id="itemsBancos" >
                            <option value="limpia">------</option>                           
                         </select>            
                 </div>
                 </div>
                 <div class="col-md-1 col-ms-12">
                   <div class="form-group">
+                    <span class="help-block">&nbsp;</span>
+                    <span class="help-block">&nbsp;</span>
                       <button type="button" class="btn green" onclick="existeID()">Agregar</button>
                   </div>
               </div>
@@ -295,10 +297,9 @@
         .done(function (responseinfo) { 
         $("#itemsBancos option").remove();
         var Resp=$.parseJSON(responseinfo);
-
-         $('#itemsBancos').append(
+         /*$('#itemsBancos').append(
                 "<option value='limpia'>------</option>"
-        );
+        );*/
           var item="";
         $.each(Resp, function(i, item) {                
                  $('#itemsBancos').append(
@@ -357,29 +358,42 @@
     }
     function existeID()
     {
-         var titleServicio=$("#itemsTipoServicio option:selected").text();
-         var titlebanco=$("#itemsBancos").val();
-        if ( $("#Add"+titlebanco+"").length > 0 ) 
-        {
-            Command: toastr.warning("Ya se Encuentra Agregado", "Notifications")
-        }
-        else{          
-            
-              FindTipoServicio();
-        }
-    }
-    function FindTipoServicio()
-    {
-        var valueBanco=$("#itemsBancos").val();
-        var titlebanco=$("#itemsBancos option:selected").text();
+        
+         var valueBanco=$("#itemsBancos").val();
           var valueServicio=$("#itemsTipoServicio").val();
-          var titleServicio=$("#itemsTipoServicio option:selected").text();
+         //console.log(valueBanco);
+         if(valueBanco==null)
+          {
+            Command: toastr.warning("Bancos No Seleccionados!", "Notifications")
+          }else if(valueServicio=="limpia")
+          {
+            Command: toastr.warning("Servicio No Seleccionado!", "Notifications")
+          }else{
+          valueBanco.forEach(function(element) { 
+          var titlebanco=$("#itemsBancos option[value="+element+"]").text();
+          if ( $("#Add"+element+"").length > 0 ) 
+            {                
+            
+            }
+            else{          
+            
+                FindTipoServicio(element,titlebanco);
+              }
+            }); 
+        }    
+    
+    }
+    function FindTipoServicio(id_,nombreBanco)
+    {
+        var valueBanco= id_;//$("#itemsBancos").val();
+        var titlebanco=nombreBanco;//$("#itemsBancos option:selected").text();       
+        var valueServicio=$("#itemsTipoServicio").val();          
         if(valueServicio=="limpia")
         {
             Command: toastr.warning("Tramite No Seleccionado", "Notifications")
              document.getElementById('itemsBancos').value="limpia";
         }else{
-        if(valueBanco=="limpia")
+        if(valueBanco=="")
         {
             Command: toastr.warning("Banco No Seleccionado", "Notifications")
             
@@ -389,7 +403,7 @@
             FindCuentasBancarias(valueBanco);
 
         var TipoServ=$("#itemsTipoServicio").val();
-        var IdBanc=$("#itemsBancos").val();
+        var IdBanc= valueBanco;//$("#itemsBancos").val();
          $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-find') }}",
@@ -431,12 +445,11 @@
 }
 
 function FindCuentasBancarias(banco_)
-{
-    var valueBanco=$("#itemsBancos").val();
+{    
       $.ajax({
            method: "POST",            
            url: "{{ url('/cuentasbanco-find') }}",
-           data: {id:valueBanco,_token:'{{ csrf_token() }}'}  })
+           data: {id:banco_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
 
             var Resp=$.parseJSON(responseinfo); 
@@ -589,7 +602,7 @@ function eliminarRegistro(banco_,idbanco_)
 function addTablaVacio(banco,idbanco_)
 {
 
-    $("#addTables").append("<div id='Add"+idbanco_+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'>            <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> </div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+idbanco_+"'>                <option value='limpia'>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite("+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+idbanco_+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
+    $("#addTables").append("<div id='Add"+idbanco_+"'><div class='row'>  <div class='portlet box blue'> <div class='portlet-title'> <div class='caption'>    <i class='fa fa-cogs'></i>Cuentas "+banco+"    </div> <div class='tools'> <a  onclick=\"removeTableAdd(\'"+idbanco_+"\')\" style='color:white;'>X</a> </div></div>  <div class='portlet-body'>   <div class='form-group col-md-6'>  <label >Cuentas disponibles:</label>    <select class='form-control' id='CuentasOption"+idbanco_+"'>  <option value='limpia'>------</option>  </select>   </div>  <div class='form-group col-md-2'>     <span class='help-block'>&nbsp;</span>   <button class='btn green' data-toggle='modal' href='#static' onclick=\"InsertPagoTramite("+idbanco_+")\" >Agregar</button>   </div>       <div class='table-scrollable'>  <table class='table table-hover' id='table"+idbanco_+"'>   <thead>            <tr>        <th> Cuenta </th> <th>Servicio / CIE / CLABE      </th>   <th>  Método de pago </th>  <th> Monto Mínimo </th> <th> Monto Máximo   </th>        <th>&nbsp; </th></tr></thead> <tbody><tr> <td><span class='help-block'>No Found</span></td> </tr></tbody></table></div></div></div></div>");
 }
 function InsertPagoTramite(id_)
 {
@@ -669,7 +682,11 @@ function ActualizarTabla(idbanco_)
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  }); 
 }
+function removeTableAdd(id_)
+{
+  $("#Add"+id_+"").remove();
 
+}
 
 </script>
 @endsection

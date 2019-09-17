@@ -24,7 +24,7 @@ use App\Repositories\TiporeferenciaRepositoryEloquent;
 use App\Repositories\EgobiernostatusRepositoryEloquent;
 use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
-use App\Repositories\TramiteRepositoryEloquent;
+use App\Repositories\TramitesRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 use Mail;
 class ConciliacionController extends Controller
@@ -58,7 +58,7 @@ class ConciliacionController extends Controller
         EgobiernostatusRepositoryEloquent $statusdb,
         EgobiernotransaccionesRepositoryEloquent $transaccionesdb,
         TransaccionesRepositoryEloquent $oper_transaccionesdb,
-        TramiteRepositoryEloquent $tramitedb,
+        TramitesRepositoryEloquent $tramitedb,
         TramitedetalleRepositoryEloquent $tramite_detalledb
 
     )
@@ -308,7 +308,7 @@ class ConciliacionController extends Controller
              }
             if($oper_transacciones->count() == 0)
             {
-
+                
             }else{
                 $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);
             }         
