@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Egobiernopartidas.
+ * Class Egobfolios.
  *
  * @package namespace App\Entities;
  */
-class Egobiernopartidas extends Model implements Transformable
+class Egobfolios extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -22,9 +22,9 @@ class Egobiernopartidas extends Model implements Transformable
      */
     protected $connection = "mysql3";
     
-    protected $fillable = ['id_servicio','id_partida','descripcion'];
+    protected $fillable = ['Folio','idTrans','CartCantidad','CartKey1','CartKey2','CartImporte','CartTipo','CartDescripcion','CartKey3','idgestor'];
 
-    protected $table = "partidas";
+    protected $table = "folios";
 	
 	public $timestamps = false;
 
