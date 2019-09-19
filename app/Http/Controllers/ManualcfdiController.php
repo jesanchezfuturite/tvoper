@@ -84,4 +84,32 @@ class ManualcfdiController extends Controller
             }
         }
     }
+
+
+     /**
+     *
+     * @param POST data to CFDI
+     * Return result from insert.
+     *
+     * @return success or fail.
+     */
+    public function savecfdi(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+
+            dd($request->post());            
+
+            // try {
+            //     $reg = $this->datosfiscales->findWhere(['rfc_receptor'=>$request->rfc]);
+            //     // print_r($reg);
+            //     return json_encode($reg[0]);
+                
+            // } 
+            // catch (\Exception $e) 
+            // {
+            //     return json_encode($e);
+            // }
+        }
+    }
 }
