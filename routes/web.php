@@ -108,7 +108,7 @@ Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 /*************   envio correo    **************/
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
-Route::get('/genera-archivo','ConciliacionController@generaarchivo');
+Route::get('/genera-archivo','CorteController@generaarchivo');
 
 /* ws estado de cuenta icv */
 
