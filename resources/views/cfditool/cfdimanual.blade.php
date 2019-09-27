@@ -29,7 +29,7 @@
 			</div>
 		</div>
 		<div class="portlet-body form">
-			<form action="#" class="form-horizontal" method="POST" id="formCFDI">
+			<form class="form-horizontal" method="post" id="formCFDI" role="form">
 				<div class="form-body">
 					<div class="row">
 						<div class="col-md-6">
@@ -124,6 +124,15 @@
 									<input id="fp" name="fp" type="text" class="form-control" value="PAGO EN UNA SOLA EXHIBICION" readonly="true">
 								</div>
 							</div>
+							<div class="form-group" style="text-align: center;">
+								<label for="" class="col-md-3 control-label">Folio Unico</label>
+								<div class=" col-md-8 input-group">
+									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
+									<input id="fu" name="fu" type="text" class="form-control" placeholder="Maximo 30 posiciones" maxlength="30" readonly="true">
+									<span class="input-group-btn"><a class="btn blue" id="genfol"><i class="fa fa-cog"></i></a></span>
+								</div>
+								<span class="help-block">Generar el folio previo a su guardado</span>
+							</div>
 						</div>
 					</div>
 					<h3 class="form-section">Detalle del CFDI</h3>
@@ -150,8 +159,10 @@
 	                    </table>
 	                </div>
 					<br><br>
+					<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					<div class="col text-center">
-						<button class="btn btn-success" id="btnAdd" type="button">Agregar</button>								
+						<button class="btn btn-success" id="btnAdd" type="button">Agregar</button>
+						<button class="btn btn-primary" id="btnSave" type="button">Guardar</button>								
 					</div>									
 				</div>				
 			</form>
@@ -195,27 +206,18 @@
 	    messages:{
 	        rfc: ""
 	    },
+	    highlight: function () {
+            $('#rfc').parent().addClass('has-error');
+        },
 	    submitHandler: function(){
 	    	var rfc = $('#rfc').val();
 
 	    	$.ajax({
-	    		method:"POST",
-	    		beforeSend: function() {
-
-	    		},
+	    		method:"post",
 	    		url: "{{ url('/cfdi-manual/busca-rfc') }}",
 	    		data: { rfc: rfc, _token: '{{ csrf_token() }}' }
 	    	})
-	    	.done(function(data){
-	    		console.log(data);
-	    	});
-		},
-	    highlight: function (element) {
-	        $("#rfc").css('border','1px solid red')
-	    },
-	    unhighlight: function (element) {
-	        $("#rfc").css('border','0px solid black')
-	    }
+		}
 	});
 
 	$('#btnVrfc').on('click',function(){
@@ -231,6 +233,9 @@
 		$('#colonia').val();
 
 		if(rfc.length>0){
+
+			$('#rfc').parent().removeClass('has-error');
+
 			$.ajax({
 	    		method:"POST",
 	    		beforeSend: function() {
@@ -279,13 +284,40 @@
 			.append($('<td>').append($('<input>').attr({readonly:true,value:'SERVICIO',name:'uni[]'}).addClass('form-control')))
 			.append($('<td>').append($('<input>').attr({name:'pru[]'}).addClass('form-control')))
 			.append($('<td>').append($('<input>').attr({name:'ttl[]'}).addClass('form-control')))
-			.append($('<td>').append($('<input>').attr({name:'con[]'}).addClass('form-control')))
-			
+			.append($('<td>').append($('<input>').attr({name:'con[]'}).addClass('form-control')));
 
-
-		$('#details > tbody').append(row);
-			
+		$('#details > tbody').append(row);			
 	});
+
+	$('#btnSave').on('click',function(){
+
+		if($('#formCFDI').valid()){
+
+			$.ajax({
+	            method: "post",
+	            url: "{{ url('/cfdi-manual/savecfdi') }}",
+	            data: $('#formCFDI').serialize(),
+	            beforeSend:function(){
+	                return confirm("¿Desea guardar los cambios?");
+	            },
+	        })
+	        .done(function(data){
+
+	            $('#formCFDI input').attr('readonly',true);
+	            $('#btnSave').attr('disabled',true);
+	            $('#btnAdd').attr('disabled',true);        
+	            // console.log(data);
+	        })
+	        .fail(function(msg){
+	            console.log(msg);
+	        });	
+		}
+	});
+
+	$('#genfol').on('click',function(){
+
+		$('#fu').val('123456789012345678901234567890');
+	})
 
 </script>
 @endsection

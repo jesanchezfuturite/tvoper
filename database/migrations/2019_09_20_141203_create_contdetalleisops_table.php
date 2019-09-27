@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateDetalletramitesTable.
+ * Class CreateContdetalleisopsTable.
  */
-class CreateDetalletramitesTable extends Migration
+class CreateContdetalleisopsTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateDetalletramitesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('detalletramites', function(Blueprint $table) {
+		Schema::create('contdetalleisops', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateDetalletramitesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('detalletramites');
+		Schema::drop('contdetalleisops');
 	}
 }

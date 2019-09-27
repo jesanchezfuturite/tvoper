@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateIcvremotodetallesTable.
+ * Class CreateEgobiernonominasTable.
  */
-class CreateIcvremotodetallesTable extends Migration
+class CreateEgobiernonominasTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateIcvremotodetallesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('icvremotodetalles', function(Blueprint $table) {
+		Schema::create('egobiernonominas', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateIcvremotodetallesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('icvremotodetalles');
+		Schema::drop('egobiernonominas');
 	}
 }

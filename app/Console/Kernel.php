@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\Conciliacion::class,
         Commands\Egobtransacciones::class,
         Commands\updateStatus::class,
+        Commands\CorteSendEmail::class,
     ];
 
     /**
@@ -39,6 +40,10 @@ class Kernel extends ConsoleKernel
        $schedule->command('updateStatus:status')
                 //->everyMinute();
                ->dailyAt('03:00');
+        /*  Genera el Archivo para corte y envia por correo  */
+        //$schedule->command('CorteSendEmail:SendEmail')
+                //->everyMinute();
+                //->dailyAt('15:26');
     }   
 
     /**
