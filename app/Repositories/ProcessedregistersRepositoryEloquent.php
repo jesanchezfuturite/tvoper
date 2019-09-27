@@ -54,5 +54,5 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }
     }
-    
+        
 }

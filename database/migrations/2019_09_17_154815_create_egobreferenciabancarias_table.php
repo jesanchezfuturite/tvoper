@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateIcvremotoreferenciasTable.
+ * Class CreateEgobreferenciabancariasTable.
  */
-class CreateIcvremotoreferenciasTable extends Migration
+class CreateEgobreferenciabancariasTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateIcvremotoreferenciasTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('icvremotoreferencias', function(Blueprint $table) {
+		Schema::create('egobreferenciabancarias', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateIcvremotoreferenciasTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('icvremotoreferencias');
+		Schema::drop('egobreferenciabancarias');
 	}
 }
