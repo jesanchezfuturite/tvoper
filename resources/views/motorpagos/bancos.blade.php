@@ -97,6 +97,7 @@
                     <tr>
                         <th>Cuenta</th>
                         <th>Servicio / CIE / CLABE</th>
+                        <th>Leyenda</th>
                         <th>Método de pago</th>
                         <th>Monto Mínimo</th>
                         <th>Monto Máximo</th>
@@ -145,6 +146,13 @@
                             <div class="col-md-6">
                                 <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio" maxlength="18">
                             </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Leyenda</label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Ingrese la Leyenda" id="leyenda">
+                            </div>
+                            
                         </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Mínimo</label>
@@ -366,10 +374,12 @@
         $.each(Resp, function(i, item) {
          var Serv="";
         var Cuent=""; 
+        var Ley=""; 
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
                 Serv=item2.servicio;
                 Cuent=item2.cuenta;                
+                Ley=item2.leyenda;                
             });            
             status=item.status;    
             if (status=='1') 
@@ -384,7 +394,8 @@
                      min=item.monto_min;
             $('#table tbody').append("<tr>"
             +"<td>"+Cuent+"</td>"
-            +"<td >"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
+            +"<td>"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
+            +"<td>"+Ley+"</td>"
             +"<td>"+item.metodopago+"</td>"
             +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
             +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
@@ -399,9 +410,10 @@
         var metodopago_=$("#itemMetodopago").val();
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
+        var leyenda=$("#leyenda").val();
         var monto_max_=$("#monto_max").val();
         var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'"}]';             
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();  
 
@@ -504,13 +516,16 @@
             $.each(Resp, function(i, item) {
             var Serv="";
             var Cuent="";             
+            var ley="";             
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
                 Serv=item2.servicio;
-                Cuent=item2.cuenta;                
+                Cuent=item2.cuenta;
+                ley=item2.leyenda;               
             });
              document.getElementById('cuenta').value=Cuent;
             document.getElementById('servicio').value=Serv;
+            document.getElementById('leyenda').value=ley;
             document.getElementById('monto_max').value=item.monto_max;
              document.getElementById('monto_min').value=item.monto_min; 
             //document.getElementById('itemMetodopago').value=item.metodopago_id;
@@ -531,9 +546,10 @@
         var metodopago_=$("#itemMetodopago").val();
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
+        var leyenda=$("#leyenda").val();
         var monto_max_=$("#monto_max").val();
         var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'"}]';             
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();     
        if(metodopago_=="limpia")
@@ -565,6 +581,7 @@
     {
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
+        var leyenda=$("#leyenda").val();
         var monto_max=$("#monto_max").val();
         var monto_min=$("#monto_min").val();
         var metodP=$("#itemMetodopago").val();
@@ -581,6 +598,9 @@
             }else if(servicio.length<1 ){
                Command: toastr.warning("Campo Servicio Requerido! 1 a 18 Caracteres.", "Notifications")
                document.getElementById("servicio").focus();
+            }else if(leyenda.length<1 ){
+               Command: toastr.warning("Campo Leyenda Requerido! 1 a 18 Caracteres.", "Notifications")
+               document.getElementById("leyenda").focus();
             }else if(monto_min.length<1){
               Command: toastr.warning("Campo Monto Min. Requerido! 1 Caracteres Min.", "Notifications")
               document.getElementById("monto_min").focus();

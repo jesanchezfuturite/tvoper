@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitesTable.
+ * Class CreateContdetimpisopsTable.
  */
-class CreateTramitesTable extends Migration
+class CreateContdetimpisopsTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateTramitesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites', function(Blueprint $table) {
+		Schema::create('contdetimpisops', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateTramitesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramites');
+		Schema::drop('contdetimpisops');
 	}
 }

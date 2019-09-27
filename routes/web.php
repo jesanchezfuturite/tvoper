@@ -11,6 +11,7 @@
 |
 */
 
+
 Route::get('/', function () {
     return view('auth.login');
 });
@@ -107,7 +108,7 @@ Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 /*************   envio correo    **************/
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
-Route::get('/genera-archivo','ConciliacionController@generaarchivo');
+Route::get('/genera-archivo','CorteController@generaarchivo');
 
 /* ws estado de cuenta icv */
 
@@ -129,12 +130,15 @@ Route::group(['middleware' => 'permissions'], function () {
 });
 
 /* herramienta de cfdi */
-Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
+Route::group(['middleware' => ['verifyassignment']],function(){
+	Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
+	Route::get('/cfdi-manual','ManualcfdiController@index')->name('cfdi-captura');
+});
 Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@searchfoliounico');
 Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
-Route::get('/cfdi-manual','ManualcfdiController@index')->name('cfdi-captura');
+Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');	
 Route::post('/cfdi-manual/busca-rfc','ManualcfdiController@searchrfc');
-Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');
+Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');

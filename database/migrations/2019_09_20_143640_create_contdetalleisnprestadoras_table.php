@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitesTable.
+ * Class CreateContdetalleisnprestadorasTable.
  */
-class CreateTramitesTable extends Migration
+class CreateContdetalleisnprestadorasTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateTramitesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites', function(Blueprint $table) {
+		Schema::create('contdetalleisnprestadoras', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateTramitesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramites');
+		Schema::drop('contdetalleisnprestadoras');
 	}
 }
