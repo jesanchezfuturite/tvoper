@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\Storage;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
 
-class Egobtransacciones extends Command
+class Operaciontransacciones extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'conciliacion:egobt';
+    protected $signature = 'conciliacion:operaciont';
 
     /**
      * The console command description.
