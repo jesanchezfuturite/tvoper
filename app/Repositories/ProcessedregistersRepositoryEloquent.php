@@ -54,5 +54,23 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }
     }
+
+    /**
+     * This method updates the control table in status serialized field and updates the message
+     * @param info => array with the info to modify, option => status to be configured
+     *
+     * @return false if get an error 
+     */
+    public function updateStatusPerReferenceTo($info, $option)
+    {
+        try
+        {
+            $data = Processedregisters::whereIn('referencia', $info)->update( ['status' => $option]);
+
+        }catch( \Exception $e ){
+            Log::info("[EgobiernotransaccionesRepositoryEloquent @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            return false;
+        }
+    }
         
 }

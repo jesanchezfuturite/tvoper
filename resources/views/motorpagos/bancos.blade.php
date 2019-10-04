@@ -442,6 +442,7 @@
     {
          document.getElementById('cuenta').value="";
          document.getElementById('servicio').value="";
+         document.getElementById('leyenda').value="";
          document.getElementById('monto_max').value="";
          document.getElementById('monto_min').value=""; 
          //document.getElementById('itemMetodopago').value="limpia";
