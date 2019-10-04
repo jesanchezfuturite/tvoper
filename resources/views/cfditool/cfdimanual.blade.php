@@ -128,10 +128,8 @@
 								<label for="" class="col-md-3 control-label">Folio Unico</label>
 								<div class=" col-md-8 input-group">
 									<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
-									<input id="fu" name="fu" type="text" class="form-control" placeholder="Maximo 30 posiciones" maxlength="30" readonly="true">
-									<span class="input-group-btn"><a class="btn blue" id="genfol"><i class="fa fa-cog"></i></a></span>
+									<input id="fu" name="fu" type="text"  value="{{ '1700000000000000' . date('YmdHis') }}" class="form-control" placeholder="Maximo 30 posiciones" maxlength="30" readonly="true">
 								</div>
-								<span class="help-block">Generar el folio previo a su guardado</span>
 							</div>
 						</div>
 					</div>
@@ -282,11 +280,13 @@
 		var row = $('<tr>').addClass('row')
 			.append($('<td>').append($('<input>').attr({readonly:true,value:1,name:'qty[]'}).addClass('form-control')))
 			.append($('<td>').append($('<input>').attr({readonly:true,value:'SERVICIO',name:'uni[]'}).addClass('form-control')))
-			.append($('<td>').append($('<input>').attr({name:'pru[]'}).addClass('form-control')))
-			.append($('<td>').append($('<input>').attr({name:'ttl[]'}).addClass('form-control')))
+			.append($('<td>').append($('<input>').attr({name:'pru[]'}).addClass('form-control currency')))
+			.append($('<td>').append($('<input>').attr({name:'ttl[]'}).addClass('form-control currency')))
 			.append($('<td>').append($('<input>').attr({name:'con[]'}).addClass('form-control')));
 
-		$('#details > tbody').append(row);			
+		$('#details > tbody').append(row);
+
+		$.validator.addClassRules("currency", { required:true });
 	});
 
 	$('#btnSave').on('click',function(){
@@ -314,10 +314,6 @@
 		}
 	});
 
-	$('#genfol').on('click',function(){
-
-		$('#fu').val('123456789012345678901234567890');
-	})
 
 </script>
 @endsection
