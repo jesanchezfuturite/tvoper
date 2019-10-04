@@ -99,6 +99,24 @@ Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesF
 //Route::post('/transaccion-find-referencia-oper','MotorpagosController@transaccionesFindWhereReferencia_oper');
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
+/**-------*********----------------- PARTIDAS -----------*********-------------*/
+Route::get('/partidas','MotorpagosController@partidas');
+Route::get('/partidas-find-all','MotorpagosController@partidasFindAll');
+Route::post('/partidas-insert','MotorpagosController@partidasInsert');
+Route::post('/partidas-find-where','MotorpagosController@partidasFindWhere');
+Route::post('/partidas-update','MotorpagosController@partidasUpdate');
+Route::post('/partidas-deleted','MotorpagosController@partidasDeleted');
+
+
+/*/***************************CLASIFICADOR*********************************/
+Route::get('/clasificador','MotorpagosController@clasificador');
+Route::get('/clasificador-find-all','MotorpagosController@clasificadorFindAll');
+Route::post('/clasificador-insert','MotorpagosController@clasificadorInsert');
+Route::post('/clasificador-find-where','MotorpagosController@clasificadorFindWhere');
+Route::post('/clasificador-update','MotorpagosController@clasificadorUpdate');
+Route::post('/clasificador-deleted','MotorpagosController@clasificadorDeleted');
+
+
 
 /************detalle de pago tramite***********/
 
