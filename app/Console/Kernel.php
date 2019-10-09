@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
     {
         /* carga las tablas con los procesos de archivos */
        $schedule->command('conciliacion:processFiles')
-                  //->everyFiveMinutes();
+                  ->everyFiveMinutes();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
         $schedule->command('conciliacion:egobt')
