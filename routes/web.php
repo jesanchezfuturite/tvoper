@@ -116,8 +116,13 @@ Route::post('/clasificador-find-where','MotorpagosController@clasificadorFindWhe
 Route::post('/clasificador-update','MotorpagosController@clasificadorUpdate');
 Route::post('/clasificador-deleted','MotorpagosController@clasificadorDeleted');
 
-
-
+/*****************************TIPO REFERENCIA***************************************/
+Route::get('/tipo-referencia','MotorpagosController@tiporeferencia');
+Route::get('/tipo-referencia-find-all','MotorpagosController@tiporeferenciaFindAll');
+Route::post('/tipo-referencia-insert','MotorpagosController@tiporeferenciaInsert');
+Route::post('/tipo-referencia-find-where','MotorpagosController@tiporeferenciaFindWhere');
+Route::post('/tipo-referencia-update','MotorpagosController@tiporeferenciaUpdate');
+Route::post('/tipo-referencia-deleted','MotorpagosController@tiporeferenciaDeleted');
 /************detalle de pago tramite***********/
 
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
