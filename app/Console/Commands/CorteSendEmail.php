@@ -200,8 +200,7 @@ class CorteSendEmail extends Command
             log::info($count);*/
             //$this->gArchivos();
             $this->enviacorreo();
-        }
-       
+        }       
     }
     private function gArchivos()
     {
