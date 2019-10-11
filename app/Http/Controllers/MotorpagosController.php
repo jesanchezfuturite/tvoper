@@ -847,6 +847,25 @@ return json_encode($response);
         return $response;
 
     }
+    public function updateTipoServicioArray(Request $request)
+    {
+        
+        $id=$request->id;
+        $tiporeferencia=$request->tiporeferencia;
+        $limitereferencia=$request->limitereferencia;
+         Log::info($id);   
+        $response = "false";
+        try{ 
+        foreach ($id as $i) {         
+            $info=$this->tiposerviciodb->updateMenuByName(['tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$i]);
+         } 
+            $response="true";
+        }catch( \Exception $e ){
+            Log::info('Error Method updateTipoServicioArray: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
+    }
     public function deleteentidadtramite(Request $request)
     {
         $id=$request->id;
@@ -1569,10 +1588,8 @@ return json_encode($response);
                     "monto_max"=>$cuenta->monto_max,
                     "monto_min"=>$cuenta->monto_min                
                     );
-                }
-                
-            }
-            
+                }                
+            }            
         }
         return json_encode($response);
     }
@@ -1752,4 +1769,101 @@ return json_encode($response);
         }
        return $response;
     }
+    public function tiporeferencia()
+    {
+        return view('motorpagos/tiporeferencia');
+    }
+    public function tiporeferenciaInsert(Request $request)
+    {
+       
+        $descripcion=$request->descripcion;
+        $origen=$request->origen;
+        $diasvigencia=$request->diasvigencia;
+        $digitoverificador=$request->digitoverificador;
+        $longitud=$request->longitud;
+        $response = "false";
+        try{
+            $inserttiporeferencia=$this->tiporeferenciadb->create(['fecha_condensada'=>$descripcion,'digito_verificador'=>$digitoverificador,'longitud'=>$longitud,'origen'=>$origen,'dias_vigencia'=>$diasvigencia]);
+            $response = "true";
+            
+        } catch( \Exception $e ){
+            Log::info('Error Method tiporeferenciaInsert: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+
+    }
+    
+    public function tiporeferenciaFindWhere(Request $request)
+    {
+        $response= array();
+        $id=$request->id;
+         $findtiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$id]);
+         foreach ($findtiporeferencia as $tipo) {
+            $response []= array(
+                'id' => $tipo->id, 
+                'fecha_condensada' => $tipo->fecha_condensada,
+                'digito_verificador' => $tipo->digito_verificador,
+                'longitud' => $tipo->longitud,
+                'origen' => $tipo->origen,
+                'dias_vigencia' => $tipo->dias_vigencia 
+
+            );
+         }
+         return json_encode($response);
+    }
+    public  function tiporeferenciaUpdate(Request $request)
+    {       
+        $id=$request->id;  
+        $descripcion=$request->descripcion;
+        $origen=$request->origen;
+        $diasvigencia=$request->diasvigencia;
+        $digitoverificador=$request->digitoverificador;
+        $longitud=$request->longitud;
+        $response = "false";
+        try{ 
+
+        $updatetiporeferencia=$this->tiporeferenciadb->update(['fecha_condensada'=>$descripcion,'digito_verificador'=>$digitoverificador,'longitud'=>$longitud,'origen'=>$origen,'dias_vigencia'=>$diasvigencia],$id);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+       return $response;
+    }
+    public function tiporeferenciaDeleted(Request $request)
+    {
+         $id=$request->id;
+         $response = "false";
+        try{   
+        $deletedtiporeferencia=$this->tiporeferenciadb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+    public function serviciosFindWhereID(Request $request)
+    {
+        $id_entidad=$request->id_entidad;
+        $response=array();
+         $infoentidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$id_entidad]);
+             if($infoentidadtramite->count()> 0)
+            {
+                 foreach ($infoentidadtramite as $key) 
+                {
+                     $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$key->tipo_servicios_id]);
+                      foreach ($tiposervicio as $tipo) 
+                    {                        
+                        $response []= array(
+                        "id" => $tipo->Tipo_Code,
+                        "descripcion" => $tipo->Tipo_Descripcion 
+                        );
+                    }
+                }
+            }  
+        return json_encode($response);
+    }
+
 }

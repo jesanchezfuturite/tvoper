@@ -191,8 +191,7 @@
                 <div class="col-md-4"><div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='MostrarTodos()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div><span class='help-block'>Muestra Todo los Registros</span> 
               </div></div>
                 <br>
-               <div  id="demo">
-              
+               <div  id="demo">              
                  <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
                     <thead>
                       <tr>            
@@ -251,7 +250,7 @@
         $.each(Resp, function(i, item) {                
                $("#table2").append("<tr>"
                 +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
-                +"<td >"+item.nombre+"</td>"
+                +"<td  width='100%'>"+item.nombre+"</td>"
                 +"</tr>"
             );  
         });
@@ -273,7 +272,7 @@
         $.each(Resp, function(i, item) {                
                $("#table2").append("<tr>"
                 +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
-                +"<td >"+item.nombre+"</td>"
+                +"<td  width='100%'>"+item.nombre+"</td>"
                 +"</tr>"
             );  
         });
