@@ -847,6 +847,25 @@ return json_encode($response);
         return $response;
 
     }
+    public function updateTipoServicioArray(Request $request)
+    {
+        
+        $id=$request->id;
+        $tiporeferencia=$request->tiporeferencia;
+        $limitereferencia=$request->limitereferencia;
+         Log::info($id);   
+        $response = "false";
+        try{ 
+        foreach ($id as $i) {         
+            $info=$this->tiposerviciodb->updateMenuByName(['tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$i]);
+         } 
+            $response="true";
+        }catch( \Exception $e ){
+            Log::info('Error Method updateTipoServicioArray: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
+    }
     public function deleteentidadtramite(Request $request)
     {
         $id=$request->id;
@@ -1824,6 +1843,27 @@ return json_encode($response);
         $response = "false";
         }
        return $response;
+    }
+    public function serviciosFindWhereID(Request $request)
+    {
+        $id_entidad=$request->id_entidad;
+        $response=array();
+         $infoentidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$id_entidad]);
+             if($infoentidadtramite->count()> 0)
+            {
+                 foreach ($infoentidadtramite as $key) 
+                {
+                     $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$key->tipo_servicios_id]);
+                      foreach ($tiposervicio as $tipo) 
+                    {                        
+                        $response []= array(
+                        "id" => $tipo->Tipo_Code,
+                        "descripcion" => $tipo->Tipo_Descripcion 
+                        );
+                    }
+                }
+            }  
+        return json_encode($response);
     }
 
 }
