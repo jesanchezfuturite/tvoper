@@ -674,7 +674,7 @@ TableTools = function( oDT, oOpts )
 			 *  @type	 array
 			 *  @default  []
 			 */
-			"hidden": [],
+			"hidden": true,
 
 			/**
 			 * The information display saying telling the user about the print display
