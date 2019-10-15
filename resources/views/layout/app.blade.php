@@ -1663,6 +1663,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- END CORE PLUGINS -->
 <script src="assets/global/plugins/bootstrap-toastr/toastr.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/select2/select2.min.js"></script>
+<script src="assets/admin/pages/scripts/ui-blockui.js"></script>
 <!-- END PAGE LEVEL SCRIPTS -->
 <script src="assets/admin/pages/scripts/ui-toastr.js"></script>
 <script src="assets/global/scripts/metronic.js" type="text/javascript"></script>

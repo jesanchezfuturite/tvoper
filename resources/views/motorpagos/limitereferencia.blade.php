@@ -34,7 +34,7 @@
 		<div class="portlet-body" id="tabla_2">
 			 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
        <span class="help-block">&nbsp;</span>
-			<table  class="table table-hover"  id="sample_1">
+			<table  class="table table-hover"  id="sample_2">
 				<thead>
 					<tr>						
 						<th>Descripcion</th>
@@ -155,8 +155,8 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {       
        ComponentsPickers.init();
-          //TableManaged.init(); 
-          TableAdvanced.init();      
+          TableManaged.init(); 
+          //TableAdvanced.init();      
     });
 function verificaMes()
 {
@@ -352,17 +352,17 @@ function actualizatabla(Resp)
 var item = '';
 	$("#tabla_2").remove();
             /*agrega tabla*/
-             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><span class='help-block'>&nbsp;</span><table  class='table table-striped table-bordered table-hover' id='sample_1'><thead><tr><th>Descripción</th><th>Periodicidad</th><th class='text-center'>Vencimiento</th><th class='text-center'>Operacion</th></tr></thead><tbody></tbody></table></div>");
+             $('#tabla_1').append("<div class='portlet-body' id='tabla_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button><span class='help-block'>&nbsp;</span><table  class='table table-striped table-bordered table-hover' id='sample_2'><thead><tr><th>Descripción</th><th>Periodicidad</th><th class='text-center'>Vencimiento</th><th class='text-center'>Operacion</th></tr></thead><tbody></tbody></table></div>");
                 $.each(Resp, function(i, item) {                
-                 $('#sample_1 tbody').append("<tr>"  
+                 $('#sample_2 tbody').append("<tr>"  
                  +"<td>"+ item.descripcion + "</td>"                 
                  + "<td>"+ item.periodicidad + "</a></td>"                 
                  + "<td class='text-center'>"+ item.vencimiento + "</a></td>"                 
                  + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='update("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                  + "</tr>");
                 });  
-         //TableManaged.init(); 
-         TableAdvanced.init();
+         TableManaged.init(); 
+         //TableAdvanced.init();
 }
 function limpiar()
 {

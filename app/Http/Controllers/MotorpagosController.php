@@ -474,7 +474,8 @@ return json_encode($response);
         
     }
      public function findTipoServicioAllWhere()
-    {       
+    {    
+        $response=array();   
         $responseentidad = array();  
         $entidadtramite=$this->entidadtramitedb->all();
          foreach($entidadtramite as $ii)
@@ -1553,17 +1554,19 @@ return json_encode($response);
     public function findCuentasBancoAll(Request $request)
     {
         $Id_entidad=$request->Id_entidad;
-        $servicio;
+        $descripcion;
         $idpagotramite;
         $nombrebanco;
         $metodopago;
+        $cuentas;
+        $servicio;
         $response=array(); 
         $oper_entidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad]);
         foreach ($oper_entidadtramite as $i) {
            
             $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
             foreach ($tiposervicio as $ii) {
-               $servicio=$ii->Tipo_Descripcion;
+               $descripcion=$ii->Tipo_Descripcion;
             }
             $oper_pagotramite=$this->pagotramitedb->findWhere(['tramite_id'=>$i->tipo_servicios_id]);
             foreach ($oper_pagotramite as $key) {
@@ -1579,11 +1582,20 @@ return json_encode($response);
                         foreach ($oper_metodopago as $metodo) {
                           $metodopago=$metodo->nombre;
                         }
+
+                   
+                    
+                    $beneficiario=json_decode($cuenta->beneficiario);
+                    foreach ( $beneficiario as $b) {
+                       $cuentas=$b->cuenta;
+                       $servicio=$b->servicio;
+                   }
                     $response []= array(
                     "id"=> $idpagotramite,                    
-                    "servicio" => $servicio,
+                    "descripcion" => $descripcion,
                     "banco"=>$nombrebanco,
-                    "beneficiario"=>$cuenta->beneficiario,
+                    "cuenta"=>$cuentas,
+                    "servicio"=>$servicio,
                     "metodopago"=>$metodopago,
                     "monto_max"=>$cuenta->monto_max,
                     "monto_min"=>$cuenta->monto_min                
