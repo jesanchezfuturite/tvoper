@@ -28,6 +28,10 @@
     <strong>Info: </strong>Esta configuración te permite dar de alta un trámite al sistema, editar o eliminar su registro. Así como también asignar el tipo de referencia y tipo de límite.
 </div>
 <div class="row">
+  <div hidden="true">
+  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
+  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
+  <div id="blockui_sample_3_1_element">
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue"id="table_1">
             <div class="portlet-title" >
@@ -38,19 +42,24 @@
               </div>             
             </div>
             <div class="portlet-body" id="table_2">
-              <div class="row">            
-            <div class="col-md-1">
-                <div class="form-group">
+            <div class="row"> 
+              <div class="col-md-1">
+                <div class="form-group">               
                    <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
                 </div> 
-            </div>
-             <div class="col-md-2">
-                <div class="form-group">
+              </div>
+             <div class="col-md-2"> 
+              <div class="form-group">                                
                    <button class="btn green" data-toggle="modal" href="#static3">Actualizar por Entidad</button>
                 </div> 
-            </div>  
+              </div>  
+              <div class='col-md-9 text-right'><div class='form-group'> 
+                     
+                  <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> 
+                </div>
+              </div> 
             	                
-              </div>
+            </div>
 
                 <span class="help-block">&nbsp;</span>
                     <table class="table table-hover" id="sample_2">
@@ -82,6 +91,7 @@
                
             </div>
         </div>
+      </div>
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 <div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
@@ -305,12 +315,9 @@
         findLimiteReferencia();
         findTipoReferencia();
         FindEntidad();
-        
-
-        TableManaged.init();         
-       //TableAdvanced.init();
-
-        
+        TableManaged.init();
+        UIBlockUI.init();         
+       //TableAdvanced.init();       
     });
   function updateServiciosArray()
   {
@@ -615,7 +622,7 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'>      <div class='col-md-1'><div class='form-group'>   <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button></div>     </div>   <div class='col-md-2'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button>     </div>  </div>              </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
         $.each(Resp, function(i, item) {
             if(item.origen==null)
             {
@@ -716,5 +723,79 @@
        document.getElementById('search').value="";
 
   }
+function GuardarExcel()
+{
+ var id_=$("#OptionEntidad").val();
+  if(id_=="limpia"){
+    Command: toastr.warning("Entidad No Seleccionada!", "Notifications")
+  }else{
+    document.getElementById("blockui_sample_3_1").click();
+     $.ajax({
+           method: "GET",            
+           url: "{{ url('/tipo-servicio-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseTipoServicio) {
+            //console.log(responseTipoServicio);
+            if(responseTipoServicio=="[]")
+            { 
+              Command: toastr.warning("Sin Registros!", "Notifications")
+              document.getElementById("blockui_sample_3_1_1").click();
+
+            }else{
+              //var Resp=$.parseJSON(responseTipoServicio);  
+               var title="Tipo_Servicio";        
+               JSONToCSVConvertor(responseTipoServicio, title, true);
+               
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications") 
+         document.getElementById("blockui_sample_3_1_1").click(); }); 
+  
+  }
+   
+     
+}
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 </script>
 @endsection

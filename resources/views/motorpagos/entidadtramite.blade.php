@@ -585,7 +585,7 @@
     }
     function AddtableSample_1()
     {
-      $("#Addtable").append("<div class='portlet-body' id='RemoveTable'> <div class='row'> <div class='form-group'><div class='col-md-6'> <button class='btn green' href='#static2' data-toggle='modal' >Agregar</button> </div>        </div> <div class='form-group'> <div class='col-md-6 text-right'>     <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> <span class='help-block'>&nbsp; </span></div> <table class='table table-hover' id='sample_2'> <thead> <tr><th>Nombre</th> <th>&nbsp;</th></tr>      </thead><tbody> <tr><td> <span class='help-block'>No Found</span> </td><td class='text-right'></td> </tr> </tbody></table></div>");
+      $("#Addtable").append("<div class='portlet-body' id='RemoveTable'> <div class='row'> <div class='form-group'><div class='col-md-6'> <button class='btn green' href='#static2' data-toggle='modal' >Agregar</button> </div>        </div> <div class='form-group'> <div class='col-md-6 text-right'>     <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> <span class='help-block'>&nbsp; </span></div> <table class='table table-hover' id='sample_2'> <thead> <tr><th>Nombre</th> <th>&nbsp;</th></tr> </thead><tbody> <tr><td> <span class='help-block'>No Found</span> </td><td class='text-right'></td> </tr> </tbody></table></div>");
     }
     function findClave()
     {
