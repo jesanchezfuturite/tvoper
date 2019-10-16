@@ -1,5 +1,6 @@
 @extends('layout.app')
 
+
 @section('content')
 <h3 class="page-title">Motor de pagos <small>Configuración Partidas</small></h3>
 <div class="page-bar">
