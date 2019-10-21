@@ -442,6 +442,7 @@
     {
          document.getElementById('cuenta').value="";
          document.getElementById('servicio').value="";
+         document.getElementById('leyenda').value="";
          document.getElementById('monto_max').value="";
          document.getElementById('monto_min').value=""; 
          //document.getElementById('itemMetodopago').value="limpia";
@@ -755,18 +756,7 @@
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  }); 
-    }
-    toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "positionClass": "toast-top-right",
-         "onclick": null,
-        "showDuration": "1000",
-        "hideDuration": "1000",
-        "timeOut": "4000",
-         "extendedTimeOut": "1000"
-        }  
-
+    }    
     function prueba(n) {
        var num = n.value;
         var vew;

@@ -1,6 +1,8 @@
 @extends('layout.app')
 
+
 @section('content')
+<link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración de Trámite</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -27,6 +29,10 @@
     <strong>Info: </strong>Esta configuración te permite dar de alta un trámite al sistema, editar o eliminar su registro. Así como también asignar el tipo de referencia y tipo de límite.
 </div>
 <div class="row">
+  <div hidden="true">
+  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
+  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
+  <div id="blockui_sample_3_1_element">
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue"id="table_1">
             <div class="portlet-title" >
@@ -37,10 +43,27 @@
               </div>             
             </div>
             <div class="portlet-body" id="table_2">
+            <div class="row"> 
+              <div class="col-md-1">
+                <div class="form-group">               
+                   <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
+                </div> 
+              </div>
+             <div class="col-md-2"> 
+              <div class="form-group">                                
+                   <button class="btn green" data-toggle="modal" href="#static3">Actualizar por Entidad</button>
+                </div> 
+              </div>  
+              <div class='col-md-9 text-right'><div class='form-group'> 
+                     
+                  <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> 
+                </div>
+              </div> 
+            	                
+            </div>
 
-            	 <button class="btn green" data-toggle="modal" href="#static2">Agregar</button>
                 <span class="help-block">&nbsp;</span>
-                    <table class="table table-hover" id="sample_1">
+                    <table class="table table-hover" id="sample_2">
                     <thead>
                     <tr>
                         <th>&nbsp;Entidad&nbsp;</th>
@@ -69,6 +92,7 @@
                
             </div>
         </div>
+      </div>
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 <div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
@@ -169,6 +193,100 @@
         </div>
     </div>
 </div>
+
+<div id="static3" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar_modal()"></button>
+                <h4 class="form-section">Actualizar Registros</h4>
+            </div>
+            <div class="modal-body">
+              
+              <div class="portlet-body form">
+              <input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">
+                      
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="form-group">
+                              <label class="col-md-2 control-label" >Entidad</label>                       
+                              <div class="col-md-9">                                             
+                                <select id="optionEntidad" class="select2me form-control" onchange="changeEntidadFind()">
+                                    <option value="limpia">-------</option>
+                                </select>
+                                <span class="help-block">
+                                Seleccione una Opcion </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>                      
+                    </div>
+                    <div class="row">
+                          <div class="col-md-12">
+                             <div class="col-md-12">
+                              <div class='form-group'>
+                                <label class="col-md-2 control-label" >Buscar</label> 
+                               <div class="col-md-6">
+                                <input type="text" name="search" id="search" class="form-control" placeholder="Escribe...">
+                                </div>               
+                              </div>               
+                              </div>               
+                              <br>
+                              <div  id="demo">              
+                              <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
+                                <thead>
+                                  <tr>            
+                                   <th>Selecciona los Servicios</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                  <td>No Found</td>
+                                  <td></td>
+                                </tr>         
+                                </tbody>
+                              </table>
+                            </div> 
+                          </div>
+                        </div>
+                    <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Tipo Referencia</label>
+                                <select id="tiporeferencia2" class="select2me form-control">
+                                  <option value="limpia">-------</option>
+                                </select>
+                                <span class="help-block">
+                                Seleccione una Opcion </span>
+                            </div>
+                          </div>
+                          <!--/span-->
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Limite Referencia</label>
+
+                                <select id="limitereferencia2" class="select2me form-control">
+                                  <option value="limpia">-------</option>
+                                </select>
+                                <span class="help-block">
+                                Seleccione una Opcion </span>
+                            </div>
+                          </div>
+                          <!--/span-->
+                        </div>
+
+                      <div class="form-actions left">
+                        <!--<button type="button" class="btn default">Cancel</button>-->
+                        <button type="submit" class="btn blue" onclick="updateServiciosArray()"><i class="fa fa-check"></i> Guardar</button>
+                      </div>                                    
+                </div>
+                <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar_modal()">Cerrar</button>
+              </div>
+            </div>            
+        </div>
+    </div>
+</div>
 <div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -197,10 +315,78 @@
 	jQuery(document).ready(function() {
         findLimiteReferencia();
         findTipoReferencia();
-        //TableManaged.init(); 
-       TableAdvanced.init();
-        
+        FindEntidad();
+        TableManaged.init();
+        UIBlockUI.init();         
+       //TableAdvanced.init();       
     });
+  function updateServiciosArray()
+  {
+    var tiporeferencia=$("#tiporeferencia2").val();
+    var limitereferencia=$("#limitereferencia2").val();
+    let valoresCheck = [];
+    $("input[type=checkbox]:checked").each(function(){
+       valoresCheck.push(this.value);
+    });
+   if(valoresCheck.length == 0)
+   {
+     Command: toastr.warning("Ningun Servicio Seleccionado", "Notifications")
+   }else if(limitereferencia=="limpia"){
+    Command: toastr.warning("Limite Referencia Requerido", "Notifications")
+   }else if(tiporeferencia=="limpia"){
+    Command: toastr.warning("Tipo Referencia Requerido!", "Notifications")
+   }else{
+    ActualizarServicios();
+
+   }
+  }
+  function ActualizarServicios()
+  {
+    var tiporeferencia_=$("#tiporeferencia2").val();
+    var limitereferencia_=$("#limitereferencia2").val();
+    let valoresCheck = [];
+    $("input[type=checkbox]:checked").each(function(){
+       valoresCheck.push(this.value);
+    });
+    $.ajax({
+           method: "POST",            
+           url: "{{ url('/tipo-servicio-update-array') }}",
+           data: {tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,id:valoresCheck, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+        if(response=="true")
+        {   
+        $("#tiporeferencia2").val("limpia").change();
+        $("#limitereferencia2").val("limpia").change();
+        $('input:checkbox').removeAttr('checked');
+         
+          Command: toastr.success("Success", "Notifications")
+             ActualizaTabla();
+
+        } 
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
+  function FindEntidad()
+    {
+         $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#optionEntidad option").remove();
+          $("#optionEntidad").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#optionEntidad").append("<option value='"+item.id+"'>"+item.nombre+"</option>"
+            );  
+        });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
 	function findLimiteReferencia()
 	{
 		$.ajax({
@@ -213,8 +399,15 @@
          $('#limitereferencia').append(
             "<option value='limpia'>------</option>"
         );
+         $("#limitereferencia2 option").remove();
+         $('#limitereferencia2').append(
+            "<option value='limpia'>------</option>"
+        );
         $.each(Resp, function(i, item) {                
             $('#limitereferencia').append(
+                "<option value='"+item.id+"'>"+item.descripcion+" "+item.periodicidad+" "+item.vencimiento+"</option>"
+                );
+                $('#limitereferencia2').append(
                 "<option value='"+item.id+"'>"+item.descripcion+" "+item.periodicidad+" "+item.vencimiento+"</option>"
                 );
             });
@@ -235,11 +428,19 @@
          $('#tiporeferencia').append(
             "<option value='limpia'>------</option>"
         );
+          $("#tiporeferencia2 option").remove();
+         $('#tiporeferencia2').append(
+            "<option value='limpia'>------</option>"
+        );
         $.each(Resp, function(i, item) {                
             $('#tiporeferencia').append(
                 "<option value='"+item.id+"'>"+item.fecha_condensada+"</option>"
+                );           
+         $('#tiporeferencia2').append(
+                "<option value='"+item.id+"'>"+item.fecha_condensada+"</option>"
                 );
             });
+
       	})
         .fail(function( msg ) {
          console.log("Error al Cargar select Option Limite Referencia");  });
@@ -422,7 +623,7 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><button class='btn green' data-toggle='modal' href='#static2'>Agregar</button>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_1'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
         $.each(Resp, function(i, item) {
             if(item.origen==null)
             {
@@ -432,7 +633,7 @@
             {
               desc="";
             }else{desc=item.descripcion_gpm;  }
-            $("#sample_1 tbody").append("<tr>"
+            $("#sample_2 tbody").append("<tr>"
             +"<td>"+item.entidad+"</td>"
             +"<td>"+item.descripcion+"</td>"
             +"<td>"+orig+"</td>"
@@ -444,13 +645,60 @@
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
           });
-            //TableManaged.init();
-           TableAdvanced.init() 
+            TableManaged.init();
+           //TableAdvanced.init() 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
 
   } 
+  function changeEntidadFind()
+  {
+    var entidad=$("#optionEntidad").val();
+    if(entidad=="limpia")
+    {
+      $("#table2 tbody tr").remove();
+        $("#table2").append("<tr>"
+          +"<td>No Found</td>"
+          +"<td></td>"
+          +"</tr>"
+        ); 
+    }else{
+      FindserviciosTableAll();
+    }
+
+  }
+  function FindserviciosTableAll()
+    {
+      var entidad=$("#optionEntidad").val();
+      $.ajax({
+       method: "POST",
+           url: "{{ url('/tipo-servicio-find-where-id') }}",
+           data: { id_entidad:entidad,_token: '{{ csrf_token() }}' }  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#table2 tbody tr").remove();
+        $.each(Resp, function(i, item) {                
+               $("#table2").append("<tr>"
+                +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox' value='"+item.id+"'></td>"
+                +"<td width='100%'>"+item.descripcion+"</td>"
+                +"</tr>"
+            );  
+        });
+      })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    $("#search").keyup(function(){
+        _this = this;
+        $.each($("#table2 tbody tr"), function() {
+        if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+        $(this).hide();
+        else
+        $(this).show();
+        });
+    });
   function limpiar()
   {
     $("#tiporeferencia").val("limpia").change();
@@ -463,5 +711,92 @@
     document.getElementById('idupdate').value="";
 
   }
+  function limpiar_modal() {
+    $("#tiporeferencia2").val("limpia").change();
+    $("#limitereferencia2").val("limpia").change();
+    $("#optionEntidad").val("limpia").change();
+          $("#table2 tbody tr").remove();
+        $("#table2").append("<tr>"
+          +"<td>No Found</td>"
+          +"<td></td>"
+          +"</tr>"
+        );
+       document.getElementById('search').value="";
+
+  }
+function GuardarExcel()
+{
+ var id_=$("#OptionEntidad").val();
+  if(id_=="limpia"){
+    Command: toastr.warning("Entidad No Seleccionada!", "Notifications")
+  }else{
+    document.getElementById("blockui_sample_3_1").click();
+     $.ajax({
+           method: "GET",            
+           url: "{{ url('/tipo-servicio-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseTipoServicio) {
+            //console.log(responseTipoServicio);
+            if(responseTipoServicio=="[]")
+            { 
+              Command: toastr.warning("Sin Registros!", "Notifications")
+              document.getElementById("blockui_sample_3_1_1").click();
+
+            }else{
+              //var Resp=$.parseJSON(responseTipoServicio);  
+               var title="Tipo_Servicio";        
+               JSONToCSVConvertor(responseTipoServicio, title, true);
+               
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications") 
+         document.getElementById("blockui_sample_3_1_1").click(); }); 
+  
+  }
+   
+     
+}
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 </script>
 @endsection

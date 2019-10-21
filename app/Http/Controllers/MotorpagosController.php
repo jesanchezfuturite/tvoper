@@ -22,6 +22,9 @@ use App\Repositories\TiporeferenciaRepositoryEloquent;
 use App\Repositories\EgobiernostatusRepositoryEloquent;
 use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\EgobiernopartidasRepositoryEloquent;
+use App\Repositories\ClasificadorRepositoryEloquent;
+
 
 class MotorpagosController extends Controller
 {
@@ -39,6 +42,8 @@ class MotorpagosController extends Controller
     protected $statusdb;
     protected $transaccionesdb;
     protected $oper_transaccionesdb;
+    protected $partidasdb;
+    protected $clasificadordb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -55,7 +60,9 @@ class MotorpagosController extends Controller
         TiporeferenciaRepositoryEloquent $tiporeferenciadb,
         EgobiernostatusRepositoryEloquent $statusdb,
         EgobiernotransaccionesRepositoryEloquent $transaccionesdb,
-     TransaccionesRepositoryEloquent $oper_transaccionesdb
+        TransaccionesRepositoryEloquent $oper_transaccionesdb,
+        EgobiernopartidasRepositoryEloquent $partidasdb,
+        ClasificadorRepositoryEloquent $clasificadordb
 
     )
     {
@@ -74,6 +81,8 @@ class MotorpagosController extends Controller
         $this->statusdb=$statusdb;
         $this->transaccionesdb=$transaccionesdb;
         $this->oper_transaccionesdb=$oper_transaccionesdb;
+        $this->partidasdb=$partidasdb;
+        $this->clasificadordb=$clasificadordb;
     }
 
     /**
@@ -465,7 +474,8 @@ return json_encode($response);
         
     }
      public function findTipoServicioAllWhere()
-    {       
+    {    
+        $response=array();   
         $responseentidad = array();  
         $entidadtramite=$this->entidadtramitedb->all();
          foreach($entidadtramite as $ii)
@@ -837,6 +847,25 @@ return json_encode($response);
         }
         return $response;
 
+    }
+    public function updateTipoServicioArray(Request $request)
+    {
+        
+        $id=$request->id;
+        $tiporeferencia=$request->tiporeferencia;
+        $limitereferencia=$request->limitereferencia;
+         Log::info($id);   
+        $response = "false";
+        try{ 
+        foreach ($id as $i) {         
+            $info=$this->tiposerviciodb->updateMenuByName(['tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$i]);
+         } 
+            $response="true";
+        }catch( \Exception $e ){
+            Log::info('Error Method updateTipoServicioArray: '.$e->getMessage());
+            $response="false";            
+        }
+        return $response;
     }
     public function deleteentidadtramite(Request $request)
     {
@@ -1525,17 +1554,19 @@ return json_encode($response);
     public function findCuentasBancoAll(Request $request)
     {
         $Id_entidad=$request->Id_entidad;
-        $servicio;
+        $descripcion;
         $idpagotramite;
         $nombrebanco;
         $metodopago;
+        $cuentas;
+        $servicio;
         $response=array(); 
         $oper_entidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad]);
         foreach ($oper_entidadtramite as $i) {
            
             $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
             foreach ($tiposervicio as $ii) {
-               $servicio=$ii->Tipo_Descripcion;
+               $descripcion=$ii->Tipo_Descripcion;
             }
             $oper_pagotramite=$this->pagotramitedb->findWhere(['tramite_id'=>$i->tipo_servicios_id]);
             foreach ($oper_pagotramite as $key) {
@@ -1551,20 +1582,300 @@ return json_encode($response);
                         foreach ($oper_metodopago as $metodo) {
                           $metodopago=$metodo->nombre;
                         }
+
+                   
+                    
+                    $beneficiario=json_decode($cuenta->beneficiario);
+                    foreach ( $beneficiario as $b) {
+                       $cuentas=$b->cuenta;
+                       $servicio=$b->servicio;
+                   }
                     $response []= array(
                     "id"=> $idpagotramite,                    
-                    "servicio" => $servicio,
+                    "descripcion" => $descripcion,
                     "banco"=>$nombrebanco,
-                    "beneficiario"=>$cuenta->beneficiario,
+                    "cuenta"=>$cuentas,
+                    "servicio"=>$servicio,
                     "metodopago"=>$metodopago,
                     "monto_max"=>$cuenta->monto_max,
                     "monto_min"=>$cuenta->monto_min                
                     );
-                }
-                
-            }
-            
+                }                
+            }            
         }
         return json_encode($response);
     }
+
+    /*********************PARTIDAS******************///
+    public function partidas()
+    {
+        return view('motorpagos/partidas');
+    }
+    public function partidasInsert(Request $request)
+    {
+        $idpartida=$request->idpartida;
+        $idservicio=$request->idservicio;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{  
+        $findpartida=$this->partidasdb->findWhere(['id_partida'=>$idpartida]);
+            if($findpartida->count()==0)
+            {
+            $insertpartidas=$this->partidasdb->create(['id_servicio'=>$idservicio,'id_partida'=>$idpartida,'descripcion'=>$descripcion]);
+            $response = "true";
+            }else{
+                $response = "false";
+            }
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasInsert: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+
+    }
+    public function partidasFindAll()
+    {   
+        $response= array();
+        $servicio;
+        $partidasfind=$this->partidasdb->all();
+        foreach ($partidasfind as $part) {
+            $serviciofind=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$part->id_servicio]);
+            foreach ($serviciofind as $serv) {
+                $servicio=$serv->Tipo_Descripcion;
+            }
+            $response []= array(
+                'id_partida' => $part->id_partida, 
+                'id_servicio' => $part->id_servicio, 
+                'servicio' => $servicio, 
+                'descripcion' => $part->descripcion 
+
+            );
+        }
+        return json_encode($response);
+    }
+    public function partidasFindWhere(Request $request)
+    {
+        $response= array();
+        $idpartida=$request->idpartida;
+         $findpartida=$this->partidasdb->findWhere(['id_partida'=>$idpartida]);
+         foreach ($findpartida as $part) {
+            $response []= array(
+                'id_partida' => $part->id_partida, 
+                'id_servicio' => $part->id_servicio,
+                'descripcion' => $part->descripcion 
+
+            );
+         }
+         return json_encode($response);
+    }
+    public  function partidasUpdate(Request $request)
+    {
+        $idpartida=$request->idpartida;
+        $idservicio=$request->idservicio;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{ 
+
+        $updatepartidas=$this->partidasdb->updatePartida(['id_servicio'=>$idservicio,'descripcion'=>$descripcion],['id_partida'=>$idpartida]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+       return $response;
+    }
+    public function partidasDeleted(Request $request)
+    {
+         $idpartida=$request->idpartida;
+         $response = "false";
+        try{   
+        $deletedpartidas=$this->partidasdb->deleteWhere(['id_partida'=>$idpartida]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasDeleted: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+    public function clasificador()
+    {
+        return view('motorpagos/clasificador');
+    } 
+    public function clasificadorInsert(Request $request)
+    {
+       
+        $identidad=$request->identidad;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{
+            $insertclasificador=$this->clasificadordb->create(['entidad_id'=>$identidad,'descripcion'=>$descripcion]);
+            $response = "true";
+            
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorInsert: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+
+    }
+    public function clasificadorFindAll()
+    {   
+        $response= array();
+        $entidad;
+        $clasificadorfind=$this->clasificadordb->all();
+        foreach ($clasificadorfind as $clas) {
+            $entidadfind=$this->entidaddb->findWhere(['id'=>$clas->entidad_id]);
+            foreach ($entidadfind as $enti) {
+                $entidad=$enti->nombre;
+            }
+            $response []= array(
+                'id' => $clas->id, 
+                'entidad' => $entidad, 
+                'descripcion' => $clas->descripcion 
+
+            );
+        }
+        return json_encode($response);
+    }
+    public function clasificadorFindWhere(Request $request)
+    {
+        $response= array();
+        $id=$request->id;
+         $findclasificador=$this->clasificadordb->findWhere(['id'=>$id]);
+         foreach ($findclasificador as $enti) {
+            $response []= array(
+                'id' => $enti->id, 
+                'entidad_id' => $enti->entidad_id,
+                'descripcion' => $enti->descripcion 
+
+            );
+         }
+         return json_encode($response);
+    }
+    public  function clasificadorUpdate(Request $request)
+    {
+        $identidad=$request->identidad;
+        $id=$request->id;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{ 
+
+        $updateclasificador=$this->clasificadordb->update(['entidad_id'=>$identidad,'descripcion'=>$descripcion],$id);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+       return $response;
+    }
+    public function clasificadorDeleted(Request $request)
+    {
+         $id=$request->id;
+         $response = "false";
+        try{   
+        $deletedclasificador=$this->clasificadordb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+    public function tiporeferencia()
+    {
+        return view('motorpagos/tiporeferencia');
+    }
+    public function tiporeferenciaInsert(Request $request)
+    {
+       
+        $descripcion=$request->descripcion;
+        $origen=$request->origen;
+        $diasvigencia=$request->diasvigencia;
+        $digitoverificador=$request->digitoverificador;
+        $longitud=$request->longitud;
+        $response = "false";
+        try{
+            $inserttiporeferencia=$this->tiporeferenciadb->create(['fecha_condensada'=>$descripcion,'digito_verificador'=>$digitoverificador,'longitud'=>$longitud,'origen'=>$origen,'dias_vigencia'=>$diasvigencia]);
+            $response = "true";
+            
+        } catch( \Exception $e ){
+            Log::info('Error Method tiporeferenciaInsert: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+
+    }
+    
+    public function tiporeferenciaFindWhere(Request $request)
+    {
+        $response= array();
+        $id=$request->id;
+         $findtiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$id]);
+         foreach ($findtiporeferencia as $tipo) {
+            $response []= array(
+                'id' => $tipo->id, 
+                'fecha_condensada' => $tipo->fecha_condensada,
+                'digito_verificador' => $tipo->digito_verificador,
+                'longitud' => $tipo->longitud,
+                'origen' => $tipo->origen,
+                'dias_vigencia' => $tipo->dias_vigencia 
+
+            );
+         }
+         return json_encode($response);
+    }
+    public  function tiporeferenciaUpdate(Request $request)
+    {       
+        $id=$request->id;  
+        $descripcion=$request->descripcion;
+        $origen=$request->origen;
+        $diasvigencia=$request->diasvigencia;
+        $digitoverificador=$request->digitoverificador;
+        $longitud=$request->longitud;
+        $response = "false";
+        try{ 
+
+        $updatetiporeferencia=$this->tiporeferenciadb->update(['fecha_condensada'=>$descripcion,'digito_verificador'=>$digitoverificador,'longitud'=>$longitud,'origen'=>$origen,'dias_vigencia'=>$diasvigencia],$id);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+       return $response;
+    }
+    public function tiporeferenciaDeleted(Request $request)
+    {
+         $id=$request->id;
+         $response = "false";
+        try{   
+        $deletedtiporeferencia=$this->tiporeferenciadb->deleteWhere(['id'=>$id]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
+    public function serviciosFindWhereID(Request $request)
+    {
+        $id_entidad=$request->id_entidad;
+        $response=array();
+         $infoentidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$id_entidad]);
+             if($infoentidadtramite->count()> 0)
+            {
+                 foreach ($infoentidadtramite as $key) 
+                {
+                     $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$key->tipo_servicios_id]);
+                      foreach ($tiposervicio as $tipo) 
+                    {                        
+                        $response []= array(
+                        "id" => $tipo->Tipo_Code,
+                        "descripcion" => $tipo->Tipo_Descripcion 
+                        );
+                    }
+                }
+            }  
+        return json_encode($response);
+    }
+
 }

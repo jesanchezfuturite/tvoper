@@ -34,5 +34,17 @@ class EgobiernopartidasRepositoryEloquent extends BaseRepository implements Egob
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+     public function updatePartida($Descripcion,$id)
+    {
+        try{
+
+            return Egobiernopartidas::where($id)->update($Descripcion);    
+        
+         }catch( \Exception $e){
+            Log::info('[EgobiernostatusRepositoryEloquent@updateDescripcion] Error ' . $e->getMessage());
+        }
+        
+
+    }
     
 }

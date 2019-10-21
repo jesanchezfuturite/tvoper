@@ -64,7 +64,7 @@ Route::post('/pagotramite-insert','MotorpagosController@insertPagoTramite');
 Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere');
 Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
 Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
-/* Metodo Entidad */
+/***********++ Metodo Entidad **********/
 Route::get('/entidad','MotorpagosController@entidadView');
 Route::get('/entidad-find','MotorpagosController@findentidad');
 Route::post('/entidad-find-where','MotorpagosController@findentidadWhere');
@@ -72,7 +72,7 @@ Route::post('/entidad-insert','MotorpagosController@insertentidad');
 Route::post('/entidad-update','MotorpagosController@updateentidad');
 Route::post('/entidad-delete','MotorpagosController@deleteentidad');
 
-/* Entidad Tramite*/
+/****************Entidad Tramite********/
 Route::get('/entidad-tramite','MotorpagosController@entidadtramiteView');
 Route::post('/entidad-tramite-find','MotorpagosController@findtramiteEntidad');
 Route::post('/entidad-tramite-insert','MotorpagosController@insertentidadtramite');
@@ -80,7 +80,9 @@ Route::post('/entidad-tramite-update','MotorpagosController@updateentidadtramite
 Route::post('/entidad-tramite-delete','MotorpagosController@deleteentidadtramite');
 Route::post('/entidad-tramite-find-where','MotorpagosController@findtramiteEntidadWhere');
 Route::post('/entidad-tramite-find-id','MotorpagosController@findtramiteEntidadWhereID');
-/*/ Tipo Servicio/*/
+Route::post('/tipo-servicio-update-array','MotorpagosController@updateTipoServicioArray');
+
+/*/************ Tipo Servicio**************/
 Route::get('/tipo-servicio','MotorpagosController@tiposervicio');
 Route::get('/tipo-referencia-Find','MotorpagosController@tiporeferenciaFindAll');
 Route::post('/tipo-servicio-Find-where','MotorpagosController@findTipoServicio_whereId');
@@ -89,6 +91,7 @@ Route::post('/tipo-servicio-insert','MotorpagosController@insertTipoServicio');
 Route::post('/tipo-servicio-update','MotorpagosController@updateTipoServicio');
 Route::get('/tipo-servicio-find-all','MotorpagosController@findTipoServicioWhere');
 Route::post('/tipo-servicio-delete','MotorpagosController@deleteTipoServicio');
+Route::post('/tipo-servicio-find-where-id','MotorpagosController@serviciosFindWhereID');
 
 /*----------Estatus Transaccion--------*/
 Route::get('/status-find-all','MotorpagosController@statusFindAll');
@@ -99,7 +102,30 @@ Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesF
 //Route::post('/transaccion-find-referencia-oper','MotorpagosController@transaccionesFindWhereReferencia_oper');
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
+/**-------*********----------------- PARTIDAS -----------*********-------------*/
+Route::get('/partidas','MotorpagosController@partidas');
+Route::get('/partidas-find-all','MotorpagosController@partidasFindAll');
+Route::post('/partidas-insert','MotorpagosController@partidasInsert');
+Route::post('/partidas-find-where','MotorpagosController@partidasFindWhere');
+Route::post('/partidas-update','MotorpagosController@partidasUpdate');
+Route::post('/partidas-deleted','MotorpagosController@partidasDeleted');
 
+
+/*/***************************CLASIFICADOR*********************************/
+Route::get('/clasificador','MotorpagosController@clasificador');
+Route::get('/clasificador-find-all','MotorpagosController@clasificadorFindAll');
+Route::post('/clasificador-insert','MotorpagosController@clasificadorInsert');
+Route::post('/clasificador-find-where','MotorpagosController@clasificadorFindWhere');
+Route::post('/clasificador-update','MotorpagosController@clasificadorUpdate');
+Route::post('/clasificador-deleted','MotorpagosController@clasificadorDeleted');
+
+/*****************************TIPO REFERENCIA***************************************/
+Route::get('/tipo-referencia','MotorpagosController@tiporeferencia');
+Route::get('/tipo-referencia-find-all','MotorpagosController@tiporeferenciaFindAll');
+Route::post('/tipo-referencia-insert','MotorpagosController@tiporeferenciaInsert');
+Route::post('/tipo-referencia-find-where','MotorpagosController@tiporeferenciaFindWhere');
+Route::post('/tipo-referencia-update','MotorpagosController@tiporeferenciaUpdate');
+Route::post('/tipo-referencia-deleted','MotorpagosController@tiporeferenciaDeleted');
 /************detalle de pago tramite***********/
 
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');

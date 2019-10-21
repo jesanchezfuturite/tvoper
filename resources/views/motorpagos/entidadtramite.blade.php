@@ -1,5 +1,6 @@
 @extends('layout.app')
 
+
 @section('content')
 <link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Motor de pagos <small>Configuración Entidad Tramite</small></h3>
@@ -28,7 +29,9 @@
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
     <strong>Info: </strong>Esta configuración te permite relacionar un trámite a una entidad. También puedes eliminar o editar el registro.
 </div>
+
 <div class="row">
+  
     <div class="portlet box blue">
         <div class="portlet-title">
             <div class="caption">
@@ -58,7 +61,7 @@
             </div> 
                 <div class="col-md-3">   
                 <div class="form-group">    
-                    <select class="select2me form-control" name="OptionEntidad" id="OptionEntidad" onchange="TableTramiteEntidad()">
+                    <select class="select2me form-control" name="OptionEntidad" id="OptionEntidad" onchange="changeEntidad()">
                         <option value="limpia">------</option>
                     </select>       
                 </div> 
@@ -67,30 +70,38 @@
             </div>
         </div>
     </div>
+    
 </div>
 
 <div class="row">
+  <div hidden="true">
+  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
+  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
+  <div id="blockui_sample_3_1_element">
     <!-- BEGIN SAMPLE TABLE PORTLET-->
-    <div class="portlet box blue">
+    <div class="portlet box blue" id="Addtable">
         <div class="portlet-title" id="TitleBanco">
             <div class="caption" id="RemoveTitle">
                 <i class="fa fa-cogs"></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class="label label-sm label-danger">
                             <strong>Clave: </strong>Sin Clave</span> @endif
             </div>
         </div>
-        <div class="portlet-body">
+        <div class="portlet-body" id="RemoveTable">
           <div class="row">
-         <div class="col-md-12">           
-            <div class="form-group">           
+            <div class="form-group">
+              <div class="col-md-6">                      
                 <button class="btn green" href='#static2' data-toggle='modal' >Agregar</button>
+              </div>
             </div>
+            <div class="form-group">
+             <div class="col-md-6 text-right">                
+                <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
+              </div>
+            </div>
+            <span class="help-block">&nbsp; </span>
           </div>
-          </div>
-          <div class="row">
-           <div class="col-md-12">           
-            <div class="form-group"> 
-            <div class="table-scrollable">
-                <table class="table table-hover" id="table">
+          
+                <table class="table table-hover" id="sample_2">
                 <thead>
                 <tr>
                     <th>
@@ -111,11 +122,9 @@
                         </tr>                              
                 </tbody>
                 </table>
-            </div>
-            </div>
-            </div>
+           
         </div>
-        </div>
+    </div>
     </div>
     <!-- END SAMPLE TABLE PORTLET-->    
 
@@ -191,8 +200,7 @@
                 <div class="col-md-4"><div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='MostrarTodos()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div><span class='help-block'>Muestra Todo los Registros</span> 
               </div></div>
                 <br>
-               <div  id="demo">
-              
+               <div  id="demo">              
                  <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
                     <thead>
                       <tr>            
@@ -221,6 +229,8 @@
       FindEntidad();
       AddOptionTipoServicio();
       FindEntidadTable();
+      TableManaged.init();
+      UIBlockUI.init();
       
     });
     function MostrarTodos()
@@ -251,7 +261,7 @@
         $.each(Resp, function(i, item) {                
                $("#table2").append("<tr>"
                 +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
-                +"<td >"+item.nombre+"</td>"
+                +"<td  width='100%'>"+item.nombre+"</td>"
                 +"</tr>"
             );  
         });
@@ -273,7 +283,7 @@
         $.each(Resp, function(i, item) {                
                $("#table2").append("<tr>"
                 +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
-                +"<td >"+item.nombre+"</td>"
+                +"<td  width='100%'>"+item.nombre+"</td>"
                 +"</tr>"
             );  
         });
@@ -525,7 +535,11 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
     }
-
+    function changeEntidad() {
+       $("#sample_2 tbody tr").remove();
+          $("#sample_2 tbody").append("<tr><th>Espere Cargando...</th></tr>");
+        TableTramiteEntidad()
+    }
     function TableTramiteEntidad()
     {
       AddOptionTipoServicio();
@@ -535,11 +549,10 @@
             {
               $("#RemoveTitle").remove();
                $("#TitleBanco").append("<div class='caption' id='RemoveTitle'>        <i class='fa fa-cogs'></i>Registros Entidad Tramite  @if(session('is_admin') == true)<span class='label label-sm label-danger'> <strong>Clave: </strong>Sin Clave</span> @endif </div>");
-                $("#table tbody tr").remove();
-                $('#table').append("<tr>"
-                    +"<td> <span class='help-block'>No Found</span></td>"
-                    +"<td class='text-right'></td>"
-                    +"</tr>");
+
+                $("#RemoveTable").remove();
+                AddtableSample_1();
+                TableManaged.init();
             }else{
                 $.ajax({
            method: "POST",            
@@ -547,21 +560,22 @@
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
           findClave();
-        $("#table tbody tr").remove();
         var Resp=$.parseJSON(responseinfo);
           var item="";
           if(responseinfo=="[]")
             {
-               $('#table').append("<tr>"
-                    +"<td> <span class='help-block'>No Found</span></td>"
-                    +"<td></td>"
-                    +"</tr>");
+              $("#RemoveTable").remove();
+              AddtableSample_1();
             }else{
+               $("#RemoveTable").remove();
+                AddtableSample_1();
+                $("#sample_2 tbody tr").remove();
                 $.each(Resp, function(i, item) {                
-                 $('#table').append("<tr>"
+                 $('#sample_2').append("<tr>"
                     +"<td>"+item.tiposervicio+"</td>"
                     +"<td class='text-right'><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar Registro' onclick=\"DeleteTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
                     +"</tr>");    });
+                TableManaged.init(); 
               }
               /*<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar Registro' onclick=\"updateTramiteEntidad(\'"+item.id+"\')\"><i class='fa fa-edit'></i> </a>*/
         })
@@ -569,6 +583,10 @@
          Command: toastr.warning("No Success", "Notifications")  });
             }
          
+    }
+    function AddtableSample_1()
+    {
+      $("#Addtable").append("<div class='portlet-body' id='RemoveTable'> <div class='row'> <div class='form-group'><div class='col-md-6'> <button class='btn green' href='#static2' data-toggle='modal' >Agregar</button> </div>        </div> <div class='form-group'> <div class='col-md-6 text-right'>     <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> <span class='help-block'>&nbsp; </span></div> <table class='table table-hover' id='sample_2'> <thead> <tr><th>Nombre</th> <th>&nbsp;</th></tr> </thead><tbody> <tr><td> <span class='help-block'>No Found</span> </td><td class='text-right'></td> </tr> </tbody></table></div>");
     }
     function findClave()
     {
@@ -698,6 +716,79 @@
         });
     });
 
+function GuardarExcel()
+{
+ var id_=$("#OptionEntidad").val();
+  if(id_=="limpia"){
+    Command: toastr.warning("Entidad No Seleccionada!", "Notifications")
+  }else{
+    document.getElementById("blockui_sample_3_1").click();
+     $.ajax({
+           method: "POST",            
+           url: "{{ url('/entidad-tramite-find') }}",
+           data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (responseTipoServicio) {
+            //console.log(responseTipoServicio);
+            if(responseTipoServicio=="[]")
+            { 
+              Command: toastr.warning("Sin Registros!", "Notifications")
+              document.getElementById("blockui_sample_3_1_1").click();
+
+            }else{
+              //var Resp=$.parseJSON(responseTipoServicio);  
+               var Entidad=$("#OptionEntidad option:selected").text();        
+               JSONToCSVConvertor(responseTipoServicio, Entidad, true);
+               
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications") 
+         document.getElementById("blockui_sample_3_1_1").click(); }); 
+  
+  }
+   
+     
+}
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha+"Entidad_";
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 </script>
 @endsection
