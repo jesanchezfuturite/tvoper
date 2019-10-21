@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 
+use Illuminate\Support\Facades\Auth;
+
 class VerifyAssignment
 {
     /**
@@ -15,7 +17,10 @@ class VerifyAssignment
      */
     public function handle($request, Closure $next)
     {   
-        $obj = $request->session()->get('menu') !== null ? $request->session()->get('menu') : ['childs'=>[]];
+
+        $obj = $request->session()->get('menu') !== null ? 
+            $request->session()->get('menu') : 
+            ['childs'=>[]];
         $routes = array_column($obj['childs'],'route');
         $pwd = $request->getPathInfo();
         if(in_array($pwd, $routes) || session('is_admin'))

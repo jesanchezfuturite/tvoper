@@ -22,6 +22,10 @@
 
 
 <div class="row">
+    <div hidden="true">
+  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
+  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
+  <div id="blockui_sample_3_1_element">
     <!-- BEGIN SAMPLE TABLE PORTLET-->
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
@@ -30,12 +34,18 @@
             </div>
         </div>
         <div class="portlet-body" id="Removetable">           
-            <div class="form-group">           
-                <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
+                </div>
             </div>
-            
-            
-                <table class="table table-hover" id="sample_1">
+            <div class="form-group">
+                <div class="col-md-6 text-right">                
+                    <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
+                </div>
+            </div> 
+            <span class='help-block'>&nbsp; </span>          
+                <table class="table table-hover" id="sample_2">
                 <thead>
                 <tr>
                     <th>
@@ -65,6 +75,7 @@
                 </tbody>
                 </table>
           
+            </div>
         </div>
     </div>
     <!-- END SAMPLE TABLE PORTLET-->    
@@ -157,8 +168,7 @@
 <script type="text/javascript">
     jQuery(document).ready(function() {
         tiporeferenciaFindAll();
-       
-        
+        UIBlockUI.init();        
     });    
     function limpiar()
     {
@@ -274,7 +284,8 @@
     }
     function tiporeferenciaActualiza()
     {
-         var id_=$("#idupdate").val();var descripcion_=$("#descripcion").val();
+        var id_=$("#idupdate").val();
+        var descripcion_=$("#descripcion").val();
         var digito_verificador=$("#digito_verificador").val();
         var longitud_=$("#longitud").val();
         var origen_=$("#origen").val();
@@ -282,7 +293,7 @@
         $.ajax({
         method: "post",            
         url: "{{ url('/tipo-referencia-update') }}",
-        data: {descripcion:descripcion_,digitoverificador:digito_verificador,longitud:longitud_,origen:origen_,diasvigencia:dias_vigencia,_token:'{{ csrf_token() }}'} })
+        data: {id:id_,descripcion:descripcion_,digitoverificador:digito_verificador,longitud:longitud_,origen:origen_,diasvigencia:dias_vigencia,_token:'{{ csrf_token() }}'} })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
             {
@@ -310,10 +321,10 @@
           var Resp=$.parseJSON(response);
            $("#Removetable").remove();
          $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'> <div class='form-group'>  <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div><table class='table table-hover' id='sample_1'><thead><tr> <th> Descripción</th><th> Digito Verifivcador </th><th>Longitud             </th>  <th> Origen</th> <th> Dias Vigencia </th> <th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
+            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th> Descripción</th><th> Digito Verifivcador </th><th>Longitud </th> <th> Origen</th> <th> Dias Vigencia </th> <th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
         );
         $.each(Resp, function(i, item) {                
-            $('#sample_1 tbody').append("<tr>"
+            $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.fecha_condensada+"</td>"
                 +"<td>"+item.digito_verificador+"</td>"
                 +"<td>"+item.longitud+"</td>"
@@ -323,7 +334,7 @@
                 +"</tr>"
                 );
             });
-        TableAdvanced.init();
+        TableManaged.init();
         })
         .fail(function( msg ) {
          console.log("Error al Cargar Tabla Partidas");  });
@@ -333,6 +344,70 @@
     var key = window.Event ? e.which : e.keyCode
     return ((key >= 48 && key <= 57) || (key==8))
     }
+function GuardarExcel()
+{
+  
+    document.getElementById("blockui_sample_3_1").click();
+     $.ajax({
+           method: "GET",            
+           url: "{{ url('/tipo-referencia-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            //console.log(responseTipoServicio);
+            if(response=="[]")
+            { 
+              Command: toastr.warning("Sin Registros!", "Notifications")
+              document.getElementById("blockui_sample_3_1_1").click();
+            }else{
+              //var Resp=$.parseJSON(responseTipoServicio);  
+               var Title="Tipo_Referencia";        
+               JSONToCSVConvertor(response, Title, true);               
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications") 
+         document.getElementById("blockui_sample_3_1_1").click(); });       
+}
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 </script>
 @endsection

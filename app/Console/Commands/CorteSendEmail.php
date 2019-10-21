@@ -169,8 +169,8 @@ class CorteSendEmail extends Command
         if (!File::exists(storage_path('app/Cortes')))
         { File::makeDirectory(storage_path('app/Cortes'));}       
         $path1=storage_path('app/Cortes/Cortes_'.$nombreArchivo->format('Y'));
-        $path2=storage_path('app/Cortes/Cortes_'.$nombreArchivo->format('Y').'/Cortes_'.$nombreArchivo->format('Y_m'));
-        $path3=storage_path('app/Cortes/Cortes_'.$nombreArchivo->format('Y').'/Cortes_'.$nombreArchivo->format('Y_m').'/Corte_'.$nombreArchivo->format('Y_m_d'));        
+        $path2=$path1.'/Cortes_'.$nombreArchivo->format('Y_m');
+        $path3=$path2.'/Corte_'.$nombreArchivo->format('Y_m_d');        
         $response = array();       
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
@@ -1085,7 +1085,7 @@ class CorteSendEmail extends Command
                         $RowRfcPrest=str_pad($retenciones->rfc_prestadora,13,"0",STR_PAD_LEFT);
                         $RowCuentaPrest=str_pad($retenciones->cuenta,11,"0",STR_PAD_LEFT);
                         $RowNombrePrest=str_pad($retenciones->nombre_prestadora,150);
-                        $RowEmpleados=str_pad($retenciones->no_empleados,6,"0",STR_PAD_LEFT);///pendiente
+                        $RowEmpleados=str_pad($retenciones->r,6,"0",STR_PAD_LEFT);///pendiente
                         $RowRenumeracion=str_pad(str_replace(".", "", $retenciones->remuneraciones),15,"0",STR_PAD_LEFT);  //pendiente 
                         $RowPartidaRet=str_pad('12510',5);
                         $RowRetencion=str_pad(str_replace(".","",$retenciones->retencion),13,"0",STR_PAD_LEFT);
