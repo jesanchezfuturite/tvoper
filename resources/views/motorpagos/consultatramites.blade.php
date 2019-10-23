@@ -1,0 +1,335 @@
+@extends('layout.app')
+
+@section('content')
+<h3 class="page-title">Motor de pagos <small>Consulta Transacciones</small></h3>
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="fa fa-home"></i>
+            <a href="index.html">Home</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#">Motor de pagos</a>
+            <i class="fa fa-angle-right"></i>
+        </li>
+        <li>
+            <a href="#">Consulta Transacciones</a>
+        </li>
+    </ul>
+</div>
+<div class="alert alert-info alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+    <strong>Info:</strong> Esta consulta te permite buscar por rango de fechas.
+</div>
+<div class="row">
+    <div hidden="true">
+  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
+  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
+  <div id="blockui_sample_3_1_element">
+        <!-- BEGIN SAMPLE TABLE PORTLET-->
+        <div class="portlet box blue">
+            <div class="portlet-title" >
+                <div class="caption" id="headerTabla">
+                  <div id="borraheader"> <a class=" popovers" data-container="body" data-trigger="hover" data-placement="top" data-content="Esta consulta te permite buscar y cambiar el estatus de una transacciónDismissable " data-original-title="Tip"> <i class="fa fa-cogs" style="color:white;">&nbsp; </i></a>Transacciones</div>
+                  </div>
+                  <div class="tools" hidden="true">
+              </div>             
+            </div>
+            <div class="portlet-body" >
+                <div class="row">
+                    <div class="col-md-12 text-right"> 
+                        <span class="help-block">Selecciona una Opcion. </span>
+                        <div class="md-radio-inline">
+                            <div class="md-radio">
+                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn"value="undia" onclick="radiobuttons()" checked>
+                                    <label for="radio6">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                         Hace 1 Dia (Últimas 24hrs). </label>
+                                </div>|
+                                <div class="md-radio">
+                                    <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="tresdias" onclick="radiobuttons()">
+                                    <label for="radio7">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                        Hace 3 Días.</label>
+                                </div>|
+                                <div class="md-radio">
+                                    <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="avanzado" onclick="radiobuttons()">
+                                    <label for="radio8">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>
+                                    Avanzado (Rango Fechas). </label>
+                                </div>
+                        </div>
+                                                                 
+                    </div>
+                   
+                </div>
+            <div id="addTimerpicker">
+               
+        </div>                
+                
+        <div class="row">
+            <hr> 
+    <div class="col-md-12">
+        <div class="tabbable-line boxless tabbable-reversed">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab_0" data-toggle="tab">Operaciones</a>
+                </li>
+                <li>
+                    <a href="#tab_1" data-toggle="tab">Egobierno</a>
+                </li>                            
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_0">
+                    <div class="portlet box blue" id="addTable_1">
+
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-gift"></i>Operaciones
+                            </div>
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>                                      
+                            </div>
+                        </div>
+                        <div class="portlet-body" id="table_1"> 
+                                <table class="table table-hover" id="sample_3">
+                                    <thead>
+                                        <tr> 
+                                            <th>Estatus</th>
+                                            <th>Transacción</th>
+                                            <th>Entidad</th>
+                                            <th>Tramite</th>
+                                            <th>Contribuyente</th> 
+                                            <th>Inicio Tramite</th>                       
+                                            <th>Banco</th>
+                                            <th>Tipo Pago</th>
+                                            <th>Total Tramite</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <tr>
+                                        <td><span class="help-block">No Found</span></td>                       
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        </tr>                                   
+                                    </tbody>
+                                </table>                          
+                        </div>
+                        <div class="form-actions">
+                            <div class="row">
+                                      <span class="help-block">&nbsp;</span>              
+                            </div>
+                        </div>
+                    </div>
+                </div>            
+                <div class="tab-pane" id="tab_1">
+                    <div class="portlet box blue" id="addTable_2">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-gift"></i>Egobierno
+                            </div>
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>                                      
+                            </div>
+                        </div>
+                        <div class="portlet-body" id="table_2"> 
+                            <table class="table table-hover" id="sample_2">
+                                    <thead>
+                                        <tr> 
+                                            <th>Estatus</th>
+                                            <th>Transacción</th>
+                                            <th>Entidad</th>
+                                            <th>Tramite</th>
+                                            <th>Contribuyente</th> 
+                                            <th>Inicio Tramite</th>                       
+                                            <th>Banco</th>
+                                            <th>Tipo Pago</th>                                            
+                                            <th>Total Tamite</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody> 
+                                        <tr>
+                                        <td><span class="help-block">No Found</span></td>           
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        </tr>                                   
+                                    </tbody>
+                                </table>
+                            
+                        </div>
+                        <div class="form-actions ">
+                            <div class="row">
+                                      <span class="help-block">&nbsp;</span>              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+</div>               
+ </div>
+</div>       
+</div>
+</div>
+
+
+
+<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="form-section">Detalle</h4>
+            </div>
+            <div class="modal-body">
+
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+            </div>
+            </div>            
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        UIBlockUI.init();  
+        consultaInicial();
+             
+        
+    });
+    function radiobuttons()
+    {
+        var option = document.querySelector('input[name = radio2]:checked').value;        
+        if(option=="avanzado")
+        {
+            timpicker();
+        }else{
+            $("#addTimerpicker div").remove();
+            if(option=="undia")
+            {
+                consultaInicial();
+            }
+            else{consulta3dias();}
+        }
+    }
+    function timpicker()
+    {
+        $("#addTimerpicker div").remove();
+         $("#addTimerpicker").append("<div class='row'><hr><div class='col-md-4'> <div class='form-group'>   <span class='help-block'>Seleccionar Rango de Fechas. </span><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin'></div></div></div><div class='col-md-1'><div class='form-group'><span class='help-block'>&nbsp; </span><button class='btn green' id='Buscar' onclick='consultaRangoFechas()'>Buscar</button></div></div></div>");
+         ComponentsPickers.init();   
+    }
+    function consultaInicial()
+    {        
+        fechaIn = "1";
+        fechaF = "1";
+        consultaEgob(fechaIn,fechaF);
+    }
+    function consulta3dias()
+    {
+        fechaIn = "3";
+        fechaF = "3";
+        consultaEgob(fechaIn,fechaF);
+    }
+    function consultaRangoFechas()
+    {
+        fechaIn=$("#fechainicio").val();
+        fechaF=$("#fechafin").val();
+        if(fechaIn.length<1){
+            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
+        }else if(fechaF.length<1){
+            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        }else{
+            consultaEgob(fechaIn,fechaF);
+        }
+    }
+    function consultaEgob(fechaIn,fechaF) {
+        Addtable2();
+        document.getElementById("blockui_sample_3_1").click();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-egob') }}",
+        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        $("#sample_2 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+        if(response=="[]")
+        {
+            $("#sample_2 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"</tr>");
+            TableManaged.init();
+        }else{
+        $.each(Resp, function(i, item) { 
+             $("#sample_2 tbody").append("<tr>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td><a href='#static2' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
+                +"</tr>");
+            });
+        TableManaged.init();
+        }
+       
+        document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_2 tbody tr").remove(); 
+            $("#sample_2 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });
+        
+      
+    }
+    function Addtable2()
+    {
+        $("#table_2").remove();
+        $("#table_1").remove();
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+    }
+    function limpiar()
+    {
+        
+    }
+
+    
+</script>
+@endsection

@@ -132,7 +132,11 @@ Route::post('/tipo-referencia-deleted','MotorpagosController@tiporeferenciaDelet
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
 Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
-/*************   envio correo    **************/
+/*********************CONSULTA TRAMITES***************************/
+
+Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones');
+Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
+
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@generaarchivo');

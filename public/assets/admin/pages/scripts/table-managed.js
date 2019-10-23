@@ -41,7 +41,7 @@ var TableManaged = function () {
             "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
 
             "columns": [{
-                "orderable": false
+                "orderable": true
             }, {
                 "orderable": true
             }, {
@@ -112,12 +112,12 @@ var TableManaged = function () {
                 "info": "Showing _START_ to _END_ of _TOTAL_ records",
                 "infoEmpty": "No records found",
                 "infoFiltered": "(filtered1 from _MAX_ total records)",
-                "lengthMenu": " _MENU_ records",
+                "lengthMenu": "Ver _MENU_ Entradas",
                 "paging": {
                     "previous": "Prev",
                     "next": "Next"
                 },
-                "search": "Search:",
+                "search": "Buscar:",
                 "zeroRecords": "No matching records found"
             },
 
@@ -181,8 +181,8 @@ var TableManaged = function () {
                 "info": "Showing _START_ to _END_ of _TOTAL_ records",
                 "infoEmpty": "No records found",
                 "infoFiltered": "(filtered1 from _MAX_ total records)",
-                "lengthMenu": "Show _MENU_ records",
-                "search": "Search:",
+                "lengthMenu": "Ver _MENU_ Entradas",
+                "search": "Buscar:",
                 "zeroRecords": "No matching records found"
             },
             
@@ -207,7 +207,7 @@ var TableManaged = function () {
                 "targets": [0]
             }],
             "order": [
-                [1, "asc"]
+                [0, "asc"]
             ] // set first column as a default sort by asc
         });
 
