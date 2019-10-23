@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /* conciliacion app */
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
+Route::get('/conciliacion-results','ConciliacionController@results');
 Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 
 /* motor de pagos app */

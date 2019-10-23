@@ -214,4 +214,20 @@ class ConciliacionController extends Controller
 
         return $response;
     }
+
+
+    /**
+     * Vista principal de la herramienta de resultados de conciliacion
+     *
+     * @param Request $request
+     *
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */ 
+
+    public function results()
+    {
+        return view('conciliacion/results' );
+    }
+
 }
