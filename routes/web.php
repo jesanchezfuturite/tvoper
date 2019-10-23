@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /* conciliacion app */
 Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
+Route::get('/conciliacion-results','ConciliacionController@results');
 Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 
 /* motor de pagos app */
@@ -131,7 +132,11 @@ Route::post('/tipo-referencia-deleted','MotorpagosController@tiporeferenciaDelet
 Route::get('/detalle-pago-tramite','MotorpagosController@detallepagotramite');
 Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
-/*************   envio correo    **************/
+/*********************CONSULTA TRAMITES***************************/
+
+Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones');
+Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
+
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@generaarchivo');

@@ -25,7 +25,7 @@ class Egobtransacciones extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Realiza la conciliacion de las operaciones por internet';
 
     /**
      * Create a new command instance.

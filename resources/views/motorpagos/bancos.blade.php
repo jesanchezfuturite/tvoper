@@ -98,6 +98,7 @@
                         <th>Cuenta</th>
                         <th>Servicio / CIE / CLABE</th>
                         <th>Leyenda</th>
+                        <th>Alias</th>
                         <th>Método de pago</th>
                         <th>Monto Mínimo</th>
                         <th>Monto Máximo</th>
@@ -153,6 +154,12 @@
                                 <input type="text" class="form-control" placeholder="Ingrese la Leyenda" id="leyenda">
                             </div>
                             
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Alias</label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Ingrese el Alias" id="alias">
+                            </div>                            
                         </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Monto Mínimo</label>
@@ -375,11 +382,13 @@
          var Serv="";
         var Cuent=""; 
         var Ley=""; 
+        var ali=""; 
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
                 Serv=item2.servicio;
                 Cuent=item2.cuenta;                
                 Ley=item2.leyenda;                
+                ali=item2.alias;                
             });            
             status=item.status;    
             if (status=='1') 
@@ -396,6 +405,7 @@
             +"<td>"+Cuent+"</td>"
             +"<td>"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
             +"<td>"+Ley+"</td>"
+            +"<td>"+ali+"</td>"
             +"<td>"+item.metodopago+"</td>"
             +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
             +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
@@ -411,9 +421,10 @@
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
         var leyenda=$("#leyenda").val();
+        var alias=$("#alias").val();
         var monto_max_=$("#monto_max").val();
         var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'"}]';             
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();  
 
@@ -443,6 +454,7 @@
          document.getElementById('cuenta').value="";
          document.getElementById('servicio').value="";
          document.getElementById('leyenda').value="";
+         document.getElementById('alias').value="";
          document.getElementById('monto_max').value="";
          document.getElementById('monto_min').value=""; 
          //document.getElementById('itemMetodopago').value="limpia";
@@ -518,15 +530,19 @@
             var Serv="";
             var Cuent="";             
             var ley="";             
+            var ali="";
+
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
                 Serv=item2.servicio;
                 Cuent=item2.cuenta;
-                ley=item2.leyenda;               
+                ley=item2.leyenda; 
+                ali=item2.alias;               
             });
              document.getElementById('cuenta').value=Cuent;
             document.getElementById('servicio').value=Serv;
             document.getElementById('leyenda').value=ley;
+            document.getElementById('alias').value=ali;
             document.getElementById('monto_max').value=item.monto_max;
              document.getElementById('monto_min').value=item.monto_min; 
             //document.getElementById('itemMetodopago').value=item.metodopago_id;
@@ -548,9 +564,10 @@
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
         var leyenda=$("#leyenda").val();
+        var alias=$("#alias").val();
         var monto_max_=$("#monto_max").val();
         var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'"}]';             
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();     
        if(metodopago_=="limpia")
@@ -583,6 +600,7 @@
         var cuenta=$("#cuenta").val();
         var servicio=$("#servicio").val();
         var leyenda=$("#leyenda").val();
+        var alias=$("#alias").val();
         var monto_max=$("#monto_max").val();
         var monto_min=$("#monto_min").val();
         var metodP=$("#itemMetodopago").val();
@@ -600,8 +618,11 @@
                Command: toastr.warning("Campo Servicio Requerido! 1 a 18 Caracteres.", "Notifications")
                document.getElementById("servicio").focus();
             }else if(leyenda.length<1 ){
-               Command: toastr.warning("Campo Leyenda Requerido! 1 a 18 Caracteres.", "Notifications")
+               Command: toastr.warning("Campo Leyenda Requerido!", "Notifications")
                document.getElementById("leyenda").focus();
+            }else if(alias.length<1 ){
+               Command: toastr.warning("Campo Alias Requerido!", "Notifications")
+               document.getElementById("alias").focus();
             }else if(monto_min.length<1){
               Command: toastr.warning("Campo Monto Min. Requerido! 1 Caracteres Min.", "Notifications")
               document.getElementById("monto_min").focus();

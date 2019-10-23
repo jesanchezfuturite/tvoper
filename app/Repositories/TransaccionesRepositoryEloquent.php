@@ -42,10 +42,20 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
         
          }catch( \Exception $e){
             Log::info('[TransaccionesRepositoryEloquent@updateTransacciones] Error ' . $e->getMessage());
-        }
-        
+        }       
 
     }
-    
+    public function consultaTransacciones($fechaIn,$fechaF)
+    {
+        try{
+
+         //$data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
+        // ->
+         //->get();
+
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@updateTransacciones] Error ' . $e->getMessage());
+        }      
+    }
     
 }

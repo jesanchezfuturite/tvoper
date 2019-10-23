@@ -24,6 +24,9 @@ use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\ClasificadorRepositoryEloquent;
+use App\Repositories\EgobiernotipopagoRepositoryEloquent;
+use App\Repositories\TramitesRepositoryEloquent;
+
 
 
 class MotorpagosController extends Controller
@@ -44,6 +47,8 @@ class MotorpagosController extends Controller
     protected $oper_transaccionesdb;
     protected $partidasdb;
     protected $clasificadordb;
+    protected $tipopagodb;
+    protected $tramitedb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -62,7 +67,9 @@ class MotorpagosController extends Controller
         EgobiernotransaccionesRepositoryEloquent $transaccionesdb,
         TransaccionesRepositoryEloquent $oper_transaccionesdb,
         EgobiernopartidasRepositoryEloquent $partidasdb,
-        ClasificadorRepositoryEloquent $clasificadordb
+        ClasificadorRepositoryEloquent $clasificadordb,
+        EgobiernotipopagoRepositoryEloquent $tipopagodb,
+        TramitesRepositoryEloquent $tramitedb
 
     )
     {
@@ -83,6 +90,8 @@ class MotorpagosController extends Controller
         $this->oper_transaccionesdb=$oper_transaccionesdb;
         $this->partidasdb=$partidasdb;
         $this->clasificadordb=$clasificadordb;
+        $this->tipopagodb=$tipopagodb;
+        $this->tramitedb=$tramitedb;
     }
 
     /**
@@ -1876,6 +1885,135 @@ return json_encode($response);
                 }
             }  
         return json_encode($response);
+    }
+    public function consultaTransacciones()
+    {
+        return view('motorpagos/consultatramites');
+    }
+    public function consultaTransaccionesEgob(Request $request)
+    {
+
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
+        //Log::info($fecha_inicio." ".$fecha_fin);
+        if($fecha_inicio=="1")
+        {
+            $fechaActual=Carbon::now();
+            $fechaAterior=Carbon::now()->subDays(1);
+            $fecha_inicio=$fechaAterior->format('Y-m-d');
+            $fecha_fin=$fechaActual->format('Y-m-d');
+            //Log::info($fecha_inicio." ".$fecha_fin);
+        }
+        if($fecha_inicio=="3")
+        {
+            $fechaActual=Carbon::now();
+            $fechaAterior=Carbon::now()->subDays(3);
+            $fecha_inicio=$fechaAterior->format('Y-m-d');
+            $fecha_fin=$fechaActual->format('Y-m-d');
+            //Log::info($fecha_inicio." ".$fecha_fin);
+        }       
+        
+        $response=array();
+        $status='';
+        $entidadRes='';
+        $tipopago='';
+        $tiposervicio='';
+        //Log::info($fecha_inicio." ".$fecha_fin);
+        $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);         
+         //Log::info($transaccion);
+        if($transaccion<>null){
+        foreach ($transaccion as $trans) {
+            $response []= array(
+                'Estatus'=>$trans->status,
+                'Transaccion'=>$trans->idTrans,
+                'Entidad'=>$trans->entidad,
+                'Tramite'=>$trans->tiposervicio,
+                'Contribuyente'=>$trans->TitularTC,
+                'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
+                'Banco'=>$trans->BancoSeleccion,
+                'Tipo_Pago'=>$trans->$tipopago,
+                'Total_Tramite'=>$trans->TotalTramite
+             );
+            
+            }
+        }
+        //log::info($response);
+        return json_encode($response);
+    }
+    public function consultaTransaccionesOper(Request $request)
+    {
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
+        if($fecha_inicio=="1")
+        {
+            $fechaActual=Carbon::now();
+            $fechaAterior=Carbon::now()->subDays(1);
+            $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
+            $fecha_fin=$fechaActual->format('Y-m-d').'23:59:59';
+        }
+        if($fecha_inicio=="3")
+        {
+            $fechaActual=Carbon::now();
+            $fechaAterior=Carbon::now()->subDays(3);
+            $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
+            $fecha_fin=$fechaActual->format('Y-m-d').'23:59:59';
+            
+        }       
+        
+        $response=array();
+        $status='';
+        $entidadRes='';
+        $tipopago='';
+        $tiposervicio='';
+        $transaccion=$this->oper_transaccionesdb->findWhere([['fecha_transaccion','>=',$fecha_inicio],['fecha_transaccion','<=',$fecha_fin]]);
+         
+         Log::info($transaccion);
+        foreach ($transaccion as $trans) {
+
+            $estatus=$this->statusdb->findWhere(['Status'=>$trans->estatus]);
+            if($estatus->count()==0)
+                {
+                    $status="Sin Estatus";
+                }else{
+                   foreach ($estatus as $sta) {
+                        $status=$sta->Descripcion;
+                    } 
+                }
+            
+            /*$tramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$trans->TipoServicio]);
+            foreach ($tramite as $tra) {*/
+            $entidad=$this->entidaddb->findWhere(['id'=>$tra->entidad]);
+                foreach ($entidad as $ent ) {
+                    $entidadRes=$ent->nombre;
+                }
+            //}
+            $tramites=$this->tramitedb->findWhere(['id_transaccion_motor'=>$trans->id_transaccion_motor]);
+            $servicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$trans->TipoServicio]);
+            foreach ($servicio as $ser) {
+                $tiposervicio=$ser->Tipo_Descripcion;
+            }
+            $pago=$this->tipopagodb->findWhere(['TipoPago'=>$trans->TipoPago]);
+            foreach ($pago as $pa) {
+                $tipopago=$pa->Descripcion;
+            }
+            
+            $response []= array(
+                'Estatus'=>$status,
+                'Transaccion'=>$trans->id_transaccion_motor,
+                'Entidad'=>$entidadRes,
+                'Tramite'=>$tiposervicio,
+                'Contribuyente'=>$trans->TitularTC,
+                'Inicio_Tramite'=>$trans->fecha_transaccion,
+                'Banco'=>$trans->BancoSeleccion,
+                'Tipo_Pago'=>$tipopago,
+                'Total_Tramite'=>$trans->TotalTramite
+             );
+            
+
+        }
+        log::info($response);
+        return json_encode($response);
+
     }
 
 }

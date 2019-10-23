@@ -26,6 +26,6 @@ class Egobiernotipopago extends Model implements Transformable
 
     public $timestamps = false;
 
-    protected $fillable = [];
+    protected $fillable = ['Tipo_Code','Tipo_Descripcion','Origen_URL','GpoTrans_Num','id_gpm','descripcion_gpm','tiporeferencia_id','limitereferencia_id'];
 
 }
