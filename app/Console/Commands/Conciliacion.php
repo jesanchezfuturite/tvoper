@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
+use App\Repositories\BancoRepositoryEloquent;
+use App\Repositories\CuentasbancoRepositoryEloquent;
+
 
 class Conciliacion extends Command
 {
@@ -41,13 +44,23 @@ class Conciliacion extends Command
 
     protected $ps;
 
+    protected $banco;
+
+    protected $cuentasbanco;
+
+    protected $bank_details;
+
+    protected $info_cuenta;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
     public function __construct(
-        ProcessedregistersRepositoryEloquent $ps
+        ProcessedregistersRepositoryEloquent $ps,
+        BancoRepositoryEloquent $banco,
+        CuentasbancoRepositoryEloquent $cuentasbanco
     )
     {
         parent::__construct();
@@ -57,6 +70,12 @@ class Conciliacion extends Command
 
         // instancia del repositorio para guardar los valores de los archivos
         $this->ps = $ps;
+
+        $this->banco = $banco;
+
+        $this->cuentasbanco = $cuentasbanco;
+
+        $this->loadBankDetails();
     }
 
     /**
@@ -98,6 +117,25 @@ class Conciliacion extends Command
 
             if($config)
             {
+
+                /*
+                modificar para obtener el alias de la cuenta en el nombre de archivo
+                */
+                $alias_array = explode('_',$filename);
+            
+                $this->info_cuenta = $this->obtenerDetallesCuenta($alias_array[1]);
+
+                if(!$info_cuenta)
+                {
+                  Log::info('[Conciliacion:ProcessFiles] - FATAL ERROR - El archivo tiene un alias de cuenta no registrado');
+                  
+                  Log::info('[Conciliacion:ProcessFiles] - Alias ERROR ' . $filename );
+
+                  exit();  
+                }
+
+                unset($alias_array);
+
                 // process the file per defined method
                 $method = $config["config"]["method"];
                 
@@ -216,6 +254,8 @@ class Conciliacion extends Command
                             "filename"       => $filename,
                             "origen"         => $origen,
                             "referencia"     => $referencia,
+                            "cuenta_banco"   => $this->info_cuenta["cuenta"],
+                            "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                         ];
 
                     try{
@@ -250,6 +290,8 @@ class Conciliacion extends Command
                                 "filename"       => $filename,
                                 "origen"         => substr($line, $origenStart, $origenLength),
                                 "referencia"     => substr($line, $referenciaStart, $referenciaLength),
+                                "cuenta_banco"   => $this->info_cuenta["cuenta"],
+                                "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                             ];
 
                         try{
@@ -331,7 +373,9 @@ class Conciliacion extends Command
                             "transaccion_id" => $info[$id],
                             "status"         => "np",
                             "filename"       => $filename,
-                            "origen"         => 1
+                            "origen"         => 1,
+                            "cuenta_banco"   => $this->info_cuenta["cuenta"],
+                            "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                         ];
 
                     try{
@@ -415,7 +459,9 @@ class Conciliacion extends Command
                                 "transaccion_id" => substr($info[$id],0,8),
                                 "status"         => "np",
                                 "filename"       => $filename,
-                                "origen"         => 1
+                                "origen"         => 1,
+                                "cuenta_banco"   => $this->info_cuenta["cuenta"],
+                                "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                             ];
 
                         try{
@@ -503,7 +549,9 @@ class Conciliacion extends Command
                                 "transaccion_id" => $info[$id],
                                 "status"         => "np",
                                 "filename"       => $filename,
-                                "origen"         => 1
+                                "origen"         => 1,
+                                "cuenta_banco"   => $this->info_cuenta["cuenta"],
+                                "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                             ];
 
                         try{
@@ -569,5 +617,98 @@ class Conciliacion extends Command
 
     }
 
+
+    /**
+     * Get the alias account a returns an array with bank account and alias
+     *
+     * @param $alias . string provided in the file
+     *
+     * @return false if error, array with info [account => , alias =>] 
+     */ 
+
+    private function obtenerDetallesCuenta($alias)
+    {
+        $cuenta = false;
+        // obtener los datos de las cuentas
+        foreach( $this->bank_details as $bd )
+        {
+            if($alias == $bd["alias"])
+            {
+                $cuenta = $bd;
+            }
+        }
+
+        return $cuenta;
+    }
+
+    /**
+     * Loads bancos info loaded in operacion 
+     *
+     * @param null
+     *
+     * @return array with x => [account => , alias =>] 
+     */ 
+
+    private function loadBankDetails()
+    {
+        $bancos = $this->banco->all();
+
+        $cuentasbanco = $this->cuentasbanco->all();
+
+        foreach ($bancos as $b)
+        {  
+            $cuentas = $this->processBankAccounts($b->id,$cuentasbanco);
+            foreach($cuentas as $c)
+            {
+                $details []= array(
+                    "banco_id"      => $b->id,
+                    "banco"         => $b->nombre,
+                    "cuenta"        => $c["cuenta"],
+                    "cuenta_alias"  => $c["alias"],
+                );
+            }
+        }
+
+        $this->bank_details = $details;
+
+    }
+
+
+    /**
+     * Returns an array with the accounts from an specific bank
+     *
+     * @param null
+     *
+     * @return array with x => [account => , alias =>] 
+     */ 
+
+    private function processBankAccounts($bank, $accounts)
+    {
+        $info = array();
+        $final = array();
+        foreach ($accounts as $a)
+        {
+            if($bank == $a->banco_id)
+            {
+                $info [$a->id]= json_decode($a->beneficiario); 
+            }
+
+        }
+
+        foreach($info as $i => $data)
+        {   
+
+            foreach($data as $f){
+                $final []= array(
+                    "cuenta" => $f->cuenta,
+                    "alias"  => $f->alias
+                );
+            }
+            
+        }
+
+        return $final;
+
+    }
 
 }

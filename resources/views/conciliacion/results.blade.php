@@ -40,54 +40,118 @@
         </div>
     </div>
 </div>
-<br /><br />
 <div class="row">
-    <!-- BEGIN SAMPLE TABLE PORTLET-->
-    <div class="portlet box blue">
-        <div class="portlet-title">
-            <div class="caption" id="headerTabla">
-              <div id="borraheader">  Resultados de conciliación &nbsp;
-                
-                <span class="label label-sm label-danger">Sin resultados </span>
+    <hr> 
+    <div class="col-md-12">
+        <div class="tabbable-line boxless tabbable-reversed">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab_0" data-toggle="tab">Operaciones</a>
+                </li>
+                <li>
+                    <a href="#tab_1" data-toggle="tab">Egobierno</a>
+                </li>                            
+            </ul>
 
-            </div>
-        </div>
-            
-        </div>
-        <div class="portlet-body">
-            <div class="table-scrollable">
-                <table class="table table-hover" id="table">
-                <thead>
-                <tr>
-                    <th>Banco</th>
-                    <th colspan="4" align="center">Internet</th>
-                    <th colspan="4" align="center">Medios de pagos</th>
-                </tr>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Total de tramites</th>
-                    <th>Procesado</th>
-                    <th>No Procesado</th>
-                    <th>Monto</th>
-                    <th>Total de tramites</th>
-                    <th>Procesado</th>
-                    <th>No Procesado</th>
-                    <th>Monto</th>
-                </tr>
-                </thead>
-                <tbody>                   
-                
-                <tr>
-                <td>
-                    <span class="help-block">No Found</span>
-                </td>
-                </tr>                 
-                </tbody>
-                </table>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_0">
+                    <div class="portlet box blue" id="addTable_1">
+
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-gift"></i>Operaciones
+                            </div>
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>                                     
+                            </div>
+                        </div>
+                        <div class="portlet-body" id="table_1"> 
+                            <table class="table table-hover" id="sample_3">
+                                <thead>
+                                    <tr> 
+                                        <th>Estatus</th>
+                                        <th>Transacción</th>
+                                        <th>Entidad</th>
+                                        <th>Tramite</th>
+                                        <th>Contribuyente</th> 
+                                        <th>Inicio Tramite</th>                       
+                                        <th>Banco</th>
+                                        <th>Tipo Pago</th>
+                                        <th>Total Tramite</th>
+                                    </tr>
+                                </thead>
+                                <tbody> 
+                                    <tr>
+                                        <td><span class="help-block">No Found</span></td>                       
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>                                   
+                                </tbody>
+                            </table>                          
+                        </div>
+                        <div class="form-actions">
+                            <div class="row">
+                            <span class="help-block">&nbsp;</span>              
+                            </div>
+                        </div>
+                    </div>
+                </div>            
+                <div class="tab-pane" id="tab_1">
+                    <div class="portlet box blue" id="addTable_2">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-gift"></i>Egobierno
+                            </div>
+                            <div class="tools">                               
+                                <a href="javascript:;" class="collapse"></a>
+                            </div>
+                        </div>
+                    <div class="portlet-body" id="table_2"> 
+                        <table class="table table-hover" id="sample_2">
+                            <thead>
+                                <tr> 
+                                    <th>Estatus</th>
+                                    <th>Transacción</th>
+                                    <th>Entidad</th>
+                                    <th>Tramite</th>
+                                    <th>Contribuyente</th> 
+                                    <th>Inicio Tramite</th>                       
+                                    <th>Banco</th>
+                                    <th>Tipo Pago</th>                                            
+                                    <th>Total Tamite</th>
+                                </tr>
+                            </thead>
+                            <tbody> 
+                                <tr>
+                                    <td><span class="help-block">No Found</span></td>           
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>                                   
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="form-actions ">
+                        <div class="row">
+                            <span class="help-block">&nbsp;</span>              
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- END SAMPLE TABLE PORTLET-->
 </div>
 @endsection
 

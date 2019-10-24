@@ -24,6 +24,6 @@ class Processedregisters extends Model implements Transformable
 
     protected $table = "oper_processedregisters";
 
-    protected $fillable = ['transaccion_id','day','month','year','monto','status','filename','origen','referencia'];
+    protected $fillable = ['transaccion_id','day','month','year','monto','status','filename','origen','referencia','cuenta_banco','cuenta_alias'];
 
 }
