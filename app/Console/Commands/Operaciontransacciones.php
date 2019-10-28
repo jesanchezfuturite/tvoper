@@ -25,7 +25,7 @@ class Operaciontransacciones extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Concilia los movimientos que estan en oper_transacciones del nuevo modulo de operacion';
 
     /**
      * Create a new command instance.
