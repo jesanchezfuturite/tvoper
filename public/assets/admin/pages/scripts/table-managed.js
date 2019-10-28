@@ -68,7 +68,7 @@ var TableManaged = function () {
                 "targets": [0]
             }],
             "order": [
-                [1, "asc"]
+                [0, "asc"]
             ] // set first column as a default sort by asc
         });
 
@@ -135,7 +135,7 @@ var TableManaged = function () {
             // set the initial value
             "pageLength": 5,
             "columnDefs": [{  // set default column settings
-                'orderable': false,
+                'orderable': true,
                 'targets': [0]
             }, {
                 "searchable": false,
@@ -148,7 +148,7 @@ var TableManaged = function () {
 
         var tableWrapper = jQuery('#sample_2_wrapper');
 
-        table.find('.group-checkable').change(function () {
+       /* table.find('.group-checkable').change(function () {
             var set = jQuery(this).attr("data-set");
             var checked = jQuery(this).is(":checked");
             jQuery(set).each(function () {
@@ -159,7 +159,7 @@ var TableManaged = function () {
                 }
             });
             jQuery.uniform.update(set);
-        });
+        });*/
 
         tableWrapper.find('.dataTables_length select').select2(); // initialize select2 dropdown
     }
@@ -200,7 +200,7 @@ var TableManaged = function () {
             // set the initial value
             "pageLength": 5,
             "columnDefs": [{  // set default column settings
-                'orderable': false,
+                'orderable': true,
                 'targets': [0]
             }, {
                 "searchable": false,
