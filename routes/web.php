@@ -65,6 +65,7 @@ Route::post('/pagotramite-insert','MotorpagosController@insertPagoTramite');
 Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere');
 Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
 Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
+Route::post('/pagotramite-update-status','MotorpagosController@updateStatusPagoTramite');
 /***********++ Metodo Entidad **********/
 Route::get('/entidad','MotorpagosController@entidadView');
 Route::get('/entidad-find','MotorpagosController@findentidad');
@@ -136,7 +137,7 @@ Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 
 Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones');
 Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
-
+Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@generaarchivo');

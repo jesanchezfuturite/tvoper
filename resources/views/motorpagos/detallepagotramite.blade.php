@@ -164,6 +164,29 @@
     </div>
 </div>
 
+<!-- modal-dialog -->
+<div id="static3" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Desactivar/Activar Registro?
+                </p>
+                 <input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="updateEstatus()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -213,7 +236,7 @@
   }
   function addtableDetalle() {
     $("#removeTable").remove();
-    $("#addTable").append("<div class='portlet-body' id='removeTable'><table class='table table-hover' id='sample_2'> <thead>  <tr> <th>Tipo Tramite</th><th>Banco</th> <th>Cuenta</th><th>Servicio / CIE / CLABE</th><th>Método de pago</th>   <th>Monto Mínimo</th> <th>Monto Máximo</th>  <th>&nbsp; </th> </tr> </thead> <tbody><tr><td><span class='help-block'>No Found</span></td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td> </tr></tbody> </table></div>");
+    $("#addTable").append("<div class='portlet-body' id='removeTable'><table class='table table-hover' id='sample_2'> <thead>  <tr> <th>Tipo Tramite</th><th>Banco</th> <th>Cuenta</th><th>Servicio / CIE / CLABE</th><th>Método de pago</th>   <th>Monto Mínimo</th> <th>Monto Máximo</th>  <th>&nbsp;&nbsp;&nbsp; </th> </tr> </thead> <tbody><tr><td><span class='help-block'>No Found</span></td><td>&nbsp; </td><td><span class='help-block'>&nbsp; </span></td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td><td>&nbsp; </td> </tr></tbody> </table></div>");
   }
     
 function deletedPagoTramite(id_)
@@ -338,9 +361,7 @@ function actualizaPagoTramite()
             return false;
 }
 function ActualizarTabla()
-{
- 
-  
+{ 
     var identidad_=$("#optionEntidad").val();
       $.ajax({
            method: "POST",            
@@ -348,6 +369,7 @@ function ActualizarTabla()
            data: {Id_entidad:identidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);
+
             if(responseTipoServicio=="[]")
             {              
               addtableDetalle();
@@ -361,20 +383,37 @@ function ActualizarTabla()
               var item2="";
               var max=0;
               var min=0;
+              var msgg="";
+              var msggI="";
+              var icon="";
+              var label="";
+              var estatus="";
+            $("#sample_2 tbody tr").remove();
+             $.each(Resp, function(i, item) {
+              estatus=item.status;
+              if(estatus==0){
+                var msggI="Activa";
+                var msgg="Inactiva";
+                var icon="green";
+                var label="danger";
+              }else{                
+                var msggI="Inactiva";
+                var msgg="Activo";
+                var icon="red";
+                var label="success";
+              }
 
-             $("#sample_2 tbody tr").remove();
-             $.each(Resp, function(i, item) {                 
                   max=item.monto_max;
                   min=item.monto_min;
                  $("#sample_2 tbody").append("<tr>"
-                    +"<td>"+item.descripcion+"</td>"
+                    +"<td>"+item.descripcion+"&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
                     +"<td>"+item.banco+"</td>"
                     +"<td>"+item.cuenta+"</td>"
                     +"<td>"+item.servicio+"</td>"
                     +"<td>"+item.metodopago+"</td>"                    
                     +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
                     +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
-                    +"<td><a class='btn btn-icon-only blue' href='#static' data-toggle='modal'  title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i> </a></td>"
+                    +"<td width='150'><a class='btn btn-icon-only blue' href='#static' data-toggle='modal'  title='Agregar Cuenta' onclick=\"findPagoTramite(\'"+item.id+"\')\"><i class='fa fa-calendar'></i> </a><a class='btn btn-icon-only red' data-toggle='modal' href='#static2' onclick=\"deletedPagoTramite(\'"+item.id+"\')\" title='Eliminar Cuenta'><i class='fa fa-minus'></i> </a><a class='btn btn-icon-only "+icon+"'data-toggle='modal' href='#static3'  onclick=\"ChangeStatus(\'"+item.id+"\')\" title='"+msggI+" Cuenta'><i class='fa fa-power-off'></i> </a></td>"
                     +"</tr>"
                    );
                 });
@@ -383,6 +422,39 @@ function ActualizarTabla()
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  }); 
+}
+/*/***pendiente*****/
+function ChangeStatus(id_)
+{
+  document.getElementById("idupdate").value=id_;
+       
+}
+function updateEstatus()
+{
+  var id_=$("#idupdate").val();
+  $.ajax({
+           method: "POST",            
+           url: "{{ url('/pagotramite-update-status') }}",
+           data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            //console.log(responseTipoServicio);
+            if(response=="false")
+            { 
+              Command: toastr.warning("Fallo Al Activar/Desactivar", "Notifications")              
+            }else{
+              ActualizarTabla();
+              if(response=="activo"){
+              Command: toastr.success("Activado!", "Notifications")             
+              }else{
+              Command: toastr.success("Inactiva!","Notifications")
+              }
+              
+            }
+
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications") 
+     });
 }
 function GuardarExcel()
 {
