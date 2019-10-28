@@ -20,7 +20,7 @@
 </div>
 <div class="alert alert-info alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
-    <strong>Info:</strong> Esta consulta te permite buscar por rango de fechas.
+    <strong>Info:</strong> -------.
 </div>
 <div class="row">
     <div hidden="true">
@@ -95,9 +95,6 @@
                             <div class="caption">
                                 <i class="fa fa-gift"></i>Operaciones
                             </div>
-                            <div class="tools">
-                                <a href="javascript:;" class="collapse"></a>                                      
-                            </div>
                         </div>
                         <div class="portlet-body" id="table_1"> 
                                 <table class="table table-hover" id="sample_3">
@@ -129,21 +126,13 @@
                                     </tbody>
                                 </table>                          
                         </div>
-                        <div class="form-actions">
-                            <div class="row">
-                                      <span class="help-block">&nbsp;</span>              
-                            </div>
-                        </div>
-                    </div>
+                     </div>
                 </div>            
                 <div class="tab-pane" id="tab_1">
                     <div class="portlet box blue" id="addTable_2">
                         <div class="portlet-title">
                             <div class="caption">
                                 <i class="fa fa-gift"></i>Egobierno
-                            </div>
-                            <div class="tools">
-                                <a href="javascript:;" class="collapse"></a>                                      
                             </div>
                         </div>
                         <div class="portlet-body" id="table_2"> 
@@ -174,13 +163,7 @@
                                         <td></td>
                                         </tr>                                   
                                     </tbody>
-                                </table>
-                            
-                        </div>
-                        <div class="form-actions ">
-                            <div class="row">
-                                      <span class="help-block">&nbsp;</span>              
-                            </div>
+                                </table>                            
                         </div>
                     </div>
                 </div>
@@ -247,12 +230,17 @@
         fechaIn = "1";
         fechaF = "1";
         consultaEgob(fechaIn,fechaF);
+        consultaOper(fechaIn,fechaF);
+       
     }
     function consulta3dias()
     {
         fechaIn = "3";
         fechaF = "3";
         consultaEgob(fechaIn,fechaF);
+        consultaOper(fechaIn,fechaF);
+       
+
     }
     function consultaRangoFechas()
     {
@@ -264,6 +252,8 @@
             Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
         }else{
             consultaEgob(fechaIn,fechaF);
+            consultaOper(fechaIn,fechaF);
+           
         }
     }
     function consultaEgob(fechaIn,fechaF) {
@@ -289,7 +279,7 @@
                 +"<td></td>"
                 +"<td></td>"
                 +"</tr>");
-            TableManaged.init();
+            
         }else{
         $.each(Resp, function(i, item) { 
              $("#sample_2 tbody").append("<tr>"
@@ -304,7 +294,7 @@
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
             });
-        TableManaged.init();
+        //TableManaged.init();
         }
        
         document.getElementById("blockui_sample_3_1_1").click();
@@ -322,14 +312,72 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#table_1").remove();
+        //$("#table_1").remove();
         $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+    }
+     function Addtable1()
+    {
+        //$("#table_2").remove();
+        $("#table_1").remove();
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><table class='table table-hover' id='sample_3'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
     function limpiar()
     {
         
     }
-
+    function consultaOper(fechaIn,fechaF) {
+        Addtable1();
+        document.getElementById("blockui_sample_3_1").click();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-oper') }}",
+        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        $("#sample_3 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+        if(response=="[]")
+        {
+            $("#sample_3 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"</tr>");
+            //TableManaged.init();
+        }else{
+        $.each(Resp, function(i, item) { 
+             $("#sample_3 tbody").append("<tr>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td><a href='#static2' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
+                +"</tr>");
+            });
+        
+        }
+       TableManaged.init();
+        document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_3 tbody tr").remove(); 
+            $("#sample_3 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });
+        
+      
+    }
     
 </script>
 @endsection

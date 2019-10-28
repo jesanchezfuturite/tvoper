@@ -574,6 +574,37 @@ return json_encode($response);
         }
         return $response;
     }
+    function updateStatusPagoTramite(Request $request)
+    {
+        $id=$request->id;
+        $actual;
+        $nuevo;
+        $response="false";
+        try{
+            $buscaEstatus=$this->pagotramitedb->findWhere(['id'=>$id]);
+            foreach ($buscaEstatus as $e) {
+                $actual=$e->estatus;
+            }
+            
+            if($actual==1)
+            {
+                $nuevo=0;
+                $response="inactivo";
+            }
+            else{
+                $nuevo=1;
+                $response="activo";
+
+            }
+            $updateEstatus=$this->pagotramitedb->update(['estatus'=>$nuevo],$id);                  
+
+        } catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+        $response = "false";
+        }
+        return $response;
+
+    }
     public function findPagoTramite(Request $request)
     {
         $id=$request->id;
@@ -1569,6 +1600,7 @@ return json_encode($response);
         $metodopago;
         $cuentas;
         $servicio;
+        $estatus;
         $response=array(); 
         $oper_entidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad]);
         foreach ($oper_entidadtramite as $i) {
@@ -1580,6 +1612,7 @@ return json_encode($response);
             $oper_pagotramite=$this->pagotramitedb->findWhere(['tramite_id'=>$i->tipo_servicios_id]);
             foreach ($oper_pagotramite as $key) {
                  $idpagotramite=$key->id;
+                 $estatus=$key->estatus;
                 $oper_cuentasbanco=$this->cuentasbancodb->findWhere(['id'=>$key->cuentasbanco_id]);
 
                 foreach ($oper_cuentasbanco as $cuenta) {
@@ -1607,7 +1640,8 @@ return json_encode($response);
                     "servicio"=>$servicio,
                     "metodopago"=>$metodopago,
                     "monto_max"=>$cuenta->monto_max,
-                    "monto_min"=>$cuenta->monto_min                
+                    "monto_min"=>$cuenta->monto_min,
+                    "status" =>$estatus               
                     );
                 }                
             }            
@@ -1892,7 +1926,6 @@ return json_encode($response);
     }
     public function consultaTransaccionesEgob(Request $request)
     {
-
         $fecha_inicio=$request->fecha_inicio;
         $fecha_fin=$request->fecha_fin;
         //Log::info($fecha_inicio." ".$fecha_fin);
@@ -1931,7 +1964,7 @@ return json_encode($response);
                 'Contribuyente'=>$trans->TitularTC,
                 'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
                 'Banco'=>$trans->BancoSeleccion,
-                'Tipo_Pago'=>$trans->$tipopago,
+                'Tipo_Pago'=>$trans->tipopago,
                 'Total_Tramite'=>$trans->TotalTramite
              );
             
@@ -1942,21 +1975,21 @@ return json_encode($response);
     }
     public function consultaTransaccionesOper(Request $request)
     {
-        $fecha_inicio=$request->fecha_inicio;
-        $fecha_fin=$request->fecha_fin;
+        $fecha_inicio=$request->fecha_inicio.' 00:00:00';
+        $fecha_fin=$request->fecha_fin.' 23:59:59';
         if($fecha_inicio=="1")
         {
             $fechaActual=Carbon::now();
             $fechaAterior=Carbon::now()->subDays(1);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
-            $fecha_fin=$fechaActual->format('Y-m-d').'23:59:59';
+            $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';
         }
         if($fecha_inicio=="3")
         {
             $fechaActual=Carbon::now();
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
-            $fecha_fin=$fechaActual->format('Y-m-d').'23:59:59';
+            $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';
             
         }       
         
@@ -1965,51 +1998,23 @@ return json_encode($response);
         $entidadRes='';
         $tipopago='';
         $tiposervicio='';
-        $transaccion=$this->oper_transaccionesdb->findWhere([['fecha_transaccion','>=',$fecha_inicio],['fecha_transaccion','<=',$fecha_fin]]);
-         
-         Log::info($transaccion);
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);         
+         //Log::info($transaccion);
+        if($transaccion<>null){
         foreach ($transaccion as $trans) {
-
-            $estatus=$this->statusdb->findWhere(['Status'=>$trans->estatus]);
-            if($estatus->count()==0)
-                {
-                    $status="Sin Estatus";
-                }else{
-                   foreach ($estatus as $sta) {
-                        $status=$sta->Descripcion;
-                    } 
-                }
-            
-            /*$tramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$trans->TipoServicio]);
-            foreach ($tramite as $tra) {*/
-            $entidad=$this->entidaddb->findWhere(['id'=>$tra->entidad]);
-                foreach ($entidad as $ent ) {
-                    $entidadRes=$ent->nombre;
-                }
-            //}
-            $tramites=$this->tramitedb->findWhere(['id_transaccion_motor'=>$trans->id_transaccion_motor]);
-            $servicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$trans->TipoServicio]);
-            foreach ($servicio as $ser) {
-                $tiposervicio=$ser->Tipo_Descripcion;
-            }
-            $pago=$this->tipopagodb->findWhere(['TipoPago'=>$trans->TipoPago]);
-            foreach ($pago as $pa) {
-                $tipopago=$pa->Descripcion;
-            }
-            
             $response []= array(
-                'Estatus'=>$status,
-                'Transaccion'=>$trans->id_transaccion_motor,
-                'Entidad'=>$entidadRes,
-                'Tramite'=>$tiposervicio,
-                'Contribuyente'=>$trans->TitularTC,
+                'Estatus'=>$trans->status,
+                'Transaccion'=>$trans->idTrans,
+                'Entidad'=>$trans->entidad,
+                'Tramite'=>$trans->tiposervicio,
+                'Contribuyente'=>$trans->nombre." ".$trans->apellido_paterno,
                 'Inicio_Tramite'=>$trans->fecha_transaccion,
                 'Banco'=>$trans->BancoSeleccion,
-                'Tipo_Pago'=>$tipopago,
+                'Tipo_Pago'=>$trans->tipopago,
                 'Total_Tramite'=>$trans->TotalTramite
              );
             
-
+            }
         }
         log::info($response);
         return json_encode($response);
