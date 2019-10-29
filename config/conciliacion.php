@@ -19,7 +19,7 @@ return array (
 				"startFrom"		=> 0,
 				"method"		=> 1,
 			), 
-		"afirmeVentanilla" 		=>
+		"afirmeV" 		=>
 			array(
 				"extension"	=> "txt",
 				"lineExample"	=> "D0000391137808110010000000000121393260624181257                                                                                          2019062800000000016280001V0000000101121305MXP201906281507080000000000000000000000000000000000000000",
@@ -70,7 +70,7 @@ return array (
 				"startFrom"		=> "", /* los movimientos comienzan con numero*/
 				"method"		=> 3,
 			),
-		"banamexVentanilla"		=>
+		"banamexV"		=>
 			array(
 				"extension"	=> "txt",
 				"lineExample"	=> "11906280000000000726000024144552010519712321128010000000000121442650624141203                                24         ",
@@ -104,7 +104,7 @@ return array (
 				"startFrom"		=> 0, /*el archivo no tiene encabezados*/
 				"method"		=> 1,
 			),
-		"bancomerVentanilla"	=>
+		"bancomerV"	=>
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "1480138000000000000000000001800000000000002526107241682760000000000000.000000000000000.000000000000707.000003678562019-06-28SANTA CATA0204EFE",
@@ -137,6 +137,39 @@ return array (
 				"startFrom"		=> 0, /* todos los movimientos que comiencen con 0*/
 				"method"		=> 4,
 			),
+		"banorte"			=> array // pendiente
+			(
+				/* aqui se hace un explode a la linea por | */
+				"extension"		=> "txt",
+				"lineExample"	=> "0524310375|28/06/2019|0000000000|COM CHQ ELECCHE050534427Jun19|537|8502|$0.00|$52.50|$667,004.30|246915|COMISIONES POR ECHECK",
+				"positions"		=> array
+					(
+					"month"		=> 1,
+					"day" 		=> 1,
+					"year"		=> 1,
+					"amount"	=> 6, /* si la posicion 6 del arreglo es 0 entonces es otro tipo de movimiento diferente al ingreso*/
+					"id"		=> 2 /* 20 posiciones a partir de 0, si este valor es igual a cero se descarta el registro */ 
+					),
+				"startFrom"		=> 0, /* todos los movimientos que comiencen con 0*/
+				"method"		=> 4,
+			),
+		"banorteV"		=>
+			array(
+				"extension"		=> "txt",
+				"lineExample"	=> "2088469179574555003508I10400000000012559000000000000N00000000012559000000000000010000000000120648880624148284                                                                                                                        000101018846130316A00020190628**31620720000000                                                       003508",
+				"positions"		=> array
+					(
+					"month"			=> [11,2],
+					"day" 			=> [13,2],
+					"year"			=> [7,4],
+					"amount"		=> [53,16], /* se divide entre 100 para considerar los centavos*/
+					"id"			=> [91,8], /* 8 posiciones a partir de 91 */ 
+					"referencia"	=> [79,30],
+					"origen"		=> [79,2],
+					),
+				"startFrom"		=> 2, /* todos los movimientos que comiencen con 2*/
+				"method"		=> 1,
+			),
 		"banorteNominas"		=>
 			array(
 				"extension"		=> "txt",
@@ -154,7 +187,7 @@ return array (
 				"startFrom"		=> 2, /* todos los movimientos que comiencen con 2*/
 				"method"		=> 1,
 			),
-		"banregioVentanilla"	=>
+		"banregioV"	=>
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "06/27/20190000000010800010000000000121198780624341207",
@@ -205,7 +238,7 @@ return array (
 				"startFrom"		=> 0, /* el archivo no tiene condiciones especiales o delimitadores */
 				"method"		=> 1
 			),
-		"santanderVentanilla"	=> 
+		"santanderV"	=> 
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
@@ -222,7 +255,7 @@ return array (
 				"startFrom"		=> 0, /* el archivo no tiene condiciones especiales o delimitadores */
 				"method"		=> 1
 			),
-		"scotiabankVentanilla"	=>
+		"scotiabankV"	=>
 			array(
 				"extension"		=> "txt",
 				"lineExample"	=> "DMONTERREY, N.L001037000000000295700|010000000000121204020624141235|20190628||                                                                                                                                                                                                 20190628201906282019062820190628+00000000029570000100000000000   000000000295700112551063120351112035110000000000000001",

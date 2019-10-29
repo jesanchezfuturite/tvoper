@@ -125,7 +125,7 @@ class Conciliacion extends Command
             
                 $this->info_cuenta = $this->obtenerDetallesCuenta($alias_array[1]);
 
-                if(!$info_cuenta)
+                if($this->info_cuenta == false)
                 {
                   Log::info('[Conciliacion:ProcessFiles] - FATAL ERROR - El archivo tiene un alias de cuenta no registrado');
                   
@@ -589,7 +589,7 @@ class Conciliacion extends Command
      */ 
     private function checkValidFilename($filename)
     {
-        
+        /*
         $data = explode(".",$filename);
 
         $bank_data = $data[0];
@@ -599,7 +599,11 @@ class Conciliacion extends Command
 
         $length -= 8;
 
-        $name = substr($bank_data,0,$length);
+        $name = substr($bank_data,0,$length);*/
+
+        $name = explode("_", $filename);
+
+        $name = $name[0];
 
         $validNames = $this->files;
 
@@ -632,7 +636,7 @@ class Conciliacion extends Command
         // obtener los datos de las cuentas
         foreach( $this->bank_details as $bd )
         {
-            if($alias == $bd["alias"])
+            if($alias == $bd["cuenta_alias"])
             {
                 $cuenta = $bd;
             }
