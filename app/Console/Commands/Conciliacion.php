@@ -256,6 +256,7 @@ class Conciliacion extends Command
                             "referencia"     => $referencia,
                             "cuenta_banco"   => $this->info_cuenta["cuenta"],
                             "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
+                            "banco_id"   => $this->info_cuenta["banco_id"],
                         ];
 
                     try{
@@ -292,6 +293,7 @@ class Conciliacion extends Command
                                 "referencia"     => substr($line, $referenciaStart, $referenciaLength),
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
+                                "banco_id"   => $this->info_cuenta["banco_id"],
                             ];
 
                         try{
@@ -376,6 +378,7 @@ class Conciliacion extends Command
                             "origen"         => 1,
                             "cuenta_banco"   => $this->info_cuenta["cuenta"],
                             "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
+                            "banco_id"   => $this->info_cuenta["banco_id"],
                         ];
 
                     try{
@@ -462,6 +465,7 @@ class Conciliacion extends Command
                                 "origen"         => 1,
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
+                                "banco_id"   => $this->info_cuenta["banco_id"],
                             ];
 
                         try{
@@ -552,6 +556,7 @@ class Conciliacion extends Command
                                 "origen"         => 1,
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
+                                "banco_id"   => $this->info_cuenta["banco_id"],
                             ];
 
                         try{

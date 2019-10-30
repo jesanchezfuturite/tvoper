@@ -33,8 +33,8 @@
                 <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
                 <span class="help-block">
                  </span>
-                <button class="btn blue" onclick="guardar()" type="submit">
-                    Agregar
+                <button class="btn blue" id="busqueda" type="submit">
+                    Buscar
                 </button>
             </div>
         </div>
