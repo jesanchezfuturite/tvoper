@@ -106,7 +106,12 @@ class Operaciontransacciones extends Command
                     'status' => 'np', 
                     ['origen','>','1']
                 ] 
-            );    
+            ); 
+            if($this->registers->count() == 0 )
+            {
+               Log::info('[Conciliacion:EgobTransacciones] @loadRegisters NADA QUE PROCESAR');
+               exit(); 
+            }      
         }catch( \Exception $e ){
             Log::info('[Conciliacion:OperTransacciones] @loadRegisters - Error ' . $e->getMessage());
         }  

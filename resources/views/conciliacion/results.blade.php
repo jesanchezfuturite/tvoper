@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-3">Consultar resultados conciliación</label>
             <div class="col-md-3">
-                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
+                <input id="fecha" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
                 <span class="help-block">
                  </span>
                 <button class="btn blue" id="busqueda" type="submit">
@@ -40,7 +40,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div id="bancos_tabs" class="row">
     <hr> 
     <div class="col-md-12">
         <div class="tabbable-line boxless tabbable-reversed">
@@ -55,81 +55,33 @@
 
             <div class="tab-content">
                 <div class="tab-pane active" id="tab_0">
-                    <div class="portlet box blue" id="addTable_1">
-
-                        <div class="portlet-title">
-                            <div class="caption">
-                                <i class="fa fa-gift"></i>Operaciones
-                            </div>
-                            <div class="tools">
-                                <a href="javascript:;" class="collapse"></a>                                     
-                            </div>
-                        </div>
-                        <div class="portlet-body" id="table_1"> 
-                            <table class="table table-hover" id="sample_3">
-                                <thead>
-                                    <tr> 
-                                        <th>Estatus</th>
-                                        <th>Transacción</th>
-                                        <th>Entidad</th>
-                                        <th>Tramite</th>
-                                        <th>Contribuyente</th> 
-                                        <th>Inicio Tramite</th>                       
-                                        <th>Banco</th>
-                                        <th>Tipo Pago</th>
-                                        <th>Total Tramite</th>
-                                    </tr>
-                                </thead>
-                                <tbody> 
-                                    <tr>
-                                        <td><span class="help-block">No Found</span></td>                       
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>                                   
-                                </tbody>
-                            </table>                          
-                        </div>
-                        <div class="form-actions">
-                            <div class="row">
-                            <span class="help-block">&nbsp;</span>              
-                            </div>
-                        </div>
-                    </div>
-                </div>            
-                <div class="tab-pane" id="tab_1">
-                    <div class="portlet box blue" id="addTable_2">
-                        <div class="portlet-title">
-                            <div class="caption">
-                                <i class="fa fa-gift"></i>Egobierno
-                            </div>
-                            <div class="tools">                               
-                                <a href="javascript:;" class="collapse"></a>
-                            </div>
-                        </div>
-                    <div class="portlet-body" id="table_2"> 
-                        <table class="table table-hover" id="sample_2">
+                    <div class="portlet-body" id="table_1"> 
+                        <table class="table table-hover" id="sample_3">
                             <thead>
-                                <tr> 
-                                    <th>Estatus</th>
-                                    <th>Transacción</th>
-                                    <th>Entidad</th>
-                                    <th>Tramite</th>
-                                    <th>Contribuyente</th> 
-                                    <th>Inicio Tramite</th>                       
-                                    <th>Banco</th>
-                                    <th>Tipo Pago</th>                                            
-                                    <th>Total Tamite</th>
+                                <tr>
+                                    <th></th> 
+                                    <th colspan="5">Internet</th>
+                                    <th colspan="5" style="background-color: #E9E9E9">Modulo de operaciones</th>
+                                </tr>
+                                <tr>
+                                    <th>Cuenta</th> 
+                                    <th>Trámites</th>
+                                    <th>Conciliados</th>
+                                    <th>No conciliados</th>
+                                    <th>Monto conciliado</th>
+                                    <th>Monto no conciliado</th> 
+                                    <th style="background-color: #E9E9E9">Trámites</th>
+                                    <th style="background-color: #E9E9E9">Conciliados</th>
+                                    <th style="background-color: #E9E9E9">No conciliados</th>
+                                    <th style="background-color: #E9E9E9">Monto conciliado</th>
+                                    <th style="background-color: #E9E9E9">Monto no conciliado</th> 
                                 </tr>
                             </thead>
                             <tbody> 
                                 <tr>
-                                    <td><span class="help-block">No Found</span></td>           
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>                       
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -140,14 +92,11 @@
                                     <td></td>
                                 </tr>                                   
                             </tbody>
-                        </table>
-
-                    </div>
-                    <div class="form-actions ">
-                        <div class="row">
-                            <span class="help-block">&nbsp;</span>              
-                        </div>
-                    </div>
+                        </table>                          
+                    </div>      
+                </div>            
+                <div class="tab-pane" id="tab_1">
+                
                 </div>
             </div>
         </div>
@@ -162,7 +111,13 @@
 <script>
     jQuery(document).ready(function() {       
        ComponentsPickers.init();
-       sortTable();
     }); 
+
+    $("#busqueda").click(function(){
+
+        var fecha = $("#fecha").val();
+        console.log(fecha);
+
+    });
 </script>
 @endsection
