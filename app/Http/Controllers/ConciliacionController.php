@@ -76,6 +76,7 @@ class ConciliacionController extends Controller
             if(!$this->checkValidFilename($fileName))
             {
                 // Throws an error with the file invalid status file code 
+                dd($fileName);
                 return view('conciliacion/loadFile', [ "report" => false, "valid" => 0 ]);             
             }else{
                 // save the file in the storage folder
@@ -104,7 +105,8 @@ class ConciliacionController extends Controller
     private function checkValidFilename($filename)
     {
     	
-    	$data = explode(".",$filename);
+    	/* comentado por el cambio de nombres en los nuevos archivos
+        $data = explode(".",$filename);
 
     	$bank_data = $data[0];
 
@@ -114,6 +116,11 @@ class ConciliacionController extends Controller
     	$length -= 8;
 
     	$name = substr($bank_data,0,$length);
+        */
+
+        $name = explode("_", $filename);
+
+        $name = $name[0];
 
     	$validNames = $this->files;
 
