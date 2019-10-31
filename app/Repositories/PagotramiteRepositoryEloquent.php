@@ -34,5 +34,15 @@ class PagotramiteRepositoryEloquent extends BaseRepository implements Pagotramit
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+    public function updateStatus($id_tramite,$estatus)
+    {
+         try{
+
+            return Pagotramite::where($id_tramite)->update($estatus);    
+        
+         }catch( \Exception $e){
+            Log::info('[PagotramiteRepositoryEloquent@updateStatus] Error ' . $e->getMessage());
+        } 
+    }
     
 }

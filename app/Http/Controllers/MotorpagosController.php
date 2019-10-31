@@ -398,6 +398,10 @@ return json_encode($response);
             $id = $request->id;
             $status = $request->status;
             $info2 = $this->cuentasbancodb->update(['status' => $status],$id);
+
+            /*Actualiza todos los estatus relacionados con la cuenta en pagotramite referente a todos los tramites*/
+            $updatStatus=$this->pagotramitedb->updateStatus(['cuentasbanco_id'=>$id],['estatus' => $status]);
+
             $response="true";
         }catch( \Exception $e ){
             Log::info2('Error Method limitereferencia: '.$e->getMessage());
