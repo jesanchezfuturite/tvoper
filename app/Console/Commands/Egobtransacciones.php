@@ -101,7 +101,14 @@ class Egobtransacciones extends Command
     {
         try{
             Log::info('[Conciliacion:EgobTransacciones] @loadRegisters - Obtener registros pendientes a procesar');
-            $this->registers = $this->pr->findWhere( ['status' => 'np', 'origen' => 1] );    
+            $this->registers = $this->pr->findWhere( ['status' => 'np', 'origen' => 1] ); 
+
+            if($this->registers->count() == 0 )
+            {
+               Log::info('[Conciliacion:EgobTransacciones] @loadRegisters NADA QUE PROCESAR');
+               exit(); 
+            }   
+
         }catch( \Exception $e ){
             Log::info('[Conciliacion:EgobTransacciones] @loadRegisters - Error ' . $e->getMessage());
         }  
