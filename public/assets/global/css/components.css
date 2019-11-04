@@ -55,7 +55,14 @@ body {
   font-size: 13px;
   direction: ltr;
 }
-
+.vl {
+  border-left: 1px solid #e5e5e5;
+  height: 100%;
+  position: absolute;
+  left: 50%;
+  margin-left: 1px;
+  top: 0;
+}
 /*
  Internet Explorer 10 doesn't differentiate device width from viewport width, and thus doesn't 
  properly apply the media queries in Bootstrap's CSS. To address this, 

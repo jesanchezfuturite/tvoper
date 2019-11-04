@@ -73,7 +73,7 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             ->join('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
             ->join('tipo_servicios','tipo_servicios.Tipo_Code', '=','transacciones.TipoServicio')
             ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
-            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite')
+            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id')
             ->groupBy('transacciones.idTrans')
             ->get();
             return $data;
