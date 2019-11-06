@@ -11,15 +11,25 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
+use App\Repositories\BancoRepositoryEloquent;
+use App\Repositories\CuentasbancoRepositoryEloquent;
 
 class ConciliacionController extends Controller
 {
     //
     protected $files, $pr;
 
+    protected $banco;
+
+    protected $cuentasbanco;
+
+    protected $bank_details;
+
     
     public function __construct(
-        ProcessedregistersRepositoryEloquent $pr
+        ProcessedregistersRepositoryEloquent $pr,
+        BancoRepositoryEloquent $banco,
+        CuentasbancoRepositoryEloquent $cuentasbanco
 
     )
     {
@@ -28,6 +38,12 @@ class ConciliacionController extends Controller
     	$this->files = config('conciliacion.conciliacion_conf');
 
         $this->pr = $pr;
+
+        $this->banco = $banco;
+
+        $this->cuentasbanco = $cuentasbanco;
+
+        $this->loadBankDetails();
     }
 
 
@@ -234,7 +250,87 @@ class ConciliacionController extends Controller
 
     public function results()
     {
+        // obtener el arreglo de los bancos y cuentas 
+
         return view('conciliacion/results' );
+    }
+
+
+    /**
+     * Loads bancos info loaded in operacion 
+     *
+     * @param null
+     *
+     * @return array with x => [account => , alias =>] 
+     */ 
+
+    private function loadBankDetails()
+    {
+        $bancos = $this->banco->all();
+
+        $cuentasbanco = $this->cuentasbanco->all();
+
+        foreach ($bancos as $b)
+        {  
+            $cuentas = $this->processBankAccounts($b->id,$cuentasbanco);
+
+            $details = array();
+
+            foreach($cuentas as $c)
+            {
+                $details []= array(
+                    "cuenta"        => $c["cuenta"],
+                    "cuenta_alias"  => $c["alias"],
+                );
+            }
+
+
+            $final [$b->id]= array(
+                "descripcion"   => $b->nombre,
+                "info"          => $details
+            );
+        }
+
+        $this->bank_details = $final;
+
+    }
+
+
+    /**
+     * Returns an array with the accounts from an specific bank
+     *
+     * @param null
+     *
+     * @return array with x => [account => , alias =>] 
+     */ 
+
+    private function processBankAccounts($bank, $accounts)
+    {
+        $info = array();
+        $final = array();
+        foreach ($accounts as $a)
+        {
+            if($bank == $a->banco_id)
+            {
+                $info [$a->id]= json_decode($a->beneficiario); 
+            }
+
+        }
+
+        foreach($info as $i => $data)
+        {   
+
+            foreach($data as $f){
+                $final []= array(
+                    "cuenta" => $f->cuenta,
+                    "alias"  => $f->alias
+                );
+            }
+            
+        }
+
+        return $final;
+
     }
 
 }
