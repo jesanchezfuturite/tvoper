@@ -1934,6 +1934,8 @@ return json_encode($response);
         $estatus=$request->estatus;        
         $fecha_inicio=$request->fecha_inicio;
         $fecha_fin=$request->fecha_fin;
+        $rfc=$request->rfc;
+        $response=array(); 
         $fechaActual=Carbon::now();
         if($fecha_inicio=="1")
         {
@@ -1947,16 +1949,20 @@ return json_encode($response);
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d');
             $fecha_fin=$fechaActual->format('Y-m-d');
-        }       
-        
-        $response=array();        
+        }
+        if($rfc=="")
+        {                
         $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+        }else{
+        $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);            
+        }
         if($transaccion<>null){
           foreach ($transaccion as $trans) {  
             if($tipo_servicio=="limpia" && $estatus=="limpia")
             {                
                 $response []= array(
                         'Estatus'=>$trans->status,
+                        'RFC'=>$trans->rfc,
                         'Transaccion'=>$trans->idTrans,
                         'Entidad'=>$trans->entidad,
                         'Tramite'=>$trans->tiposervicio,
@@ -1971,6 +1977,7 @@ return json_encode($response);
                 {                   
                     $response []= array(
                         'Estatus'=>$trans->status,
+                        'RFC'=>$trans->rfc,
                         'Transaccion'=>$trans->idTrans,
                         'Entidad'=>$trans->entidad,
                         'Tramite'=>$trans->tiposervicio,
@@ -1986,6 +1993,7 @@ return json_encode($response);
                     {                        
                             $response []= array(
                                 'Estatus'=>$trans->status,
+                                'RFC'=>$trans->rfc,
                                 'Transaccion'=>$trans->idTrans,
                                 'Entidad'=>$trans->entidad,
                                 'Tramite'=>$trans->tiposervicio,
@@ -2002,6 +2010,7 @@ return json_encode($response);
                         {
                             $response []= array(
                                 'Estatus'=>$trans->status,
+                                'RFC'=>$trans->rfc,
                                 'Transaccion'=>$trans->idTrans,
                                 'Entidad'=>$trans->entidad,
                                 'Tramite'=>$trans->tiposervicio,
@@ -2025,10 +2034,12 @@ return json_encode($response);
     public function consultaTransaccionesOper(Request $request)
     {
         $tipo_servicio=$request->tipo_servicio;
-        $estatus=$request->estatus;        
+        $estatus=$request->estatus;
+        $rfc=$request->rfc;        
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
-        log::info($tipo_servicio." ".$estatus." ".$fecha_fin." ".$fecha_inicio);
+        $response=array();
+        //log::info($rfc);
         $fechaActual=Carbon::now();
         if($fecha_inicio=="1")
         {           
@@ -2042,15 +2053,18 @@ return json_encode($response);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';            
         }       
-        
-        $response=array();
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
-          Log::info($transaccion);
+        if($rfc=="")
+        {
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);            
+        }else{
+         $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+        }          
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
             if($tipo_servicio=="limpia" && $estatus=="limpia"){
                 $response []= array(
                     'Estatus'=>$trans->status,
+                    'RFC'=>$trans->rfc,
                     'Transaccion'=>$trans->idTrans,
                     'Entidad'=>$trans->entidad,
                     'Tramite'=>$trans->tiposervicio,
@@ -2065,6 +2079,7 @@ return json_encode($response);
                     {
                        $response []= array(
                         'Estatus'=>$trans->status,
+                        'RFC'=>$trans->rfc,
                         'Transaccion'=>$trans->idTrans,
                         'Entidad'=>$trans->entidad,
                         'Tramite'=>$trans->tiposervicio,
@@ -2079,6 +2094,7 @@ return json_encode($response);
                         {
                             $response []= array(
                             'Estatus'=>$trans->status,
+                            'RFC'=>$trans->rfc,
                             'Transaccion'=>$trans->idTrans,
                             'Entidad'=>$trans->entidad,
                             'Tramite'=>$trans->tiposervicio,
@@ -2089,11 +2105,11 @@ return json_encode($response);
                             'Total_Tramite'=>$trans->TotalTramite
                             ); 
                     }else{
-
                             if($tipo_servicio =="limpia" && $estatus==$trans->estatus_id)
                             {
                                 $response []= array(
                                 'Estatus'=>$trans->status,
+                                'RFC'=>$trans->rfc,
                                 'Transaccion'=>$trans->idTrans,
                                 'Entidad'=>$trans->entidad,
                                 'Tramite'=>$trans->tiposervicio,
@@ -2109,7 +2125,6 @@ return json_encode($response);
                 }
             }
         }
-        //log::info($response);
         return json_encode($response);
 
     }
