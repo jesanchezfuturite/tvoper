@@ -205,13 +205,13 @@ class CorteSendEmail extends Command
     private function gArchivos()
     {
         //$this->insrtfolio();
-           $this->gArchivo_Generico();        
-            $this->gArchivo_Nomina();            
-            $this->gArchivo_ISAN_ISH(); 
-          $this->gArchivo_ISOP(); 
-            $this->gArchivo_Prestadora_Servicios(); 
-            $this->gArchivo_Retenedora_Servicios(); 
-            $this->gArchivo_Juegos_Apuestas(); 
+        $this->gArchivo_Generico();        
+        $this->gArchivo_Nomina();            
+        $this->gArchivo_ISAN_ISH(); 
+        $this->gArchivo_ISOP(); 
+        $this->gArchivo_Prestadora_Servicios(); 
+        $this->gArchivo_Retenedora_Servicios(); 
+        $this->gArchivo_Juegos_Apuestas(); 
             //$this->gArchivo_Tenencia();
            // $this->gArchivo_Licencias();
           //  $this->gArchivo_Carta_no_Inhabilita();
@@ -247,12 +247,13 @@ class CorteSendEmail extends Command
         $existe=false;
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);          
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);          
         foreach ($conciliacion as $concilia) {          
             $existe=false;             
-            $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);
+            $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);            
             if($transacciones->Count()>0){
                 foreach ($transacciones as $trans){
+                
                     foreach ($Servicios as $serv){
                         if($serv==$trans->TipoServicio)
                         {$existe=true; }
@@ -261,7 +262,9 @@ class CorteSendEmail extends Command
                     {
                         $RowClaveltramite=str_pad($trans->TipoServicio,6,"0",STR_PAD_LEFT);
                         $RowFechapago=str_pad(Carbon::parse($trans->fechatramite)->format('Ymd'),8);
-                        $RowHorapago=str_pad(Carbon::parse($trans->HoraTramite)->format('hms'),6);                
+                        $RowHorapago=str_pad(Carbon::parse($trans->HoraTramite)->format('hms'),6);
+                        $RowFechaDis=str_pad(Carbon::parse($trans->fechatramite)->format('Ymd'),8);
+                        $RowHoraDis=str_pad(Carbon::parse($trans->HoraTramite)->format('hms'),6);
                     $partidas=$this->partidasdb->findwhere(['id_servicio'=>$trans->TipoServicio]);
                         if($partidas->count()==0)
                         {
@@ -270,7 +273,7 @@ class CorteSendEmail extends Command
                         }else{  
                             foreach ($partidas as $part) {                   
                                 $RowPartida=str_pad($part->id_partida,5,"0",STR_PAD_LEFT);
-                                $RowConsepto=str_pad($part->descripcion,120);                       
+                                $RowConsepto=str_pad(mb_convert_encoding($part->descripcion, "Windows-1252", "UTF-8"),120);                       
                             }
                         }                
                     $folios=$this->foliosdb->findwhere(['idTrans'=>$trans->idTrans]);
@@ -295,15 +298,14 @@ class CorteSendEmail extends Command
                         }
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                         $RowMedio_pago=str_pad('001',3,"0",STR_PAD_LEFT);//pendiente
-                        $RowFechaDis=str_pad('20191002',8);//pendiente
-                        $RowHoraDis=str_pad('140201',6);//pendiente                        
+                                                 
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
                         $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
-                        $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"1",STR_PAD_LEFT);//pendiente
-                        $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); // pediente  $concilia->alias
+                        $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
+                        $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowDatoAdicional1.$RowDatoAdicional2.$RowCuentaPago.$RowAlias;
-                        $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
-                        File::append($path,$dataAnsi."\r\n");
+                       // $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+                        File::append($path,$cadena."\r\n");
                     }            
                 }
             }
@@ -501,13 +503,14 @@ class CorteSendEmail extends Command
         File::delete($path);
         $cadena='';
         $response = array();
-        $Servicios= array('1');
+        $Servicios= array('3','24');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);        
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);        
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {          
-            //log::info($S);
+            $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8); 
+
             $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {
                 $RowIdTrans=str_pad($trans->idTrans,9,"0",STR_PAD_LEFT);        
@@ -515,19 +518,20 @@ class CorteSendEmail extends Command
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite, 10,''))->format('Hms'),6);          
                 $RowFuente=str_pad(substr($trans->fuente, 4),4);         
                 $RowTipoPagoT=str_pad($trans->TipoPago,4,"0",STR_PAD_LEFT);     
-                $RowFechaDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 10,''),10);         
-                $RowHoraDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 8,''),8); 
-                //$RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('Y-m-d'),10);         
-                //$RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('H:m:s'),8); 
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaCorte=str_pad('00000000',8);                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaCorte=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);   
-                    }
-                }
+                $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                 if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
+
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Y-m-d'),10);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }  
+                
                 $nomina=$this->nominadb->findwhere(['idTran'=>$trans->idTrans]);
                 if($nomina->count()==0)
                     {  
@@ -556,12 +560,12 @@ class CorteSendEmail extends Command
                         $RowFolio=str_pad($nom->folio,11,"0",STR_PAD_LEFT);
                         $RowMunnom=str_pad($nom->munnom,2,"0",STR_PAD_LEFT);
                         $RowClaveNombre=str_pad($nom->cvenom,7,"0",STR_PAD_LEFT);
-                        $RowRfcAlfa=str_pad($nom->rfcalf,4," ",STR_PAD_LEFT);
-                        $RowRfcNumero=str_pad($nom->rfcnum,6,"0",STR_PAD_LEFT);
-                        $RowRfcHomoclave=str_pad($nom->rfchomo,3," ",STR_PAD_LEFT);         
+                        $RowRfcAlfa=str_pad(Str::limit($nom->rfcalf, 4,''),4," ",STR_PAD_LEFT);
+                        $RowRfcNumero=str_pad(Str::limit($nom->rfcnum, 6,''),6,"0",STR_PAD_LEFT);
+                        $RowRfcHomoclave=str_pad(Str::limit($nom->rfchomo, 3,''),3," ",STR_PAD_LEFT);         
                         $RowTipoPagoN=str_pad($nom->tipopago,1,"0",STR_PAD_LEFT);         
                         $RowMesDec=str_pad($nom->mesdec,2,"0",STR_PAD_LEFT);
-                        $RowTriDec=str_pad($nom->mesdec,1);        
+                        $RowTriDec=str_pad($nom->tridec,1,"0",STR_PAD_LEFT);        
                         $RowAnoDec=str_pad($nom->anodec,4,"0",STR_PAD_LEFT);         
                         $RowNumemp=str_pad($nom->numemp,6,"0",STR_PAD_LEFT);         
                         $RowRenumeracion=str_pad(str_replace(".", "", $nom->remuneracion),15,"0",STR_PAD_LEFT);        
@@ -572,7 +576,7 @@ class CorteSendEmail extends Command
                         $RowSancion=str_pad(str_replace(".", "",$nom->sancion ),9,"0",STR_PAD_LEFT);
                         $RowCompensacion=str_pad(str_replace(".", "", $nom->compensacion),15,"0",STR_PAD_LEFT);
                     }
-                }              
+                }             
                 $RowValorFijo="0";
                 $cadena=$RowIdTrans.$RowFolio.$RowValorFijo.$RowFechaTramite.$RowHoraTramite.$RowMunnom.$RowClaveNombre.$RowRfcAlfa.$RowRfcNumero.$RowRfcHomoclave.$RowTipoPagoN.$RowMesDec.$RowTriDec.$RowAnoDec.$RowNumemp.$RowRenumeracion.$RowBase.$RowActualiza.$RowRecargos.$RowGastosEjecucion.$RowSancion.$RowFuente.$RowTipoPagoT.$RowFechaDispersion.$RowHoraDispersion.$RowFechaCorte.$RowCompensacion;
                 $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252',$cadena);
@@ -670,32 +674,34 @@ class CorteSendEmail extends Command
         $conseptoo []=array('clave' => '03','consepto'=>'Recargos','partida'=>'40205');
         $consepto=json_encode($conseptoo);
         $declaracion;
-        $Servicios= array('1');
+        $Servicios= array('13','14');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
+        $RowFechaBanco=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
         $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {
                 $RowIdTrans=str_pad($trans->idTrans,20,"0",STR_PAD_LEFT);
                 $RowFechaTramite=str_pad(Carbon::parse(Str::limit($trans->fechatramite, 10,''))->format('Ymd'),8);
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite, 10,''))->format('H:m:s'),8);
-                $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->fechatramite, 10,''))->format('Ymd'),8);
-                $RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->HoraTramite, 10,''))->format('H:m:s'),8);
-                //$RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);        
-                //$RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),),8);
+               $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
+
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }                  
                 $RowTipoPago=str_pad($trans->TipoPago,4,"0",STR_PAD_LEFT);
                 $RowTotalTramite=str_pad(str_replace(".", "",$trans->TotalTramite),11,"0",STR_PAD_LEFT);
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaBanco=str_pad('00000000',8);                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaBanco=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);  
-                    }
-                }
+               
                 $folio=$this->foliosdb->findwhere(['idTrans'=>$trans->idTrans]);
                 if($folio->count()==0)
                     {                     
@@ -708,8 +714,10 @@ class CorteSendEmail extends Command
                     }
                 }
                 $isan=$this->detalleisandb->findwhere(['idTrans'=>$trans->idTrans]); 
+
                 if($isan->count()==0)
                 {
+
                    $ish=$this->detalleishdb->findwhere(['idTrans'=>$trans->idTrans]);
                     if($ish->count()==0){
                         $RowCuenta=str_pad('12012',11,"0",STR_PAD_LEFT);
@@ -746,12 +754,18 @@ class CorteSendEmail extends Command
                         $RowFuente=str_pad('0015',4);          
                         $RowClaveImpuesto=str_pad('0010',4);
                         $declaracion="Normal";
+                        $impuesto="1000";
+                        $actualizacion="2000";
+                        $recargos="1200";
+                        $dif_imp="1300";
+                        $dif_act="1200";
+                        $dif_rec="5000";
 
                     }else{
                     foreach ($ish as $is ) {
                         $RowCuenta=str_pad($is->cuenta,11,"0",STR_PAD_LEFT);
                         $RowCurp=str_pad($is->curp,18," ",STR_PAD_LEFT);///pendiente
-                        $RowRazonSocial=str_pad($is->nombre_razonS,150);
+                        $RowRazonSocial=str_pad(mb_convert_encoding($is->nombre_razonS, "Windows-1252", "UTF-8"),150);
                         $RowTipoDeclaracion=str_pad(Str::limit($is->tipo_declaracion,1,''),1);
                         $RowPeriodicidad=str_pad('M',1);                         
                         $RowAnoDeclarado=str_pad($is->anio,4,"0",STR_PAD_LEFT);
@@ -792,9 +806,10 @@ class CorteSendEmail extends Command
                     }  
                 }else{
                     foreach ($isan as $i) {
+
                         $RowCuenta=str_pad($i->cuenta,11,"0",STR_PAD_LEFT);
-                        $RowCurp=str_pad($i->curp,18," ",STR_PAD_LEFT);///pendiente
-                        $RowRazonSocial=str_pad($i->nombre_razonS,150);
+                        $RowCurp=str_pad($i->curp,18," ",STR_PAD_LEFT);
+                        $RowRazonSocial=str_pad(mb_convert_encoding($i->nombre_razonS, "Windows-1252", "UTF-8"),150);
                         $RowTipoDeclaracion=str_pad(Str::limit($i->tipo_declaracion,1,''),1);
                         $RowPeriodicidad=str_pad(Str::limit($i->tipo_tramite,1,''),1);
                         $RowAnoDeclarado=str_pad($i->anio_1,4);
@@ -875,8 +890,8 @@ class CorteSendEmail extends Command
                         $RowClaveConsepto=str_pad($cont->clave,2);
                         $RowPartida=str_pad($cont->partida,5,"0",STR_PAD_LEFT);
                         $cadena=$RowIdTrans.$RowFolio.$RowRfc.$RowCuenta.$RowCurp.$RowRazonSocial.$RowTipoPagoD.$RowTipoDeclaracion.$RowPeriodicidad.$RowAnoDeclarado.$RowMesDeclarado.$RowNoComple.$RowFolioAnterior.$RowDeclaracionAnterior.$RowEmpleados.$RowRenumeracion.$RowClaveConsepto.$RowImporteDecl.$RowFechaTramite.$RowHoraTramite.$RowFechaDispersion.$RowHoraDispersion.$RowFechaBanco.$RowTipoPago.$RowTotalTramite.$RowPartida.$RowImporte.$RowTipoEstabl.$RowTipoContrib.$RowAlr.$RowAutosEnajenUnidades.$RowCamionesEnajenUnidades.$RowAutosExeUnidades.$RowVehiculosExtUnidades.$RowAutosEnajenValor.$RowCamionesEnajenValor.$RowAutosExtValor.$RowVehiculosExtValor.$RowTotalUnidades.$RowTotalValor.$RowVehiculosIncorp.$RowFacturasExpInicial.$RowFacturasExpFinal.$RowVehiculosenajenados.$RowValorTotEnajena.$RowFuente.$RowClaveImpuesto;
-                        $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
-                        File::append($path,$dataAnsi."\r\n");
+                        //$dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+                        File::append($path,$cadena."\r\n");
                     }                
                 }            
             }
@@ -890,33 +905,34 @@ class CorteSendEmail extends Command
         $response = array();
         $cadena='';        
         ///***tramites array***/////
-        $Servicios= array('1');
+        $Servicios= array('15');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
+        $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8); 
+
         $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {
                 $RowIdTrans=str_pad($trans->idTrans,9,"0",STR_PAD_LEFT);
                 $RowFechaTramite=str_pad(Carbon::parse(Str::limit($trans->fechatramite,10,''))->format('Ymd'),8);
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite,10,''))->format('Hms'),6);
-                //$RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('Y-m-d'),10);
-               // $RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('H:m:s'),8);
-                $RowFechaDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 10,''),10);         
-                $RowHoraDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 8,''),8);
-                $RowTipoPago=str_pad($trans->TipoPago,2,"0",STR_PAD_LEFT);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                 if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
 
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaCorte=str_pad('00000000',8);
-                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaCorte=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);  
-                    }
-                }
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }   
+                $RowTipoPago=str_pad($trans->TipoPago,2,"0",STR_PAD_LEFT);
+               
                 $folio=$this->foliosdb->findwhere(['idTrans'=>$trans->idTrans]);
                 if($folio->count()==0)
                     {                     
@@ -948,7 +964,7 @@ class CorteSendEmail extends Command
                            
                             $RowCuentaEstatal=str_pad($iso->cuenta,11,"0",STR_PAD_LEFT);   
                             $RowCurp=str_pad($iso->curp,18);        
-                            $RowNombreRazonS=str_pad($iso->nombre_razonS,120);
+                            $RowNombreRazonS=str_pad(mb_convert_encoding($iso->nombre_razonS, "Windows-1252", "UTF-8"),120);
                             $RowMesDeclarado=str_pad($iso->mes,2,"0",STR_PAD_LEFT);
                             $RowAnoDeclarado=str_pad($iso->anio,4);
                             $RowTipoDeclaracion=str_pad($iso->tipo_dec,1,"0",STR_PAD_LEFT);
@@ -961,9 +977,8 @@ class CorteSendEmail extends Command
                     }
                          
                 $cadena=$RowIdTrans.$RowFolio.$RowFechaTramite.$RowHoraTramite.$RowRfc.$RowCuentaEstatal.$RowCurp.$RowNombreRazonS.$RowTipoPago.$RowMesDeclarado.$RowAnoDeclarado.$RowTipoDeclaracion.$RowPremio.$RowImpuesto.$RowActualizacion.$RowRecargos.$RowTotalContr.$RowFechaDispersion.$RowHoraDispersion.$RowFechaCorte;
-                $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
-                //fwrite($Archivo,$dataAnsi."\r\n");
-                File::append($path,$dataAnsi."\r\n");
+                //$dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+                File::append($path,$cadena."\r\n");
                 }            
             }
         }       
@@ -990,34 +1005,34 @@ class CorteSendEmail extends Command
         $conseptoo []=array('clave' => '06','consepto'=>'cant_acreditada','partida'=>'12512');
         $consepto=json_encode($conseptoo);
         $declaracion;
-        $Servicios= array('1');
+        $Servicios= array('23');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
+        $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
+        $RowBanco=str_pad($concilia->banco_id,4,"0",STR_PAD_LEFT);
         $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {
                
                 $RowFechaTramite=str_pad(Carbon::parse(Str::limit($trans->fechatramite,10,''))->format('Ymd'),8);
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite,10,''))->format('H:m:s'),8);
-                //$RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('Ymd'),8);
-                //$RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('H:m:s'),8);
-                $RowFechaDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 10,''),10);         
-                $RowHoraDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 8,''),8);      
+                $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                 if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
+
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }      
                 $RowTotalTramite=str_pad(str_replace(".", "", $trans->TotalTramite),11,"0",STR_PAD_LEFT);
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaCorte=str_pad('',8);
-                        $RowBanco=str_pad('',4,"0",STR_PAD_LEFT);
-                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaCorte=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);
-                        $RowBanco=str_pad($con->Banco,4,"0",STR_PAD_LEFT); 
-                    }
-                }                
+                             
                 $detalleisn=$this->detalleisnprestadoradb->findwhere(['idTrans'=>$trans->idTrans]);
                 if($detalleisn->count()==0)
                     {                            
@@ -1027,7 +1042,7 @@ class CorteSendEmail extends Command
                             $RowRfcCnum=str_pad('1',6,"0",STR_PAD_LEFT);  
                             $RowRfcChom=str_pad('1',3,"0",STR_PAD_LEFT);  
                             $RowCuenta=str_pad('1',11,"0",STR_PAD_LEFT);        
-                            $RowNombreRazonS=str_pad('',150,"R",STR_PAD_LEFT);
+                            $RowNombreRazonS=str_pad('',150);
                             $RowTipoDeclaracion=str_pad('N',1);
                             $RowValorFijo=str_pad('1',1);
                             $RowAno=str_pad('2019',4);
@@ -1041,6 +1056,14 @@ class CorteSendEmail extends Command
                             $RowImporteC=str_pad('100',11,"0",STR_PAD_LEFT);                
                             $RowPartida=str_pad('',5,"0",STR_PAD_LEFT);
                             $RowImporte=str_pad('100',11,"0",STR_PAD_LEFT);
+                            $declaracion="Normal";
+                            $impuesto="2000";
+                            $cant_acreditada="1000";
+                            $actualizacion="3000";
+                            $recargos="2100";
+                            $dif_imp="1000";
+                            $dif_act="1000";
+                            $dif_rec="4000";
                     }else{
                         foreach ($detalleisn as $isn) {
                            $RowIdTrans=str_pad($isn->idtrans,20,"0",STR_PAD_LEFT);
@@ -1049,13 +1072,14 @@ class CorteSendEmail extends Command
                             $RowRfcCnum=str_pad($isn->rfcnum,6,"0",STR_PAD_LEFT);  
                             $RowRfcChom=str_pad($isn->rfchom,3,"0",STR_PAD_LEFT);  
                             $RowCuenta=str_pad($isn->cuenta,11,"0",STR_PAD_LEFT);
-                            $RowNombreRazonS=str_pad($isn->nombre_razonS,150);
+                            $RowNombreRazonS=mb_convert_encoding($isn->nombre_razonS,"Windows-1252", "UTF-8");
+                            $RowNombreRazonS=str_pad(mb_convert_encoding($RowNombreRazonS,"Windows-1252", "UTF-8"),150);
                             $RowTipoDeclaracion=str_pad(Str::limit($isn->tipo_declaracion, 1,''),1,"0",STR_PAD_LEFT);
                             $RowValorFijo=str_pad('1',1);
                             $RowAno=str_pad($isn->anio,4);
                             $RowMes=str_pad($isn->mes,2,"0",STR_PAD_LEFT);       
                             $RowFolioAnterior=str_pad($isn->folio_anterior,20,"0",STR_PAD_LEFT);
-                            $RowNumComplem=str_pad($isn->num_complementaria,2,"0",STR_PAD_LEFT);
+                            $RowNumComplem=str_pad(Str::limit($isn->num_complementaria, 1,''),1,"0",STR_PAD_LEFT);
                             $RowImptAnterior=str_pad(str_replace(".", "",$isn->declaracion_anterior),13,"0",STR_PAD_LEFT);
                             $RowEmpleados=str_pad($isn->no_empleados,6,"0",STR_PAD_LEFT);
                             $RowRenumeracion=str_pad(str_replace(".", "",$isn->remuneraciones),15,"0",STR_PAD_LEFT);
@@ -1114,8 +1138,8 @@ class CorteSendEmail extends Command
                         }
                        
                        $cadena=$RowIdTrans.$RowFolio.$RowRfcAlfa.$RowRfcCnum.$RowRfcChom.$RowCuenta.$RowNombreRazonS.$RowTipoDeclaracion.$RowValorFijo.$RowAno.$RowMes.$RowFolioAnterior.$RowNumComplem.$RowImptAnterior.$RowEmpleados.$RowRenumeracion.$RowClave.$RowImporteC.$RowFechaTramite.$RowHoraTramite.$RowFechaDispersion.$RowHoraDispersion.$RowFechaCorte.$RowBanco.$RowTotalTramite.$RowPartida.$RowImporte;
-                            $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
-                            File::append($path,$dataAnsi."\r\n");
+                        //$dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+                        File::append($path,$cadena."\r\n");
                     }
                         
                 }            
@@ -1132,33 +1156,33 @@ class CorteSendEmail extends Command
         $response = array();
         $cadena='';        
         ///***tramites array***/////
-        $Servicios= array('1');
+        $Servicios= array('24');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
-        $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
+            $RowFechaCorte=str_pad(Carbon::parse($concilia->crated_at)->format('Ymd'),8);
+            $RowBanco=str_pad($concilia->banco_id,4,"0",STR_PAD_LEFT);
+            $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {               
                 $RowFechaTramite=str_pad(Carbon::parse(Str::limit($trans->fechatramite,10,''))->format('Ymd'),8);
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite,10,''))->format('H:m:s'),8);
-                //$RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('Ymd'),8);
-                //$RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('H:m:s'),8); 
-                $RowFechaDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 10,''),10);         
-                $RowHoraDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 8,''),8);                
+               $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                 if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
+
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }          
                 $RowTotalTramite=str_pad(str_replace(".", "", $trans->TotalTramite),13,"0",STR_PAD_LEFT);
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaCorte=str_pad('20190202',8);
-                        $RowBanco=str_pad('',4,"0",STR_PAD_LEFT);
-                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaCorte=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);
-                        $RowBanco=str_pad($con->Banco,4,"0",STR_PAD_LEFT); 
-                    }
-                }                
+                             
                 $detalleisnr=$this->detalleisnretenedordb->findwhere(['idTrans'=>$trans->idTrans]);
                 if($detalleisnr->count()==0)
                     {
@@ -1188,11 +1212,11 @@ class CorteSendEmail extends Command
                         $RowTipoDeclaracion=str_pad(Str::limit($isn->tipo_declaracion, 1,''),1,"0",STR_PAD_LEFT);
                         $RowAno=str_pad($isn->anio,4);
                         $RowMes=str_pad($isn->mes,2,"0",STR_PAD_LEFT);  
-                        $RowNumComplem=str_pad($isn->num_complementaria,1,"0",STR_PAD_LEFT);
-                        $RowFolioAnterior=str_pad($isn->folio_anterior,20,"0",STR_PAD_LEFT);
+                        $RowNumComplem=str_pad(str_replace(".",$isn->num_complementaria,""),1,"0",STR_PAD_LEFT);
+                        $RowFolioAnterior=str_pad(str_replace(".",$isn->folio_anterior,""),20,"0",STR_PAD_LEFT);
                         $RowImptDeclaracion=str_pad(str_replace(".", "", $isn->declaracion_anterior),13,"0",STR_PAD_LEFT);
-                         $RowActualizaciones=str_pad($isn->actualizacion,13,"0",STR_PAD_LEFT);
-                        $RowRecargos=str_pad($isn->recargos,13,"0",STR_PAD_LEFT);
+                         $RowActualizaciones=str_pad(str_replace(".",$isn->actualizacion,""),13,"0",STR_PAD_LEFT);
+                        $RowRecargos=str_pad(str_replace(".",$isn->recargos,""),13,"0",STR_PAD_LEFT);
                         }
 
                     }
@@ -1210,10 +1234,10 @@ class CorteSendEmail extends Command
                            
                     }else{
                         foreach ($detalleretenciones as $retenciones) {
-                        $RowNombreRet=str_pad($retenciones->nombre_retenedora,150);
-                        $RowRfcPrest=str_pad($retenciones->rfc_prestadora,13,"0",STR_PAD_LEFT);
+                        $RowNombreRet=str_pad(mb_convert_encoding($retenciones->nombre_retenedora, "Windows-1252", "UTF-8"),150);
+                        $RowRfcPrest=str_pad(mb_convert_encoding($retenciones->rfc_prestadora, "Windows-1252", "UTF-8"),13);
                         $RowCuentaPrest=str_pad($retenciones->cuenta,11,"0",STR_PAD_LEFT);
-                        $RowNombrePrest=str_pad($retenciones->nombre_prestadora,150);
+                        $RowNombrePrest=str_pad(mb_convert_encoding($retenciones->nombre_prestadora, "Windows-1252", "UTF-8"),150);
                         $RowEmpleados=str_pad($retenciones->no_empleados,6,"0",STR_PAD_LEFT);
                         $RowRenumeracion=str_pad(str_replace(".", "", $retenciones->remuneraciones),15,"0",STR_PAD_LEFT); 
                         $RowRetencion=str_pad(str_replace(".","",$retenciones->retencion),13,"0",STR_PAD_LEFT);
@@ -1224,8 +1248,8 @@ class CorteSendEmail extends Command
                     $RowPartidaActu=str_pad('40215',5);
                     $RowPartidaRecargo=str_pad('12514',5); 
                 $cadena=$RowIdTrans.$RowFolio.$RowRfcAlfa.$RowRfcCnum.$RowRfcChom.$RowCuentaRet.$RowNombreRet.$RowRfcPrest.$RowCuentaPrest.$RowNombrePrest.$RowTipoDeclaracion.$RowAno.$RowMes.$RowNumComplem.$RowFolioAnterior.$RowImptDeclaracion.$RowEmpleados.$RowRenumeracion.$RowPartidaRet.$RowRetencion.$RowPartidaActu.$RowActualizaciones.$RowPartidaRecargo.$RowRecargos.$RowFechaTramite.$RowHoraTramite.$RowFechaDispersion.$RowHoraDispersion.$RowFechaCorte.$RowBanco.$RowTotalTramite;
-                $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
-               File::append($path,$dataAnsi."\r\n");
+                //$dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+               File::append($path,$cadena."\r\n");
                 }            
             }
         }
@@ -1253,33 +1277,36 @@ class CorteSendEmail extends Command
         $conseptoo []=array('clave' => '0023','consepto'=>'rec_jys_isop','partida'=>'15103','total'=>'15103');
         $consepto=json_encode($conseptoo);
         $importe;
-        $Servicios= array('1');
+        $Servicios= array('25');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-09-11 00:00:00'],['created_at','<','2019-09-11 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
-        $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
+            $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
+
+            $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id,'TipoServicio'=>$S]);
             foreach ($transacciones as $trans) {
                 $RowIdTrans=str_pad($trans->idTrans,20,"0",STR_PAD_LEFT);
                
                 $RowFechaTramite=str_pad(Carbon::parse(Str::limit($trans->fechatramite,10,''))->format('Ymd'),8);
                 $RowHoraTramite=str_pad(Carbon::parse(Str::limit($trans->HoraTramite,10,''))->format('H:m:s'),8);
-                //$RowFechaDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('Ymd'),8);
-                //$RowHoraDispersion=str_pad(Carbon::parse(Str::limit($trans->Clabe_FechaDisp, 10,''))->format('H:m:s'),8);
-                $RowFechaDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 10,''),10);         
-                $RowHoraDispersion=str_pad(Str::limit($trans->Clabe_FechaDisp, 8,''),8);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "", $trans->Clabe_FechaDisp);
+                 if(strlen($RowFechaDispersion)==13)
+                {
+                    $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
+
+                } 
+                else{
+                    $RowFechaDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('Ymd'),8);
+                    $RowHoraDispersion=str_pad(Carbon::parse($trans->Clabe_FechaDisp)->format('H:m:s'),8);
+
+                }    
                 $RowTipoPago=str_pad($trans->TipoPago,4,"0",STR_PAD_LEFT);              
                 $RowTotalTramite=str_pad(str_replace(".", "",$trans->TotalTramite ),13,"0",STR_PAD_LEFT);
-                $conc=$this->conciliaciondb->findwhere(['idTrans'=>$trans->idTrans]);
-                if($conc->count()==0)
-                    {
-                        $RowFechaCorte=str_pad('',8);                       
-                    }else{
-                    foreach ($conc as $con) {
-                        $RowFechaCorte=str_pad(Carbon::parse($con->archivo)->format('Ymd'),8);                        
-                    }
-                } 
+                
                 $folio=$this->foliosdb->findwhere([]);
                 if($folio->count()==0){
                      $RowFolio=str_pad('1',20,"0",STR_PAD_LEFT);
@@ -1288,7 +1315,7 @@ class CorteSendEmail extends Command
                 else{
                     foreach ($folio as $fol) {
                         $RowFolio=str_pad($fol->Folio,20,"0",STR_PAD_LEFT);        
-                        $RowDescrip=str_pad($fol->CartDescripcion,150);
+                        $RowDescrip=str_pad(mb_convert_encoding($fol->CartDescripcion, "Windows-1252", "UTF-8"),150);
                     }
                 }               
                 $det=$this->detimpisopdb->findwhere(['idTrans'=>$trans->idTrans]);
@@ -1350,24 +1377,7 @@ class CorteSendEmail extends Command
         }
         //$this->enviacorreo($txt);
     }
-    private function insrtfolio()
-    {
-
-        $banco;
-        $referen=556312312321;
-        $process=$this->pr->findwhere(['status'=>'p']);  
-        foreach ($process as $proc) {
-          $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$proc->transaccion_id]);
-          foreach ($transacciones as $key) {
-            $referen=$referen+3214;
-                $concilia=$this->conciliaciondb->findwhere(['idtrans'=>$key->idTrans]);
-                foreach ($concilia as $con) {
-                    $banco=$con->Banco;
-                }
-                $inserta=$this->referenciabancariadb->create(['idTrans'=>$key->idTrans,'Linea'=>$referen,'FechaLimite'=>'2019-08-28 00:00:00','BancoPago'=>$banco,'FechaCanc'=>'2019-09-02 00:00:00']);
-          }
-      }
-    }
+   
     private function enviacorreo()
     {   
          $nombreArchivo=Carbon::now();

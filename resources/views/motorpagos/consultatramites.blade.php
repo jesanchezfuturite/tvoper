@@ -20,7 +20,7 @@
 </div>
 <div class="alert alert-info alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
-    <strong>Info:</strong> -------.
+    <strong>Info:</strong> Consulta de las Transacciones, filtro por ESTATUS y TIPO SERVICIO, Busqueda por rango de fechas y RFC.
 </div>
 <div class="row">
     <div hidden="true">
@@ -70,12 +70,10 @@
                     </div>
                    
                 </div>
-            <div id="addTimerpicker">
-               
-        </div>                
+                            
                 
-        <div class="row">
-            <hr> 
+    <div class="row">
+             
     <div class="col-md-12">
         <div class="tabbable-line boxless tabbable-reversed">
             <ul class="nav nav-tabs">
@@ -88,6 +86,11 @@
             </ul>
 
             <div class="tab-content">
+                <div class="row">
+                    <div id="addTimerpicker">
+               
+                    </div>
+                </div> 
                 <div class="tab-pane active" id="tab_0">
                     <div class="portlet box blue" id="addTable_1">
 
@@ -96,12 +99,41 @@
                                 <i class="fa fa-gift"></i>Operaciones
                             </div>
                         </div>
+                        </select>
+                                                 
+                        <div class="portlet-body "> 
+                                                      
+                            <div class="row "> 
+                             <div class="col-md-5 "> </div>
+                                <div class="col-md-3 "> 
+                                    <div class="form-group">
+                                        <span class="help-block"> Estatus</span>
+                                            <select id="itemsStatus" class="select2me form-control" onchange="ChangeItemsOper()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block  text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div>                                
+                                <div class="col-md-4 ">
+                                    <div class="form-group">
+                                    <span class="help-block">Tramite </span>                                       
+                                            <select id="itemsTipoServicio" class="select2me form-control" onchange="ChangeItemsOper()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="portlet-body" id="table_1"> 
                                 <table class="table table-hover" id="sample_3">
                                     <thead>
                                         <tr> 
                                             <th>Estatus</th>
                                             <th>Transacción</th>
+                                            <th>RFC</th>
                                             <th>Entidad</th>
                                             <th>Tramite</th>
                                             <th>Contribuyente</th> 
@@ -114,6 +146,7 @@
                                     <tbody> 
                                         <tr>
                                         <td><span class="help-block">No Found</span></td>                       
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -135,12 +168,39 @@
                                 <i class="fa fa-gift"></i>Egobierno
                             </div>
                         </div>
+                        <div class="portlet-body ">                         
+                            <div class="row "> 
+                                <div class="col-md-5 "> </div>
+                                <div class="col-md-3 "> 
+                                    <div class="form-group">
+                                         <span class="help-block"> Estatus</span>
+                                            <select id="itemsStatus2" class="select2me form-control" onchange="ChangeItemsEgob()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div> 
+                                <div class="col-md-4 ">                              
+                                    <div class="form-group">
+                                         <span class="help-block"> Tramite</span>
+                                            <select id="itemsTipoServicio2" class="select2me form-control" onchange="ChangeItemsEgob()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="portlet-body" id="table_2"> 
                             <table class="table table-hover" id="sample_2">
                                     <thead>
                                         <tr> 
                                             <th>Estatus</th>
                                             <th>Transacción</th>
+                                            <th>RFC</th>
                                             <th>Entidad</th>
                                             <th>Tramite</th>
                                             <th>Contribuyente</th> 
@@ -153,6 +213,7 @@
                                     <tbody> 
                                         <tr>
                                         <td><span class="help-block">No Found</span></td>           
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -176,24 +237,33 @@
 </div>
 </div>
 
-
-
-<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
+<div class="modal fade bs-modal-lg" id="large" tabindex="-1" data-backdrop="static" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
-                <h4 class="form-section">Detalle</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Modal Title</h4>
             </div>
             <div class="modal-body">
-
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+               <div class="vl">
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                    <span class="help-block"> &nbsp;</span>
+                </div>
             </div>
-            </div>            
+            <div class="modal-footer">
+                <button type="button" class="btn default" data-dismiss="modal">Close</button>
+            
+            </div>
         </div>
     </div>
 </div>
+
+                            
 @endsection
 
 @section('scripts')
@@ -201,9 +271,146 @@
     jQuery(document).ready(function() {
         UIBlockUI.init();  
         consultaInicial();
-             
+        AddOptionTipoServicio(); 
+        AddOptionTipoServicio2(); 
+        findEstatus();
+        findEstatus2();
         
     });
+    function ChangeItemsEgob()
+    {
+        var option = document.querySelector('input[name = radio2]:checked').value;        
+        if(option=="avanzado")
+        {
+            consultaRangoFechasEgob();
+        }else{
+            $("#addTimerpicker div").remove();
+            if(option=="undia")
+            {              
+                consultaEgob("1","1");
+            }
+            else{consultaEgob("3","3");}
+        }
+    }
+    function ChangeItemsOper()
+    {
+        var option = document.querySelector('input[name = radio2]:checked').value;        
+        if(option=="avanzado")
+        {
+            consultaRangoFechasOper();
+        }else{
+            $("#addTimerpicker div").remove();
+            if(option=="undia")
+            {              
+                consultaOper("1","1");
+            }
+            else{consultaOper("3","3");}
+        }
+    }
+    function consultaRangoFechasEgobOper()
+    {
+        fechaIn=$("#fechainicio").val();
+        fechaF=$("#fechafin").val();
+        if(fechaIn.length<1){
+            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
+        }else if(fechaF.length<1){
+            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        }else{
+            consultaEgob(fechaIn,fechaF);
+            consultaOper(fechaIn,fechaF);           
+        }
+    }
+    
+    function findEstatus()
+    {
+        $.ajax({
+           method: "get",           
+           url: "{{ url('/status-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          var Resp=$.parseJSON(response);
+           $("#itemsStatus option").remove();
+         $('#itemsStatus').append(
+            "<option value='limpia'>------</option>"
+        );
+        $.each(Resp, function(i, item) {                
+            $('#itemsStatus').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                );
+            });
+        })
+        .fail(function( msg ) {
+         console.log("Error al Cargar select Option Limite Referencia");  });
+    }
+    function findEstatus2()
+    {
+        $.ajax({
+           method: "get",           
+           url: "{{ url('/status-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          var Resp=$.parseJSON(response);
+           $("#itemsStatus2 option").remove();
+         $('#itemsStatus2').append(
+            "<option value='limpia'>------</option>"
+        );
+        $.each(Resp, function(i, item) {                
+            $('#itemsStatus2').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                );
+            });
+        })
+        .fail(function( msg ) {
+         console.log("Error al Cargar select Option Limite Referencia");  });
+    }
+     function AddOptionTipoServicio() 
+    {          
+            $.ajax({
+           method: "get",            
+           url: "{{ url('/tiposervicio-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) { 
+        $("#itemsTipoServicio option").remove();
+        var Resp=$.parseJSON(responseinfo);
+
+         $('#itemsTipoServicio').append(
+                "<option value='limpia'>------</option>"
+        );
+          var item="";
+        $.each(Resp, function(i, item) {                
+                 $('#itemsTipoServicio').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+            return false;
+    }
+     function AddOptionTipoServicio2() 
+    {          
+            $.ajax({
+           method: "get",            
+           url: "{{ url('/tiposervicio-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) { 
+        $("#itemsTipoServicio2 option").remove();
+        var Resp=$.parseJSON(responseinfo);
+
+         $('#itemsTipoServicio2').append(
+                "<option value='limpia'>------</option>"
+        );
+          var item="";
+        $.each(Resp, function(i, item) {                
+                 $('#itemsTipoServicio2').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+            return false;
+    }
     function radiobuttons()
     {
         var option = document.querySelector('input[name = radio2]:checked').value;        
@@ -212,6 +419,7 @@
             timpicker();
         }else{
             $("#addTimerpicker div").remove();
+            $("#addTimerpicker2 div").remove();
             if(option=="undia")
             {
                 consultaInicial();
@@ -222,7 +430,8 @@
     function timpicker()
     {
         $("#addTimerpicker div").remove();
-         $("#addTimerpicker").append("<div class='row'><hr><div class='col-md-4'> <div class='form-group'>   <span class='help-block'>Seleccionar Rango de Fechas. </span><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin'></div></div></div><div class='col-md-1'><div class='form-group'><span class='help-block'>&nbsp; </span><button class='btn green' id='Buscar' onclick='consultaRangoFechas()'>Buscar</button></div></div></div>");
+         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC</label> <input type='text' placeholder='Ingrese RFC' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgobOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");
+         
          ComponentsPickers.init();   
     }
     function consultaInicial()
@@ -238,31 +447,20 @@
         fechaIn = "3";
         fechaF = "3";
         consultaEgob(fechaIn,fechaF);
-        consultaOper(fechaIn,fechaF);
-       
+        consultaOper(fechaIn,fechaF);      
 
     }
-    function consultaRangoFechas()
-    {
-        fechaIn=$("#fechainicio").val();
-        fechaF=$("#fechafin").val();
-        if(fechaIn.length<1){
-            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
-        }else if(fechaF.length<1){
-            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
-        }else{
-            consultaEgob(fechaIn,fechaF);
-            consultaOper(fechaIn,fechaF);
-           
-        }
-    }
+    
     function consultaEgob(fechaIn,fechaF) {
         Addtable2();
         document.getElementById("blockui_sample_3_1").click();
+        var status=$("#itemsStatus2").val();
+        var servicio=$("#itemsTipoServicio2").val();
+        var rfc_=$("#rfc").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-egob') }}",
-        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
@@ -278,13 +476,15 @@
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
+                +"<td></td>"
                 +"</tr>");
             
         }else{
         $.each(Resp, function(i, item) { 
              $("#sample_2 tbody").append("<tr>"
                 +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#static2' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
                 +"<td>"+item.Contribuyente+"</td>"
@@ -294,9 +494,9 @@
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
             });
-        //TableManaged.init();
+        
         }
-       
+       TableManaged2.init2();
         document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
@@ -313,13 +513,13 @@
     {
         $("#table_2").remove();
         //$("#table_1").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
      function Addtable1()
     {
         //$("#table_2").remove();
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><table class='table table-hover' id='sample_3'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><table class='table table-hover' id='sample_3'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
     function limpiar()
     {
@@ -328,10 +528,14 @@
     function consultaOper(fechaIn,fechaF) {
         Addtable1();
         document.getElementById("blockui_sample_3_1").click();
+         var status=$("#itemsStatus").val();
+        var servicio=$("#itemsTipoServicio").val();
+        var rfc_=$("#rfc").val();
+
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
-        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
@@ -347,13 +551,14 @@
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
+                +"<td></td>"
                 +"</tr>");
-            //TableManaged.init();
         }else{
         $.each(Resp, function(i, item) { 
              $("#sample_3 tbody").append("<tr>"
                 +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#static2' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
                 +"<td>"+item.Contribuyente+"</td>"
@@ -365,7 +570,7 @@
             });
         
         }
-       TableManaged.init();
+       TableManaged3.init3();
         document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
@@ -374,9 +579,7 @@
             $("#sample_3 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
-         Command: toastr.warning("Registro No Encontrado", "Notifications")  });
-        
-      
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
     }
     
 </script>

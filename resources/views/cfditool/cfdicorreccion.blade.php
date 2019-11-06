@@ -109,7 +109,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalTitle"></h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="max-height: 800px;overflow-y: auto;">
                 <div class="alert hidden" role="alert" id="modalAlert"></div>
                 <input type="hidden" id="myModalID" name="myModalID" value="" />
                 <p>Modal example.</p>
@@ -379,7 +379,12 @@
     function loadDetail(id)
     {
         if(id != "" && id != 'undefined')
-        {                
+        {   
+            if($('#btnAdd').length)
+            {
+                var b = $('#myModal').find('#btnAdd');
+                b.remove();
+            }           
             $.ajax({
                 method: "get",
                 url: "{{ url('/cfdi-correccion/detalle') }}",
@@ -390,7 +395,7 @@
                 var mbody = $('#myModal').find('.modal-body');
                 var mdata = JSON.parse(data);
                 var t = $('<table>',{id:'tblDetails'}).addClass('table table-hover');
-                
+
                 mbody.html('');
 
                 $('#myModalTitle').html('Edición del Detalle');
@@ -415,7 +420,8 @@
                     );
                     
                     var tbody = $('<tbody>');
-                    var idrow,ferow;
+                    var idrow = null;
+                    var ferow = null;
 
                     $.each(mdata,function(i,item){
                         tbody.append($('<tr>')
@@ -432,15 +438,9 @@
                         idrow = item.folio_unico;
                         ferow = item.fecha_registro;
                     });
-                    
-                    if(!$('#btnAdd').length)
-                    {
-                        var b = $('#myModal').find('.modal-footer');
-                        b.append($('<button>',{id:'btnAdd'}).attr('disabled',false).on('click',function(){addRow(idrow,ferow)}).addClass('btn btn-primary').text('Nuevo ').append($('<i>').addClass('fa fa-plus')));
-                    }
-                    else{
-                        $('#btnAdd').attr('disabled',false);
-                    }
+
+                    var b = $('#myModal').find('.modal-footer');
+                    b.append($('<button>',{id:'btnAdd'}).attr('disabled',false).on('click',function(){addRow(idrow,ferow)}).addClass('btn btn-primary').text('Nuevo ').append($('<i>').addClass('fa fa-plus')));
 
                     t.append(thead).append(tbody);
                     
@@ -458,7 +458,7 @@
     }
     
     function addRow(id,fecha) 
-    {
+    {   
         var row = $('<tr>')
             .append($('<input>',{type:'hidden',value:"-1",name:'ids[]'}))
             .append($('<td>').append($('<input>',{name:'fun[]',value:id}).attr('readonly',true).addClass('form-control')))                                         // FolioUnico
@@ -489,7 +489,7 @@
             $('#edit-form input').attr('readonly',true);
             $('#btnUpd').attr('disabled',true);
             $('#btnAdd').attr('disabled',true);        
-            console.log(data);
+
         })
         .fail(function(msg){
             console.log(msg);

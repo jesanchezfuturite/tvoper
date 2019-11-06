@@ -199,7 +199,8 @@
             </div>
             <div class="modal-body">
                 <p>
-             ¿Desactivar/Activar Registro?
+             ¿Desactivar/Activar Registro?<br>
+             <br> ¡Afectara a todos los <h style="color: #cb5a5e;">Tramites</h> relacionados con la <h style="color: #cb5a5e;">Cuenta Banco</h>!
                 </p>
                  <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
                  <input hidden="true" type="text" name="idstatus" id="idstatus" class="idstatus">
