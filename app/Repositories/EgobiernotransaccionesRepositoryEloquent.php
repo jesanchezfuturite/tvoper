@@ -80,7 +80,7 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             return $data;
             //Log::info($data);
         }catch( \Exception $e ){
-            Log::info("[EgobiernotransaccionesRepositoryEloquent @ consultaTransacciones]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransacciones]  ERROR al actualizar las transacciones como procesadas en egobierno");
             return false;
         }
     }
@@ -100,9 +100,8 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             ->groupBy('transacciones.idTrans')
             ->get();
             return $data;
-            //Log::info($data);
         }catch( \Exception $e ){
-            Log::info("[EgobiernotransaccionesRepositoryEloquent @ consultaTransacciones]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransaccionesWhere]  ERROR al actualizar las transacciones como procesadas en egobierno");
             return false;
         }
     }
