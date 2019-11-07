@@ -98,8 +98,7 @@
                             <div class="caption">
                                 <i class="fa fa-gift"></i>Operaciones
                             </div>
-                        </div>
-                        </select>
+                        </div>                    
                                                  
                         <div class="portlet-body "> 
                                                       
