@@ -308,6 +308,11 @@
     }
     function consultaRangoFechasEgobOper()
     {
+       consultaRangoFechasEgob();
+       consultaRangoFechasOper();
+    }
+    function consultaRangoFechasEgob()
+    {
         fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
         if(fechaIn.length<1){
@@ -315,7 +320,18 @@
         }else if(fechaF.length<1){
             Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
         }else{
-            consultaEgob(fechaIn,fechaF);
+            consultaEgob(fechaIn,fechaF);          
+        }
+    }
+    function consultaRangoFechasOper()
+    {
+        fechaIn=$("#fechainicio").val();
+        fechaF=$("#fechafin").val();
+        if(fechaIn.length<1){
+            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
+        }else if(fechaF.length<1){
+            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        }else{
             consultaOper(fechaIn,fechaF);           
         }
     }
