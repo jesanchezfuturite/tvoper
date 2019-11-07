@@ -40,11 +40,12 @@
         </div>
     </div>
 </div>
-<div id="bancos_tabs" class="row">
+<div id="bancos_tabs" class="row" >
+    <div class="alert alert-secondary" id="imageloading" style="display: none" role="alert"></div>
     <hr> 
-    <div class="col-md-12">
+    <div class="col-md-12" >
         <div class="tabbable-line boxless tabbable-reversed">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" id="d_tabs">
                 <li class="active">
                     <a href="#tab_0" data-toggle="tab">Operaciones</a>
                 </li>
@@ -53,18 +54,20 @@
                 </li>                            
             </ul>
 
-            <div class="tab-content">
+            <div class="tab-content" id="c_tabs">
                 <div class="tab-pane active" id="tab_0">
-                    <div class="portlet-body" id="table_1"> 
-                        <table class="table table-hover" id="sample_3">
+                    <div class="portlet-body"> 
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th></th> 
+                                    <th></th> 
                                     <th colspan="5">Internet</th>
-                                    <th colspan="5" style="background-color: #E9E9E9">Modulo de operaciones</th>
+                                    <th colspan="5" style="background-color: #E9E9E9">Repositorio</th>
                                 </tr>
                                 <tr>
-                                    <th>Cuenta</th> 
+                                    <th>Alias</th>
+                                    <th>Cuenta</th>  
                                     <th>Trámites</th>
                                     <th>Conciliados</th>
                                     <th>No conciliados</th>
@@ -85,11 +88,11 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td style="background-color: #E9E9E9"></td>
+                                    <td style="background-color: #E9E9E9"></td>
+                                    <td style="background-color: #E9E9E9"></td>
+                                    <td style="background-color: #E9E9E9"></td>
+                                    <td style="background-color: #E9E9E9"></td>
                                 </tr>                                   
                             </tbody>
                         </table>                          
@@ -109,14 +112,77 @@
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
 
 <script>
-    jQuery(document).ready(function() {       
-       ComponentsPickers.init();
+    jQuery(document).ready(function() {   
+        $('#bancos_tabs').hide();    
+        ComponentsPickers.init();
     }); 
 
     $("#busqueda").click(function(){
 
         var fecha = $("#fecha").val();
-        console.log(fecha);
+
+        $.ajax({
+            method: "post",
+            beforeSend:  function(){
+                
+                $('#result-query').hide();
+                $('#imageloading').html('Procesando ...').show();
+            },
+            url: "{{ url('/conciliacion-getinfo') }}",
+            data: { f: fecha, _token: '{{ csrf_token() }}' }
+        })
+        .done(function(data){
+
+            var element = 0;
+            var content;
+            var accounts;
+            // vaciar el contenido del ul para insertar los nuevos tab
+            $("#d_tabs").empty();
+            $("#c_tabs").empty();
+
+            $.each(data,function(i,info){
+                
+                if(element == 0){
+                    $("#d_tabs").append('<li class="active"><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
+                    content = '<div class="tab-pane active" id="tab_'+element+'">';    
+                }else{
+                    $("#d_tabs").append('<li><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
+                    content = '<div class="tab-pane" id="tab_'+element+'">';     
+                }
+                // aqui genero el resumen de cada banco por cuenta
+                content += '<div class="portlet-body"><table class="table table-hover"><thead><tr><th></th><th></th><th colspan="5">Internet</th><th colspan="5" style="background-color: #E9E9E9">Repositorio</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th><th style="background-color: #E9E9E9">Trámites</th><th style="background-color: #E9E9E9">Conciliados</th><th style="background-color: #E9E9E9">No conciliados</th><th style="background-color: #E9E9E9">Monto conciliado</th><th style="background-color: #E9E9E9">Monto no conciliado</th></tr></thead><tbody>';
+
+                accounts = info.info;
+
+                $.each(accounts,function(j,cuenta){
+                    content += '<tr>';
+                    content += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
+                    content += '<td>'+cuenta.registros+'</td>';
+                    content += '<td>'+cuenta.registros_conciliados+'</td>';
+                    content += '<td>'+cuenta.registros_no_conciliados+'</td>';
+                    content += '<td>'+cuenta.monto_conciliado+'</td>';
+                    content += '<td>'+cuenta.monto_no_conciliado+'</td>';
+                    content += '<td>'+cuenta.registros_repo+'</td>';
+                    content += '<td>'+cuenta.registros_conciliados_repo+'</td>';
+                    content += '<td>'+cuenta.registros_no_conciliados_repo+'</td>';
+                    content += '<td>'+cuenta.monto_conciliado_repo+'</td>';
+                    content += '<td>'+cuenta.monto_no_conciliado_repo+'</td>';
+                    content += '</tr>';
+                });
+
+                content += '</tbody></table></div></div>';
+
+                $("#c_tabs").append(content);
+
+                element ++;
+            });
+
+            /* hide the loading */ 
+            $('#imageloading').html('');
+            /* append the results on result-query div */
+            $('#bancos_tabs').show();                   
+        });
+
 
     });
 </script>
