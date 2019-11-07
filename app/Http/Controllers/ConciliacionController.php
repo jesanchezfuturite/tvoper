@@ -25,6 +25,8 @@ class ConciliacionController extends Controller
 
     protected $bank_details;
 
+    protected $results;
+
     
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
@@ -321,6 +323,7 @@ class ConciliacionController extends Controller
         {   
 
             foreach($data as $f){
+
                 $final []= array(
                     "cuenta" => $f->cuenta,
                     "alias"  => $f->alias
@@ -330,6 +333,148 @@ class ConciliacionController extends Controller
         }
 
         return $final;
+
+    }
+
+    /**
+     * returns a json object generate the view
+     *
+     * @param request->f = date selected
+     *
+     * @return object per bank with registers of day 
+     */ 
+
+    public function getInfo(Request $request)
+    {
+        // get the date
+        $d = explode("/",$request->f);
+
+        $date = $d[2] . "-" . $d[0] . "-" . $d[1];
+
+        // get the bank
+        $this->results = $this->getResultsperDate($date);
+
+        $final = array();
+
+        if($this->results->count() != 0)
+        {
+
+            foreach($this->bank_details as $bd => $info)
+            {
+                $bank_id        = $bd;
+                $bank_name      = 
+                $bank_accounts  = $info["info"];
+                
+                $info_final = array();
+
+                foreach($bank_accounts as $b)
+                {   
+                    $temporal = array();
+
+                    $total_registros = $total_conciliados = $total_no_conciliados = $monto_conciliado = $monto_no_conciliado =  $total_conciliados_repo = $total_no_conciliados_repo = $monto_conciliado_repo = $monto_no_conciliado_repo = 0;
+
+                    $cuenta = $b["cuenta"];
+                    $alias  = $b["cuenta_alias"];
+
+                    // sub selected registers
+                    foreach($this->results as $obj)
+                    {
+                        if(
+                            $obj->banco_id     == $bank_id &&
+                            $obj->cuenta_banco == $cuenta &&
+                            $obj->cuenta_alias == $alias
+                        )
+                        {
+                            $temporal []= array(
+                                "status" => $obj->status,
+                                "amount" => $obj->monto,
+                                "origen" => $obj->origen,
+                            );
+                        }
+                    }
+
+                    foreach($temporal as $t)
+                    {
+                        switch($t["origen"])
+                        {
+                            case 1 :
+                                // internet
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados ++;
+                                    $monto_conciliado += $t["amount"];
+                                }else{
+                                    $total_no_conciliados ++;
+                                    $monto_no_conciliado += $t["amount"];
+                                }
+                                break;
+                            case 11 :
+                                // repositorio
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_repo ++;
+                                    $monto_conciliado_repo += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_repo ++;
+                                    $monto_no_conciliado_repo += $t["amount"];
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    
+                    }
+                    $info_final[]= array(
+                        "cuenta" => $cuenta,
+                        "cuenta_alias" => $alias,
+                        "registros" => $total_conciliados + $total_no_conciliados,
+                        "registros_conciliados" => $total_conciliados,
+                        "registros_no_conciliados" => $total_no_conciliados,
+                        "monto_conciliado" => $monto_conciliado,
+                        "monto_no_conciliado" => $monto_no_conciliado,
+                        "registros_conciliados_repo" => $total_conciliados_repo,
+                        "registros_no_conciliados_repo" => $total_no_conciliados_repo,
+                        "monto_conciliado_repo" => $monto_conciliado_repo,
+                        "monto_no_conciliado_repo" => $monto_no_conciliado_repo,
+                        "registros_repo" => $total_conciliados_repo +$total_no_conciliados_repo,
+                    );
+                }
+                $final [$bd]= array(
+                    "descripcion" => $info["descripcion"],
+                    "info" => $info_final, 
+                );
+            }        
+        }else{
+            $final = 0;
+        }
+        
+        return $final;
+
+    }
+
+
+    /**
+     * returns all the registers processed in the selected date
+     *
+     * @param request->f = date selected
+     *
+     * @return all the registers in the day
+     */
+    private function getResultsperDate($date)
+    {
+        $initialDate = $date . " 00:00:00";
+        $dueDate = $date . " 23:59:59";
+
+        $between = array($initialDate,$dueDate);
+
+        try{
+            $info = $this->pr->findWhereBetween('created_at',$between);
+
+            return $info;
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:getInfo]' . $e->getMessage());
+        }
 
     }
 
