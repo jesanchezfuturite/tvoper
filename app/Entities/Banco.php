@@ -22,7 +22,7 @@ class Banco extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['id','nombre','imagen','url_logo','status','created_at','updated_at'];
+    protected $fillable = ['id','nombre','imagen','url_logo','status','conciliacion','created_at','updated_at'];
 
     protected $table = "oper_banco";
 

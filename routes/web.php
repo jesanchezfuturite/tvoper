@@ -26,7 +26,7 @@ Route::get('/conciliacion-results','ConciliacionController@results');
 Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 Route::post('/conciliacion-getinfo','ConciliacionController@getInfo');
 
-/* motor de pagos app */
+/******************* motor de pagos app **********************/
 Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
 Route::post('/dias-feriados-insert','MotorpagosController@insertDiasFeriados');
 Route::post('/dias-feriados-eliminar','MotorpagosController@deletediasferiados');
@@ -34,14 +34,14 @@ Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
 Route::get('/pago-tramite','MotorpagosController@pagotramite');
-/* Limite Referencia app */
+/********************* Limite Referencia app **************/
 Route::get('/limite-referencia','MotorpagosController@limitereferencia');
 Route::post('/limite-referencia-deleted','MotorpagosController@deleteLimiteReferencia');
 Route::post('/limite-referencia-insert','MotorpagosController@insertLimiteReferencia');
 Route::post('/limite-referencia-find','MotorpagosController@FindLimiteReferencia');
 Route::post('/limite-referencia-update','MotorpagosController@updateLimiteReferencia');
 Route::get('/limite-referencia-fin-all','MotorpagosController@limitereferenciaFindAll');
-/* Banco app */
+/******************** Banco ******************/
 Route::post('/banco-insert','MotorpagosController@insertBanco');
 Route::post('/banco-find','MotorpagosController@findBanco');
 Route::post('/cuentasbanco-find','MotorpagosController@findCuentasBanco');
@@ -51,15 +51,17 @@ Route::post('/cuentasbanco-insert','MotorpagosController@insertCuentasBanco');
 Route::post('/cuentasbanco-update','MotorpagosController@updateCuentasBanco');
 Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco');
 Route::post('/banco-status-update','MotorpagosController@DesactivaBanco');
-/*Metodo Pago*/
+Route::post('/banco-concilia-update','MotorpagosController@updateConciliaBanco');
+
+/*********************** Metodo Pago ***************/
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
 Route::get('/banco-find-all','MotorpagosController@findBancoAll');
 Route::get('/banco-find-allWhere','MotorpagosController@findBancoAllWhere');
-/*metodo tipo servicio*/
+/****************** metodo tipo servicio  ***************/
 Route::get('/tiposervicio-find-all-where','MotorpagosController@findTipoServicioAllWhere');
 Route::get('/tiposervicio-find-all','MotorpagosController@findTipoServicioAll');
 Route::post('/entidad-find-all','MotorpagosController@findEntidadAll');
-/*metodo tipo PagoTramite*/
+/********************  metodo tipo PagoTramite  ***************/
 
 Route::post('/pagotramite-find','MotorpagosController@findTipoServicio');
 Route::post('/pagotramite-insert','MotorpagosController@insertPagoTramite');
@@ -67,7 +69,7 @@ Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere
 Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
 Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
 Route::post('/pagotramite-update-status','MotorpagosController@updateStatusPagoTramite');
-/***********++ Metodo Entidad **********/
+/****************** Metodo Entidad **********/
 Route::get('/entidad','MotorpagosController@entidadView');
 Route::get('/entidad-find','MotorpagosController@findentidad');
 Route::post('/entidad-find-where','MotorpagosController@findentidadWhere');
@@ -75,7 +77,7 @@ Route::post('/entidad-insert','MotorpagosController@insertentidad');
 Route::post('/entidad-update','MotorpagosController@updateentidad');
 Route::post('/entidad-delete','MotorpagosController@deleteentidad');
 
-/****************Entidad Tramite********/
+/****************  Entidad Tramite********/
 Route::get('/entidad-tramite','MotorpagosController@entidadtramiteView');
 Route::post('/entidad-tramite-find','MotorpagosController@findtramiteEntidad');
 Route::post('/entidad-tramite-insert','MotorpagosController@insertentidadtramite');
@@ -96,7 +98,7 @@ Route::get('/tipo-servicio-find-all','MotorpagosController@findTipoServicioWhere
 Route::post('/tipo-servicio-delete','MotorpagosController@deleteTipoServicio');
 Route::post('/tipo-servicio-find-where-id','MotorpagosController@serviciosFindWhereID');
 
-/*----------Estatus Transaccion--------*/
+/****************** Estatus Transaccion ****************/
 Route::get('/status-find-all','MotorpagosController@statusFindAll');
 Route::post('/transaccion-find-referencia','MotorpagosController@transaccionesFindWhere');
 Route::post('/transaccion-find-status','MotorpagosController@transaccionesFindWhereStatus');
@@ -105,7 +107,7 @@ Route::post('/transaccion-find-status-oper','MotorpagosController@transaccionesF
 //Route::post('/transaccion-find-referencia-oper','MotorpagosController@transaccionesFindWhereReferencia_oper');
 Route::post('/transaccion-update-status-oper','MotorpagosController@updateTransaccionStatus_oper');
 
-/**-------*********----------------- PARTIDAS -----------*********-------------*/
+/****************** PARTIDAS *******************************/
 Route::get('/partidas','MotorpagosController@partidas');
 Route::get('/partidas-find-all','MotorpagosController@partidasFindAll');
 Route::post('/partidas-insert','MotorpagosController@partidasInsert');
