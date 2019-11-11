@@ -1,7 +1,6 @@
 @extends('layout.app')
 
 @section('content')
-
 <h3 class="page-title">Motor de pagos <small>Bancos</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -78,16 +77,24 @@
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue">
             <div class="portlet-title">
+                
                 <div class="caption" id="headerTabla">
-                  <div id="borraheader">  <i class="fa fa-cogs"></i>Cuentas &nbsp;<span class="label label-sm label-danger">
-                            No Found </span></div>
+                  <div id="borraheader">  <i class="fa fa-cogs"></i> Cuentas &nbsp;<span class="label label-sm label-danger">
+                    No Found </span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 </div>
-                <div class="tools" id="removeBanco">
+                <div class="caption">              
+                <div class="md-checkbox has-info" >
+                   <input type="checkbox" id="checkbox10" class="md-check" onclick="Check()" >
+                   <label for='checkbox10' style="color:white !important;"><span></span>
+                    <span class='check'style="border-color: white !important;"></span><span class='box'style="border-color: white !important;"></span>Conciliar
+                    </label>
+                </div> 
+                </div>
+                <div class="tools" id="removeBanco">                
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
                    <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick="desactivabanco()"><i class='fa fa-remove' style="color:white !important;"></i>
-                        </a>
-                    
+                    </a>
                 </div>
             </div>
             <div class="portlet-body">
@@ -218,14 +225,44 @@
 
 @section('scripts')
 <script src="assets/global/scripts/validar_img.js" type="text/javascript"></script>
+
 <script>
     jQuery(document).ready(function() {       
       itemMetodopago();
-      
     });
-   
-  function SaveBanco()
-  {
+    
+    function Check()
+    {
+        var banco=$("#items").val();
+        if(banco=="limpia")
+        {
+            Command: toastr.warning("Banco Sin Seleccionar, Requeridoo!", "Notifications")
+        }else{
+            updateStatusConciliacion();
+        }
+    }
+   function updateStatusConciliacion()
+   {
+          var idbanco= $("#items").val();    
+        $.ajax({
+           method: "POST",           
+           url: "{{ url('/banco-concilia-update') }}",
+           data: {id:idbanco,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            
+            if(response=="true")
+            {
+                Command: toastr.success("Actualizado Correctamente!", "Notifications")
+            }else{
+                Command: toastr.warning("Error al Actualizar!", "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         console.log("Error al Actualizar");  });
+    }
+    
+    function SaveBanco()
+    {
     var nombre=$("#bancoNombre").val();
     var file=$("#file").val();
     if(nombre.length==0)
@@ -305,19 +342,20 @@
     {
         var items=$("#items").val();
         var banco=$("#items option:selected").text();
-         var est;
+        var est;
+        var concilia;
         var estadoBanco="";
         var estadolabel="";
         var iconB="";
        if(items=='limpia')
        {
-        $("#borraheader").remove();
-     
-        $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas &nbsp;<span class='label label-sm label-danger'>No Found</span></div></div>");   
+        $("#borraheader").remove();     
+        $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas &nbsp;<span class='label label-sm label-danger'>No Found</span>&nbsp;&nbsp;&nbsp;&nbsp;</div></div>");   
         $("#table tbody tr").remove();
         $('#table tbody').append("<tr>"
             +"<td><span class='help-block'>No Found</span></td>"
             +"</tr>");
+        $("#checkbox10").prop("checked", false);
        }
         else
        {
@@ -330,8 +368,9 @@
         .done(function (response) {
         var Resp=$.parseJSON(response);
         $.each(Resp, function(i, item) {                
-        est=item.status;         
-            });
+        est=item.status;
+        concilia=item.conciliacion;         
+        });
         if(est==1)
         {
             estadoBanco="Activa";
@@ -343,9 +382,14 @@
             estadoBanco="Inactiva";
             estadolabel="danger";
             iconB="Activar Banco";
-
         }
-       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
+        if(concilia==1)
+        {
+            $("#checkbox10").prop("checked", true);            
+        }else{
+            $("#checkbox10").prop("checked", false);            
+        }
+       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span>&nbsp;&nbsp;&nbsp;</div></div>");
           $("#Remov").remove();
         $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i> </a>");
         })
@@ -771,7 +815,7 @@
             iconB="Activar Banco";
         } 
         $("#borraheader").remove();
-       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
+       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span>&nbsp;&nbsp;&nbsp;</div></div>");
         $("#Remov").remove();
         $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i></a>");
         

@@ -261,7 +261,8 @@ return json_encode($response);
         foreach($info as $i)
         {
             $response []= array(              
-                "status" => $i->status
+                "status" => $i->status,
+                "conciliacion"=>$i->conciliacion
             );
         }
         return json_encode($response);
@@ -2126,6 +2127,32 @@ return json_encode($response);
             }
         }
         return json_encode($response);
+
+    }
+    public function updateConciliaBanco(Request $request)
+    {
+        $id=$request->id;
+        $estatus;
+        $nuevoEstatus;
+        $response="false";
+        //try{
+            $verificaStatus=$this->bancodb->findWhere(['id'=>$id]);
+            foreach ($verificaStatus as $k) {
+                $estatus=$k->conciliacion;
+            }
+            if($estatus==1)
+            {
+                $nuevoEstatus=0;  
+            }else{
+                $nuevoEstatus=1;
+            }
+            $updateStatus=$this->bancodb->update(['conciliacion'=>$nuevoEstatus],$id);
+            $response="true";
+        /*} catch( \Exception $e ){
+            Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
+        $response = "false";
+        }*/
+       return $response;
 
     }
 
