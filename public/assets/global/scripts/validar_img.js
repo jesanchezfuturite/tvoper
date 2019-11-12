@@ -1,13 +1,23 @@
 $("#file").change(function () {
     if(validarExtension(this)) {
-      if(validarPeso(this)) {
-       
+      if(validarPeso(this)) {       
       }
       else{
         document.getElementById("file").value = "";
       }    
     }else{
         document.getElementById("file").value = "";
+    }
+    });
+$("#newfile").change(function () {
+    if(validarExtension(this)) {
+      if(validarPeso(this)) {       
+      }
+      else{
+        document.getElementById("newfile").value = "";
+      }    
+    }else{
+        document.getElementById("newfile").value = "";
     }
     }); 
   function validarExtension(datos) {

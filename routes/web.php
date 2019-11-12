@@ -52,6 +52,8 @@ Route::post('/cuentasbanco-update','MotorpagosController@updateCuentasBanco');
 Route::post('/cuentasbanco-desactiva','MotorpagosController@DesactivaCuentaBanco');
 Route::post('/banco-status-update','MotorpagosController@DesactivaBanco');
 Route::post('/banco-concilia-update','MotorpagosController@updateConciliaBanco');
+Route::post('/banco-update-imagen','MotorpagosController@updateBancoImagen');
+
 
 /*********************** Metodo Pago ***************/
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
@@ -145,6 +147,10 @@ Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransac
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@generaarchivo');
 
+/********************* Command  ************************/
+Route::get('/foo', function () {
+    Artisan::queue('CorteSendEmail:SendEmail');
+});
 /* ws estado de cuenta icv */
 
 Route::get('/icv-consulta-placa/{info}/{key}','IcvrestserviceController@icvconsultaplaca');

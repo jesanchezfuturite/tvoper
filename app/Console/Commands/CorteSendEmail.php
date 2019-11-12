@@ -247,7 +247,7 @@ class CorteSendEmail extends Command
         $existe=false;
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);          
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);          
         foreach ($conciliacion as $concilia) {          
             $existe=false;             
             $transacciones=$this->transaccionesdb->findwhere(['idTrans'=>$concilia->transaccion_id]);            
@@ -297,8 +297,7 @@ class CorteSendEmail extends Command
                             }
                         }
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
-                        $RowMedio_pago=str_pad('001',3,"0",STR_PAD_LEFT);//pendiente
-                                                 
+                        $RowMedio_pago=str_pad('001',3,"0",STR_PAD_LEFT);//pendiente                                                 
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
                         $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
                         $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
@@ -506,7 +505,7 @@ class CorteSendEmail extends Command
         $Servicios= array('3','24');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);        
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);        
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {          
             $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8); 
@@ -677,7 +676,7 @@ class CorteSendEmail extends Command
         $Servicios= array('13','14');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
         $RowFechaBanco=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
@@ -908,7 +907,7 @@ class CorteSendEmail extends Command
         $Servicios= array('15');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
         $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8); 
@@ -1008,7 +1007,7 @@ class CorteSendEmail extends Command
         $Servicios= array('23');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
         $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
@@ -1159,7 +1158,7 @@ class CorteSendEmail extends Command
         $Servicios= array('24');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
             $RowFechaCorte=str_pad(Carbon::parse($concilia->crated_at)->format('Ymd'),8);
@@ -1280,7 +1279,7 @@ class CorteSendEmail extends Command
         $Servicios= array('25');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
-        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-10-30 00:00:00'],['created_at','<','2019-10-30 23:59:59']]);         
+        $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);         
         foreach ($Servicios as $S) { 
             foreach ($conciliacion as $concilia) {
             $RowFechaCorte=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
