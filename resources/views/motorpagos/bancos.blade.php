@@ -1,7 +1,6 @@
 @extends('layout.app')
 
 @section('content')
-
 <h3 class="page-title">Motor de pagos <small>Bancos</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -41,25 +40,25 @@
             </div>
             <div class="col-md-1 col-ms-12">
                 <div class="form-group">
-                <span class="btn green fileinput-button">
+                    <span class="btn green fileinput-button">
                                 <i class="fa fa-plus"></i>&nbsp;
                                 <span>
                                 Logo... </span>
                                 <input type="file" name="file" id="file">
                                 </span>
-                </div>
-                </div>
-                 <div class="col-md-1 col-ms-12">
-                <div class="form-group">
-                <button type="button" class="btn btn-default" onclick="SaveBanco()">Agregar</button>
-              </div>
+                    </div>
             </div>
-                 <div class="col-md-3 col-ms-12">
+             <div class="col-md-1 col-ms-12">
+                    <div class="form-group">
+                    <button type="button" class="btn btn-default" onclick="SaveBanco()">Agregar</button>
+                    </div>
+            </div>
+            <div class="col-md-3 col-ms-12">
                 <div class="form-group">
                     <label >Bancos Registrados (Selecciona para ver las cuentas)</label>   
                   </div>
-                </div>
-                <div class="col-md-3 col-ms-12">
+            </div>
+            <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
                         <select class="select2me form-control"name="items" id="items" onchange="CuentasBanco()">
                            <option value="limpia">------</option>
@@ -68,8 +67,13 @@
                             @endforeach
                         </select>            
                 </div>
+            </div>
+            <div class="col-md-2 col-ms-12">
+                <div class="form-group" id="addButton">
+                    
                 </div>
-              </div> 
+            </div>
+            </div> 
             </div>
         </div>
     </div>
@@ -78,16 +82,24 @@
         <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue">
             <div class="portlet-title">
+                
                 <div class="caption" id="headerTabla">
-                  <div id="borraheader">  <i class="fa fa-cogs"></i>Cuentas &nbsp;<span class="label label-sm label-danger">
-                            No Found </span></div>
+                  <div id="borraheader">  <i class="fa fa-cogs"></i>&nbsp;Cuentas &nbsp;<span class="label label-sm label-danger">
+                    No Found </span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 </div>
-                <div class="tools" id="removeBanco">
+                <div class="caption">              
+                <div class="md-checkbox has-info" >
+                   <input type="checkbox" id="checkbox10" class="md-check" onclick="Check()" >
+                   <label for='checkbox10' style="color:white !important;"><span></span>
+                    <span class='check'style="border-color: white !important;"></span><span class='box'style="border-color: white !important;"></span>Conciliar
+                    </label>
+                </div> 
+                </div>
+                <div class="tools" id="removeBanco">                
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
                    <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick="desactivabanco()"><i class='fa fa-remove' style="color:white !important;"></i>
-                        </a>
-                    
+                    </a>
                 </div>
             </div>
             <div class="portlet-body">
@@ -214,18 +226,146 @@
         </div>
     </div>
 </div>
+<div id="ModalImagen" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Cambiar Logo</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                <span class="help-block">&nbsp;</span>                    
+                    <div class="col-md-12">                        
+                        <img id="img" class="img-responsive center-block" alt="Imagen">                        
+                    </div>    
+                <span class="help-block">&nbsp;</span>
+                <span class="help-block">&nbsp;</span>
+                <div class="col-md-12">
+                    <span class="btn green fileinput-button">
+                        <i class="fa fa-plus"></i>
+                    <span>
+                    Cargar Imagen...</span>
+                    <input type="file" name="file" id="newfile" onchange="mostrarImagen()">
+                    </span>
+                </div>  
+                </div>             
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" data-dismiss="modal" class="btn default" onclick="quitImg()">Cancelar</button> 
+                <button type="button" data-dismiss="modal" class="btn green" onclick="updateBancoImg()">Confirmar</button>       
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script src="assets/global/scripts/validar_img.js" type="text/javascript"></script>
+
 <script>
     jQuery(document).ready(function() {       
       itemMetodopago();
-      
+      //FormFileUpload.init();
     });
-   
-  function SaveBanco()
-  {
+    function quitImg()
+    {
+        document.getElementById("img").src = "";
+         document.getElementById("newfile").value = "";        
+    }
+    function updateBancoImg()
+    {
+        var img = $("#newfile").val();
+    if(img.length==0)
+    {
+         Command: toastr.warning("Imagen Sin Seleccionar, Requerido!", "Notifications")
+
+    }else{
+        var items=$("#items").val();
+        var imagenV = $("#newfile")[0].files[0];                  
+        var formdata = new FormData();
+        formdata.append("file", imagenV);      
+        formdata.append("id", items);
+        formdata.append("_token",'{{ csrf_token() }}');    
+       $.ajax({
+           method: "POST",
+            contentType: false,
+            processData: false,
+           url: "{{ url('/banco-update-imagen') }}",
+           data: formdata  })
+        .done(function (response) {        
+        if(response=="true")
+        {
+         Command: toastr.success("Imagen Actualizada!", "Notifications")
+        }else{
+         Command: toastr.warning("No Success", "Notifications")
+        }
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
+    }
+    function findImagen()
+    {
+        var items=$("#items").val();       
+        $.ajax({
+           method: "POST",           
+           url: "{{ url('/banco-find') }}",
+           data: {id:items,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) {       
+        document.getElementById("img").src = "data:image/png;base64, "+item.imagen+"";        
+        });
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        Cuentas(items);   
+    }
+    function mostrarImagen(){
+        var archivo = document.getElementById("newfile").files[0];
+        var reader = new FileReader();
+        if (file) {
+        reader.readAsDataURL(archivo );
+        reader.onloadend = function () {
+        document.getElementById("img").src = reader.result;
+        }
+        }
+    }
+    function Check()
+    {
+        var banco=$("#items").val();
+        if(banco=="limpia")
+        {
+            Command: toastr.warning("Banco Sin Seleccionar, Requeridoo!", "Notifications")
+        }else{
+            updateStatusConciliacion();
+        }
+    }
+   function updateStatusConciliacion()
+   {
+          var idbanco= $("#items").val();    
+        $.ajax({
+           method: "POST",           
+           url: "{{ url('/banco-concilia-update') }}",
+           data: {id:idbanco,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            
+            if(response=="true")
+            {
+                Command: toastr.success("Actualizado Correctamente!", "Notifications")
+            }else{
+                Command: toastr.warning("Error al Actualizar!", "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         console.log("Error al Actualizar");  });
+    }
+    
+    function SaveBanco()
+    {
     var nombre=$("#bancoNombre").val();
     var file=$("#file").val();
     if(nombre.length==0)
@@ -305,23 +445,27 @@
     {
         var items=$("#items").val();
         var banco=$("#items option:selected").text();
-         var est;
+        var est;
+        var concilia;
         var estadoBanco="";
         var estadolabel="";
         var iconB="";
        if(items=='limpia')
        {
-        $("#borraheader").remove();
-     
-        $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas &nbsp;<span class='label label-sm label-danger'>No Found</span></div></div>");   
+        $("#borraheader").remove();     
+        $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>&nbsp;Cuentas &nbsp;<span class='label label-sm label-danger'>No Found</span>&nbsp;&nbsp;&nbsp;&nbsp;</div></div>");   
         $("#table tbody tr").remove();
         $('#table tbody').append("<tr>"
             +"<td><span class='help-block'>No Found</span></td>"
             +"</tr>");
+        $("#checkbox10").prop("checked", false);
+        $("#addButton button").remove();
+        document.getElementById("img").src = "";
        }
         else
        {
-       
+        $("#addButton button").remove();
+        $("#addButton").append(" <button class='btn green' data-toggle='modal' href='#ModalImagen' onclick='findImagen()' >Cambiar Logo...</button>");
         $("#borraheader").remove();
         $.ajax({
            method: "POST",           
@@ -330,8 +474,11 @@
         .done(function (response) {
         var Resp=$.parseJSON(response);
         $.each(Resp, function(i, item) {                
-        est=item.status;         
-            });
+        est=item.status;
+        concilia=item.conciliacion;
+        document.getElementById("img").src = "data:image/png;base64, "+item.imagen+"";        
+
+        });
         if(est==1)
         {
             estadoBanco="Activa";
@@ -343,9 +490,14 @@
             estadoBanco="Inactiva";
             estadolabel="danger";
             iconB="Activar Banco";
-
         }
-       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
+        if(concilia==1)
+        {
+            $("#checkbox10").prop("checked", true);            
+        }else{
+            $("#checkbox10").prop("checked", false);            
+        }
+       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>&nbsp;Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span>&nbsp;&nbsp;&nbsp;</div></div>");
           $("#Remov").remove();
         $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i> </a>");
         })
@@ -771,7 +923,7 @@
             iconB="Activar Banco";
         } 
         $("#borraheader").remove();
-       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span></div></div>");
+       $("#headerTabla").append(" <div id='borraheader'><i class='fa fa-cogs'></i>&nbsp;Cuentas "+banco+"&nbsp;<span class='label label-sm label-"+estadolabel+"'>"+estadoBanco+"</span>&nbsp;&nbsp;&nbsp;</div></div>");
         $("#Remov").remove();
         $("#removeBanco").append("<a id='Remov' href='javascript:;' data-original-title='' title='"+iconB+"' onclick='desactivabanco()'><i class='fa fa-remove' style='color:white !important;'></i></a>");
         

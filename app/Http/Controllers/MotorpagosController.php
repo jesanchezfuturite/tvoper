@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use File;
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 use App\Repositories\LimitereferenciaRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
@@ -222,9 +223,6 @@ return json_encode($response);
         // get the filename 
         $fileName = $uploadedFile->getClientOriginalName(); 
          $imageData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
-        // $string = implode(array_map("string", $imageData));
-        // check if is a valid file
-       // save the file in the storage folder
         try
             { 
                 
@@ -252,6 +250,33 @@ return json_encode($response);
         return json_encode($responseinfo);
 
     }
+    public function updateBancoImagen(Request $request)
+    {
+       
+        // identify the name of the file 
+        $uploadedFile = $request->file('file');
+        $id=$request->id;
+        $fileName = $uploadedFile->getClientOriginalName(); 
+         $imageData = base64_encode(file_get_contents($uploadedFile->getRealPath()));
+        $response="false";
+        try
+        {
+               $buscaimg=$this->bancodb->findWhere(['id'=>$id]);
+               foreach ($buscaimg as $k) {
+                   File::delete(storage_path('app/'.$k->url_logo));                   
+                   $responsed= $uploadedFile->storeAs('Image_Banco/',$fileName);
+               }
+                $info2 = $this->bancodb->update(['imagen'=>$imageData,'url_logo' => 'Image_Banco/'.$fileName],$id);
+                $response="true";              
+        
+        }catch( \Exception $e ){
+                dd($e->getMessage());
+                Log::info2('Error Method updateBancoImagen: '.$e->getMessage());
+                $response="false";
+        }
+        return $response;
+
+    }
      public function findBanco(Request $request)
     {
 
@@ -261,7 +286,9 @@ return json_encode($response);
         foreach($info as $i)
         {
             $response []= array(              
-                "status" => $i->status
+                "status" => $i->status,
+                "conciliacion"=>$i->conciliacion,
+                "imagen"=>$i->imagen
             );
         }
         return json_encode($response);
@@ -2126,6 +2153,32 @@ return json_encode($response);
             }
         }
         return json_encode($response);
+
+    }
+    public function updateConciliaBanco(Request $request)
+    {
+        $id=$request->id;
+        $estatus;
+        $nuevoEstatus;
+        $response="false";
+        //try{
+            $verificaStatus=$this->bancodb->findWhere(['id'=>$id]);
+            foreach ($verificaStatus as $k) {
+                $estatus=$k->conciliacion;
+            }
+            if($estatus==1)
+            {
+                $nuevoEstatus=0;  
+            }else{
+                $nuevoEstatus=1;
+            }
+            $updateStatus=$this->bancodb->update(['conciliacion'=>$nuevoEstatus],$id);
+            $response="true";
+        /*} catch( \Exception $e ){
+            Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
+        $response = "false";
+        }*/
+       return $response;
 
     }
 
