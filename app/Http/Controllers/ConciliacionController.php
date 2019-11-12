@@ -14,6 +14,9 @@ use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
 
+/* estos se agregan para obtener el detalle de las anomalias*/
+use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
+
 class ConciliacionController extends Controller
 {
     //
@@ -23,6 +26,8 @@ class ConciliacionController extends Controller
 
     protected $cuentasbanco;
 
+    protected $egobTrans;
+
     protected $bank_details;
 
     protected $results;
@@ -31,8 +36,8 @@ class ConciliacionController extends Controller
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
         BancoRepositoryEloquent $banco,
-        CuentasbancoRepositoryEloquent $cuentasbanco
-
+        CuentasbancoRepositoryEloquent $cuentasbanco,
+        EgobiernotransaccionesRepositoryEloquent $egobTrans
     )
     {
     	$this->middleware('auth');
@@ -44,6 +49,8 @@ class ConciliacionController extends Controller
         $this->banco = $banco;
 
         $this->cuentasbanco = $cuentasbanco;
+
+        $this->egobTrans = $egobTrans; 
 
         $this->loadBankDetails();
     }
@@ -362,7 +369,6 @@ class ConciliacionController extends Controller
             foreach($this->bank_details as $bd => $info)
             {
                 $bank_id        = $bd;
-                $bank_name      = 
                 $bank_accounts  = $info["info"];
                 
                 $info_final = array();
@@ -430,12 +436,12 @@ class ConciliacionController extends Controller
                         "registros" => $total_conciliados + $total_no_conciliados,
                         "registros_conciliados" => $total_conciliados,
                         "registros_no_conciliados" => $total_no_conciliados,
-                        "monto_conciliado" => $monto_conciliado,
-                        "monto_no_conciliado" => $monto_no_conciliado,
+                        "monto_conciliado" => number_format($monto_conciliado,2),
+                        "monto_no_conciliado" => number_format($monto_no_conciliado,2),
                         "registros_conciliados_repo" => $total_conciliados_repo,
                         "registros_no_conciliados_repo" => $total_no_conciliados_repo,
-                        "monto_conciliado_repo" => $monto_conciliado_repo,
-                        "monto_no_conciliado_repo" => $monto_no_conciliado_repo,
+                        "monto_conciliado_repo" => number_format($monto_conciliado_repo,2),
+                        "monto_no_conciliado_repo" => number_format($monto_no_conciliado_repo,2),
                         "registros_repo" => $total_conciliados_repo +$total_no_conciliados_repo,
                     );
                 }
@@ -476,6 +482,104 @@ class ConciliacionController extends Controller
             Log::info('[Conciliacion:getInfo]' . $e->getMessage());
         }
 
+    }
+
+    /**
+     * returns a json object generate the view ... finds info of the registers in status <> to p
+     *
+     * @param request->f = date selected, account, alias 
+     *
+     * @return object per bank with registers of day 
+     */ 
+
+    public function getAnomalia(Request $request)
+    {
+        // get parameters
+
+        $date = explode("/",$request->f);
+
+        $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00";
+
+        $date_to = $date[2] . "-" . $date[0] . "-" . $date[1] . " 23:59:59";
+
+        $alias = (string)$request->alias;
+
+        $cuenta = (string)$request->cuenta;
+
+        $fuente = $request->fuente;
+
+        try{
+            $data = $this->pr->findWhere(
+                [
+                    'cuenta_banco'=>$cuenta,
+                    'cuenta_alias'=>$alias,
+                    ['created_at','>', $date_from],
+                    ['created_at','<', $date_to],
+                    ['status','<>','p'],
+                ]
+            );
+
+        }catch( \Exception $e){
+           Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
+        }
+
+        
+        if($data->count() > 0)
+        {
+            $folio_id = array();
+            // checar si el movimiento esta en repositorio o en internet
+            if($fuente == 1)
+            {
+                foreach($data as $d)
+                {
+                    try
+                    {
+
+                        $info = $this->egobTrans->findWhere( ["idTrans" => $d->transaccion_id] );
+
+                        if($info->count())
+                        {
+                            foreach($info as $i)
+                            {
+                                $folio_id []= array(
+                                    "internet"      => $i, 
+                                    "conciliacion"  => $d
+                                );
+                            }
+                        }else{
+                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' . $e->getMessage());     
+                            Log::info('... Transaccion ID >' . $d->transaccion_id);
+                            Log::info('... ID' . $d->id);
+                            $folio_id []= array(
+                                    "conciliacion"  => $d
+                                );
+                        }
+
+                    }catch( \Exception $e ){
+                    Log::info('[Conciliacion:getAnomalia] ERROR buscando informacion en transacciones de internet ... ' . $e->getMessage());     
+                    Log::info('... Transaccion ID >' . $d->transaccion_id);
+                    Log::info('... ID' . $d->id);
+                    }
+                }    
+                $results = array(
+                    "response"  => 1,
+                    "data"      => $folio_id
+                );
+            }else{
+                // son todos los movimientos en el repositorio
+                false;
+            }
+
+              
+
+        }else{
+            $results = array(
+                "response"  => 0,
+                "data"      => "No existen errores"
+            );
+        }   
+
+        return $results;
     }
 
 }

@@ -56,8 +56,8 @@
 
             <div class="tab-content" id="c_tabs">
                 <div class="tab-pane active" id="tab_0">
-                    <div class="portlet-body"> 
-                        <table class="table table-hover">
+                    <div class="portlet-body" style="overflow-x: auto; white-space: nowrap;"> 
+                        <table id="dtHorizontal" class="table table-striped table-bordered table-sm" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th></th> 
@@ -157,16 +157,16 @@
                 $.each(accounts,function(j,cuenta){
                     content += '<tr>';
                     content += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
-                    content += '<td>'+cuenta.registros+'</td>';
-                    content += '<td>'+cuenta.registros_conciliados+'</td>';
-                    content += '<td>'+cuenta.registros_no_conciliados+'</td>';
-                    content += '<td>'+cuenta.monto_conciliado+'</td>';
-                    content += '<td>'+cuenta.monto_no_conciliado+'</td>';
-                    content += '<td>'+cuenta.registros_repo+'</td>';
-                    content += '<td>'+cuenta.registros_conciliados_repo+'</td>';
-                    content += '<td>'+cuenta.registros_no_conciliados_repo+'</td>';
-                    content += '<td>'+cuenta.monto_conciliado_repo+'</td>';
-                    content += '<td>'+cuenta.monto_no_conciliado_repo+'</td>';
+                    content += '<td align="right">'+cuenta.registros+'</td>';
+                    content += '<td align="right">'+cuenta.registros_conciliados+'</td>';
+                    content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
+                    content += '<td align="right">'+cuenta.monto_conciliado+'</td>';
+                    content += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
+                    content += '<td align="right">'+cuenta.registros_repo+'</td>';
+                    content += '<td align="right">'+cuenta.registros_conciliados_repo+'</td>';
+                    content += '<td align="right"><a href="#" id="noconcrepo">'+cuenta.registros_no_conciliados_repo+'</a></td>';
+                    content += '<td align="right">'+cuenta.monto_conciliado_repo+'</td>';
+                    content += '<td align="right">'+cuenta.monto_no_conciliado_repo+'</td>';
                     content += '</tr>';
                 });
 
@@ -185,5 +185,32 @@
 
 
     });
+
+    /* buscar el detalle de las transacciones de internet */ 
+    function noconc(alias,cuenta,fuente)
+    {
+        // obtener la fecha 
+        var fecha = $("#fecha").val();
+
+        $.ajax({
+            method: "post",
+            beforeSend:  function(){
+                
+                $('#result-query').hide();
+                $('#imageloading').html('Procesando ...').show();
+            },
+            url: "{{ url('/conciliacion-detalle-anomalia') }}",
+            data: { f: fecha, fuente: fuente, alias: alias, cuenta: cuenta, _token: '{{ csrf_token() }}' }
+        })
+        .done(function(data){
+
+            console.log(data);
+
+        });
+
+    }
+
+
+
 </script>
 @endsection
