@@ -56,8 +56,8 @@
 
             <div class="tab-content" id="c_tabs">
                 <div class="tab-pane active" id="tab_0">
-                    <div class="portlet-body"> 
-                        <table class="table table-hover">
+                    <div class="portlet-body" style="overflow-x: auto; white-space: nowrap;"> 
+                        <table id="dtHorizontal" class="table table-striped table-bordered table-sm" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th></th> 
@@ -101,6 +101,43 @@
                 <div class="tab-pane" id="tab_1">
                 
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Desactivar/Activar Registro?<br>
+             <br> ¡Afectara a todos los <h style="color: #cb5a5e;">Tramites</h> relacionados con la <h style="color: #cb5a5e;">Cuenta Banco</h>!
+                </p>
+                 <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
+                 <input hidden="true" type="text" name="idstatus" id="idstatus" class="idstatus">
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="desactiveCuenta()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalinfo" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="width: 90%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title" id="titulo_modal"></h4>
+            </div>
+            <div class="modal-body" id="detalleIncidencia">
+                             
             </div>
         </div>
     </div>
@@ -157,16 +194,16 @@
                 $.each(accounts,function(j,cuenta){
                     content += '<tr>';
                     content += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
-                    content += '<td>'+cuenta.registros+'</td>';
-                    content += '<td>'+cuenta.registros_conciliados+'</td>';
-                    content += '<td>'+cuenta.registros_no_conciliados+'</td>';
-                    content += '<td>'+cuenta.monto_conciliado+'</td>';
-                    content += '<td>'+cuenta.monto_no_conciliado+'</td>';
-                    content += '<td>'+cuenta.registros_repo+'</td>';
-                    content += '<td>'+cuenta.registros_conciliados_repo+'</td>';
-                    content += '<td>'+cuenta.registros_no_conciliados_repo+'</td>';
-                    content += '<td>'+cuenta.monto_conciliado_repo+'</td>';
-                    content += '<td>'+cuenta.monto_no_conciliado_repo+'</td>';
+                    content += '<td align="right">'+cuenta.registros+'</td>';
+                    content += '<td align="right">'+cuenta.registros_conciliados+'</td>';
+                    content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
+                    content += '<td align="right">'+cuenta.monto_conciliado+'</td>';
+                    content += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
+                    content += '<td align="right">'+cuenta.registros_repo+'</td>';
+                    content += '<td align="right">'+cuenta.registros_conciliados_repo+'</td>';
+                    content += '<td align="right"><a href="#" id="noconcrepo">'+cuenta.registros_no_conciliados_repo+'</a></td>';
+                    content += '<td align="right">'+cuenta.monto_conciliado_repo+'</td>';
+                    content += '<td align="right">'+cuenta.monto_no_conciliado_repo+'</td>';
                     content += '</tr>';
                 });
 
@@ -185,5 +222,91 @@
 
 
     });
+
+    /* buscar el detalle de las transacciones de internet */ 
+    function noconc(alias,cuenta,fuente)
+    {
+        // obtener la fecha 
+        var fecha = $("#fecha").val();
+
+        $.ajax({
+            method: "post",
+            beforeSend:  function(){
+                
+                $('#result-query').hide();
+                $('#imageloading').html('Procesando ...').show();
+            },
+            url: "{{ url('/conciliacion-detalle-anomalia') }}",
+            data: { f: fecha, fuente: fuente, alias: alias, cuenta: cuenta, _token: '{{ csrf_token() }}' }
+        })
+        .done(function(data){
+
+            var titleModal = 'Detalles de incidencia en la cuenta ('+alias+') ' + cuenta;
+
+            if(data.response == 1)
+            {
+                $("#detalleIncidencia").empty();
+                var info = data.data;
+
+                var tabla = '<div class="portlet-body"><table class="table table-hover"><thead><tr><th>Índice de transacción</th><th>Referencia</th><th>Monto en archivo</th><th>Monto total</th><th>Monto de mensajeria</th><th>Archivo fuente</th><th>Fecha de carga para conciliar</th><th>Estatus</th></tr></thead><tbody>';
+                    
+                $.each(info, function(i,d){
+                    var internet = d.internet;
+                    var repositorio = d.repositorio;
+
+                    var monto = repositorio.monto;
+                    var tt = internet.TotalTramite;
+                    var cm = internet.CostoMensajeria;
+
+                    if(monto == ''){
+                        monto = 0.00;
+                    }
+
+                    if(tt == ''){
+                        tt = 0.00;
+                    }
+
+                    if(cm == null){
+                        cm = 0.00;
+                    }
+
+                    console.log(internet);
+                    tabla += '<tr>';
+                    tabla += '<td>'+internet.idTrans+'</td>'
+                    tabla += '<td>'+repositorio.referencia+'</td>'
+                    tabla += '<td>'+monto+'</td>'
+                    tabla += '<td>'+tt+'</td>'
+                    tabla += '<td>'+cm+'</td>'
+                    tabla += '<td>'+repositorio.filename+'</td>'
+                    tabla += '<td>'+repositorio.created_at+'</td>'
+                    tabla += '<td>'+repositorio.status+'</td>'
+                    tabla += '</tr>';
+
+                });
+
+                tabla += '</tbody></table></div></div>';
+                $("#detalleIncidencia").empty();
+                $("#detalleIncidencia").append(tabla);
+
+            }else{
+                $("#detalleIncidencia").empty();
+                var mensaje = '<div class="alert alert-info alert-dismissable">';
+                mensaje += '<strong>Info:</strong> Esta cuenta no presenta incidendencias.</div>'
+                $("#detalleIncidencia").append(mensaje);
+            }
+
+            // open modalbox
+
+            $('#titulo_modal').empty();
+            $('#titulo_modal').append(titleModal);
+
+            $('#modalinfo').modal('show');
+
+        });
+
+    }
+
+
+
 </script>
 @endsection
