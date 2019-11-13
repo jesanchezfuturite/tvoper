@@ -543,7 +543,7 @@ class ConciliacionController extends Controller
                             {
                                 $folio_id []= array(
                                     "internet"      => $i, 
-                                    "conciliacion"  => $d
+                                    "repositorio"  => $d
                                 );
                             }
                         }else{
