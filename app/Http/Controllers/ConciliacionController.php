@@ -65,14 +65,8 @@ class ConciliacionController extends Controller
     public function index()
     {
 
-        // consultar la tabla de process para revisar si existen registros
-
-
-        // generar el arreglo para enviar a la vista
-        $report = $this->generateReport();
-
     	// valid 1 is init status 
-    	return view('conciliacion/loadFile', [ "report" => $report, "valid" => 1 ]);
+    	return view('conciliacion/loadFile', [ "valid" => 1 ]);
     }
 
 
@@ -547,7 +541,7 @@ class ConciliacionController extends Controller
                                 );
                             }
                         }else{
-                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' . $e->getMessage());     
+                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' );     
                             Log::info('... Transaccion ID >' . $d->transaccion_id);
                             Log::info('... ID' . $d->id);
                             $folio_id []= array(
