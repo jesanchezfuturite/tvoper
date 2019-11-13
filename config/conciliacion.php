@@ -113,7 +113,7 @@ return array (
 					"month"			=> [119,2],
 					"day" 			=> [122,2],
 					"year"			=> [114,4],
-					"amount"		=> [89,16],
+					"amount"		=> [87,18],
 					"id"			=> [39,8], /* 20 posiciones a partir de 0 */ 
 					"referencia"	=> [27,30],
 					"origen"		=> [27,2],

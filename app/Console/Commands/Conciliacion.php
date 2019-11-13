@@ -131,32 +131,32 @@ class Conciliacion extends Command
                   
                   Log::info('[Conciliacion:ProcessFiles] - Alias ERROR ' . $filename );
 
-                  exit();  
-                }
+                  
+                }else{
+                    unset($alias_array);
 
-                unset($alias_array);
-
-                // process the file per defined method
-                $method = $config["config"]["method"];
-                
-                switch($method)
-                {
-                    case 1: // plain text file
-                        $response = $this->processFilePositions($av,$config);
-                        break;
-                    case 2: // american express
-                        $response = $this->processAMEX($av,$config);
-                        break;
-                    case 3: // american express
-                        $response = $this->processBanamex($av,$config);
-                        break;
-                    case 4: // banorte Cheque
-                        $response = $this->processBanorteCheque($av,$config);
-                        break;
-                    default:
-                        // throws an error method undefined
-                        Log::info('[Conciliacion:ProcessFiles] - ERROR No existe un metodo para procesar el archivo ingresado, por favor verificar la configuracion de la conciliación');
-                        break; 
+                    // process the file per defined method
+                    $method = $config["config"]["method"];
+                    
+                    switch($method)
+                    {
+                        case 1: // plain text file
+                            $response = $this->processFilePositions($av,$config);
+                            break;
+                        case 2: // american express
+                            $response = $this->processAMEX($av,$config);
+                            break;
+                        case 3: // american express
+                            $response = $this->processBanamex($av,$config);
+                            break;
+                        case 4: // banorte Cheque
+                            $response = $this->processBanorteCheque($av,$config);
+                            break;
+                        default:
+                            // throws an error method undefined
+                            Log::info('[Conciliacion:ProcessFiles] - ERROR No existe un metodo para procesar el archivo ingresado, por favor verificar la configuracion de la conciliación');
+                            break; 
+                    }    
                 }
 
             }else{
@@ -238,9 +238,20 @@ class Conciliacion extends Command
                         $referencia = "";
                         $monto = substr($line, $amountStart, $amountLength);
                     }else{
+                        
                         $origen     = substr($line, $origenStart, $origenLength);
                         $referencia = substr($line, $referenciaStart, $referenciaLength);
-                        $monto = (int)substr($line, $amountStart, $amountLength) / 100;
+                        
+                        // revisar si es de bancomer 
+                        $bankName = explode("_",$filename);
+
+                        if(strcmp($bankName[0],"toProcess/bancomerV") == 0){
+                            $monto = substr($line, $amountStart, $amountLength);    
+                        }else{
+                            $monto = substr($line, $amountStart, $amountLength) / 100;    
+                        }
+
+                        
                     }
 
                     $data =

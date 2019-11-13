@@ -25,6 +25,7 @@ Route::get('/conciliacion-carga-archivo','ConciliacionController@index');
 Route::get('/conciliacion-results','ConciliacionController@results');
 Route::post('/conciliacion-uploadfile','ConciliacionController@uploadFile');
 Route::post('/conciliacion-getinfo','ConciliacionController@getInfo');
+Route::post('/conciliacion-detalle-anomalia','ConciliacionController@getAnomalia');
 
 /******************* motor de pagos app **********************/
 Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
