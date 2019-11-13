@@ -308,17 +308,23 @@
     }
     function consultaRangoFechasEgobOper()
     {
-       consultaRangoFechasEgob();
-       consultaRangoFechasOper();
+       fechaIn=$("#fechainicio").val();
+        fechaF=$("#fechafin").val();
+        var rfc=$("#rfc").val();
+        if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications")            
+        }else{
+            consultaRangoFechasEgob();
+            consultaRangoFechasOper();          
+        }
     }
     function consultaRangoFechasEgob()
     {
         fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
-        if(fechaIn.length<1){
-            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
-        }else if(fechaF.length<1){
-            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        var rfc=$("#rfc").val();
+        if(fechaIn.length<1 && fechaF.length<1 && rfc.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications") 
         }else{
             consultaEgob(fechaIn,fechaF);          
         }
@@ -327,10 +333,9 @@
     {
         fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
-        if(fechaIn.length<1){
-            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
-        }else if(fechaF.length<1){
-            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        var rfc=$("#rfc").val();
+        if(fechaIn.length<1 && rfc.length<1 &&fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications") 
         }else{
             consultaOper(fechaIn,fechaF);           
         }

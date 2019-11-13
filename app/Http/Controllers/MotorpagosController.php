@@ -2084,7 +2084,12 @@ return json_encode($response);
         {
          $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);            
         }else{
-         $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+            if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
+                {
+                    $transaccion=$this->tramitedb->consultaRFC($rfc);
+                }else{
+                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+            }
         }          
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
