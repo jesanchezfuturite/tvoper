@@ -569,9 +569,6 @@ class ConciliacionController extends Controller
                 // son todos los movimientos en el repositorio
                 false;
             }
-
-              
-
         }else{
             $results = array(
                 "response"  => 0,

@@ -152,6 +152,7 @@
     jQuery(document).ready(function() {   
         $('#bancos_tabs').hide();    
         ComponentsPickers.init();
+
     }); 
 
     $("#busqueda").click(function(){
@@ -274,9 +275,9 @@
                     tabla += '<tr>';
                     tabla += '<td>'+internet.idTrans+'</td>'
                     tabla += '<td>'+repositorio.referencia+'</td>'
-                    tabla += '<td>'+monto+'</td>'
-                    tabla += '<td>'+tt+'</td>'
-                    tabla += '<td>'+cm+'</td>'
+                    tabla += '<td class="moneyformat">'+monto+'</td>'
+                    tabla += '<td class="moneyformat">'+tt+'</td>'
+                    tabla += '<td class="moneyformat">'+cm+'</td>'
                     tabla += '<td>'+repositorio.filename+'</td>'
                     tabla += '<td>'+repositorio.created_at+'</td>'
                     tabla += '<td>'+repositorio.status+'</td>'
@@ -287,6 +288,8 @@
                 tabla += '</tbody></table></div></div>';
                 $("#detalleIncidencia").empty();
                 $("#detalleIncidencia").append(tabla);
+
+                $('.moneyformat').formatCurrency();
 
             }else{
                 $("#detalleIncidencia").empty();
