@@ -462,13 +462,16 @@ class ConciliacionController extends Controller
      */
     private function getResultsperDate($date)
     {
+        /* commented to use with fecha_ejecucion
         $initialDate = $date . " 00:00:00";
         $dueDate = $date . " 23:59:59";
 
         $between = array($initialDate,$dueDate);
-
+        */
         try{
-            $info = $this->pr->findWhereBetween('created_at',$between);
+
+            //$info = $this->pr->findWhereBetween('created_at',$between);
+            $info = $this->pr->findWhere( [ 'fecha_ejecucion' => $date ] );
 
             return $info;
                
@@ -492,9 +495,11 @@ class ConciliacionController extends Controller
 
         $date = explode("/",$request->f);
 
-        $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00";
+        $f = $date[2] . "-" . $date[0] . "-" . $date[1];
 
-        $date_to = $date[2] . "-" . $date[0] . "-" . $date[1] . " 23:59:59";
+       // $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00"; commented to use fecha_ejecucion
+
+       // $date_to = $date[2] . "-" . $date[0] . "-" . $date[1] . " 23:59:59";
 
         $alias = (string)$request->alias;
 
@@ -505,10 +510,11 @@ class ConciliacionController extends Controller
         try{
             $data = $this->pr->findWhere(
                 [
-                    'cuenta_banco'=>$cuenta,
-                    'cuenta_alias'=>$alias,
-                    ['created_at','>', $date_from],
-                    ['created_at','<', $date_to],
+                    'cuenta_banco' => $cuenta,
+                    'cuenta_alias' => $alias,
+                    // ['created_at','>', $date_from],
+                    // ['created_at','<', $date_to],
+                    'fecha_ejecucion' => $f,
                     ['status','<>','p'],
                 ]
             );
