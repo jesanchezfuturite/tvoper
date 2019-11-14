@@ -1679,6 +1679,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <script type="text/javascript" src="assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
 <script src="assets/admin/pages/scripts/table-advanced.js"></script>
+<script type="text/javascript" src="assets/global/scripts/jquery.formatCurrency-1.4.0.js"></script>
 
 <!-- END TABLE SCRIPT -->
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
@@ -1686,11 +1687,11 @@ License: You must have a valid license purchased only from themeforest(the above
 <script>
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components
-Layout.init(); // init current layout
-QuickSidebar.init(); // init quick sidebar
-Demo.init();
+		Layout.init(); // init current layout
+		QuickSidebar.init(); // init quick sidebar
+		Demo.init();
 
- UIToastr.init();// init demo features
+ 		UIToastr.init();// init demo features
       });
    </script>
    @yield('scripts')
