@@ -46,6 +46,12 @@ class Conciliacion extends Command
 
     protected $banco;
 
+    protected $bankName;
+
+    protected $bankAlias;
+
+    protected $executedDate;
+
     protected $cuentasbanco;
 
     protected $bank_details;
@@ -112,18 +118,20 @@ class Conciliacion extends Command
         {
 
             $filename = explode("/",$av)[1];
-        
+
             $config = $this->checkValidFilename($filename);
 
             if($config)
             {
+                $temporal = explode('_', $filename);
 
-                /*
-                modificar para obtener el alias de la cuenta en el nombre de archivo
-                */
-                $alias_array = explode('_',$filename);
+                $this->bankName = $temporal[0];
+
+                $this->bankAlias = $temporal[1];
+
+                $this->executedDate = substr($temporal[2],0,4) . "-" . substr($temporal[2],4,2) . "-" . substr($temporal[2],6,2);
             
-                $this->info_cuenta = $this->obtenerDetallesCuenta($alias_array[1]);
+                $this->info_cuenta = $this->obtenerDetallesCuenta($this->bankAlias);
 
                 if($this->info_cuenta == false)
                 {
@@ -236,9 +244,6 @@ class Conciliacion extends Command
                 {
                     $line   = fgets($fo);
 
-                    // revisar si es de bancomer 
-                    $bankName = explode("_",$filename);
-
                     if(strlen($line) > 50)
                     {
                         if($origenStart == 0 && $origenLength == 0 && $referenciaStart == 0 && $referenciaLength == 0)
@@ -250,11 +255,8 @@ class Conciliacion extends Command
                             
                             $origen     = substr($line, $origenStart, $origenLength);
                             $referencia = substr($line, $referenciaStart, $referenciaLength);
-                            
-                            // revisar si es de bancomer 
-                            $bankName = explode("_",$filename);
 
-                            if(strcmp($bankName[0],"toProcess/bancomerV") == 0){
+                            if(strcmp($this->bankName,"bancomerV") == 0){
                                 $monto = substr($line, $amountStart, $amountLength);    
                             }else{
                                 $monto = substr($line, $amountStart, $amountLength) / 100;    
@@ -265,18 +267,19 @@ class Conciliacion extends Command
 
                         $data =
                             [
-                                "day"            => substr($line, $dayStart, $dayLength),
-                                "month"          => substr($line, $monthStart, $monthLength),
-                                "year"           => substr($line, $yearStart, $yearLength),
-                                "monto"          => (double)$monto,
-                                "transaccion_id" => substr($line, $idStart, $idLength),
-                                "status"         => "np",
-                                "filename"       => $filename,
-                                "origen"         => $origen,
-                                "referencia"     => $referencia,
-                                "cuenta_banco"   => $this->info_cuenta["cuenta"],
-                                "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
-                                "banco_id"   => $this->info_cuenta["banco_id"],
+                                "day"               => substr($line, $dayStart, $dayLength),
+                                "month"             => substr($line, $monthStart, $monthLength),
+                                "year"              => substr($line, $yearStart, $yearLength),
+                                "monto"             => (double)$monto,
+                                "transaccion_id"    => substr($line, $idStart, $idLength),
+                                "status"            => "np",
+                                "filename"          => $filename,
+                                "origen"            => $origen,
+                                "referencia"        => $referencia,
+                                "cuenta_banco"      => $this->info_cuenta["cuenta"],
+                                "cuenta_alias"      => $this->info_cuenta["cuenta_alias"],
+                                "banco_id"          => $this->info_cuenta["banco_id"],
+                                "fecha_ejecucion"   => $this->executedDate,
                             ];
 
                         try{
@@ -314,6 +317,7 @@ class Conciliacion extends Command
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
+                                "fecha_ejecucion"   => $this->executedDate,
                             ];
 
                         try{
@@ -399,6 +403,7 @@ class Conciliacion extends Command
                             "cuenta_banco"   => $this->info_cuenta["cuenta"],
                             "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                             "banco_id"   => $this->info_cuenta["banco_id"],
+                            "fecha_ejecucion"   => $this->executedDate,
                         ];
 
                     try{
@@ -486,6 +491,7 @@ class Conciliacion extends Command
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
+                                "fecha_ejecucion"   => $this->executedDate,
                             ];
 
                         try{
@@ -577,6 +583,7 @@ class Conciliacion extends Command
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
+                                "fecha_ejecucion"   => $this->executedDate,
                             ];
 
                         try{
@@ -614,17 +621,6 @@ class Conciliacion extends Command
      */ 
     private function checkValidFilename($filename)
     {
-        /*
-        $data = explode(".",$filename);
-
-        $bank_data = $data[0];
-
-        // check the length of the name
-        $length = strlen($bank_data);
-
-        $length -= 8;
-
-        $name = substr($bank_data,0,$length);*/
 
         $name = explode("_", $filename);
 
