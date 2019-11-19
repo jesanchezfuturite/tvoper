@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use File;
+use Illuminate\Support\Str;
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 use App\Repositories\LimitereferenciaRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
@@ -27,7 +28,17 @@ use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\ClasificadorRepositoryEloquent;
 use App\Repositories\EgobiernotipopagoRepositoryEloquent;
 use App\Repositories\TramitesRepositoryEloquent;
+use App\Repositories\EgobfoliosRepositoryEloquent;
 
+/******/
+use App\Repositories\EgobiernonominaRepositoryEloquent;
+use App\Repositories\ContdetalleisanRepositoryEloquent;
+use App\Repositories\ContdetalleishRepositoryEloquent;
+use App\Repositories\ContdetalleisopRepositoryEloquent;
+use App\Repositories\ContdetalleisnprestadoraRepositoryEloquent;
+use App\Repositories\ContdetalleisnretenedorRepositoryEloquent;
+use App\Repositories\ContdetalleretencionesRepositoryEloquent;
+use App\Repositories\ContdetimpisopRepositoryEloquent;
 
 
 class MotorpagosController extends Controller
@@ -50,6 +61,16 @@ class MotorpagosController extends Controller
     protected $clasificadordb;
     protected $tipopagodb;
     protected $tramitedb;
+    protected $foliosdb;
+
+    protected $nominadb;
+    protected $detalleisandb;
+    protected $detalleishdb;
+    protected $detalleisopdb;
+    protected $detalleisnprestadoradb;
+    protected $detalleisnretenedordb;
+    protected $detalleretencionesdb;
+    protected $detimpisopdb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -70,7 +91,17 @@ class MotorpagosController extends Controller
         EgobiernopartidasRepositoryEloquent $partidasdb,
         ClasificadorRepositoryEloquent $clasificadordb,
         EgobiernotipopagoRepositoryEloquent $tipopagodb,
-        TramitesRepositoryEloquent $tramitedb
+        TramitesRepositoryEloquent $tramitedb,
+        EgobfoliosRepositoryEloquent $foliosdb,
+        EgobiernonominaRepositoryEloquent $nominadb,      
+        ContdetalleisanRepositoryEloquent $detalleisandb,
+        ContdetalleishRepositoryEloquent $detalleishdb,
+        ContdetalleisopRepositoryEloquent $detalleisopdb,
+        ContdetalleisnprestadoraRepositoryEloquent $detalleisnprestadoradb,
+        ContdetalleisnretenedorRepositoryEloquent $detalleisnretenedordb,
+        ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
+        ContdetimpisopRepositoryEloquent $detimpisopdb
+
 
     )
     {
@@ -93,6 +124,17 @@ class MotorpagosController extends Controller
         $this->clasificadordb=$clasificadordb;
         $this->tipopagodb=$tipopagodb;
         $this->tramitedb=$tramitedb;
+        $this->foliosdb=$foliosdb;
+
+
+        $this->nominadb=$nominadb;
+        $this->detalleisandb=$detalleisandb;
+        $this->detalleishdb=$detalleishdb;
+        $this->detalleisopdb=$detalleisopdb;
+        $this->detalleisnprestadoradb=$detalleisnprestadoradb;
+        $this->detalleisnretenedordb=$detalleisnretenedordb;
+        $this->detalleretencionesdb=$detalleretencionesdb;
+        $this->detimpisopdb=$detimpisopdb;
     }
 
     /**
@@ -1958,7 +2000,12 @@ return json_encode($response);
     public function consultaTransaccionesEgob(Request $request)
     {
         $tipo_servicio=$request->tipo_servicio;
-        $estatus=$request->estatus;        
+        $estatus=$request->estatus; 
+        $entidad=$request->entidad; 
+        $tipo_servicio_S=$tipo_servicio;
+        $estatus_S=$estatus;       
+        $entidad_S=$entidad;
+
         $fecha_inicio=$request->fecha_inicio;
         $fecha_fin=$request->fecha_fin;
         $rfc=$request->rfc;
@@ -1981,27 +2028,125 @@ return json_encode($response);
         {                
         $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
         }else{
-        $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);            
+            if($fecha_inicio=="" && $fecha_fin=="")
+            {
+                $transaccion=$this->foliosdb->consultaRFCegob(['CartKey1'=>$rfc]);
+                log::info($transaccion);
+            }else{
+                $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+            }            
         }
         if($transaccion<>null){
-          foreach ($transaccion as $trans) {  
-            if($tipo_servicio=="limpia" && $estatus=="limpia")
-            {                
-                $response []= array(
-                        'Estatus'=>$trans->status,
-                        'RFC'=>$trans->rfc,
-                        'Transaccion'=>$trans->idTrans,
-                        'Entidad'=>$trans->entidad,
-                        'Tramite'=>$trans->tiposervicio,
-                        'Contribuyente'=>$trans->TitularTC,
-                        'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
-                        'Banco'=>$trans->BancoSeleccion,
-                        'Tipo_Pago'=>$trans->tipopago,
-                        'Total_Tramite'=>$trans->TotalTramite
-                    );            
+          foreach ($transaccion as $trans) {
+            $findDeclarado=null;
+            $declarado_anio="Aplica";
+            $declarado_mes= "";
+            if($trans->tiposervicio_id=="3")
+            {
+                $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
+                foreach ($findDeclarado as $e) {
+                    $declarado_anio=$e->anodec;
+                    $declarado_mes=$e->mesdec;
+                }                  
+            }
+            elseif($trans->tiposervicio_id=="13")
+            {
+                $findDeclarado=$this->detalleisandb->findWhere(['idTrans'=>$trans->idTrans]);
+                foreach ($findDeclarado as $e) {
+                   $declarado_anio=$e->anio_1;
+                    $declarado_mes=$e->mes_1;
+                }
             }else{
-                if($tipo_servicio ==$trans->tiposervicio_id && $estatus==$trans->estatus_id)
-                {                   
+
+                if($trans->tiposervicio_id=="14")
+                {
+                    $findDeclarado=$this->detalleishdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                }
+                
+                if($trans->tiposervicio_id=="15")
+                {
+                    $findDeclarado=$this->detalleisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                }
+                if($trans->tiposervicio_id=="23")
+                {
+                    $findDeclarado=$this->detalleisnprestadoradb->findWhere(['idtrans'=>$trans->idTrans]);                    
+                }
+                if($trans->tiposervicio_id=="24")
+                {
+                    $findDeclarado=$this->detalleisnretenedordb->findWhere(['idtrans'=>$trans->idTrans]);                    
+                }
+                if($trans->tiposervicio_id=="25")
+                {
+                    $findDeclarado=$this->detimpisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                }                
+                if($findDeclarado<>null)
+                {
+                    foreach ($findDeclarado as $e) {
+                        $declarado_anio=$e->anio;
+                        $declarado_mes=$e->mes;
+                    }
+                }   
+            }       
+            
+            switch ($declarado_mes) {
+                case '1':
+                    $declarado="ENERO";                    
+                    break;
+                case '2':
+                    $declarado="FEBRERO";                    
+                    break;
+                case '3':
+                    $declarado="MARZO";                    
+                    break;
+                case '4':
+                    $declarado="ABRIL";                    
+                    break;
+                case '5':
+                    $declarado="MAYO";                    
+                    break;
+                case '6':
+                    $declarado="JUNIO";                    
+                    break;
+                case '7':
+                    $declarado="JULIO";                    
+                    break;
+                case '8':
+                    $declarado="AGOSTO";                    
+                    break;
+                case '9':
+                    $declarado="SEPTIEMBRE";                    
+                    break;
+                case '10':
+                    $declarado="OCTUBRE";                    
+                    break;
+                case '11':
+                    $declarado="NOVIEMBRE";                    
+                    break;
+                case '12':
+                    $declarado="NOVIEMBRE";                    
+                    break;                                    
+                default:
+                    $declarado="No";
+                    break;
+            }
+            
+
+            if($estatus=="limpia")
+            {
+                $estatus_S=$trans->estatus_id;
+            }
+            if($tipo_servicio=="limpia")
+            {
+                $tipo_servicio_S=$trans->tiposervicio_id;
+            }
+            if($entidad=="limpia")
+            {
+                $entidad_S=$trans->entidad_id;
+            }
+
+            if((string)$tipo_servicio_S==(string)$trans->tiposervicio_id && (string)$estatus_S==(string)$trans->estatus_id && (string)$entidad_S==(string)$trans->entidad_id)
+            {  
+                       
                     $response []= array(
                         'Estatus'=>$trans->status,
                         'RFC'=>$trans->rfc,
@@ -2012,49 +2157,15 @@ return json_encode($response);
                         'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
                         'Banco'=>$trans->BancoSeleccion,
                         'Tipo_Pago'=>$trans->tipopago,
-                        'Total_Tramite'=>$trans->TotalTramite
-                        ); 
-                                      
-                }else{
-                    if($tipo_servicio==$trans->tiposervicio_id && $estatus=="limpia")
-                    {                        
-                            $response []= array(
-                                'Estatus'=>$trans->status,
-                                'RFC'=>$trans->rfc,
-                                'Transaccion'=>$trans->idTrans,
-                                'Entidad'=>$trans->entidad,
-                                'Tramite'=>$trans->tiposervicio,
-                                'Contribuyente'=>$trans->TitularTC,
-                                'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
-                                'Banco'=>$trans->BancoSeleccion,
-                                'Tipo_Pago'=>$trans->tipopago,
-                                'Total_Tramite'=>$trans->TotalTramite
-                            ); 
-                         
-                    }else
-                    {
-                        if($tipo_servicio=="limpia" && $estatus==$trans->estatus_id)
-                        {
-                            $response []= array(
-                                'Estatus'=>$trans->status,
-                                'RFC'=>$trans->rfc,
-                                'Transaccion'=>$trans->idTrans,
-                                'Entidad'=>$trans->entidad,
-                                'Tramite'=>$trans->tiposervicio,
-                                'Contribuyente'=>$trans->TitularTC,
-                                'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
-                                'Banco'=>$trans->BancoSeleccion,
-                                'Tipo_Pago'=>$trans->tipopago,
-                                'Total_Tramite'=>$trans->TotalTramite
-                            ); 
-                        }
-                    }
-
+                        'Total_Tramite'=>$trans->TotalTramite,
+                        'Declarado'=>$declarado." ".$declarado_anio,
+                        'tiposervicio_id'=>$trans->tiposervicio_id,
+                        'entidad_id'=>$trans->entidad_id
+                        );                 
                 }
-
             }
         }
-        }
+        log::info($response);
         return json_encode($response);
         
     }
@@ -2062,6 +2173,10 @@ return json_encode($response);
     {
         $tipo_servicio=$request->tipo_servicio;
         $estatus=$request->estatus;
+        $entidad=$request->entidad;
+        $tipo_servicio_S=$tipo_servicio;
+        $estatus_S=$estatus;
+        $entidad_S=$entidad;
         $rfc=$request->rfc;        
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
@@ -2086,14 +2201,28 @@ return json_encode($response);
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
                 {
-                    $transaccion=$this->tramitedb->consultaRFC($rfc);
+                    $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc]);
                 }else{
                     $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
             }
         }          
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
-            if($tipo_servicio=="limpia" && $estatus=="limpia"){
+            if($estatus=="limpia")
+            {
+                $estatus_S=$trans->estatus_id;
+            }
+            if($tipo_servicio=="limpia")
+            {
+                $tipo_servicio_S=$trans->tiposervicio_id;
+            }
+            if($entidad=="limpia")
+            {
+                $entidad_S=$trans->entidad_id;
+            }
+
+            if((string)$tipo_servicio_S==(string)$trans->tiposervicio_id && (string)$estatus_S==(string)$trans->estatus_id && (string)$entidad_S==$trans->entidad_id)
+            {  
                 $response []= array(
                     'Estatus'=>$trans->status,
                     'RFC'=>$trans->rfc,
@@ -2104,61 +2233,12 @@ return json_encode($response);
                     'Inicio_Tramite'=>$trans->fecha_transaccion,
                     'Banco'=>$trans->BancoSeleccion,
                     'Tipo_Pago'=>$trans->tipopago,
-                    'Total_Tramite'=>$trans->TotalTramite
-                    );
-                }else{
-                    if($tipo_servicio ==$trans->tiposervicio_id && $estatus==$trans->estatus_id)
-                    {
-                       $response []= array(
-                        'Estatus'=>$trans->status,
-                        'RFC'=>$trans->rfc,
-                        'Transaccion'=>$trans->idTrans,
-                        'Entidad'=>$trans->entidad,
-                        'Tramite'=>$trans->tiposervicio,
-                        'Contribuyente'=>$trans->nombre." ".$trans->apellido_paterno,
-                        'Inicio_Tramite'=>$trans->fecha_transaccion,
-                        'Banco'=>$trans->BancoSeleccion,
-                        'Tipo_Pago'=>$trans->tipopago,
-                        'Total_Tramite'=>$trans->TotalTramite
-                        ); 
-                    }else{
-                        if($tipo_servicio ==$trans->tiposervicio_id && $estatus=="limpia")
-                        {
-                            $response []= array(
-                            'Estatus'=>$trans->status,
-                            'RFC'=>$trans->rfc,
-                            'Transaccion'=>$trans->idTrans,
-                            'Entidad'=>$trans->entidad,
-                            'Tramite'=>$trans->tiposervicio,
-                            'Contribuyente'=>$trans->nombre." ".$trans->apellido_paterno,
-                            'Inicio_Tramite'=>$trans->fecha_transaccion,
-                            'Banco'=>$trans->BancoSeleccion,
-                            'Tipo_Pago'=>$trans->tipopago,
-                            'Total_Tramite'=>$trans->TotalTramite
-                            ); 
-                    }else{
-                            if($tipo_servicio =="limpia" && $estatus==$trans->estatus_id)
-                            {
-                                $response []= array(
-                                'Estatus'=>$trans->status,
-                                'RFC'=>$trans->rfc,
-                                'Transaccion'=>$trans->idTrans,
-                                'Entidad'=>$trans->entidad,
-                                'Tramite'=>$trans->tiposervicio,
-                                'Contribuyente'=>$trans->nombre." ".$trans->apellido_paterno,
-                                'Inicio_Tramite'=>$trans->fecha_transaccion,
-                                'Banco'=>$trans->BancoSeleccion,
-                                'Tipo_Pago'=>$trans->tipopago,
-                                'Total_Tramite'=>$trans->TotalTramite
-                                ); 
-                            }
-                        }
-                    }
+                    'Total_Tramite'=>$trans->TotalTramite);
+                    
                 }
             }
-        }
+        }    
         return json_encode($response);
-
     }
     public function updateConciliaBanco(Request $request)
     {

@@ -34,11 +34,11 @@ class TramitesRepositoryEloquent extends BaseRepository implements TramitesRepos
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    public function consultaRFC($rfc)
+    public function consultaRFCoper($rfc)
     {
-        try{        
-        $data = Tramites::where('rfc',$rfc)
-        ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')        
+        //try{        
+        $data = Tramites::where($rfc)
+        ->join('oper_transacciones','oper_transacciones.id_transaccion_motor','=','oper_tramites.id_transaccion_motor')        
         ->join('egob.status','egob.status.Status','=','oper_transacciones.estatus')
         ->join('oper_entidad','oper_entidad.id','=','oper_transacciones.entidad')
         ->join('egob.tipo_servicios','egob.tipo_servicios.Tipo_Code','=','oper_tramites.id_tipo_servicio')        
@@ -49,9 +49,11 @@ class TramitesRepositoryEloquent extends BaseRepository implements TramitesRepos
 
         return $data;
        
-        }catch( \Exception $e){
+       /*}catch( \Exception $e){
             Log::info('[TramitesRepositoryEloquent@ConsultaRFC] Error ' . $e->getMessage());
-        } 
+        } */
     }
+   
+    
     
 }
