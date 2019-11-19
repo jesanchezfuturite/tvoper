@@ -65,14 +65,8 @@ class ConciliacionController extends Controller
     public function index()
     {
 
-        // consultar la tabla de process para revisar si existen registros
-
-
-        // generar el arreglo para enviar a la vista
-        $report = $this->generateReport();
-
     	// valid 1 is init status 
-    	return view('conciliacion/loadFile', [ "report" => $report, "valid" => 1 ]);
+    	return view('conciliacion/loadFile', [ "valid" => 1 ]);
     }
 
 
@@ -468,13 +462,16 @@ class ConciliacionController extends Controller
      */
     private function getResultsperDate($date)
     {
+        /* commented to use with fecha_ejecucion
         $initialDate = $date . " 00:00:00";
         $dueDate = $date . " 23:59:59";
 
         $between = array($initialDate,$dueDate);
-
+        */
         try{
-            $info = $this->pr->findWhereBetween('created_at',$between);
+
+            //$info = $this->pr->findWhereBetween('created_at',$between);
+            $info = $this->pr->findWhere( [ 'fecha_ejecucion' => $date ] );
 
             return $info;
                
@@ -498,9 +495,11 @@ class ConciliacionController extends Controller
 
         $date = explode("/",$request->f);
 
-        $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00";
+        $f = $date[2] . "-" . $date[0] . "-" . $date[1];
 
-        $date_to = $date[2] . "-" . $date[0] . "-" . $date[1] . " 23:59:59";
+       // $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00"; commented to use fecha_ejecucion
+
+       // $date_to = $date[2] . "-" . $date[0] . "-" . $date[1] . " 23:59:59";
 
         $alias = (string)$request->alias;
 
@@ -511,10 +510,11 @@ class ConciliacionController extends Controller
         try{
             $data = $this->pr->findWhere(
                 [
-                    'cuenta_banco'=>$cuenta,
-                    'cuenta_alias'=>$alias,
-                    ['created_at','>', $date_from],
-                    ['created_at','<', $date_to],
+                    'cuenta_banco' => $cuenta,
+                    'cuenta_alias' => $alias,
+                    // ['created_at','>', $date_from],
+                    // ['created_at','<', $date_to],
+                    'fecha_ejecucion' => $f,
                     ['status','<>','p'],
                 ]
             );
@@ -547,7 +547,7 @@ class ConciliacionController extends Controller
                                 );
                             }
                         }else{
-                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' . $e->getMessage());     
+                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' );     
                             Log::info('... Transaccion ID >' . $d->transaccion_id);
                             Log::info('... ID' . $d->id);
                             $folio_id []= array(
@@ -569,9 +569,6 @@ class ConciliacionController extends Controller
                 // son todos los movimientos en el repositorio
                 false;
             }
-
-              
-
         }else{
             $results = array(
                 "response"  => 0,
