@@ -502,7 +502,7 @@ class CorteSendEmail extends Command
         File::delete($path);
         $cadena='';
         $response = array();
-        $Servicios= array('3','24');
+        $Servicios= array('3');
         $fechaIn=$nombreArchivo->format('Y-m-d').' 00:00:00';     
         $fechaFin=$nombreArchivo->format('Y-m-d').' 23:59:59';
         $conciliacion=$this->pr->findWhere(['status'=>'p',['created_at','>','2019-11-08 00:00:00'],['created_at','<','2019-11-08 23:59:59']]);        

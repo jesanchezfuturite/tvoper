@@ -74,7 +74,7 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             ->join('tipo_servicios','tipo_servicios.Tipo_Code', '=','transacciones.TipoServicio')
             ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
             ->join('folios','folios.idTrans', '=','transacciones.idTrans')
-            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc')
+            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_entidad.id as entidad_id')
             ->groupBy('transacciones.idTrans')
             ->get();
             return $data;
@@ -96,14 +96,17 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
             ->join('folios','folios.idTrans', '=','transacciones.idTrans')
             ->where('folios.CartKey1',$rfc)
-            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc')
+            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_entidad.id as entidad_id')
             ->groupBy('transacciones.idTrans')
             ->get();
+            
             return $data;
         }catch( \Exception $e ){
             Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransaccionesWhere]  ERROR al actualizar las transacciones como procesadas en egobierno");
             return false;
         }
     }
+
+    
     
 }
