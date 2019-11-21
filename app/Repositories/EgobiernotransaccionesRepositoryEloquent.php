@@ -105,5 +105,7 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             return false;
         }
     }
+
+    
     
 }

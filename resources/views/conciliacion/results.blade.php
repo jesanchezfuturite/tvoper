@@ -202,7 +202,7 @@
                     content += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
                     content += '<td align="right">'+cuenta.registros_repo+'</td>';
                     content += '<td align="right">'+cuenta.registros_conciliados_repo+'</td>';
-                    content += '<td align="right"><a href="#" id="noconcrepo">'+cuenta.registros_no_conciliados_repo+'</a></td>';
+                    content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",) id="noconcrepo">'+cuenta.registros_no_conciliados_repo+'</a></td>';
                     content += '<td align="right">'+cuenta.monto_conciliado_repo+'</td>';
                     content += '<td align="right">'+cuenta.monto_no_conciliado_repo+'</td>';
                     content += '</tr>';
