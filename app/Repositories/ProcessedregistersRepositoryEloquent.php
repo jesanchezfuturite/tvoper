@@ -72,5 +72,29 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }
     }
+
+
+    /**
+     * This method is used in command Egobtransacciones
+     *  AS FOLLOWS:
+     *  update the info from transacciones where registers are processed
+     *  
+     * @param $data: info to update / idTrans CID
+     *
+     *
+     * @return true / false
+    */
+
+    public function completeInfoFromEgob($data,$idTrans)
+    {
+        try
+        {
+            $data = Processedregisters::where('transaccion_id', $idTrans)->update( $data );
+            return true;
+        }catch( \Exception $e ){
+            Log::info("[ProcessedRegistersRepositoryEloquent @ completeInfoFromEgob] ERROR - " . $e->getMessage());
+            return false;
+        }    
+    }
         
 }

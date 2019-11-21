@@ -140,7 +140,7 @@ class Egobtransacciones extends Command
             $this->transacciones_relacionadas = $this->tr->findWhereIn( 
                 'idTrans', 
                 $this->temporal, 
-                [ 'idTrans', 'TotalTramite', 'CostoMensajeria', 'Status' ] 
+                [ 'idTrans', 'TotalTramite', 'CostoMensajeria', 'Status', 'TipoServicio', 'fechatramite' , 'HoraTramite', 'Clabe_FechaDisp' ] 
             );
         }catch( \Exception $e ){
             Log::info('[Conciliacion:EgobTransacciones] @checkBalanceRegisters - Error al buscar transacciones en Egobierno - ' . $e->getMessage());    
@@ -263,8 +263,7 @@ class Egobtransacciones extends Command
         // actualizar la tabla egobierno
         Log::info('[Conciliacion:EgobTransacciones] @udpdateTransactionsAsProcessed - Actualizar egobierno');
 
-
-        $egob = $this->tr->updateStatusInArray($this->valid);
+        // $egob = $this->tr->updateStatusInArray($this->valid); esto ya lo hace el WS
         // actualizar con los registros que se procesaron correctamente
         Log::info('[Conciliacion:EgobTransacciones] @udpdateTransactionsAsProcessed - Actualizar operacion');
         $oper = $this->pr->updateStatusTo($this->valid,"p");
@@ -282,5 +281,36 @@ class Egobtransacciones extends Command
         }
 
         
+    }
+
+
+    // crear la funcion para actualizar los registros de processedregisters con los registros del arreglo en transacciones_relacionadas
+    /**
+     * Actualizar la tabla de processedregisters con la info de transacciones .
+     *
+     * @param null
+     *
+     *
+     * @return true
+     */
+
+    private function updateDataEgobierno()
+    { 
+
+        foreach($this->transacciones_relacionadas as $tr)
+        {
+            $data = array(
+                'tipo_servicio' => $tr->TipoServicio,
+                'info_transacciones' => json_encode(
+                    array(
+                        'fecha_tramite' => $tr->fechatramite,
+                        'hora_tramite'  => $tr->HoraTramite,
+                        'fecha_disp'    => $tr->Clabe_FechaDisp,
+                        'total_tramite' => $tr->TotalTramite,
+                    )
+                )
+            );
+            $response = $this->pr->completeInfoFromEgob($data, $tr->idTrans);
+        }
     }
 }
