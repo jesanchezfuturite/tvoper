@@ -82,7 +82,8 @@ class Egobtransacciones extends Command
         // actualizar los registros en la tabla de egobierno Transacciones
         $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();
 
-        // actualizar los errores en la tabla de process
+        // actualizar los campos de egobierno
+        $this->updateDataEgobierno();
 
 
         Log::info('[Conciliacion:EgobTransacciones] - Proceso Finalizado');
@@ -296,7 +297,7 @@ class Egobtransacciones extends Command
 
     private function updateDataEgobierno()
     { 
-
+        Log::info('[Conciliacion:EgobTransacciones] - Actualizando Info Egobierno');
         foreach($this->transacciones_relacionadas as $tr)
         {
             $data = array(
