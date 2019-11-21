@@ -103,8 +103,18 @@
                         <div class="portlet-body "> 
                                                       
                             <div class="row "> 
-                             <div class="col-md-5 "> </div>
-                                <div class="col-md-3 "> 
+                             <div class="col-md-3"> </div>
+                                <div class="col-md-3"> 
+                                    <div class="form-group">
+                                        <span class="help-block">Entidad</span>
+                                            <select id="itemsEntidad" class="select2me form-control" onchange="ChangeItemsOper()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block  text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3"> 
                                     <div class="form-group">
                                         <span class="help-block"> Estatus</span>
                                             <select id="itemsStatus" class="select2me form-control" onchange="ChangeItemsOper()">
@@ -114,7 +124,7 @@
                                         <span class="help-block  text-right">Seleccione una Opcion </span>
                                     </div>
                                 </div>                                
-                                <div class="col-md-4 ">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                     <span class="help-block">Tramite </span>                                       
                                             <select id="itemsTipoServicio" class="select2me form-control" onchange="ChangeItemsOper()">
@@ -168,19 +178,29 @@
                             </div>
                         </div>
                         <div class="portlet-body ">                         
-                            <div class="row "> 
-                                <div class="col-md-5 "> </div>
-                                <div class="col-md-3 "> 
+                            <div class="row"> 
+                                <div class="col-md-3"> </div>
+                                <div class="col-md-3"> 
                                     <div class="form-group">
-                                         <span class="help-block"> Estatus</span>
-                                            <select id="itemsStatus2" class="select2me form-control" onchange="ChangeItemsEgob()">
+                                         <span class="help-block"> Entidad</span>
+                                            <select id="itemsEntidad2" class="select2me form-control" onchange="ChangeItemsEgob()">
                                                  <option id="limpia" value="limpia">-------</option>
                                                
                                             </select>
                                         <span class="help-block text-right">Seleccione una Opcion </span>
                                     </div>
-                                </div> 
-                                <div class="col-md-4 ">                              
+                                </div>
+                                <div class="col-md-3 "> 
+                                    <div class="form-group">
+                                        <span class="help-block"> Estatus</span>
+                                            <select id="itemsStatus2" class="select2me form-control" onchange="ChangeItemsEgob()">
+                                                 <option id="limpia" value="limpia">-------</option>
+                                               
+                                            </select>
+                                        <span class="help-block  text-right">Seleccione una Opcion </span>
+                                    </div>
+                                </div>  
+                                <div class="col-md-3">                              
                                     <div class="form-group">
                                          <span class="help-block"> Tramite</span>
                                             <select id="itemsTipoServicio2" class="select2me form-control" onchange="ChangeItemsEgob()">
@@ -200,6 +220,7 @@
                                             <th>Estatus</th>
                                             <th>Transacción</th>
                                             <th>RFC</th>
+                                            <th>Declarado</th>
                                             <th>Entidad</th>
                                             <th>Tramite</th>
                                             <th>Contribuyente</th> 
@@ -212,6 +233,7 @@
                                     <tbody> 
                                         <tr>
                                         <td><span class="help-block">No Found</span></td>           
+                                        <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -274,21 +296,70 @@
         AddOptionTipoServicio2(); 
         findEstatus();
         findEstatus2();
+        FindEntidad();
+        FindEntidad2();
         
     });
+    function FindEntidad2()
+    {
+         $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#itemsEntidad2 option").remove();
+          $("#itemsEntidad2").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#itemsEntidad2").append("<option value='"+item.id+"'>"+item.nombre+"</option>"
+            );  
+        });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function FindEntidad()
+    {
+         $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#itemsEntidad option").remove();
+          $("#itemsEntidad").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#itemsEntidad").append("<option value='"+item.id+"'>"+item.nombre+"</option>"
+            );  
+        });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
     function ChangeItemsEgob()
     {
+        fechaIn=$("#fechainicio").val();
+        fechaF=$("#fechafin").val();
+        var rfc=$("#rfc").val();
         var option = document.querySelector('input[name = radio2]:checked').value;        
         if(option=="avanzado")
         {
-            consultaRangoFechasEgob();
+            if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
+                Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications")            
+            }else{
+                consultaEgobChange(fechaIn,fechaF);
+            }            
         }else{
             $("#addTimerpicker div").remove();
             if(option=="undia")
             {              
-                consultaEgob("1","1");
+                consultaEgobChange("1","1");
             }
-            else{consultaEgob("3","3");}
+            else{consultaEgobChange("3","3");}
         }
     }
     function ChangeItemsOper()
@@ -308,34 +379,17 @@
     }
     function consultaRangoFechasEgobOper()
     {
-       consultaRangoFechasEgob();
-       consultaRangoFechasOper();
-    }
-    function consultaRangoFechasEgob()
-    {
-        fechaIn=$("#fechainicio").val();
+       fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
-        if(fechaIn.length<1){
-            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
-        }else if(fechaF.length<1){
-            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
+        var rfc=$("#rfc").val();
+        if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications")            
         }else{
-            consultaEgob(fechaIn,fechaF);          
+            consultaEgob(fechaIn,fechaF);
+            consultaOper(fechaIn,fechaF);                    
         }
     }
-    function consultaRangoFechasOper()
-    {
-        fechaIn=$("#fechainicio").val();
-        fechaF=$("#fechafin").val();
-        if(fechaIn.length<1){
-            Command: toastr.warning("Fecha Inicio, Requerido!", "Notifications") 
-        }else if(fechaF.length<1){
-            Command: toastr.warning("Fecha Fin, Requerido!", "Notifications") 
-        }else{
-            consultaOper(fechaIn,fechaF);           
-        }
-    }
-    
+   
     function findEstatus()
     {
         $.ajax({
@@ -411,10 +465,9 @@
         .done(function (responseinfo) { 
         $("#itemsTipoServicio2 option").remove();
         var Resp=$.parseJSON(responseinfo);
-
          $('#itemsTipoServicio2').append(
                 "<option value='limpia'>------</option>"
-        );
+            );
           var item="";
         $.each(Resp, function(i, item) {                
                  $('#itemsTipoServicio2').append(
@@ -425,6 +478,28 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
+    }
+    function addOptionTipoServicioExiste2(add)
+    {
+        $("#itemsTipoServicio2 option").remove();
+        var Resp=$.parseJSON(add);
+        var persona = {};
+        var unicos = Array.from(new Set(Resp.map(s => s.id)))
+            .map(id => {
+            return {
+            id: id,
+            tramite: Resp.find(s => s.id === id).tramite
+            };
+        });        
+         $('#itemsTipoServicio2').append(
+                "<option value='limpia'>------</option>"
+            );
+          var item="";
+        $.each(unicos, function(i, item) {                
+                 $('#itemsTipoServicio2').append(
+                "<option value='"+item.id+"'>"+item.tramite+"</option>"
+                   );
+                });
     }
     function radiobuttons()
     {
@@ -445,8 +520,7 @@
     function timpicker()
     {
         $("#addTimerpicker div").remove();
-         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC</label> <input type='text' placeholder='Ingrese RFC' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgobOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");
-         
+         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgobOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
          ComponentsPickers.init();   
     }
     function consultaInicial()
@@ -454,16 +528,14 @@
         fechaIn = "1";
         fechaF = "1";
         consultaEgob(fechaIn,fechaF);
-        consultaOper(fechaIn,fechaF);
-       
+        consultaOper(fechaIn,fechaF);       
     }
     function consulta3dias()
     {
         fechaIn = "3";
         fechaF = "3";
         consultaEgob(fechaIn,fechaF);
-        consultaOper(fechaIn,fechaF);      
-
+        consultaOper(fechaIn,fechaF);  
     }
     
     function consultaEgob(fechaIn,fechaF) {
@@ -472,17 +544,21 @@
         var status=$("#itemsStatus2").val();
         var servicio=$("#itemsTipoServicio2").val();
         var rfc_=$("#rfc").val();
+        var entidad_=$("#itemsEntidad2").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-egob') }}",
-        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,entidad:entidad_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+        var addServicios='[';
+        var coma="";
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
         if(response=="[]")
         {
             $("#sample_2 tbody").append("<tr>"
                 +"<td>No Found</td>"
+                +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
@@ -500,6 +576,7 @@
                 +"<td>"+item.Estatus+"</td>"
                 +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
                 +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Declarado+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
                 +"<td>"+item.Contribuyente+"</td>"
@@ -508,9 +585,13 @@
                 +"<td>"+item.Tipo_Pago+"</td>"
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
+            addServicios=addServicios+coma+'{"id":"'+item.tiposervicio_id+'","tramite":"'+item.Tramite+'"}';
+            coma=",";
             });
-        
+            addServicios=addServicios+"]";        
+        addOptionTipoServicioExiste2(addServicios);
         }
+       
        TableManaged2.init2();
         document.getElementById("blockui_sample_3_1_1").click();
         })
@@ -524,11 +605,69 @@
         
       
     }
+     function consultaEgobChange(fechaIn,fechaF) {
+        Addtable2();
+        document.getElementById("blockui_sample_3_1").click();
+        var status=$("#itemsStatus2").val();
+        var servicio=$("#itemsTipoServicio2").val();
+        var entidad_=$("#itemsEntidad2").val();        
+        var rfc_=$("#rfc").val();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-egob') }}",
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,entidad:entidad_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {        
+        $("#sample_2 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+        if(response=="[]")
+        {
+            $("#sample_2 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"</tr>");            
+        }else{
+        $.each(Resp, function(i, item) { 
+             $("#sample_2 tbody").append("<tr>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Declarado+"</td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
+                +"</tr>");
+            });        
+        }
+       TableManaged2.init2();
+        document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_2 tbody tr").remove(); 
+            $("#sample_2 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });      
+      
+    }
     function Addtable2()
     {
         $("#table_2").remove();
         //$("#table_1").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th><th>Declarado</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
      function Addtable1()
     {
@@ -545,12 +684,69 @@
         document.getElementById("blockui_sample_3_1").click();
          var status=$("#itemsStatus").val();
         var servicio=$("#itemsTipoServicio").val();
+        var entidad_=$("#itemsEntidad").val();
+        var rfc_=$("#rfc").val();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-oper') }}",
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,entidad:entidad_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        $("#sample_3 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+        if(response=="[]")
+        {
+            $("#sample_3 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"<td></td>"
+                +"</tr>");
+        }else{
+        $.each(Resp, function(i, item) { 
+             $("#sample_3 tbody").append("<tr>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
+                +"</tr>");
+            });
+        
+        }
+       TableManaged3.init3();
+        document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_3 tbody tr").remove(); 
+            $("#sample_3 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
+    }
+    function consultaOperChange(fechaIn,fechaF) {
+        Addtable1();
+        document.getElementById("blockui_sample_3_1").click();
+         var status=$("#itemsStatus").val();
+        var entidad_=$("#itemsEntidad").val();
+        var servicio=$("#itemsTipoServicio").val();
         var rfc_=$("#rfc").val();
 
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
-        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {rfc:rfc_,tipo_servicio:servicio,estatus:status,entidad:entidad_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
