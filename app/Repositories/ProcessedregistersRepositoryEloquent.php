@@ -72,6 +72,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }
     }
+
     public function Generico_Corte($fecha,$banco,$cuenta,$alias)
     {
        try{        
@@ -80,7 +81,14 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.banco_id','=',$banco)   
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
-        ->where('oper_processedregisters.archivo_corte','=','') 
+        ->where('oper_processedregisters.archivo_corte','=','')
+        ->where('oper_processedregisters.tipo_servicio','<>','3') 
+        ->where('oper_processedregisters.tipo_servicio','<>','13') 
+        ->where('oper_processedregisters.tipo_servicio','<>','14') 
+        ->where('oper_processedregisters.tipo_servicio','<>','15') 
+        ->where('oper_processedregisters.tipo_servicio','<>','23') 
+        ->where('oper_processedregisters.tipo_servicio','<>','24') 
+        ->where('oper_processedregisters.tipo_servicio','<>','25') 
         ->join('egob.partidas','egob.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
         ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
         ->join('egob.referenciabancaria','egob.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
@@ -256,10 +264,50 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
     {
         try{
             $data= Processedregisters::where('transaccion_id','=',$id_transaccion)->update(['archivo_corte'=>$campos]);  
+
         
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@UpdatePorTransaccion] Error ' . $e->getMessage());
         }
 
     } 
+
+    public function ConsultaFechaEjecucion($fechaIn,$fechaFin)
+    {
+        try{
+            $data= Processedregisters::whereBetween('created_at',[$fechaIn,$fechaFin])
+            ->select('fecha_ejecucion')
+            ->groupBy('fecha_ejecucion')  
+            ->get();
+            return $data;
+        
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@ConsultaFechaEjecucion] Error ' . $e->getMessage());
+        }
+
+    }
+
+
+    /**
+     * This method is used in command Egobtransacciones
+     *  AS FOLLOWS:
+     *  update the info from transacciones where registers are processed
+     *  
+     * @param $data: info to update / idTrans CID
+     *
+     *
+     * @return true / false
+    */
+
+    public function completeInfoFromEgob($data,$idTrans)
+    {
+        try
+        {
+            $data = Processedregisters::where('transaccion_id', $idTrans)->update( $data );
+            return true;
+        }catch( \Exception $e ){
+            Log::info("[ProcessedRegistersRepositoryEloquent @ completeInfoFromEgob] ERROR - " . $e->getMessage());
+            return false;
+        }    
+    }
 }

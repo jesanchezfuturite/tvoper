@@ -38,6 +38,9 @@ use App\Repositories\ContdetalleretencionesRepositoryEloquent;
 use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\CorteArchivosRepositoryEloquent;
+use App\Repositories\CortesolicitudRepositoryEloquent;
+
+
 class CorteSendEmail extends Command
 {
     /**
@@ -88,6 +91,7 @@ class CorteSendEmail extends Command
     protected $detimpisopdb;
     protected $partidasdb;
     protected $cortearchivosdb;
+    protected $cortesolicituddb;
 
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
@@ -118,7 +122,8 @@ class CorteSendEmail extends Command
         ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
         ContdetimpisopRepositoryEloquent $detimpisopdb,
         EgobiernopartidasRepositoryEloquent $partidasdb,
-        CorteArchivosRepositoryEloquent $cortearchivosdb
+        CorteArchivosRepositoryEloquent $cortearchivosdb,
+        CortesolicitudRepositoryEloquent $cortesolicituddb
     )
     {
          parent::__construct();        
@@ -151,6 +156,7 @@ class CorteSendEmail extends Command
         $this->detimpisopdb=$detimpisopdb;
         $this->partidasdb=$partidasdb;
         $this->cortearchivosdb=$cortearchivosdb;
+        $this->cortesolicituddb=$cortesolicituddb;
 
     }
     /**
@@ -166,7 +172,7 @@ class CorteSendEmail extends Command
     public function GeneraArchivo()
     {
         //$fecha=Carbon::now();
-         $fecha=Carbon::parse('2019-10-18');
+        $fecha=Carbon::parse('2019-10-18');
         if (!File::exists(storage_path('app/Cortes')))
         { File::makeDirectory(storage_path('app/Cortes'));}       
         $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
@@ -199,9 +205,21 @@ class CorteSendEmail extends Command
     }
       private function gArchivos($path,$fecha,$banco_id,$cuenta,$alias)
     {   
-        $findConciliacion=$this->pr->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>,$cuenta,'cuenta_alias'=>$alias]);
-        if($findConciliacion<>null)
-        {            
+        $existe=false;
+        $findConciliacion=$this->pr->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias,'archivo_corte'=>'','status'=>'p']);
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,3,13,14,15,23,24,25);       
+                for ($i=100; $i < 151; $i++) { 
+                    array_push($Servicios ,$i );
+                }
+        foreach ($findConciliacion as $y) {
+            foreach ($Servicios as $serv){
+                if((string)$serv==(string)$y->tipo_servicio)
+                    {$existe=true;}
+                }
+        }
+        
+        if($existe)
+        {       
             $this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
             $this->gArchivo_ISAN($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_ISH($path,$fecha,$banco_id,$cuenta,$alias); 
@@ -211,11 +229,23 @@ class CorteSendEmail extends Command
             $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias);   
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
 
-            
+            $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias]);
+            if($findCorte->count()==0)
+            {
+                $insertCorte=$this->cortesolicituddb->create(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias,'status'=>'0']);
+            }
 
         }else
         {   
 
+            $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias,'status'=>'0']);
+            if($findCorte->count()==1)
+            {
+                foreach ($findCorte as $k) {
+                    $insetCorte=$this->cortesolicituddb->update(['status'=>'1'],$k->id);
+                }
+                
+            }
 
         }
 
@@ -233,7 +263,6 @@ class CorteSendEmail extends Command
             }
         $existe=false;
         $conciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
-        log::info($conciliacion);
         if($conciliacion<>null){     
         foreach ($conciliacion as $concilia) {          
             $existe=false;                            

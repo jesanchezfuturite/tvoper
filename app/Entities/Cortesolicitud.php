@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Processedregisters.
+ * Class Cortesolicitud.
  *
  * @package namespace App\Entities;
  */
-class Processedregisters extends Model implements Transformable
+class Cortesolicitud extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -22,8 +22,8 @@ class Processedregisters extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $table = "oper_processedregisters";
+    protected $fillable = ['id','fecha_ejecucion','banco_id','cuenta_banco','cuenta_alias','status','created_at','updated_at'];
 
-    protected $fillable = ['transaccion_id','day','month','year','monto','status','filename','origen','referencia','cuenta_banco','cuenta_alias','banco_id','fecha_ejecucion','info_transacciones','archivo_corte','tipo_servicio'];
+    protected $table = "oper_corte_solicitud";
 
 }

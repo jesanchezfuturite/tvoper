@@ -42,6 +42,7 @@ use App\Repositories\ContdetalleretencionesRepositoryEloquent;
 use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\CorteArchivosRepositoryEloquent;
+use App\Repositories\CortesolicitudRepositoryEloquent;
 
 class CorteController extends Controller
 {
@@ -74,6 +75,7 @@ class CorteController extends Controller
     protected $detimpisopdb;
     protected $partidasdb;
     protected $cortearchivosdb;
+    protected $cortesolicituddb;
 
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
@@ -104,7 +106,8 @@ class CorteController extends Controller
         ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
         ContdetimpisopRepositoryEloquent $detimpisopdb,
         EgobiernopartidasRepositoryEloquent $partidasdb,
-        CorteArchivosRepositoryEloquent $cortearchivosdb
+        CorteArchivosRepositoryEloquent $cortearchivosdb,
+        CortesolicitudRepositoryEloquent $cortesolicituddb
 
     )
     {
@@ -140,6 +143,7 @@ class CorteController extends Controller
         $this->detimpisopdb=$detimpisopdb;
         $this->partidasdb=$partidasdb;
         $this->cortearchivosdb=$cortearchivosdb;
+        $this->cortesolicituddb=$cortesolicituddb;
 
     }
    

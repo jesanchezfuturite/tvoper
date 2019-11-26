@@ -139,9 +139,9 @@
                         <div class="portlet-body" id="table_1"> 
                                 <table class="table table-hover" id="sample_3">
                                     <thead>
-                                        <tr> 
+                                        <tr>
+                                            <th>Transacción</th> 
                                             <th>Estatus</th>
-                                            <th>Transacción</th>
                                             <th>RFC</th>
                                             <th>Entidad</th>
                                             <th>Tramite</th>
@@ -217,8 +217,8 @@
                             <table class="table table-hover" id="sample_2">
                                     <thead>
                                         <tr> 
-                                            <th>Estatus</th>
                                             <th>Transacción</th>
+                                            <th>Estatus</th>
                                             <th>RFC</th>
                                             <th>Declarado</th>
                                             <th>Entidad</th>
@@ -554,6 +554,8 @@
         var coma="";
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
+        var color='';
+        var label='';
         if(response=="[]")
         {
             $("#sample_2 tbody").append("<tr>"
@@ -572,9 +574,25 @@
             
         }else{
         $.each(Resp, function(i, item) { 
+            if(item.estatus=='p')
+            {
+                color='success';
+                label='Procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='No procesado';
+            }else if(item.estatus=='ad')
+            {
+                color='warning';
+                label='ad';
+            }else{
+                color='Info';
+                label='ane';
+            }
              $("#sample_2 tbody").append("<tr>"
-                +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a>&nbsp;<span class='label label-sm label-"+color+"'>"+label+"</span></td>"
+                +"<td>"+item.Estatus+"</td>"           
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Declarado+"</td>"
                 +"<td>"+item.Entidad+"</td>"
@@ -619,6 +637,8 @@
         .done(function (response) {        
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
+        var color='';
+        var label='';
         if(response=="[]")
         {
             $("#sample_2 tbody").append("<tr>"
@@ -635,10 +655,26 @@
                 +"<td></td>"
                 +"</tr>");            
         }else{
-        $.each(Resp, function(i, item) { 
+        $.each(Resp, function(i, item) {   
+            if(item.estatus=='p')
+            {
+                color='success';
+                label='procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='procesado';
+            }else if(item.estatus=='ad')
+            {
+                color='warning';
+                label='ad';
+            }else{
+                color='Info';
+                label='ane';
+            }
              $("#sample_2 tbody").append("<tr>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a>&nbsp;<span class='label label-sm label-"+color+"'>"+label+"</span></td>"
                 +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Declarado+"</td>"
                 +"<td>"+item.Entidad+"</td>"
@@ -667,13 +703,13 @@
     {
         $("#table_2").remove();
         //$("#table_1").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th><th>Declarado</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><table class='table table-hover' id='sample_2'><thead>  <tr><th>Transacción</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
      function Addtable1()
     {
         //$("#table_2").remove();
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><table class='table table-hover' id='sample_3'><thead>  <tr><th>Estatus</th><th>Transacción</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><table class='table table-hover' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div>");
     }
     function limpiar()
     {
@@ -693,6 +729,8 @@
         .done(function (response) { 
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
+         var color='';
+        var label='';
         if(response=="[]")
         {
             $("#sample_3 tbody").append("<tr>"
@@ -709,9 +747,25 @@
                 +"</tr>");
         }else{
         $.each(Resp, function(i, item) { 
+               if(item.estatus=='p')
+            {
+                color='success';
+                label='procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='procesado';
+            }else if(item.estatus=='ad')
+            {
+                color='warning';
+                label='ad';
+            }else{
+                color='Info';
+                label='ane';
+            }
              $("#sample_3 tbody").append("<tr>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a>&nbsp;<span class='label label-sm label-"+color+"'>"+label+"</span></td>"
                 +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
@@ -750,6 +804,8 @@
         .done(function (response) { 
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
+         var color='';
+        var label='';
         if(response=="[]")
         {
             $("#sample_3 tbody").append("<tr>"
@@ -766,9 +822,25 @@
                 +"</tr>");
         }else{
         $.each(Resp, function(i, item) { 
+               if(item.estatus=='p')
+            {
+                color='success';
+                label='procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='procesado';
+            }else if(item.estatus=='ad')
+            {
+                color='warning';
+                label='ad';
+            }else{
+                color='info';
+                label='ane';
+            }
              $("#sample_3 tbody").append("<tr>"
+                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a>&nbsp;<span class='label label-sm label-"+color+"'>"+label+"</span></td>"
                 +"<td>"+item.Estatus+"</td>"
-                +"<td><a href='#large' data-toggle='modal'>"+item.Transaccion+"</a></td>"
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"

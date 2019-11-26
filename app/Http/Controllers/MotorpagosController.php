@@ -39,6 +39,7 @@ use App\Repositories\ContdetalleisnprestadoraRepositoryEloquent;
 use App\Repositories\ContdetalleisnretenedorRepositoryEloquent;
 use App\Repositories\ContdetalleretencionesRepositoryEloquent;
 use App\Repositories\ContdetimpisopRepositoryEloquent;
+use App\Repositories\ProcessedregistersRepositoryEloquent;
 
 
 class MotorpagosController extends Controller
@@ -71,6 +72,7 @@ class MotorpagosController extends Controller
     protected $detalleisnretenedordb;
     protected $detalleretencionesdb;
     protected $detimpisopdb;
+    protected $processdb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -100,7 +102,8 @@ class MotorpagosController extends Controller
         ContdetalleisnprestadoraRepositoryEloquent $detalleisnprestadoradb,
         ContdetalleisnretenedorRepositoryEloquent $detalleisnretenedordb,
         ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
-        ContdetimpisopRepositoryEloquent $detimpisopdb
+        ContdetimpisopRepositoryEloquent $detimpisopdb,
+        ProcessedregistersRepositoryEloquent $processdb
 
 
     )
@@ -125,8 +128,6 @@ class MotorpagosController extends Controller
         $this->tipopagodb=$tipopagodb;
         $this->tramitedb=$tramitedb;
         $this->foliosdb=$foliosdb;
-
-
         $this->nominadb=$nominadb;
         $this->detalleisandb=$detalleisandb;
         $this->detalleishdb=$detalleishdb;
@@ -135,6 +136,7 @@ class MotorpagosController extends Controller
         $this->detalleisnretenedordb=$detalleisnretenedordb;
         $this->detalleretencionesdb=$detalleretencionesdb;
         $this->detimpisopdb=$detimpisopdb;
+        $this->processdb=$processdb;
     }
 
     /**
@@ -2027,6 +2029,7 @@ return json_encode($response);
         if($rfc=="")
         {                
         $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+        log::info($transaccion->count());
         }else{
             if($fecha_inicio=="" && $fecha_fin=="")
             {
@@ -2041,6 +2044,18 @@ return json_encode($response);
             $findDeclarado=null;
             $declarado_anio="Aplica";
             $declarado_mes= "";
+            $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->idTrans]);
+            $estatus_C="";
+            
+            if($findConcilia->count()==0)
+                {
+                   $estatus_C="np"; 
+                }else{
+                    foreach ($findConcilia as $c) {
+                       $estatus_C=$c->status;
+                       
+                    }
+            }
             if($trans->tiposervicio_id=="3")
             {
                 $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
@@ -2160,12 +2175,13 @@ return json_encode($response);
                         'Total_Tramite'=>$trans->TotalTramite,
                         'Declarado'=>$declarado." ".$declarado_anio,
                         'tiposervicio_id'=>$trans->tiposervicio_id,
-                        'entidad_id'=>$trans->entidad_id
+                        'entidad_id'=>$trans->entidad_id,
+                        'estatus'=>$estatus_C
                         );                 
                 }
             }
         }
-        log::info($response);
+        
         return json_encode($response);
         
     }
@@ -2208,6 +2224,16 @@ return json_encode($response);
         }          
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
+            $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->id_transaccion]);
+            $estatus_C="np";
+            if($findConcilia->count()==0)
+                {
+                   $estatus_C="np"; 
+                }else{
+                    foreach ($findConcilia as $c) {
+                       $estatus_C=$c->status;
+                    }
+                }
             if($estatus=="limpia")
             {
                 $estatus_S=$trans->estatus_id;
@@ -2233,7 +2259,9 @@ return json_encode($response);
                     'Inicio_Tramite'=>$trans->fecha_transaccion,
                     'Banco'=>$trans->BancoSeleccion,
                     'Tipo_Pago'=>$trans->tipopago,
-                    'Total_Tramite'=>$trans->TotalTramite);
+                    'Total_Tramite'=>$trans->TotalTramite,
+                    'estatus'=>$estatus_C
+                    );
                     
                 }
             }
