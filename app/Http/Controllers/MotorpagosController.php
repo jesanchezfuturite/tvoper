@@ -2001,13 +2001,6 @@ return json_encode($response);
     }
     public function consultaTransaccionesEgob(Request $request)
     {
-        $tipo_servicio=$request->tipo_servicio;
-        $estatus=$request->estatus; 
-        $entidad=$request->entidad; 
-        $tipo_servicio_S=$tipo_servicio;
-        $estatus_S=$estatus;       
-        $entidad_S=$entidad;
-
         $fecha_inicio=$request->fecha_inicio;
         $fecha_fin=$request->fecha_fin;
         $rfc=$request->rfc;
@@ -2029,12 +2022,12 @@ return json_encode($response);
         if($rfc=="")
         {                
         $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
-        log::info($transaccion->count());
+        //log::info($transaccion->count());
         }else{
             if($fecha_inicio=="" && $fecha_fin=="")
             {
                 $transaccion=$this->foliosdb->consultaRFCegob(['CartKey1'=>$rfc]);
-                log::info($transaccion);
+                //log::info($transaccion);
             }else{
                 $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
             }            
@@ -2144,24 +2137,6 @@ return json_encode($response);
                     $declarado="No";
                     break;
             }
-            
-
-            if($estatus=="limpia")
-            {
-                $estatus_S=$trans->estatus_id;
-            }
-            if($tipo_servicio=="limpia")
-            {
-                $tipo_servicio_S=$trans->tiposervicio_id;
-            }
-            if($entidad=="limpia")
-            {
-                $entidad_S=$trans->entidad_id;
-            }
-
-            if((string)$tipo_servicio_S==(string)$trans->tiposervicio_id && (string)$estatus_S==(string)$trans->estatus_id && (string)$entidad_S==(string)$trans->entidad_id)
-            {  
-                       
                     $response []= array(
                         'Estatus'=>$trans->status,
                         'RFC'=>$trans->rfc,
@@ -2178,7 +2153,7 @@ return json_encode($response);
                         'entidad_id'=>$trans->entidad_id,
                         'estatus'=>$estatus_C
                         );                 
-                }
+                
             }
         }
         
@@ -2187,12 +2162,7 @@ return json_encode($response);
     }
     public function consultaTransaccionesOper(Request $request)
     {
-        $tipo_servicio=$request->tipo_servicio;
-        $estatus=$request->estatus;
-        $entidad=$request->entidad;
-        $tipo_servicio_S=$tipo_servicio;
-        $estatus_S=$estatus;
-        $entidad_S=$entidad;
+        
         $rfc=$request->rfc;        
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
@@ -2234,21 +2204,7 @@ return json_encode($response);
                        $estatus_C=$c->status;
                     }
                 }
-            if($estatus=="limpia")
-            {
-                $estatus_S=$trans->estatus_id;
-            }
-            if($tipo_servicio=="limpia")
-            {
-                $tipo_servicio_S=$trans->tiposervicio_id;
-            }
-            if($entidad=="limpia")
-            {
-                $entidad_S=$trans->entidad_id;
-            }
-
-            if((string)$tipo_servicio_S==(string)$trans->tiposervicio_id && (string)$estatus_S==(string)$trans->estatus_id && (string)$entidad_S==$trans->entidad_id)
-            {  
+            
                 $response []= array(
                     'Estatus'=>$trans->status,
                     'RFC'=>$trans->rfc,
@@ -2261,9 +2217,8 @@ return json_encode($response);
                     'Tipo_Pago'=>$trans->tipopago,
                     'Total_Tramite'=>$trans->TotalTramite,
                     'estatus'=>$estatus_C
-                    );
-                    
-                }
+                    );                    
+               
             }
         }    
         return json_encode($response);

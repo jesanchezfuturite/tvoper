@@ -81,14 +81,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.banco_id','=',$banco)   
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
-        ->where('oper_processedregisters.archivo_corte','=','')
-        ->where('oper_processedregisters.tipo_servicio','<>','3') 
-        ->where('oper_processedregisters.tipo_servicio','<>','13') 
-        ->where('oper_processedregisters.tipo_servicio','<>','14') 
-        ->where('oper_processedregisters.tipo_servicio','<>','15') 
-        ->where('oper_processedregisters.tipo_servicio','<>','23') 
-        ->where('oper_processedregisters.tipo_servicio','<>','24') 
-        ->where('oper_processedregisters.tipo_servicio','<>','25') 
+        ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('egob.partidas','egob.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
         ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
         ->join('egob.referenciabancaria','egob.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
@@ -102,6 +95,30 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
         }        
     }
+   
+   public function Generico_Corte_Oper($fecha,$banco,$cuenta,$alias)
+    {
+       try{        
+        $data = Processedregisters::where('oper_processedregisters.status','=','p')
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)  
+        ->where('oper_processedregisters.banco_id','=',$banco)   
+        ->where('oper_processedregisters.cuenta_alias','=',$alias)
+        ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
+        ->where('oper_processedregisters.archivo_corte','=','') 
+        ->join('oper_transacciones','oper_transacciones.id_transaccion','=','oper_processedregisters.transaccion_id')    
+        ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_processedregisters.transaccion_id')    
+        ->join('oper_detalle_tramite','oper_detalle_tramite.id_tramite_motor','=','oper_tramites.id_tramite_motor')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_transacciones.referencia as Linea','oper_transacciones.metodo_pago_id as banco_id','oper_transacciones.cuenta_deposito as cuenta_banco','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_transaccion_motor as Folio','oper_detalle_tramite.importe_concepto as CartImporte','oper_tramites.id_tipo_servicio as tipo_servicio','oper_detalle_tramite.partida as id_partida','oper_detalle_tramite.concepto as descripcion')
+        ->groupBy('oper_processedregisters.transaccion_id')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+        }        
+    }
+
     public function Nomina_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
     {
        try{        
@@ -286,6 +303,8 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         }
 
     }
+
+
 
 
     /**
