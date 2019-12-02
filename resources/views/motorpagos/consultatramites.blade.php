@@ -3,6 +3,7 @@
 @section('content')
 
 <link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 
 <h3 class="page-title">Motor de pagos <small>Consulta Transacciones</small></h3>
 <div class="page-bar">
@@ -252,6 +253,15 @@
 @section('scripts')
 
 <script src="assets/global/dataTable/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+<script src=""></script>
+<script src=""></script>
 
 <script  type="text/javascript">
     jQuery(document).ready(function() {
@@ -377,8 +387,6 @@
             });
            
         }
-       
-        //TableManaged2.init2();
         cargatabla2();
         document.getElementById("blockui_sample_3_1_1").click();
         })
@@ -395,18 +403,27 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        //$("#table_1").remove();
         $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th><th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
     }
      function Addtable1()
     {
-        //$("#table_2").remove();
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_3'><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function cargatabla1()
-    {
+    {   var hoy = new Date();
+        var dd = hoy.getDate();
+        var mm = hoy.getMonth()+1;
+        var yyyy = hoy.getFullYear();
         $('#sample_3').DataTable( {
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title:  'Transacciones_Oper_'+yyyy+mm+dd
+            },'pageLength'
+        ],
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
@@ -428,11 +445,24 @@
                 } );
             } );
         }
-    } );
+        } );
+        
     }
     function cargatabla2()
     {
+        var hoy = new Date();
+        var dd = hoy.getDate();
+        var mm = hoy.getMonth()+1;
+        var yyyy = hoy.getFullYear();
         $('#sample_2').DataTable( {
+        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Transacciones_Egob_'+yyyy+mm+dd
+            },'pageLength'
+        ],
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
@@ -454,8 +484,9 @@
             } );
         }
     } );
-    
+         
     }
+    
     function consultaOper(fechaIn,fechaF) {
         Addtable1();
         document.getElementById("blockui_sample_3_1").click();
@@ -518,10 +549,8 @@
                 +"<td>"+item.Tipo_Pago+"</td>"
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
-            });
-        
+            });        
         }
-       //TableManaged3.init3();
        cargatabla1();
         document.getElementById("blockui_sample_3_1_1").click();
         })

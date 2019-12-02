@@ -166,13 +166,28 @@ class CorteSendEmail extends Command
      */
     public function handle()
     {
-       $this->GeneraArchivo();
+       $this->BuscarFechas();
     }
     
-    public function GeneraArchivo()
+    public function BuscarFechas()
     {
-        //$fecha=Carbon::now();
-        $fecha=Carbon::parse('2019-10-18');
+        $fecha=Carbon::now();
+         //$fecha=Carbon::parse('2019-11-21');
+        $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
+        $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
+        $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
+        //log::info($findFechaEjec);
+        if($findFechaEjec<>null)
+        {
+            foreach ($findFechaEjec as $e) {
+                $this->GeneraArchivo($e->fecha_ejecucion);
+            }
+        }
+    }
+    private function GeneraArchivo($fechaB)
+    {
+        
+        $fecha=Carbon::parse($fechaB);
         if (!File::exists(storage_path('app/Cortes')))
         { File::makeDirectory(storage_path('app/Cortes'));}       
         $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
@@ -229,7 +244,7 @@ class CorteSendEmail extends Command
             $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias);   
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path,$fecha,$banco_id,$cuenta,$alias);
-            
+
             $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias]);
             if($findCorte->count()==0)
             {
