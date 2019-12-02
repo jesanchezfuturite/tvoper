@@ -146,7 +146,7 @@ Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransac
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
-Route::get('/genera-archivo','CorteController@generaarchivo');
+Route::get('/genera-archivo','CorteController@GeneraArchivo');
 
 /********************* Command  ************************/
 Route::get('/foo', function () {
