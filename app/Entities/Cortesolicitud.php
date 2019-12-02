@@ -20,6 +20,10 @@ class Cortesolicitud extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $connection = "mysql";
+
+    protected $fillable = ['id','fecha_ejecucion','banco_id','cuenta_banco','cuenta_alias','status','created_at','updated_at'];
+
+    protected $table = "oper_corte_solicitud";
 
 }
