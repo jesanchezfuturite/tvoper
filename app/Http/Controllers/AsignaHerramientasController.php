@@ -217,12 +217,23 @@ class AsignaHerramientasController extends Controller
 
             foreach($menu as $m => $v)
             { log::info($toDelete);
+
                 if($v->id == $toDelete)
                 {
                     unset($menu[$m]);
 
                 }
             }
+            foreach($menu as $sub => $n)
+            { 
+
+                if($n->id_father == $toDelete)
+                {
+                    unset($menu[$sub]);
+
+                }
+            }
+
             //log::info($menu);
             /* here change to json and updates the db*/
 
