@@ -197,6 +197,7 @@ class AsignaHerramientasController extends Controller
      */
     public function deleteElementUserProfile(Request $request)
     {
+        
         $users = $this->admins->findWhere( [ "name" => trim($request->username) ] );
 
         try{
@@ -215,16 +216,29 @@ class AsignaHerramientasController extends Controller
             $menu  = json_decode($menu);
 
             foreach($menu as $m => $v)
-            {
+            { log::info($toDelete);
+
                 if($v->id == $toDelete)
                 {
                     unset($menu[$m]);
+
+                }
+            }
+            foreach($menu as $sub => $n)
+            { 
+
+                if($n->id_father == $toDelete)
+                {
+                    unset($menu[$sub]);
+
                 }
             }
 
+            //log::info($menu);
             /* here change to json and updates the db*/
 
             try{
+                //log::info($menu);
                 $this->admins->updateMenuByName( ['name' => $u->name ], [ 'menu' => json_encode($menu) ]);
 
                 return 1 ;
