@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Log;
 use App\Repositories\AdministratorsRepositoryEloquent;
 
 use App\Repositories\MenuRepositoryEloquent;
@@ -99,7 +99,9 @@ class HomeController extends Controller
 
             foreach($menu_user as $mu => $data)
             {
-                $father [$data->id_father]= $fathers_nodes[$data->id_father];
+                if(array_key_exists($data->id_father, $fathers_nodes)){
+                    $father [$data->id_father]= $fathers_nodes[$data->id_father];
+                }             
             }
 
             $array_menu = array('father' => $father, 'childs' => $menu_user);
@@ -123,7 +125,7 @@ class HomeController extends Controller
         {
             $response [(string)$values->info->id]= $values->info->title;
         }
-
+        //log::info($response);
         return $response;
     }
     

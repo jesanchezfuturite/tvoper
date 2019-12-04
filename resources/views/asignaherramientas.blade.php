@@ -49,7 +49,7 @@ Configuración <small> Asignación de Herramientas</small>
                 </div>
                 <div class="col-md-3">
                     Disponibles:
-                    <select size="6" id="secondary_level" class="form-control">
+                    <select size="6" id="secondary_level" class="form-control" onchange="changesSecond()">
                         
                     </select>
                 </div>
@@ -70,39 +70,36 @@ Configuración <small> Asignación de Herramientas</small>
                     </select>
                 </div>
             </div>
-            <!--
+            
             <hr>
             <h4>Menu Auxiliar</h4>
             <div class="row">
                 <div class="col-md-3"> &nbsp;</div>
                 <div class="col-md-3">
                     Disponibles:
-                    <select multiple id="secondary_level" class="form-control">
-                        <option>Reporte 1</option>
-                        <option>Reporte 2</option>
-                        <option>Reporte 3</option>
-                        <option>Reporte 4</option>
-                        <option>Reporte 5</option>
+                    <select size="6"  id="thirdy_level" class="form-control">
+                        
                     </select>
                 </div>
                 <div class="col-md-3">
                     
                     <div class="btn-toolbar">
                         <div class="btn-group btn-group-lg btn-group-solid margin-bottom-10 center-block">
-                            <button type="button" class="btn red"> << </button>
-                            <button type="button" class="btn green"> >> </button>
+                            <button type="button" class="btn red" id="deleteThird"> << </button>
+                            <button type="button" class="btn green" id="addThird"> >> </button>
                         </div>
                     </div>
                 
                 </div>
+            
                 <div class="col-md-3">
                     Agregadas:
-                    <select multiple id="secondary_level" class="form-control">
+                    <select size="6"  id="thirdy_level_added" class="form-control">
                         
                     </select>
                 </div>
             </div>
-        -->
+    
         </div>
     </div>
 </div>   
@@ -245,7 +242,7 @@ Configuración <small> Asignación de Herramientas</small>
             })); 
 
         });
-
+        //changesSecond_added();
     });
 
     /* 
@@ -482,6 +479,315 @@ Configuración <small> Asignación de Herramientas</small>
 
 
     });
-    
+    function changesSecond()
+    {
+        var principal = $( "#secondary_level" ).val();
+
+        /* read the values in the second level and filter just with the id primary */
+        var jsonObj = $.parseJSON($("#third_level").val());
+        
+        var objSecond = [];
+        $.each(jsonObj, function (i,item){
+
+            if(item.id_father === principal)
+            {
+                /* add the new node in menu */
+                i = {}
+                i ["title"] = item.title;
+                i ["route"] = item.route;
+                i ["id"] = item.id;
+                i ["id_father"] = item.id_father;
+
+                objSecond.push(i);
+            }
+
+        });
+
+
+        /* delete all elements in the list*/
+        $('#thirdy_level').empty();
+        /*refresh select box data*/
+        $.each(objSecond, function (i, item) {
+            $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        changesSecond_added();
+
+    }
+    function changesSecond_added(){
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+
+        var first = $("#secondary_level").val();
+
+        /* reads the second level and loads the childs in multiple selector */
+        //var second = $.parseJSON($("#second_level").val());
+        var third=$.parseJSON($("#third_level").val());
+
+        /* reads the saved_tools hidden field */
+        var saved = $.parseJSON($("#saved_tools").val());
+        
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        objList.push(i);
+
+        $.each(third, function (i, item){
+            
+            if(item.id_father == first)
+            {   
+                if(saved.length == 0)
+                {
+                    i = {};
+                    i ["title"] = item.title;
+                    i ["id"] = item.id;
+                    objList.push(i);
+                }else{
+
+                    $.each(saved, function (j,sv){
+
+                        if(item.id != sv.id)
+                        {
+                            i = {};
+                            i ["title"] = item.title;
+                            i ["id"] = item.id;
+                            objList.push(i);        
+                        }
+                    });
+                }
+                
+            }
+        });
+
+        /* fill the list */
+        $('#thirdy_level').empty();
+        $.each(objList,function(i, item){
+
+           $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+        var listAdded = [];
+
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        listAdded.push(i);
+
+        /* we update the values in secondary_level_added with the values saved in */
+        $.each(saved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+
+        /* fill the list added */
+        $('#thirdy_level_added').empty();
+        $.each(listAdded,function(i, item){
+
+           $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+    };
+    $("#addThird").click( function(){
+        var selected = $("#thirdy_level").val();
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+
+        if(selected == 0 || selected == null)
+        {
+            alert("Por favor selecciona una herramienta.");
+            return false;
+        }
+
+        /* remove element from secondary and update the multi select */
+        var third = $.parseJSON($("#third_level").val());
+        var aux = {};
+        $.each(third, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                aux = item;
+                delete third[i];
+            }
+
+        });
+
+        var filtered = third.filter(function (el) {
+            return el != null;
+        });
+
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        filtered.push(i);
+
+        $('#thirdy_level').empty();
+        /*refresh select box data*/
+        $.each(filtered, function (i, item) { 
+            $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+
+        /* add the new element first reads the hidden field */
+        var saved = $.parseJSON($("#saved_tools").val());
+
+        /*push aux to saved*/
+        saved.push(aux);
+
+        $("#thirdy_level_added").empty();
+
+        $.each(saved, function (i, item) { 
+            $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        /* save with ajax in DB */
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/asignaherramientas/saveuserprofile') }}",
+            data: { tools: JSON.stringify(saved), username: user, _token: '{{ csrf_token() }}' }
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+
+    });
+
+     $("#deleteThird").click( function (){
+
+        var user = $("#users_select").val();
+        var first = $("#secondary_level").val();
+
+        if(user == 0)
+        {
+            alert("Debes seleccionar un usuario para agregar una herramienta");
+            return false;   
+        }
+
+        var added = $("#thirdy_level_added").val();
+
+        if(added == 0)
+        {
+            alert("Debes seleccionar una herramienta para eliminarla del perfil !");
+            return false;   
+        }
+
+        var saved = $.parseJSON($("#saved_tools").val());
+        /* deletes in select */
+
+        $.each(saved, function (i, item){
+            
+            if(item.id == added)
+            {   
+                delete saved[i];
+            }
+
+        });
+
+        var filtered = saved.filter(function (el) {
+            return el != null;
+        });
+        $('#thirdy_level_added').empty();
+        /*refresh select box data*/
+        $.each(filtered, function (i, item) { 
+            $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        console.log(added);
+        /* update DB */
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/asignaherramientas/deleteelementuserprofile') }}",
+            data: { username: user, id: added, _token: '{{ csrf_token() }}' }
+        })
+        .done( function ( values ) {
+            /* update the secondary */
+            if(values == 0){
+                alert("Error al desasignar la herramienta por favor verifica en la Base de Datos !!!");
+                return false;
+            }
+
+        });
+        /* adding the second level array */
+        var second = $.parseJSON($("#third_level").val());
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        objList.push(i);
+        $.each(second, function (i, item){
+            
+            if(item.id_father == first)
+            {
+                if(filtered.length == 0)
+                {
+                    i = {};
+                    i ["title"] = item.title;
+                    i ["id"] = item.id;
+                    objList.push(i);   
+                }else{
+                    $.each(filtered, function (j,sv){
+
+                        if(item.id != sv.id)
+                        {
+                            i = {};
+                            i ["title"] = item.title;
+                            i ["id"] = item.id;
+                            objList.push(i);        
+                        }
+                    });
+                }
+            }
+        });
+
+        /* fill the list */
+        $('#thirdy_level').empty();
+        $.each(objList,function(i, item){
+
+           $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+
+
+    });
 </script>
 @endsection
