@@ -499,6 +499,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				{
 					$menu_father = $menu_principal["father"];
 					$menu_child = $menu_principal["childs"];
+					//Log::debug($menu_child);
 
 				}
 				@endphp
@@ -514,10 +515,32 @@ License: You must have a valid license purchased only from themeforest(the above
 								@foreach($menu_child as $i => $values)
 								
 									@if($values->id_father == $idmf)
+										@php($sub=0)
+										@foreach($menu_child as $i => $menus)									
+											@if($menus->id_father == $values->id)
+												@php($sub=1)
+											@endif
+										@endforeach
 										<li>
-											<a href="{{ $values->route }}">
+											@if($sub==1)<a href="javascript:;">@endif
+											@if($sub==0)<a href="{{ $values->route }}">@endif
+
+											
 											{{ $values->title }}
-											</a>
+											@if($sub==1)<span class="arrow"></span>@endif
+											</a>											
+											@foreach($menu_child as $i => $submenu)									
+													@if($submenu->id_father == $values->id)
+													<ul class="sub-menu">
+														<li>
+														<a href="{{ $submenu->route }}">
+															{{ $submenu->title }} 
+														</a>											
+													</li>
+												</ul>
+												@endif
+											@endforeach	
+
 										</li>
 									@endif
 								@endforeach
