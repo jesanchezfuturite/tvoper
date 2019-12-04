@@ -528,19 +528,20 @@ License: You must have a valid license purchased only from themeforest(the above
 											
 											{{ $values->title }}
 											@if($sub==1)<span class="arrow"></span>@endif
-											</a>											
+											</a>
+											<ul class="sub-menu">											
 											@foreach($menu_child as $i => $submenu)									
 													@if($submenu->id_father == $values->id)
-													<ul class="sub-menu">
+													
 														<li>
 														<a href="{{ $submenu->route }}">
 															{{ $submenu->title }} 
 														</a>											
 													</li>
-												</ul>
+												
 												@endif
 											@endforeach	
-
+											</ul>
 										</li>
 									@endif
 								@endforeach
