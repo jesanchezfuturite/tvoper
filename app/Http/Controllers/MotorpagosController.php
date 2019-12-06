@@ -2006,14 +2006,14 @@ return json_encode($response);
         $rfc=$request->rfc;
         $response=array(); 
         $fechaActual=Carbon::now();
-        if($fecha_inicio=="1")
+        if((int)$fecha_inicio==(int)"1")
         {
             
             $fechaAterior=Carbon::now()->subDays(1);
             $fecha_inicio=$fechaAterior->format('Y-m-d');
             $fecha_fin=$fechaActual->format('Y-m-d');
         }
-        if($fecha_inicio=="3")
+        if((int)$fecha_inicio==(int)"3")
         {
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d');
@@ -2049,7 +2049,7 @@ return json_encode($response);
                        
                     }
             }
-            if($trans->tiposervicio_id=="3")
+            if((int)$trans->tiposervicio_id==(int)"3")
             {
                 $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
                 foreach ($findDeclarado as $e) {
@@ -2057,7 +2057,7 @@ return json_encode($response);
                     $declarado_mes=$e->mesdec;
                 }                  
             }
-            elseif($trans->tiposervicio_id=="13")
+            elseif((int)$trans->tiposervicio_id==(int)"13")
             {
                 $findDeclarado=$this->detalleisandb->findWhere(['idTrans'=>$trans->idTrans]);
                 foreach ($findDeclarado as $e) {
@@ -2066,24 +2066,24 @@ return json_encode($response);
                 }
             }else{
 
-                if($trans->tiposervicio_id=="14")
+                if((int)$trans->tiposervicio_id==(int)"14")
                 {
                     $findDeclarado=$this->detalleishdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }
                 
-                if($trans->tiposervicio_id=="15")
+                if((int)$trans->tiposervicio_id==(int)"15")
                 {
                     $findDeclarado=$this->detalleisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="23")
+                if((int)$trans->tiposervicio_id==(int)"23")
                 {
                     $findDeclarado=$this->detalleisnprestadoradb->findWhere(['idtrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="24")
+                if((int)$trans->tiposervicio_id==(int)"24")
                 {
                     $findDeclarado=$this->detalleisnretenedordb->findWhere(['idtrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="25")
+                if((int)$trans->tiposervicio_id==(int)"25")
                 {
                     $findDeclarado=$this->detimpisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }                
@@ -2169,13 +2169,13 @@ return json_encode($response);
         $response=array();
         //log::info($rfc);
         $fechaActual=Carbon::now();
-        if($fecha_inicio=="1")
+        if((int)$fecha_inicio==(int)"1")
         {           
             $fechaAterior=Carbon::now()->subDays(1);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';
         }
-        if($fecha_inicio=="3")
+        if((int)$fecha_inicio==(int)"3")
         {           
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
@@ -2183,7 +2183,9 @@ return json_encode($response);
         }       
         if($rfc=="")
         {
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);            
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+         log::info($transaccion);       
+         log::info($fecha_inicio.' - '.$fecha_fin);       
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
                 {
