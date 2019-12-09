@@ -2184,8 +2184,8 @@ return json_encode($response);
         if($rfc=="")
         {
          $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
-         log::info($transaccion);       
-         log::info($fecha_inicio.' - '.$fecha_fin);       
+         //log::info($transaccion);       
+         //log::info($fecha_inicio.' - '.$fecha_fin);       
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
                 {
