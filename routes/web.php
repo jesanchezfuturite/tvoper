@@ -145,6 +145,16 @@ Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones
 Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 
+/************************ FAMILIA ***********************/
+Route::get('/familia','MotorpagosController@familia');
+Route::post('/familia-insert','MotorpagosController@familiaInsert');
+Route::get('/familia-find-all','MotorpagosController@familiafindAll');
+Route::post('/familiaentidad-find','MotorpagosController@familiaentidadFindwhere');
+Route::post('/familiaentidad-insert','MotorpagosController@familientidadInsert');
+Route::post('/familiaentidad-update','MotorpagosController@familientidadUpdate');
+Route::post('/familiaentidad-deleted','MotorpagosController@familientidadDeleted');
+
+
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');
 

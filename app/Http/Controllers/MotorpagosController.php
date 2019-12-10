@@ -40,6 +40,9 @@ use App\Repositories\ContdetalleisnretenedorRepositoryEloquent;
 use App\Repositories\ContdetalleretencionesRepositoryEloquent;
 use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
+use App\Repositories\FamiliaRepositoryEloquent;
+use App\Repositories\FamiliaentidadRepositoryEloquent;
+
 
 
 class MotorpagosController extends Controller
@@ -73,6 +76,9 @@ class MotorpagosController extends Controller
     protected $detalleretencionesdb;
     protected $detimpisopdb;
     protected $processdb;
+    protected $familiadb;
+    protected $familiaentidaddb;
+
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -103,7 +109,9 @@ class MotorpagosController extends Controller
         ContdetalleisnretenedorRepositoryEloquent $detalleisnretenedordb,
         ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
         ContdetimpisopRepositoryEloquent $detimpisopdb,
-        ProcessedregistersRepositoryEloquent $processdb
+        ProcessedregistersRepositoryEloquent $processdb,
+        FamiliaRepositoryEloquent $familiadb,
+        FamiliaentidadRepositoryEloquent $familiaentidaddb
 
 
     )
@@ -137,6 +145,8 @@ class MotorpagosController extends Controller
         $this->detalleretencionesdb=$detalleretencionesdb;
         $this->detimpisopdb=$detimpisopdb;
         $this->processdb=$processdb;
+        $this->familiadb=$familiadb;
+        $this->familiaentidaddb=$familiaentidaddb;
     }
 
     /**
@@ -2006,14 +2016,14 @@ return json_encode($response);
         $rfc=$request->rfc;
         $response=array(); 
         $fechaActual=Carbon::now();
-        if($fecha_inicio=="1")
+        if((int)$fecha_inicio==(int)"1")
         {
             
             $fechaAterior=Carbon::now()->subDays(1);
             $fecha_inicio=$fechaAterior->format('Y-m-d');
             $fecha_fin=$fechaActual->format('Y-m-d');
         }
-        if($fecha_inicio=="3")
+        if((int)$fecha_inicio==(int)"3")
         {
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d');
@@ -2049,7 +2059,7 @@ return json_encode($response);
                        
                     }
             }
-            if($trans->tiposervicio_id=="3")
+            if((int)$trans->tiposervicio_id==(int)"3")
             {
                 $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
                 foreach ($findDeclarado as $e) {
@@ -2057,7 +2067,7 @@ return json_encode($response);
                     $declarado_mes=$e->mesdec;
                 }                  
             }
-            elseif($trans->tiposervicio_id=="13")
+            elseif((int)$trans->tiposervicio_id==(int)"13")
             {
                 $findDeclarado=$this->detalleisandb->findWhere(['idTrans'=>$trans->idTrans]);
                 foreach ($findDeclarado as $e) {
@@ -2066,24 +2076,24 @@ return json_encode($response);
                 }
             }else{
 
-                if($trans->tiposervicio_id=="14")
+                if((int)$trans->tiposervicio_id==(int)"14")
                 {
                     $findDeclarado=$this->detalleishdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }
                 
-                if($trans->tiposervicio_id=="15")
+                if((int)$trans->tiposervicio_id==(int)"15")
                 {
                     $findDeclarado=$this->detalleisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="23")
+                if((int)$trans->tiposervicio_id==(int)"23")
                 {
                     $findDeclarado=$this->detalleisnprestadoradb->findWhere(['idtrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="24")
+                if((int)$trans->tiposervicio_id==(int)"24")
                 {
                     $findDeclarado=$this->detalleisnretenedordb->findWhere(['idtrans'=>$trans->idTrans]);                    
                 }
-                if($trans->tiposervicio_id=="25")
+                if((int)$trans->tiposervicio_id==(int)"25")
                 {
                     $findDeclarado=$this->detimpisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
                 }                
@@ -2169,13 +2179,13 @@ return json_encode($response);
         $response=array();
         //log::info($rfc);
         $fechaActual=Carbon::now();
-        if($fecha_inicio=="1")
+        if((int)$fecha_inicio==(int)"1")
         {           
             $fechaAterior=Carbon::now()->subDays(1);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';
         }
-        if($fecha_inicio=="3")
+        if((int)$fecha_inicio==(int)"3")
         {           
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
@@ -2183,7 +2193,9 @@ return json_encode($response);
         }       
         if($rfc=="")
         {
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);            
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+         //log::info($transaccion);       
+         //log::info($fecha_inicio.' - '.$fecha_fin);       
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
                 {
@@ -2247,6 +2259,128 @@ return json_encode($response);
         $response = "false";
         }*/
        return $response;
+
+    }
+
+    public function familia()
+    {   
+        $response=array();
+        $findFamilia=$this->familiadb->All();
+        foreach ($findFamilia as $e) {
+           $response []= array(
+           'id'=>$e->id,
+           'nombre'=>$e->nombre
+            );
+        }
+
+        return view('motorpagos/familia', [ "familia" => $response ]);
+
+    }
+    public function familiaInsert(Request $request)
+    {
+        $nombre=$request->nombre;
+        $val=false;
+        $busca=strtolower($nombre);
+        $response="false";
+        try{
+        $findFamilia=$this->familiadb->all();
+        foreach ($findFamilia as $a){
+            if($busca==strtolower($a->nombre))
+                {
+                    $val=true;
+                }
+        }        
+        if($val)
+        {
+            $response="false";
+        }else{
+            
+            $insert=$this->familiadb->create(['nombre'=>$nombre]);
+            $response="true";
+        }
+
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function familiafindAll()
+    {
+        $response=array();
+        $findFamilia=$this->familiadb->All();
+        foreach ($findFamilia as $e) {
+           $response []= array(
+           'id'=>$e->id,
+           'nombre'=>$e->nombre
+            );
+        }
+         return json_encode($response);
+    }
+    public function familiaentidadFindwhere(Request $request)
+    {
+        $response=array();
+        $familia_id=$request->familia_id;
+
+        $findFamiliaEntidad=$this->familiaentidaddb->findFamilia($familia_id);
+        foreach ($findFamiliaEntidad as $k) {
+           $response []= array(
+            'id' => $k->id, 
+            'familia' => $k->familia, 
+            'entidad' => $k->entidad, 
+            'familia_id' => $k->familia_id, 
+            'entidad_id' => $k->entidad_id
+            );
+        }
+        return json_encode($response);
+    }
+    public function familientidadInsert(Request $request)
+    {
+        $familia_id=$request->familia_id;
+        $entidad_id=$request->entidad_id;
+        $response="false";
+        $findFamiliaEntidad=$this->familiaentidaddb->findWhere(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+
+        if($findFamiliaEntidad->count()==0)
+        {
+            $insert=$this->familiaentidaddb->create(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+            $response="true";
+        }else{
+            $response="false";
+        }
+        return $response;
+
+    }
+    public function familientidadUpdate(Request $request)
+    {
+        $id=$request->id;
+        $familia_id=$request->familia_id;
+        $entidad_id=$request->entidad_id;
+        $response="false";
+        $findFamiliaEntidad=$this->familiaentidaddb->findWhere(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+
+        if($findFamiliaEntidad->count()==0)
+        {
+            $insert=$this->familiaentidaddb->update(['entidad_id'=>$entidad_id],$id);
+            $response="true";
+        }else{
+            $response="false";
+        }
+        return $response;
+
+    }
+    public function familientidadDeleted(Request $request)
+    {
+        $id=$request->id;
+        $response="false";
+        try{
+            $insert=$this->familiaentidaddb->deleteWhere(['id'=>$id]);
+            $response="true";
+        } catch( \Exception $e ){
+            Log::info('Error Method familientidadDeleted: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
 
     }
 

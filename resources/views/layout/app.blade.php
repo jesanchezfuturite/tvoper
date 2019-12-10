@@ -529,6 +529,7 @@ License: You must have a valid license purchased only from themeforest(the above
 											{{ $values->title }}
 											@if($sub==1)<span class="arrow"></span>@endif
 											</a>
+											@if($sub==1)
 											<ul class="sub-menu">											
 											@foreach($menu_child as $i => $submenu)									
 													@if($submenu->id_father == $values->id)
@@ -542,6 +543,7 @@ License: You must have a valid license purchased only from themeforest(the above
 												@endif
 											@endforeach	
 											</ul>
+											@endif
 										</li>
 									@endif
 								@endforeach
