@@ -40,6 +40,9 @@ use App\Repositories\ContdetalleisnretenedorRepositoryEloquent;
 use App\Repositories\ContdetalleretencionesRepositoryEloquent;
 use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
+use App\Repositories\FamiliaRepositoryEloquent;
+use App\Repositories\FamiliaentidadRepositoryEloquent;
+
 
 
 class MotorpagosController extends Controller
@@ -73,6 +76,9 @@ class MotorpagosController extends Controller
     protected $detalleretencionesdb;
     protected $detimpisopdb;
     protected $processdb;
+    protected $familiadb;
+    protected $familiaentidaddb;
+
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -103,7 +109,9 @@ class MotorpagosController extends Controller
         ContdetalleisnretenedorRepositoryEloquent $detalleisnretenedordb,
         ContdetalleretencionesRepositoryEloquent $detalleretencionesdb,
         ContdetimpisopRepositoryEloquent $detimpisopdb,
-        ProcessedregistersRepositoryEloquent $processdb
+        ProcessedregistersRepositoryEloquent $processdb,
+        FamiliaRepositoryEloquent $familiadb,
+        FamiliaentidadRepositoryEloquent $familiaentidaddb
 
 
     )
@@ -137,6 +145,8 @@ class MotorpagosController extends Controller
         $this->detalleretencionesdb=$detalleretencionesdb;
         $this->detimpisopdb=$detimpisopdb;
         $this->processdb=$processdb;
+        $this->familiadb=$familiadb;
+        $this->familiaentidaddb=$familiaentidaddb;
     }
 
     /**
@@ -2249,6 +2259,128 @@ return json_encode($response);
         $response = "false";
         }*/
        return $response;
+
+    }
+
+    public function familia()
+    {   
+        $response=array();
+        $findFamilia=$this->familiadb->All();
+        foreach ($findFamilia as $e) {
+           $response []= array(
+           'id'=>$e->id,
+           'nombre'=>$e->nombre
+            );
+        }
+
+        return view('motorpagos/familia', [ "familia" => $response ]);
+
+    }
+    public function familiaInsert(Request $request)
+    {
+        $nombre=$request->nombre;
+        $val=false;
+        $busca=strtolower($nombre);
+        $response="false";
+        try{
+        $findFamilia=$this->familiadb->all();
+        foreach ($findFamilia as $a){
+            if($busca==strtolower($a->nombre))
+                {
+                    $val=true;
+                }
+        }        
+        if($val)
+        {
+            $response="false";
+        }else{
+            
+            $insert=$this->familiadb->create(['nombre'=>$nombre]);
+            $response="true";
+        }
+
+        } catch( \Exception $e ){
+            Log::info('Error Method clasificadorUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function familiafindAll()
+    {
+        $response=array();
+        $findFamilia=$this->familiadb->All();
+        foreach ($findFamilia as $e) {
+           $response []= array(
+           'id'=>$e->id,
+           'nombre'=>$e->nombre
+            );
+        }
+         return json_encode($response);
+    }
+    public function familiaentidadFindwhere(Request $request)
+    {
+        $response=array();
+        $familia_id=$request->familia_id;
+
+        $findFamiliaEntidad=$this->familiaentidaddb->findFamilia($familia_id);
+        foreach ($findFamiliaEntidad as $k) {
+           $response []= array(
+            'id' => $k->id, 
+            'familia' => $k->familia, 
+            'entidad' => $k->entidad, 
+            'familia_id' => $k->familia_id, 
+            'entidad_id' => $k->entidad_id
+            );
+        }
+        return json_encode($response);
+    }
+    public function familientidadInsert(Request $request)
+    {
+        $familia_id=$request->familia_id;
+        $entidad_id=$request->entidad_id;
+        $response="false";
+        $findFamiliaEntidad=$this->familiaentidaddb->findWhere(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+
+        if($findFamiliaEntidad->count()==0)
+        {
+            $insert=$this->familiaentidaddb->create(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+            $response="true";
+        }else{
+            $response="false";
+        }
+        return $response;
+
+    }
+    public function familientidadUpdate(Request $request)
+    {
+        $id=$request->id;
+        $familia_id=$request->familia_id;
+        $entidad_id=$request->entidad_id;
+        $response="false";
+        $findFamiliaEntidad=$this->familiaentidaddb->findWhere(['familia_id'=>$familia_id,'entidad_id'=>$entidad_id]);
+
+        if($findFamiliaEntidad->count()==0)
+        {
+            $insert=$this->familiaentidaddb->update(['entidad_id'=>$entidad_id],$id);
+            $response="true";
+        }else{
+            $response="false";
+        }
+        return $response;
+
+    }
+    public function familientidadDeleted(Request $request)
+    {
+        $id=$request->id;
+        $response="false";
+        try{
+            $insert=$this->familiaentidaddb->deleteWhere(['id'=>$id]);
+            $response="true";
+        } catch( \Exception $e ){
+            Log::info('Error Method familientidadDeleted: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
 
     }
 
