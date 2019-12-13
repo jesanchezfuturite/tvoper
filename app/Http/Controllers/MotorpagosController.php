@@ -2036,8 +2036,13 @@ return json_encode($response);
         }else{
             if($fecha_inicio=="" && $fecha_fin=="")
             {
-                $transaccion=$this->foliosdb->consultaRFCegob(['CartKey1'=>$rfc]);
-                //log::info($transaccion);
+                 $fechaIn=Carbon::now()->subYears(1);
+                    $fechaIn=$fechaIn->format('Y');
+                    $fechaIn=$fechaIn.'-01-01';
+                    $fechaFin=$fechaActual->format('Y-m-d');
+                   // log::info($fechaIn.' - '.$fechaFin.' - '.$rfc);
+                $transaccion=$this->foliosdb->consultaRFCegob(['CartKey1'=>$rfc],$fechaIn,$fechaFin);
+               
             }else{
                 $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
             }            
@@ -2151,6 +2156,7 @@ return json_encode($response);
                         'Estatus'=>$trans->status,
                         'RFC'=>$trans->rfc,
                         'Transaccion'=>$trans->idTrans,
+                        'Familia'=>$trans->familia,
                         'Entidad'=>$trans->entidad,
                         'Tramite'=>$trans->tiposervicio,
                         'Contribuyente'=>$trans->TitularTC,
@@ -2159,8 +2165,6 @@ return json_encode($response);
                         'Tipo_Pago'=>$trans->tipopago,
                         'Total_Tramite'=>$trans->TotalTramite,
                         'Declarado'=>$declarado." ".$declarado_anio,
-                        'tiposervicio_id'=>$trans->tiposervicio_id,
-                        'entidad_id'=>$trans->entidad_id,
                         'estatus'=>$estatus_C
                         );                 
                 
@@ -2193,13 +2197,15 @@ return json_encode($response);
         }       
         if($rfc=="")
         {
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
-         //log::info($transaccion);       
-         //log::info($fecha_inicio.' - '.$fecha_fin);       
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);             
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
                 {
-                    $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc]);
+                    $fechaIn=$fechaActual->subYears(1);
+                    $fechaIn=$fechaIn->format('Y');
+                    $fechaIn=$fechaIn.'-01-01 00:00:00';
+                    $fechaFin=$fechaActual->format('Y-m-d').' 23:59:59';
+                    $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc],$fechaIn,$fechaFin);
                 }else{
                     $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
             }
@@ -2221,6 +2227,7 @@ return json_encode($response);
                     'Estatus'=>$trans->status,
                     'RFC'=>$trans->rfc,
                     'Transaccion'=>$trans->idTrans,
+                    'Familia'=>$trans->familia,
                     'Entidad'=>$trans->entidad,
                     'Tramite'=>$trans->tiposervicio,
                     'Contribuyente'=>$trans->nombre." ".$trans->apellido_paterno,
@@ -2241,7 +2248,7 @@ return json_encode($response);
         $estatus;
         $nuevoEstatus;
         $response="false";
-        //try{
+        try{
             $verificaStatus=$this->bancodb->findWhere(['id'=>$id]);
             foreach ($verificaStatus as $k) {
                 $estatus=$k->conciliacion;
@@ -2254,10 +2261,10 @@ return json_encode($response);
             }
             $updateStatus=$this->bancodb->update(['conciliacion'=>$nuevoEstatus],$id);
             $response="true";
-        /*} catch( \Exception $e ){
+        } catch( \Exception $e ){
             Log::info('Error Method clasificadorDeleted: '.$e->getMessage());
         $response = "false";
-        }*/
+        }
        return $response;
 
     }

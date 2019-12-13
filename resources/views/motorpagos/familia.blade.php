@@ -353,10 +353,11 @@
     {
  
     document.getElementById("blockui_sample_3_1").click();
-     $.ajax({
-           method: "GET",            
-           url: "{{ url('/clasificador-find-all') }}",
-           data: {_token:'{{ csrf_token() }}'}  })
+     var id=$("#itemsFamilia").val();
+        $.ajax({
+           method: "post",           
+           url: "{{ url('/familiaentidad-find') }}",
+           data: {familia_id:id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);
             if(response=="[]")
@@ -366,8 +367,8 @@
 
             }else{
               //var Resp=$.parseJSON(responseTipoServicio);  
-               var Entidad="Clasificador";        
-               JSONToCSVConvertor(response, Entidad, true);
+               var Familia="Familia";        
+               JSONToCSVConvertor(response, Familia, true);
                
             }
         })
