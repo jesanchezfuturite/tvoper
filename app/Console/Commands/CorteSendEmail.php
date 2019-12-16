@@ -171,8 +171,8 @@ class CorteSendEmail extends Command
     
     public function BuscarFechas()
     {
-        $fecha=Carbon::now();
-         //$fecha=Carbon::parse('2019-11-21');
+        ///$fecha=Carbon::now();
+         $fecha=Carbon::parse('2019-11-21');
         $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
         $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
         $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
@@ -180,6 +180,7 @@ class CorteSendEmail extends Command
         if($findFechaEjec<>null)
         {
             foreach ($findFechaEjec as $e) {
+                //log::info($e->fecha_ejecucion);
                 $this->GeneraArchivo($e->fecha_ejecucion);
             }
         }
@@ -241,7 +242,7 @@ class CorteSendEmail extends Command
             $this->gArchivo_ISOP($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Prestadora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
-            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias);   
+            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias);  
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path,$fecha,$banco_id,$cuenta,$alias);
 
@@ -293,6 +294,12 @@ class CorteSendEmail extends Command
                    $k=json_decode($concilia->info_transacciones);
                         $RowFechaDis=str_replace("Por Operacion", "", $k->fecha_disp);         
                         $RowHoraDis=str_replace("Por Operacion", "",$k->fecha_disp);
+                        $fechaVerif=explode("-", $RowFechaDis);
+                        if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
+                        {
+                            $RowFechaDis=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }}
                         if(strlen($RowFechaDis)==13)
                         {
                         $RowFechaDis=str_pad(Carbon::parse(Str::limit($RowFechaDis,10,''))->format('Y-m-d'),10);
@@ -305,8 +312,15 @@ class CorteSendEmail extends Command
                             $RowHoraDis=str_pad("00:00:00",8);
                              
                             }else{
-                            $RowFechaDis=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDis=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                                if(strlen($RowFechaDis)==10)
+                                {
+                                    $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Y-m-d'),10);
+                                    $RowHoraDis=str_pad("00:00:00",8);
+                                }
+                                else{                                
+                                    $RowFechaDis=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                    $RowHoraDis=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                                }
                             }
                         } 
                     
@@ -316,7 +330,7 @@ class CorteSendEmail extends Command
                     $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
                     $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                     $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
-                    $RowReferencia=str_pad($concilia->Linea,30,"0",STR_PAD_LEFT);                           
+                    $RowReferencia=str_pad('',30,"0",STR_PAD_LEFT);                           
                     $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                     $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                     $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
@@ -394,26 +408,38 @@ class CorteSendEmail extends Command
                 $RowFuente=str_pad(substr($concilia->fuente, 4),4);         
                 $RowTipoPagoT=str_pad($concilia->TipoPago,4,"0",STR_PAD_LEFT);     
                 $k=json_decode($concilia->info_transacciones);                    
-                       $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        if(strlen($RowFechaDispersion)==13)
+                $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+                $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+                $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        } 
+                        }
+                    }
                                           
                 $RowFolio=str_pad($concilia->folio,11,"0",STR_PAD_LEFT);
                 $RowMunnom=str_pad($concilia->munnom,2,"0",STR_PAD_LEFT);
@@ -467,26 +493,38 @@ class CorteSendEmail extends Command
                 $RowFechaBanco=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);       
                 $RowIdTrans=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
                 $k=json_decode($concilia->info_transacciones);                    
-                       $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        if(strlen($RowFechaDispersion)==13)
+                $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+                $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+                $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        }                 
+                        }
+                    }              
                 $RowTipoPago=str_pad($concilia->TipoPago,4,"0",STR_PAD_LEFT);
                 $RowTotalTramite=str_pad(str_replace(".", "",$concilia->TotalTramite),11,"0",STR_PAD_LEFT);             
                 $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
@@ -603,26 +641,38 @@ class CorteSendEmail extends Command
             $RowFechaBanco=str_pad(Carbon::parse($concilia->created_at)->format('Ymd'),8);
             $RowIdTrans=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
             $k=json_decode($concilia->info_transacciones);        
-                $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                    if(strlen($RowFechaDispersion)==13)
+            $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+            $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+            $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+            $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+            $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                            }
                         }
-                    } 
+                    }
                                
         $RowTipoPago=str_pad($concilia->TipoPago,4,"0",STR_PAD_LEFT);
         $RowTotalTramite=str_pad(str_replace(".", "",$concilia->TotalTramite),11,"0",STR_PAD_LEFT);       
@@ -726,27 +776,39 @@ class CorteSendEmail extends Command
         foreach ($conciliacion as $concilia) {
             $RowFechaCorte=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
             $RowIdTrans=str_pad($concilia->transaccion_id,9,"0",STR_PAD_LEFT);
-                $k=json_decode($concilia->info_transacciones);           
-                       $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        if(strlen($RowFechaDispersion)==13)
+            $k=json_decode($concilia->info_transacciones);           
+            $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+            $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+            $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+            $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+            $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        }   
+                        }
+                    }
             $RowTipoPago=str_pad($concilia->TipoPago,2,"0",STR_PAD_LEFT);               
             $RowFolio=str_pad($concilia->Folio,11,"0",STR_PAD_LEFT);
             $RowRfc=str_pad($concilia->CartKey1,13," ",STR_PAD_LEFT);           
@@ -795,29 +857,40 @@ class CorteSendEmail extends Command
             foreach ($conciliacion as $concilia) {
                 $RowFechaCorte=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
                 $RowBanco=str_pad($concilia->banco_id,4,"0",STR_PAD_LEFT);        
-                $k=json_decode($concilia->info_transacciones);                    
-                
-                       $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        $RowTotalTramite=str_pad(str_replace(".", "", $k->total_tramite),11,"0",STR_PAD_LEFT);
-                        if(strlen($RowFechaDispersion)==13)
+                $k=json_decode($concilia->info_transacciones); 
+                $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+                $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+                $RowTotalTramite=str_pad(str_replace(".", "", $k->total_tramite),11,"0",STR_PAD_LEFT);
+                $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        }            
+                        }
+                    }       
 
                 $RowIdTrans=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
                 $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);     
@@ -906,28 +979,40 @@ class CorteSendEmail extends Command
             foreach ($conciliacion as $concilia) {
                 $RowFechaCorte=str_pad(Carbon::parse($concilia->crated_at)->format('Ymd'),8);
                 $RowBanco=str_pad($concilia->banco_id,4,"0",STR_PAD_LEFT);               
-                   $k=json_decode($concilia->info_transacciones);                    
-                        $RowTotalTramite=str_pad(str_replace(".", "", $k->total_tramite),13,"0",STR_PAD_LEFT);
-                       $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        if(strlen($RowFechaDispersion)==13)
+                $k=json_decode($concilia->info_transacciones);                    
+                $RowTotalTramite=str_pad(str_replace(".", "", $k->total_tramite),13,"0",STR_PAD_LEFT);
+                $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
+                $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+                $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+                $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+                $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        }   
+                        }
+                    }
                 $RowIdTrans=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
                 $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);        
                 $RowRfcAlfa=str_pad($concilia->rfcalfa,4,"0",STR_PAD_LEFT);  
@@ -990,25 +1075,37 @@ class CorteSendEmail extends Command
                 $k=json_decode($concilia->info_transacciones);               
                     $RowTotalTramite=str_pad(str_replace(".", "",$k->total_tramite ),13,"0",STR_PAD_LEFT);       
                     $RowFechaTramite=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
-                        $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
-                        $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
-                        $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
-                        if(strlen($RowFechaDispersion)==13)
+                    $RowHoraTramite=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
+                    $RowFechaDispersion=str_replace("Por Operacion", "", $k->fecha_disp);         
+                    $RowHoraDispersion=str_replace("Por Operacion", "",$k->fecha_disp);
+                    $fechaVerif=explode("-", $RowFechaDispersion);
+                    if($fechaVerif[0]<>''){
+                        if((int)$fechaVerif[1]>12 )
                         {
+                            $RowFechaDispersion=$fechaVerif[0]."-".$fechaVerif[2]."-".$fechaVerif[1];
+                        }
+                    }
+                    if(strlen($RowFechaDispersion)==13)
+                    {
                         $RowFechaDispersion=str_pad(Carbon::parse(Str::limit($RowFechaDispersion,10,''))->format('Y-m-d'),10);
                         $RowHoraDispersion=str_pad(substr($RowHoraDispersion,-2).":00:00",8);
-                        } 
-                        else{
-                            if($RowFechaDispersion==null)
-                            {
+                    }else{
+                        if($RowFechaDispersion==null)
+                        {
                             $RowFechaDispersion=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
                             $RowHoraDispersion=str_pad("00:00:00",8);
                              
-                            }else{
-                            $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                            $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                        }else{
+                            if(strlen($RowFechaDispersion)==10)
+                            {
+                                $RowFechaDispersion=str_pad(Carbon::parse($RowFechaDispersion)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad("00:00:00",8);
+                            }else{                                
+                                $RowFechaDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
+                                $RowHoraDispersion=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
                             }
-                        } 
+                        }
+                    }
                        
                 $RowTipoPago=str_pad($concilia->TipoPago,4,"0",STR_PAD_LEFT); /////////             
                 
