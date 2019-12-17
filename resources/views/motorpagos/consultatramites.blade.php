@@ -86,10 +86,11 @@
                                 </li>                            
                             </ul>
                             <div class="tab-content">
+                               
+                                <div class="tab-pane active" id="tab_0"> 
                                 <div class="row">
                                     <div id="addTimerpicker"></div>
                                 </div> 
-                                <div class="tab-pane active" id="tab_0">
                                     <div class="portlet box blue" id="addTable_1">
                                         <div class="portlet-title">
                                             <div class="caption">
@@ -105,6 +106,7 @@
                                                     <th>Conciliacion</th> 
                                                     <th>Estatus</th>
                                                     <th>RFC</th>
+                                                    <th>Familia</th>
                                                     <th>Entidad</th>
                                                     <th>Tramite</th>
                                                     <th>Contribuyente</th> 
@@ -127,6 +129,7 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    <td></td>
                                                 </tr>                                   
                                             </tbody>
                                             <tfoot>
@@ -135,6 +138,7 @@
                                                     <th>Conciliacion</th> 
                                                     <th>Estatus</th>
                                                     <th>RFC</th>
+                                                    <th>Familia</th>
                                                     <th>Entidad</th>
                                                     <th>Tramite</th>
                                                     <th>Contribuyente</th> 
@@ -150,6 +154,9 @@
                                 </div>
                             </div>            
                             <div class="tab-pane" id="tab_1">
+                                <div class="row">
+                                    <div id="addTimerpicker2"></div>
+                                </div>
                                 <div class="portlet box blue" id="addTable_2">
                                     <div class="portlet-title">
                                         <div class="caption">
@@ -166,6 +173,7 @@
                                                     <th>Estatus</th>
                                                     <th>RFC</th>
                                                     <th>Declarado</th>
+                                                    <th>Familia</th>
                                                     <th>Entidad</th>
                                                     <th>Tramite</th>
                                                     <th>Contribuyente</th> 
@@ -189,6 +197,7 @@
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
+                                                    <td></td>
                                                 </tr>                                   
                                             </tbody>
                                             <tfoot>
@@ -198,6 +207,7 @@
                                                     <th>Estatus</th>
                                                     <th>RFC</th>
                                                     <th>Declarado</th>
+                                                    <th>Familia</th>
                                                     <th>Entidad</th>
                                                     <th>Tramite</th>
                                                     <th>Contribuyente</th> 
@@ -246,7 +256,8 @@
         </div>
     </div>
 </div>
-
+<input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
+<input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
                             
 @endsection
 
@@ -268,7 +279,7 @@
         
     });
     
-    function consultaRangoFechasEgobOper()
+    function consultaRangoFechasOper()
     {
        fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
@@ -276,8 +287,19 @@
         if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
             Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications")            
         }else{
-            consultaEgob(fechaIn,fechaF);
             consultaOper(fechaIn,fechaF);                    
+        }
+    }
+     function consultaRangoFechasEgob()
+    {
+       fechaIn=$("#fechainicio2").val();
+        fechaF=$("#fechafin2").val();
+        var rfc=$("#rfc2").val();
+        if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin o RFC, Requerido!", "Notifications")            
+        }else{
+            consultaEgob(fechaIn,fechaF);
+                                
         }
     }
     function radiobuttons()
@@ -286,6 +308,7 @@
         if(option=="avanzado")
         {
             timpicker();
+            timpicker2();
         }else{
             $("#addTimerpicker div").remove();
             $("#addTimerpicker2 div").remove();
@@ -299,7 +322,13 @@
     function timpicker()
     {
         $("#addTimerpicker div").remove();
-         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgobOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
+         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
+         ComponentsPickers.init();   
+    }
+     function timpicker2()
+    {
+        $("#addTimerpicker2 div").remove();
+         $("#addTimerpicker2").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio2' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin2' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc2' id='rfc2' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgob()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
          ComponentsPickers.init();   
     }
     function consultaInicial()
@@ -320,15 +349,13 @@
     function consultaEgob(fechaIn,fechaF) {
         Addtable2();
         document.getElementById("blockui_sample_3_1").click();
-        var status=$("#itemsStatus2").val();
-        var servicio=$("#itemsTipoServicio2").val();
-        var rfc_=$("#rfc").val();
-        var entidad_=$("#itemsEntidad2").val();
+        var rfc_=$("#rfc2").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-egob') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
+        document.getElementById('jsonCode2').value=response;
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
         var color='';
@@ -337,6 +364,7 @@
         {
             $("#sample_2 tbody").append("<tr>"
                 +"<td>No Found</td>"
+                +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
@@ -374,6 +402,7 @@
                 +"<td>"+item.Estatus+"</td>"           
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Declarado+"</td>"
+                +"<td>"+item.Familia+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
                 +"<td>"+item.Contribuyente+"</td>"
@@ -401,27 +430,27 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th><th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th>"+"<th>Familia</th>"+"<th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
     }
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_3'><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot></table></div> </div>");
     }
     function cargatabla1()
-    {   var hoy = new Date();
+    {   /*var hoy = new Date();
         var dd = hoy.getDate();
         var mm = hoy.getMonth()+1;
-        var yyyy = hoy.getFullYear();
+        var yyyy = hoy.getFullYear();*/
         $('#sample_3').DataTable( {
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        /*lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         dom: 'Bfrtip',
         buttons: [
             {
                 extend: 'excelHtml5',
                 title:  'Transacciones_Oper_'+yyyy+mm+dd
             },'pageLength'
-        ],
+        ],*/
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
@@ -448,19 +477,19 @@
     }
     function cargatabla2()
     {
-        var hoy = new Date();
+        /*var hoy = new Date();
         var dd = hoy.getDate();
         var mm = hoy.getMonth()+1;
-        var yyyy = hoy.getFullYear();
+        var yyyy = hoy.getFullYear();*/
         $('#sample_2').DataTable( {
-        lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+       /* lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         dom: 'Bfrtip',
         buttons: [
             {
                 extend: 'excelHtml5',
                 title: 'Transacciones_Egob_'+yyyy+mm+dd
             },'pageLength'
-        ],
+        ],*/
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
@@ -488,15 +517,13 @@
     function consultaOper(fechaIn,fechaF) {
         Addtable1();
         document.getElementById("blockui_sample_3_1").click();
-         var status=$("#itemsStatus").val();
-        var servicio=$("#itemsTipoServicio").val();
-        var entidad_=$("#itemsEntidad").val();
         var rfc_=$("#rfc").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+        document.getElementById('jsonCode1').value=response;        
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
@@ -505,6 +532,7 @@
         {
             $("#sample_3 tbody").append("<tr>"
                 +"<td>No Found</td>"
+                +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
@@ -539,6 +567,7 @@
                 +"<td>"+label+"</td>"
                 +"<td>"+item.Estatus+"</td>"
                 +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Familia+"</td>"
                 +"<td>"+item.Entidad+"</td>"
                 +"<td>"+item.Tramite+"</td>"
                 +"<td>"+item.Contribuyente+"</td>"
@@ -560,6 +589,60 @@
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
     }
+
+    function saveEgob()
+    {
+        var JSONData=$("#jsonCode2").val();
+        var ReportTitle='Transacciones_Egobierno';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+    function saveOper()
+    {
+        var JSONData=$("#jsonCode1").val();
+        var ReportTitle='Transacciones_Operaciones';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
     
 </script>
 @endsection
