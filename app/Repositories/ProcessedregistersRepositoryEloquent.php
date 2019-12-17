@@ -84,8 +84,8 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('egob.partidas','egob.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
         ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        //->join('egob.referenciabancaria','egob.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones','egob.partidas.id_partida','egob.partidas.descripcion','egob.folios.Folio','egob.folios.CartImporte'/*,'egob.referenciabancaria.Linea'*/,'oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
+        ->join('egob.referenciabancaria','egob.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones','egob.partidas.id_partida','egob.partidas.descripcion','egob.folios.Folio','egob.folios.CartImporte','egob.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
