@@ -256,7 +256,8 @@
         </div>
     </div>
 </div>
-
+<input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
+<input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
                             
 @endsection
 
@@ -354,6 +355,7 @@
         url: "{{ url('/consulta-transacciones-egob') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
+        document.getElementById('jsonCode2').value=response;
         $("#sample_2 tbody tr").remove();   
         var Resp=$.parseJSON(response);
         var color='';
@@ -428,12 +430,12 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> <th>Familia</th><th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th><th>Familia</th><th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th>"+"<th>Familia</th>"+"<th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
     }
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'><span class='help-block'>&nbsp;</span><table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Familia</th> <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> <th>Familia</th><th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot></table></div> </div>");
     }
     function cargatabla1()
     {   /*var hoy = new Date();
@@ -521,6 +523,7 @@
         url: "{{ url('/consulta-transacciones-oper') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+        document.getElementById('jsonCode1').value=response;        
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
@@ -586,6 +589,60 @@
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
     }
+
+    function saveEgob()
+    {
+        var JSONData=$("#jsonCode2").val();
+        var ReportTitle='Transacciones_Egobierno';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+    function saveOper()
+    {
+        var JSONData=$("#jsonCode1").val();
+        var ReportTitle='Transacciones_Operaciones';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f = new Date();
+  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    document.getElementById("blockui_sample_3_1_1").click();
+
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
     
 </script>
 @endsection

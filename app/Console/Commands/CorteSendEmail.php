@@ -302,24 +302,24 @@ class CorteSendEmail extends Command
                         }}
                         if(strlen($RowFechaDis)==13)
                         {
-                        $RowFechaDis=str_pad(Carbon::parse(Str::limit($RowFechaDis,10,''))->format('Y-m-d'),10);
-                        $RowHoraDis=str_pad(substr($RowHoraDis,-2).":00:00",8);
+                        $RowFechaDis=str_pad(Carbon::parse(Str::limit($RowFechaDis,10,''))->format('Ymd'),8);
+                        $RowHoraDis=str_pad(substr($RowHoraDis,-2)."0000",6);
                         } 
                         else{
                             if($RowFechaDis==null)
                             {
-                            $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
-                            $RowHoraDis=str_pad("00:00:00",8);
+                            $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
+                            $RowHoraDis=str_pad("000000",6);
                              
                             }else{
                                 if(strlen($RowFechaDis)==10)
                                 {
-                                    $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Y-m-d'),10);
-                                    $RowHoraDis=str_pad("00:00:00",8);
+                                    $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Ymd'),8);
+                                    $RowHoraDis=str_pad("000000",6);
                                 }
                                 else{                                
-                                    $RowFechaDis=str_pad(Carbon::parse($k->fecha_disp)->format('Y-m-d'),10);
-                                    $RowHoraDis=str_pad(Carbon::parse($k->fecha_disp)->format('H:m:s'),8);
+                                    $RowFechaDis=str_pad(Carbon::parse($k->fecha_disp)->format('Ymd'),8);
+                                    $RowHoraDis=str_pad(Carbon::parse($k->fecha_disp)->format('Hms'),6);
                                 }
                             }
                         } 
@@ -337,7 +337,7 @@ class CorteSendEmail extends Command
                     $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
                     $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                     $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
-                    $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowDatoAdicional1.$RowDatoAdicional2.$RowCuentaPago.$RowAlias;
+                    $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
                        // $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
                     File::append($Directorio,$cadena."\r\n");
                     $updateConciliacion=$this->pr->UpdatePorTransaccion($fecha,$concilia->transaccion_id);
@@ -369,22 +369,22 @@ class CorteSendEmail extends Command
                 {
                     $RowClaveltramite=str_pad($concilia->tipo_servicio,6,"0",STR_PAD_LEFT);
                     
-                    $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Y-m-d'),10);
-                    $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('H:m:s'),8);                  
+                    $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
+                    $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);                  
                     $RowFechapago=str_pad(Carbon::parse($concilia->fecha_tramite)->format('Ymd'),8);
                     $RowHorapago=str_pad(Carbon::parse($concilia->hora_tramite)->format('hms'),6);
                     $RowPartida=str_pad($concilia->id_partida,5,"0",STR_PAD_LEFT);
                     $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
                     $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                     $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
-                    $RowReferencia=str_pad($concilia->Linea,30,"0",STR_PAD_LEFT);                           
+                    $RowReferencia=str_pad(/*$concilia->Linea*/'',30,"0",STR_PAD_LEFT);                           
                     $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                     $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                     $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
                     $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
                     $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                     $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
-                    $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowDatoAdicional1.$RowDatoAdicional2.$RowCuentaPago.$RowAlias;
+                    $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
                        // $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
                     File::append($Directorio,$cadena."\r\n");
                     $updateConciliacion=$this->pr->UpdatePorTransaccion($fecha,$concilia->transaccion_id);
