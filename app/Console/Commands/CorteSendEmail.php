@@ -171,8 +171,8 @@ class CorteSendEmail extends Command
     
     public function BuscarFechas()
     {
-        ///$fecha=Carbon::now();
-         $fecha=Carbon::parse('2019-11-21');
+        $fecha=Carbon::now();
+        //$fecha=Carbon::parse('2019-11-21');
         $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
         $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
         $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
@@ -223,7 +223,8 @@ class CorteSendEmail extends Command
     {   
         $existe=false;
         $findConciliacion=$this->pr->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias,'archivo_corte'=>'','status'=>'p']);
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,3,13,14,15,23,24,25);       
+        //,3,13,14,15,23,24,25
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
@@ -236,13 +237,13 @@ class CorteSendEmail extends Command
         
         if($existe)
         {       
-            $this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
+            /*$this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
             $this->gArchivo_ISAN($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_ISH($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_ISOP($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Prestadora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
-            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias);  
+            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */ 
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path,$fecha,$banco_id,$cuenta,$alias);
 
@@ -377,7 +378,7 @@ class CorteSendEmail extends Command
                     $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
                     $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                     $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
-                    $RowReferencia=str_pad(/*$concilia->Linea*/'',30,"0",STR_PAD_LEFT);                           
+                    $RowReferencia=str_pad($concilia->Linea,30,"0",STR_PAD_LEFT);                           
                     $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                     $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                     $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
