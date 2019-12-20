@@ -378,7 +378,7 @@ class CorteSendEmail extends Command
                     $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
                     $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                     $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
-                    $RowReferencia=str_pad(/*$concilia->Linea*/'',30,"0",STR_PAD_LEFT);                           
+                    $RowReferencia=str_pad($concilia->Linea,30,"0",STR_PAD_LEFT);                           
                     $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                     $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                     $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente

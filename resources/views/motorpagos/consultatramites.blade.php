@@ -132,22 +132,7 @@
                                                     <td></td>
                                                 </tr>                                   
                                             </tbody>
-                                            <tfoot>
-                                                 <tr>
-                                                    <th>Transacción</th> 
-                                                    <th>Conciliacion</th> 
-                                                    <th>Estatus</th>
-                                                    <th>RFC</th>
-                                                    <th>Familia</th>
-                                                    <th>Entidad</th>
-                                                    <th>Tramite</th>
-                                                    <th>Contribuyente</th> 
-                                                    <th>Inicio Tramite</th>                       
-                                                    <th>Banco</th>
-                                                    <th>Tipo Pago</th>
-                                                    <th>Total Tramite</th>
-                                                </tr>
-                                            </tfoot>
+                                            
                                         </table>                          
                                     </div>
                                     </div>
@@ -200,23 +185,7 @@
                                                     <td></td>
                                                 </tr>                                   
                                             </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Transacción</th>
-                                                    <th>Conciliacion</th>
-                                                    <th>Estatus</th>
-                                                    <th>RFC</th>
-                                                    <th>Declarado</th>
-                                                    <th>Familia</th>
-                                                    <th>Entidad</th>
-                                                    <th>Tramite</th>
-                                                    <th>Contribuyente</th> 
-                                                    <th>Inicio Tramite</th>                       
-                                                    <th>Banco</th>
-                                                    <th>Tipo Pago</th>                                            
-                                                    <th>Total Tamite</th>
-                                                </tr>
-                                            </tfoot>
+                                            
                                         </table>                            
                                     </div>
                                     </div>
@@ -430,32 +399,28 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody><tfoot><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>RFC</th><th>Declarado</th>"+"<th>Familia</th>"+"<th>Entidad</th><th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th><th>Banco</th><th>Tipo Pago</th><th>Total Tamite</th> </tr> </tfoot></table></div> </div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody></table></div> </div>");
     }
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody><tfoot><tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr></tfoot></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function cargatabla1()
-    {   /*var hoy = new Date();
-        var dd = hoy.getDate();
-        var mm = hoy.getMonth()+1;
-        var yyyy = hoy.getFullYear();*/
+    {    var inin=0;
+        $('#sample_3 thead tr').clone(true).appendTo( '#sample_3 thead' );
         $('#sample_3').DataTable( {
-        /*lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'excelHtml5',
-                title:  'Transacciones_Oper_'+yyyy+mm+dd
-            },'pageLength'
-        ],*/
+        
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
+               
+                console.log(inin);
+               
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                    .appendTo( $(column.footer()).empty() )
+                
+                
+                    .appendTo( $("#sample_3 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
@@ -470,6 +435,7 @@
                 column.data().unique().sort().each( function ( d, j ) {
                     select.append( '<option value="'+d+'">'+d+'</option>' )
                 } );
+                 inin=inin+1;
             } );
         }
         } );
@@ -477,24 +443,15 @@
     }
     function cargatabla2()
     {
-        /*var hoy = new Date();
-        var dd = hoy.getDate();
-        var mm = hoy.getMonth()+1;
-        var yyyy = hoy.getFullYear();*/
+         var inin=0;
+        $('#sample_2 thead tr').clone(true).appendTo( '#sample_2 thead' );       
         $('#sample_2').DataTable( {
-       /* lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'excelHtml5',
-                title: 'Transacciones_Egob_'+yyyy+mm+dd
-            },'pageLength'
-        ],*/
+       
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                    .appendTo( $(column.footer()).empty() )
+                    .appendTo( $("#sample_2 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
@@ -508,9 +465,10 @@
                 column.data().unique().sort().each( function ( d, j ) {
                     select.append( '<option value="'+d+'">'+d+'</option>' )
                 } );
+                 inin=inin+1;                
             } );
-        }
-    } );
+            }
+        } );
          
     }
     
