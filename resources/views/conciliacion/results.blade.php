@@ -188,7 +188,7 @@
                     content = '<div class="tab-pane" id="tab_'+element+'">';     
                 }
                 // aqui genero el resumen de cada banco por cuenta
-                content += '<div class="portlet-body"><table class="table table-hover"><thead><tr><th></th><th></th><th colspan="5">Internet</th><th colspan="5" style="background-color: #E9E9E9">Repositorio</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th><th style="background-color: #E9E9E9">Trámites</th><th style="background-color: #E9E9E9">Conciliados</th><th style="background-color: #E9E9E9">No conciliados</th><th style="background-color: #E9E9E9">Monto conciliado</th><th style="background-color: #E9E9E9">Monto no conciliado</th></tr></thead><tbody>';
+                content += '<div class="portlet-body"><table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
                 accounts = info.info;
 
@@ -200,11 +200,6 @@
                     content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
                     content += '<td align="right">'+cuenta.monto_conciliado+'</td>';
                     content += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
-                    content += '<td align="right">'+cuenta.registros_repo+'</td>';
-                    content += '<td align="right">'+cuenta.registros_conciliados_repo+'</td>';
-                    content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",) id="noconcrepo">'+cuenta.registros_no_conciliados_repo+'</a></td>';
-                    content += '<td align="right">'+cuenta.monto_conciliado_repo+'</td>';
-                    content += '<td align="right">'+cuenta.monto_no_conciliado_repo+'</td>';
                     content += '</tr>';
                 });
 

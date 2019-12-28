@@ -371,7 +371,22 @@ class ConciliacionController extends Controller
                 {   
                     $temporal = array();
 
-                    $total_registros = $total_conciliados = $total_no_conciliados = $monto_conciliado = $monto_no_conciliado =  $total_conciliados_repo = $total_no_conciliados_repo = $monto_conciliado_repo = $monto_no_conciliado_repo = 0;
+                    $total_registros            = 0;
+                    
+                    $total_conciliados          = 0;
+                    $total_no_conciliados       = 0;
+                    $monto_conciliado           = 0;
+                    $monto_no_conciliado        = 0;
+
+                    $total_conciliados_repo     = 0;
+                    $total_no_conciliados_repo  = 0;
+                    $monto_conciliado_repo      = 0;
+                    $monto_no_conciliado_repo   = 0;
+
+                    $total_conciliados_as400    = 0;
+                    $total_no_conciliados_as400 = 0;
+                    $monto_conciliado_as400     = 0;
+                    $monto_no_conciliado_as400  = 0;
 
                     $cuenta = $b["cuenta"];
                     $alias  = $b["cuenta_alias"];
@@ -396,7 +411,7 @@ class ConciliacionController extends Controller
                     foreach($temporal as $t)
                     {
                         switch($t["origen"])
-                        {
+                        {   
                             case 1 :
                                 // internet
                                 if(strcmp($t["status"],"p") == 0)
@@ -419,29 +434,59 @@ class ConciliacionController extends Controller
                                     $monto_no_conciliado_repo += $t["amount"];
                                 }
                                 break;
+                            case 2:
+                            case 5:
+                                // son los de AS400
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_as400 ++;
+                                    $monto_conciliado_as400 += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_as400 ++;
+                                    $monto_no_conciliado_as400 += $t["amount"];
+                                }
+                                break;
                             default:
                                 break;
                         }
                     
                     }
-                    $info_final[]= array(
-                        "cuenta" => $cuenta,
-                        "cuenta_alias" => $alias,
-                        "registros" => $total_conciliados + $total_no_conciliados,
-                        "registros_conciliados" => $total_conciliados,
-                        "registros_no_conciliados" => $total_no_conciliados,
-                        "monto_conciliado" => number_format($monto_conciliado,2),
-                        "monto_no_conciliado" => number_format($monto_no_conciliado,2),
-                        "registros_conciliados_repo" => $total_conciliados_repo,
-                        "registros_no_conciliados_repo" => $total_no_conciliados_repo,
-                        "monto_conciliado_repo" => number_format($monto_conciliado_repo,2),
-                        "monto_no_conciliado_repo" => number_format($monto_no_conciliado_repo,2),
-                        "registros_repo" => $total_conciliados_repo +$total_no_conciliados_repo,
+                    $info_internet[]= array(
+                        "cuenta"                            => $cuenta,
+                        "cuenta_alias"                      => $alias,
+                        //internet
+                        "registros"                         => $total_conciliados + $total_no_conciliados,
+                        "registros_conciliados"             => $total_conciliados,
+                        "registros_no_conciliados"          => $total_no_conciliados,
+                        "monto_conciliado"                  => number_format($monto_conciliado,2),
+                        "monto_no_conciliado"               => number_format($monto_no_conciliado,2),
+                    );    
+                        // repositorio
+                    $info_repositorio []= array(
+                        "cuenta"                            => $cuenta,
+                        "cuenta_alias"                      => $alias,    
+                        "registros_conciliados"             => $total_conciliados_repo,
+                        "registros_no_conciliados"          => $total_no_conciliados_repo,
+                        "monto_conciliado"                  => number_format($monto_conciliado_repo,2),
+                        "monto_no_conciliado"               => number_format($monto_no_conciliado_repo,2),
+                        "registros"                         => $total_conciliados_repo +$total_no_conciliados_repo,
+                    );
+                        // as400
+                    $info_as400 []= array(
+                        "cuenta"                            => $cuenta,
+                        "cuenta_alias"                      => $alias,
+                        "registros_conciliados"             => $total_conciliados_as400,
+                        "registros_no_conciliados"          => $total_no_conciliados_as400,
+                        "monto_conciliado"                  => number_format($monto_conciliado_as400,2),
+                        "monto_no_conciliado"               => number_format($monto_no_conciliado_as400,2),
+                        "registros"                         => $total_conciliados_as400 +$total_no_conciliados_as400,
                     );
                 }
                 $final [$bd]= array(
-                    "descripcion" => $info["descripcion"],
-                    "info" => $info_final, 
+                    "descripcion"       => $info["descripcion"],
+                    "info"              => $info_internet,
+                    "info_repositorio"  => $info_repositorio, 
+                    "info_as400"        => $info_as400, 
                 );
             }        
         }else{
