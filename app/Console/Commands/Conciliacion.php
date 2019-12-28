@@ -265,12 +265,14 @@ class Conciliacion extends Command
                             
                         }
 
+
+
                         $data =
                             [
                                 "day"               => substr($line, $dayStart, $dayLength),
                                 "month"             => substr($line, $monthStart, $monthLength),
                                 "year"              => substr($line, $yearStart, $yearLength),
-                                "monto"             => (double)$monto,
+                                "monto"             => $monto,
                                 "transaccion_id"    => substr($line, $idStart, $idLength),
                                 "status"            => "np",
                                 "filename"          => $filename,
@@ -281,6 +283,12 @@ class Conciliacion extends Command
                                 "banco_id"          => $this->info_cuenta["banco_id"],
                                 "fecha_ejecucion"   => $this->executedDate,
                             ];
+
+                        if(strcmp('010000000000125500841025278275', $referencia) == 0){
+                            dd($data,"line",$line,$dayStart,$dayLength,$monthStart,$monthLength,$yearStart,$yearLength,$amountStart,$amountLength,$idStart,$idLength,$origenStart,$origenLength,$referenciaStart,$referenciaLength)
+                        }
+                        
+
 
                         try{
 
@@ -676,7 +684,7 @@ class Conciliacion extends Command
 
     private function loadBankDetails()
     {
-        $bancos = $this->banco->all();
+        $bancos = $this->banco->findWhere( [ "conciliacion" => 1 ]);
 
         $cuentasbanco = $this->cuentasbanco->all();
 
