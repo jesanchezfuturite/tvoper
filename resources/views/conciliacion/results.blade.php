@@ -228,7 +228,7 @@
 
                 as400 = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">AS400</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
-                accounts_as400 = info.info_repositorio;
+                accounts_as400 = info.info_as400;
 
                 $.each(accounts_as400,function(j,cuenta_as400){
                     as400 += '<tr>';
