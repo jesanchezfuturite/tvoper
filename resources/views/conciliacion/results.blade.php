@@ -191,25 +191,51 @@
                     content = '<div class="tab-pane" id="tab_'+element+'">';     
                 }
                 // aqui genero el resumen de cada banco por cuenta para internet
-                content += '<div class="portlet-body"><table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+                content += '<div class="portlet-body">';
+
+                internet = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
                 accounts = info.info;
-                console.log(info.info);
 
                 $.each(accounts,function(j,cuenta){
-                    content += '<tr>';
-                    content += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
-                    content += '<td align="right">'+cuenta.registros+'</td>';
-                    content += '<td align="right">'+cuenta.registros_conciliados+'</td>';
-                    content += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
-                    content += '<td align="right">'+cuenta.monto_conciliado+'</td>';
-                    content += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
-                    content += '</tr>';
+                    internet += '<tr>';
+                    internet += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
+                    internet += '<td align="right">'+cuenta.registros+'</td>';
+                    internet += '<td align="right">'+cuenta.registros_conciliados+'</td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
+                    internet += '<td align="right">'+cuenta.monto_conciliado+'</td>';
+                    internet += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
+                    internet += '</tr>';
                 });
 
-                content += '</tbody></table></div></div>';
+                internet += '</tbody></table>';
 
-                $("#c_tabs").append(content);                
+                repo = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+
+                accounts_repo = info.info_repositorio;
+
+                $.each(accounts_repo,function(j,cuenta_repo){
+                    repo += '<tr>';
+                    repo += '<td>'+cuenta_repo.cuenta_alias+'</td><td>'+cuenta_repo.cuenta+'</td>';
+                    repo += '<td align="right">'+cuenta_repo.registros+'</td>';
+                    repo += '<td align="right">'+cuenta_repo.registros_conciliados+'</td>';
+                    repo += '<td align="right"><a href="#" onclick=noconc("'+cuenta_repo.cuenta_alias+'","'+cuenta_repo.cuenta+'",1) id="noconc">'+cuenta_repo.registros_no_conciliados+'</a></td>';
+                    repo += '<td align="right">'+cuenta_repo.monto_conciliado+'</td>';
+                    repo += '<td align="right">'+cuenta_repo.monto_no_conciliado+'</td>';
+                    repo += '</tr>';
+                });
+
+                repo += '</tbody></table>';
+
+                content += internet;
+
+                content += repo;
+
+                content += '</div></div>';
+
+                $("#c_tabs").append(content);
+
+                internet = "";                
 
                 element ++;
             });
