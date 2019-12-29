@@ -365,7 +365,9 @@ class ConciliacionController extends Controller
                 $bank_id        = $bd;
                 $bank_accounts  = $info["info"];
                 
-                $info_final = array();
+                $info_internet = array();
+                $info_repositorio = array();
+                $info_as400 = array();
 
                 foreach($bank_accounts as $b)
                 {   

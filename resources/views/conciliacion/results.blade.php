@@ -193,6 +193,7 @@
                 content += '<div class="portlet-body"><table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
                 accounts = info.info;
+                console.log(info.info);
 
                 $.each(accounts,function(j,cuenta){
                     content += '<tr>';
@@ -205,9 +206,7 @@
                     content += '</tr>';
                 });
 
-                content += '</tbody></table>';
-
-                content += '</div></div>';
+                content += '</tbody></table></div></div>';
 
                 $("#c_tabs").append(content);                
 
