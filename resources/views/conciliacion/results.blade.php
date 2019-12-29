@@ -174,18 +174,15 @@
             var element = 0;
 
             var content;
-            var content_r;
-            var content_a;
             var accounts;
-            var accounts_r;
-            var accounts_a;
             
             // vaciar el contenido del ul para insertar los nuevos tab
             $("#d_tabs").empty();
             $("#c_tabs").empty();
 
-            $.each(data,function(i,info){                
-                content = content_r = content_a = accounts = accounts_a = accounts_r = 0; 
+
+            $.each(data,function(i,info){
+                 
                 if(element == 0){
                     $("#d_tabs").append('<li class="active"><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
                     content = '<div class="tab-pane active" id="tab_'+element+'">';    
@@ -211,49 +208,9 @@
 
                 content += '</tbody></table>';
 
-                // aqui genero el resumen de cada banco por cuenta para repositorio
-                content_r += '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Repositorio</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+                content += '</div></div>';
 
-                accounts_r = info.info_repositorio;
-
-                $.each(accounts_r,function(j,cuenta_r){
-                    content_r += '<tr>';
-                    content_r += '<td>'+cuenta_r.cuenta_alias+'</td><td>'+cuenta_r.cuenta+'</td>';
-                    content_r += '<td align="right">'+cuenta_r.registros+'</td>';
-                    content_r += '<td align="right">'+cuenta_r.registros_conciliados+'</td>';
-                    content_r += '<td align="right"><a href="#" onclick=noconc("'+cuenta_r.cuenta_alias+'","'+cuenta_r.cuenta+'",1) id="noconc">'+cuenta_r.registros_no_conciliados+'</a></td>';
-                    content_r += '<td align="right">'+cuenta_r.monto_conciliado+'</td>';
-                    content_r += '<td align="right">'+cuenta_r.monto_no_conciliado+'</td>';
-                    content_r += '</tr>';
-                });
-
-                content_r += '</tbody></table>';
-
-                // aqui genero el resumen de cada banco por cuenta para as400
-                content_a += '<table class="table table-hover"><thead><tr><th></th><th colspan="5">AS400</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
-
-                accounts_a = info.info_as400;
-
-                $.each(accounts_a,function(j,cuenta_a){
-                    content_a += '<tr>';
-                    content_a += '<td>'+cuenta_a.cuenta_alias+'</td><td>'+cuenta_a.cuenta+'</td>';
-                    content_a += '<td align="right">'+cuenta_a.registros+'</td>';
-                    content_a += '<td align="right">'+cuenta_a.registros_conciliados+'</td>';
-                    content_a += '<td align="right"><a href="#" onclick=noconc("'+cuenta_a.cuenta_alias+'","'+cuenta_a.cuenta+'",1) id="noconc">'+cuenta_a.registros_no_conciliados+'</a></td>';
-                    content_a += '<td align="right">'+cuenta_a.monto_conciliado+'</td>';
-                    content_a += '<td align="right">'+cuenta_a.monto_no_conciliado+'</td>';
-                    content_a += '</tr>';
-                });
-
-                content_a += '</tbody></table>';
-
-                $("#c_tabs").append(content);
-
-                $("#c_tabs").append(content_r);
-
-                $("#c_tabs").append(content_a);
-
-                $("#c_tabs").append('</div></div>');                
+                $("#c_tabs").append(content);                
 
                 element ++;
             });
