@@ -209,7 +209,7 @@
 
                 internet += '</tbody></table>';
 
-                repo = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+                repo = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Repositorio</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
                 accounts_repo = info.info_repositorio;
 
@@ -226,15 +226,36 @@
 
                 repo += '</tbody></table>';
 
+                as400 = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">AS400</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+
+                accounts_as400 = info.info_repositorio;
+
+                $.each(accounts_as400,function(j,cuenta_as400){
+                    as400 += '<tr>';
+                    as400 += '<td>'+cuenta_as400.cuenta_alias+'</td><td>'+cuenta_as400.cuenta+'</td>';
+                    as400 += '<td align="right">'+cuenta_as400.registros+'</td>';
+                    as400 += '<td align="right">'+cuenta_as400.registros_conciliados+'</td>';
+                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",1) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
+                    as400 += '<td align="right">'+cuenta_as400.monto_conciliado+'</td>';
+                    as400 += '<td align="right">'+cuenta_as400.monto_no_conciliado+'</td>';
+                    as400 += '</tr>';
+                });
+
+                as400 += '</tbody></table>';
+
                 content += internet;
 
                 content += repo;
+
+                content += as400;
 
                 content += '</div></div>';
 
                 $("#c_tabs").append(content);
 
-                internet = "";                
+                internet = ""; 
+                repo = ""; 
+                as400 = "";                
 
                 element ++;
             });
