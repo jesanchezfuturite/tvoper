@@ -181,9 +181,8 @@
             $("#c_tabs").empty();
 
             $.each(data,function(i,info){
-                content   = "";
-                content_a = "";
-                content_r = "";
+               content = content_a = content_r = accounts = accounts_a = accounts_r = 0;
+		console.log(content);
                 if(element == 0){
                     $("#d_tabs").append('<li class="active"><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
                     content = '<div class="tab-pane active" id="tab_'+element+'">';    
