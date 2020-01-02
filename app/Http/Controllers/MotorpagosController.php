@@ -42,6 +42,8 @@ use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\FamiliaRepositoryEloquent;
 use App\Repositories\FamiliaentidadRepositoryEloquent;
+use App\Repositories\InpcRepositoryEloquent;
+use App\Repositories\RecargonominaRepositoryEloquent;
 
 
 
@@ -78,6 +80,8 @@ class MotorpagosController extends Controller
     protected $processdb;
     protected $familiadb;
     protected $familiaentidaddb;
+    protected $inpcdb;
+    protected $recargonominadb;
 
     // In this method we ensure that the user is logged in using the middleware
 
@@ -111,7 +115,9 @@ class MotorpagosController extends Controller
         ContdetimpisopRepositoryEloquent $detimpisopdb,
         ProcessedregistersRepositoryEloquent $processdb,
         FamiliaRepositoryEloquent $familiadb,
-        FamiliaentidadRepositoryEloquent $familiaentidaddb
+        FamiliaentidadRepositoryEloquent $familiaentidaddb,
+        InpcRepositoryEloquent $inpcdb,
+        RecargonominaRepositoryEloquent $recargonominadb
 
 
     )
@@ -147,6 +153,8 @@ class MotorpagosController extends Controller
         $this->processdb=$processdb;
         $this->familiadb=$familiadb;
         $this->familiaentidaddb=$familiaentidaddb;
+        $this->inpcdb=$inpcdb;
+        $this->recargonominadb=$recargonominadb;
     }
 
     /**
@@ -2390,5 +2398,266 @@ return json_encode($response);
         return $response;
 
     }
+    public function inpc()
+    {
+        return view('motorpagos/inpc');
+    }
+    public function inpcFindAll()
+    {
+        $response=array();
+        $mes='';
+        $findAll=$this->inpcdb->all();
+        foreach ($findAll as $i) {
+            switch ($i->mes) {
+                case '1':
+                    $mes="ENERO";                    
+                    break;
+                case '2':
+                    $mes="FEBRERO";                    
+                    break;
+                case '3':
+                    $mes="MARZO";                    
+                    break;
+                case '4':
+                    $mes="ABRIL";                    
+                    break;
+                case '5':
+                    $mes="MAYO";                    
+                    break;
+                case '6':
+                    $mes="JUNIO";                    
+                    break;
+                case '7':
+                    $mes="JULIO";                    
+                    break;
+                case '8':
+                    $mes="AGOSTO";                    
+                    break;
+                case '9':
+                    $mes="SEPTIEMBRE";                    
+                    break;
+                case '10':
+                    $mes="OCTUBRE";                    
+                    break;
+                case '11':
+                    $mes="NOVIEMBRE";                    
+                    break;
+                case '12':
+                    $mes="NOVIEMBRE";                    
+                    break;                                    
+                default:
+                    $mes="---";
+                    break;
+            }
+            $response []= array( 
+            'id'=>$i->id,
+            'anio'=>$i->ano,
+            'mes'=>$mes,
+            'indice'=>$i->indice
+        );
+        }
+        return json_encode($response);
+    }
+    public function inpcInsert(Request $request)
+    {
+        $response='false';
+        $anio=$request->anio;
+        $mes=$request->mes;
+        $indice=$request->indice;
+        try{
+            $find=$this->inpcdb->findWhere(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice]);
+            if($find->count()==0)
+                {
+                    $update=$this->inpcdb->create(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice]);
+                    $response='true';
+                }else{
+                    $response='false';
+                }           
+
+        } catch( \Exception $e ){
+            Log::info('Error Method inpcInsert: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function inpcUpdate(Request $request)
+    {
+        $response='false';
+        $id=$request->id;
+        $anio=$request->anio;
+        $mes=$request->mes;
+        $indice=$request->indice;
+        try{
+            $update=$this->inpcdb->update(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice],$id);
+            $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method inpcUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+     public function inpcDeleted(Request $request)
+    {
+        $response='false';
+        $id=$request->id;
+        
+        try{
+            $update=$this->inpcdb->deleteWhere(['id'=>$id]);
+            $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method inpcDeleted: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function inpcFindWhere(Request $request)
+    {
+        $response=array();
+        $id=$request->id;
+        $find=$this->inpcdb->findWhere(['id'=>$id]);
+        foreach ($find as $i) {
+          $response []= array( 
+            'id'=>$i->id,
+            'anio'=>$i->ano,
+            'mes'=>$i->mes,
+            'indice'=>$i->indice
+            );
+        }
+        return json_encode($response);
+    }
+
+    public function recargosNomina()
+    {
+        return view('motorpagos/recargosnomina');
+    }
+    public function recargosFindAll()
+    {
+        $response=array();
+        $mes='';
+        $findAll=$this->recargonominadb->all();
+        foreach ($findAll as $i) {
+            switch ($i->mes) {
+                case '1':
+                    $mes="ENERO";                    
+                    break;
+                case '2':
+                    $mes="FEBRERO";                    
+                    break;
+                case '3':
+                    $mes="MARZO";                    
+                    break;
+                case '4':
+                    $mes="ABRIL";                    
+                    break;
+                case '5':
+                    $mes="MAYO";                    
+                    break;
+                case '6':
+                    $mes="JUNIO";                    
+                    break;
+                case '7':
+                    $mes="JULIO";                    
+                    break;
+                case '8':
+                    $mes="AGOSTO";                    
+                    break;
+                case '9':
+                    $mes="SEPTIEMBRE";                    
+                    break;
+                case '10':
+                    $mes="OCTUBRE";                    
+                    break;
+                case '11':
+                    $mes="NOVIEMBRE";                    
+                    break;
+                case '12':
+                    $mes="NOVIEMBRE";                    
+                    break;                                    
+                default:
+                    $mes="---";
+                    break;
+            }
+            $response []= array( 
+            'id'=>$i->id,
+            'anio'=>$i->ano,
+            'mes'=>$mes,
+            'vencido'=>$i->vencido,
+            'requerido'=>$i->requerido
+        );
+        }
+        return json_encode($response);
+    }
+    public function recargosInsert(Request $request)
+    {
+        $response='false';
+        $anio=$request->anio;
+        $mes=$request->mes;
+        $vencido=$request->vencido;
+        $requerido=$request->requerido;
+        try{
+            $find=$this->recargonominadb->findWhere(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido]);
+            if($find->count()==0)
+                {
+                    $update=$this->recargonominadb->create(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido]);
+                    $response='true';
+                }else{
+                    $response='false';
+                }           
+
+        } catch( \Exception $e ){
+            Log::info('Error Method recargosInsert: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function recargosUpdate(Request $request)
+    {
+        $response='false';
+        $id=$request->id;
+        $anio=$request->anio;
+        $mes=$request->mes;
+        $vencido=$request->vencido;
+        $requerido=$request->requerido;
+        try{
+            $update=$this->recargonominadb->update(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido],$id);
+            $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method recargosUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+     public function recargosDeleted(Request $request)
+    {
+        $response='false';
+        $id=$request->id;
+        
+        try{
+            $update=$this->recargonominadb->deleteWhere(['id'=>$id]);
+            $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method recargosDeleted: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+    }
+    public function recargosFindWhere(Request $request)
+    {
+        $response=array();
+        $id=$request->id;
+        $find=$this->recargonominadb->findWhere(['id'=>$id]);
+        foreach ($find as $i) {
+          $response []= array( 
+            'id'=>$i->id,
+            'anio'=>$i->ano,
+            'mes'=>$i->mes,
+            'vencido'=>$i->vencido,
+            'requerido'=>$i->requerido
+            );
+        }
+        return json_encode($response);
+    }
+
+
 
 }

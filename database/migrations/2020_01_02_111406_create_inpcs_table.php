@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateFamiliaentidadsTable.
+ * Class CreateInpcsTable.
  */
-class CreateFamiliaentidadsTable extends Migration
+class CreateInpcsTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateFamiliaentidadsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('familiaentidads', function(Blueprint $table) {
+		Schema::create('inpcs', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateFamiliaentidadsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('familiaentidads');
+		Schema::drop('inpcs');
 	}
 }
