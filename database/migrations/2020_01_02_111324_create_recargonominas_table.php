@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateFamiliaRepositoriesTable.
+ * Class CreateRecargonominasTable.
  */
-class CreateFamiliaRepositoriesTable extends Migration
+class CreateRecargonominasTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateFamiliaRepositoriesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('familia_repositories', function(Blueprint $table) {
+		Schema::create('recargonominas', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateFamiliaRepositoriesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('familia_repositories');
+		Schema::drop('recargonominas');
 	}
 }
