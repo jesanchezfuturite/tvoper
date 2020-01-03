@@ -154,6 +154,22 @@ Route::post('/familiaentidad-insert','MotorpagosController@familientidadInsert')
 Route::post('/familiaentidad-update','MotorpagosController@familientidadUpdate');
 Route::post('/familiaentidad-deleted','MotorpagosController@familientidadDeleted');
 
+/*************************  INPC  ******************************/
+Route::get('/inpc','MotorpagosController@inpc');
+Route::get('/inpc-find-all','MotorpagosController@inpcFindAll');
+Route::post('/inpc-find-where','MotorpagosController@inpcFindWhere');
+Route::post('/inpc-insert','MotorpagosController@inpcInsert');
+Route::post('/inpc-update','MotorpagosController@inpcUpdate');
+Route::post('/inpc-deleted','MotorpagosController@inpcDeleted');
+
+/*************************** RECARGOS SOBRE NOMINA ****************************/
+Route::get('/recargos','MotorpagosController@recargosNomina');
+Route::get('/recargos-find-all','MotorpagosController@recargosFindAll');
+Route::post('/recargos-find-where','MotorpagosController@recargosFindWhere');
+Route::post('/recargos-insert','MotorpagosController@recargosInsert');
+Route::post('/recargos-update','MotorpagosController@recargosUpdate');
+Route::post('/recargos-deleted','MotorpagosController@recargosDeleted');
+
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');

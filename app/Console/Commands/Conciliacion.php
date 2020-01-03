@@ -285,7 +285,7 @@ class Conciliacion extends Command
                             ];
 
                         if(strcmp('010000000000125500841025278275', $referencia) == 0){
-                            dd($data,"line",$line,$dayStart,$dayLength,$monthStart,$monthLength,$yearStart,$yearLength,$amountStart,$amountLength,$idStart,$idLength,$origenStart,$origenLength,$referenciaStart,$referenciaLength)
+                            dd($data,"line",$line,$dayStart,$dayLength,$monthStart,$monthLength,$yearStart,$yearLength,$amountStart,$amountLength,$idStart,$idLength,$origenStart,$origenLength,$referenciaStart,$referenciaLength);
                         }
                         
 

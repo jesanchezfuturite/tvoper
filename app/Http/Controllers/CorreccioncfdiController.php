@@ -72,7 +72,7 @@ class CorreccioncfdiController extends Controller
     	if($request->isMethod('post'))
     	{
     		try {
-    			$reg = $this->encabezado->findWhere(['folio_unico'=>$request->fu,['fecha_transaccion','>=',date('Y').'-01-01']],['folio_unico','folio_pago','fecha_transaccion','estatus_generacion','estatus_documento','total']);
+    			$reg = $this->encabezado->findWhere(['folio_unico'=>$request->fu],['folio_unico','folio_pago','fecha_transaccion','estatus_generacion','estatus_documento','total']);
     			return json_encode($reg);
     			
     		} 
