@@ -80,7 +80,7 @@
                        <div class="form-group">
                             <label class="col-md-3 control-label">Año</label>
                             <div class="col-md-8">
-                                <input id="anio" class="form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
+                                <input id="anio" class="valida-num form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
                             </div>
                         </div>
                         <div class="form-group">
@@ -106,13 +106,13 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">% Vencido</label>
                             <div class="col-md-8">
-                                <input id="vencido" class="form-control"   autocomplete="off" placeholder="Ingresar Indice">
+                                <input id="vencido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">% Requerido</label>
                             <div class="col-md-8">
-                                <input id="requerido" class="form-control"   autocomplete="off" placeholder="Ingresar Indice">
+                                <input id="requerido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
                             </div>
                         </div>
                         <br>
@@ -331,6 +331,12 @@
         var JSONData=$("#jsonCode").val();
         JSONToCSVConvertor(JSONData, "Recargos_sobre_Nomina", true)
     }
+    $('.valida-num').on('input', function () { 
+    this.value = this.value.replace(/[^0-9]/g,'');
+    });
+    $('.valida-decimal').on('input', function () { 
+    this.value = this.value.replace(/[^0-9.]/g,'');
+    });
     function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
@@ -371,5 +377,6 @@
     link.click();
     document.body.removeChild(link);
 }
+
 </script>
 @endsection
