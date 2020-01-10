@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Motor de pagos <small>Configuración Recargos Sobre Nomnia</small></h3>
+<h3 class="page-title">Motor de pagos <small>Configuración UMA</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -13,7 +13,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Configuración Recargos Sobre Nomnia</a>
+            <a href="#">Configuración UMA</a>
         </li>
     </ul>
 </div>
@@ -27,7 +27,7 @@
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-cogs"></i>Registros Recargos Sobre Nomnia
+                <i class="fa fa-cogs"></i>Registros UMA
             </div>
         </div>
         <div class="portlet-body" id="Removetable">           
@@ -47,16 +47,17 @@
                 <thead>
                 <tr>
                     <th>Año</th>
-                    <th>Mes</th> 
-                    <th>% Vencido</th>                                       
-                    <th>% Requerido</th>                                       
+                    <th>Valor Diario</th> 
+                    <th>Valor Mensual</th>                                       
+                    <th>Valor Anual</th>                                       
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
-                     <td><span class="help-block">No Found</span></td>
-                            <td></td>                         
-                            <td></td>                                                               
+                    <td><span class="help-block">No Found</span></td>
+                    <td></td>                         
+                    <td></td>                                                               
+                    <td></td>                                                               
                 </tbody>
                 </table>
           
@@ -78,41 +79,27 @@
                     <div class="form-body">
                          <input hidden="true" type="text"  id="idupdate">
                        <div class="form-group">
-                            <label class="col-md-3 control-label">Año</label>
+                            <label class="col-md-3 control-label ">Año</label>
                             <div class="col-md-8">
                                 <input id="anio" class="valida-num form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
                             </div>
-                        </div>
+                        </div>                        
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Mes</label>
+                            <label class="col-md-3 control-label">Valor Diario</label>
                             <div class="col-md-8">
-                                <select id="mes" class="select2me form-control" >
-                                  <option value="limpia">-------</option>
-                                  <option value="1">Enero</option>
-                                  <option value="2">Febrero</option>
-                                  <option value="3">Marzo</option>
-                                  <option value="4">Abril</option>
-                                  <option value="5">Mayo</option>
-                                  <option value="6">Junio</option>
-                                  <option value="7">Julio</option>
-                                  <option value="8">Agosto</option>
-                                  <option value="9">Septiembre</option>
-                                  <option value="10">Octubre</option>
-                                  <option value="11">Noviembre</option>
-                                  <option value="12">Diciembre</option>
-                                </select>
+                                <input id="Vdiario" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Diario">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-3 control-label">% Vencido</label>
+                            <label class="col-md-3 control-label">Valor Mensual</label>
                             <div class="col-md-8">
-                                <input id="vencido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
+                                <input id="Vmensual" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Mensual">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-md-3 control-label">% Requerido</label>
+                            <label class="col-md-3 control-label">Valor Anual</label>
                             <div class="col-md-8">
-                                <input id="requerido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
+                                <input id="Vanual" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Anual">
                             </div>
                         </div>
                         <br>
@@ -159,28 +146,23 @@
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
-             CargartablaINPC();
+             //CargartablaUMA();
     });    
     function limpiar()
     {
-        document.getElementById('anio').value="";
-        document.getElementById('vencido').value="";
-        document.getElementById('requerido').value="";
-        document.getElementById('idupdate').value="";
-        document.getElementById('iddeleted').value="";
-        $("#mes").val("limpia").change();
+        
     }
     function addTable()
     {
         $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Mes</th><th>% Vencido</th><th>% Requerido</th><th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
+            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Mes</th><th>Indice</th><th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
         );
     }
     function CargartablaINPC()
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/recargos-find-all') }}",
+           url: "{{ url('/inpc-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            
@@ -191,8 +173,7 @@
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.anio+"</td>"
                 +"<td>"+item.mes+"</td>"
-                +"<td>"+item.vencido+"</td>"
-                +"<td>"+item.requerido+"</td>"
+                +"<td>"+item.indice+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='InpcDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
@@ -206,12 +187,11 @@
     {
         var anio_=$("#anio").val();
         var mes_=$("#mes").val();
-        var vencido_=$("#vencido").val();
-        var requerido_=$("#requerido").val();
+        var indice_=$("#indice").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-insert') }}",
-           data: {anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/inpc-insert') }}",
+           data: {anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
           if(response=="true"){
@@ -230,12 +210,11 @@
         var anio_=$("#anio").val();
         var id_=$("#idupdate").val();
         var mes_=$("#mes").val();
-        var vencido_=$("#vencido").val();
-        var requerido_=$("#requerido").val();
+        var indice_=$("#indice").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-update') }}",
-           data: {id:id_,anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/inpc-update') }}",
+           data: {id:id_,anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
             {
@@ -254,15 +233,14 @@
         document.getElementById('idupdate').value=id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-find-where') }}",
+           url: "{{ url('/inpc-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
           
             $.each(Resp, function(i, item) {                
                 document.getElementById('anio').value=item.anio;
-                document.getElementById('vencido').value=item.vencido;
-                document.getElementById('requerido').value=item.requerido;
+                document.getElementById('indice').value=item.indice;
                 $("#mes").val(item.mes).change();
             });
         })
@@ -274,8 +252,7 @@
         var anio_=$("#anio").val();
         var id_=$("#idupdate").val();
         var mes_=$("#mes").val();
-        var vencido_=$("#vencido").val();
-        var requerido_=$("#requerido").val();
+        var indice_=$("#indice").val();
         if(anio_.length<4)
         {
             Command: toastr.warning("Campo Año, Requerido!", "Notifications")
@@ -284,15 +261,11 @@
         {
             Command: toastr.warning("Campo Mes, Requerido!", "Notifications")
 
-        }else if(vencido_.length==0)
+        }else if(indice_.length==0)
         {
-            Command: toastr.warning("Campo % Vencido, Requerido!", "Notifications")
+            Command: toastr.warning("Campo Indice, Requerido!", "Notifications")
 
-        }else if(requerido_.length==0)
-        {
-            Command: toastr.warning("Campo % Requerido, Requerido!", "Notifications")
-
-        }        else{
+        }else{
             if(id_.length==0)
             {
                 InpcInsert();
@@ -312,7 +285,7 @@
         var id_=$("#iddeleted").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-deleted') }}",
+           url: "{{ url('/inpc-deleted') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
@@ -329,7 +302,7 @@
     function GuardarExcel()
     {
         var JSONData=$("#jsonCode").val();
-        JSONToCSVConvertor(JSONData, "Recargos_sobre_Nomina", true)
+        JSONToCSVConvertor(JSONData, "INPC", true)
     }
     $('.valida-num').on('input', function () { 
     this.value = this.value.replace(/[^0-9]/g,'');
@@ -377,6 +350,5 @@
     link.click();
     document.body.removeChild(link);
 }
-
 </script>
 @endsection

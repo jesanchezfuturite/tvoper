@@ -1223,14 +1223,15 @@ return json_encode($response);
 
     public function tiposervicio()
     {
-        $info=$this->tiposerviciodb->all();
+        $info=$this->tiposerviciodb->ServiciosfindAll();
         $response = array();
-        $limitereferencia= "";
+        /*$limitereferencia= "";
         $tiporeferencia="";
-        $nombreentidad="";
+        $nombreentidad="";*/
+        //log::info($info);
         foreach ($info as $i) 
         {
-            $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
+          /*  $infotiporeferencia=$this->tiporeferenciadb->fin(['id'=>$i->tiporeferencia_id]);
              if($infotiporeferencia->count() == 0)
             {
                  $tiporeferencia="Sin Registro";
@@ -1266,17 +1267,17 @@ return json_encode($response);
                         $nombreentidad=$ent->nombre;
                     }
                 }
-            }
+            }*/
              $response []= array(
-                "entidad"=>$nombreentidad,
-               "Tipo_Code" => $i->Tipo_Code,
+                "Entidad"=>$i->Entidad,
+                "Tipo_Code" => $i->Tipo_Code,
                 "Tipo_Descripcion" => $i->Tipo_Descripcion,
                 "Origen_URL" => $i->Origen_URL,
                 "GpoTrans_Num" => $i->GpoTrans_Num,
                 "id_gpm" => $i->id_gpm,
                 "descripcion_gpm" => $i->descripcion_gpm,
-                "tiporeferencia_id" => $tiporeferencia,
-                "limitereferencia_id" => $limitereferencia
+                "tiporeferencia" => $i->fecha_condensada,
+                "limitereferencia" => $i->descripcion
             );
         }
 
@@ -1285,68 +1286,25 @@ return json_encode($response);
 
     }
 
-    public function findTipoServicioWhere(Request $request)
+    public function findTipoServicioWhere()
     {
        
-        $info=$this->tiposerviciodb->all();
-        $response = array();
-        $limitereferencia;
-        $tiporeferencia;
-        $descripcion;
-        $url;
-        $gpoTrans;
-        $id_gpm;
-        $descripcion_gpm;
-        $nombreentidad="";
+        $info=$this->tiposerviciodb->ServiciosfindAll();
+        $response = array();        
         foreach ($info as $i) 
         {
-           $infotiporeferencia=$this->tiporeferenciadb->findWhere(['id'=>$i->tiporeferencia_id]);
-             if($infotiporeferencia->count() == 0)
-            {
-                 $tiporeferencia="Sin Registro";
-            }
-            else{
-                foreach ($infotiporeferencia as $ii) 
-                {
-                   $tiporeferencia=$ii->fecha_condensada;
-                }
-            }
-            $infolimitereferencia=$this->limitereferenciadb->findWhere(['id'=>$i->limitereferencia_id]);
-             if($infolimitereferencia->count() == 0)
-            {
-                $limitereferencia="Sin Registro";
-            }
-            else{
-                foreach ($infolimitereferencia as $iii) 
-                {
-                    $limitereferencia=$iii->descripcion." ".$iii->periodicidad." ".$iii->vencimiento;
-                }
-            }
-            $infoentidadtramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$i->Tipo_Code]);
-             if($infoentidadtramite->count() == 0)
-            {
-                 $nombreentidad="Sin / Asignar";
-            }
-            else{
-                foreach ($infoentidadtramite as $key) 
-                {
-                     $infoentidad=$this->entidaddb->findWhere(['id'=>$key->entidad_id]);
-                      foreach ($infoentidad as $ent) 
-                    {
-                        $nombreentidad=$ent->nombre;
-                    }
-                }
-            }
-             $response []= array(
-                "entidad"=>$nombreentidad,
-               "id" => $i->Tipo_Code,
-                "descripcion" => $i->Tipo_Descripcion,
-                "origen" => $i->Origen_URL,
-                "gpo" => $i->GpoTrans_Num,
+           
+            $response []= array(
+                "id"=>$i->id,
+                "Entidad"=>$i->Entidad,
+                "Tipo_Code" => $i->Tipo_Code,
+                "Tipo_Descripcion" => $i->Tipo_Descripcion,
+                "Origen_URL" => $i->Origen_URL,
+                "GpoTrans_Num" => $i->GpoTrans_Num,
                 "id_gpm" => $i->id_gpm,
                 "descripcion_gpm" => $i->descripcion_gpm,
-                "tiporeferencia" => $tiporeferencia,
-                "limitereferencia" => $limitereferencia
+                "tiporeferencia" => $i->fecha_condensada,
+                "limitereferencia" => $i->descripcion
             );
         }
 
@@ -2658,6 +2616,9 @@ return json_encode($response);
         return json_encode($response);
     }
 
-
+    public function uma()
+    {
+        return view('motorpagos/uma');
+    }
 
 }
