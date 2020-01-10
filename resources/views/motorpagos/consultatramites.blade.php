@@ -47,7 +47,7 @@
                         <span class="help-block">Selecciona una Opcion. </span>
                         <div class="md-radio-inline">
                             <div class="md-radio">
-                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn"value="undia" onclick="radiobuttons()" checked>
+                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()" checked>
                                     <label for="radio6">
                                     <span></span>
                                     <span class="check"></span>
@@ -410,8 +410,8 @@
     {    var inin=0;
         $('#sample_3 thead tr').clone(true).appendTo( '#sample_3 thead' );
         $('#sample_3').DataTable( {
-        
-        initComplete: function () {
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+        initComplete: function () {            
             this.api().columns().every( function () {
                 var column = this;
                
@@ -446,7 +446,7 @@
          var inin=0;
         $('#sample_2 thead tr').clone(true).appendTo( '#sample_2 thead' );       
         $('#sample_2').DataTable( {
-       
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;

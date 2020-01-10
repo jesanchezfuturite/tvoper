@@ -72,21 +72,11 @@
                         <th>Descripcion gpm</th>
                         <th>Tipo Referencia</th>
                         <th>Limite Referencia</th>
-                        <th>&nbsp;Operacion&nbsp; &nbsp;</th>
+                        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>                   
-                    @foreach( $response as $sd)
-                        <tr>
-                          <td>{{$sd["entidad"]}}</td>
-                            <td>{{$sd["Tipo_Descripcion"]}}</td>
-                            <td>{{$sd["Origen_URL"]}}</td>
-                            <td>{{$sd["descripcion_gpm"]}}</td>
-                            <td>{{$sd["tiporeferencia_id"]}}</td>
-                            <td>{{$sd["limitereferencia_id"]}}</td>
-                             <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='OperacionTramite({{$sd["Tipo_Code"]}})'><i class='fa fa-pencil'></i></a></td>
-                        </tr>
-                    @endforeach                  
+                                  
                     </tbody>
                     </table>
                
@@ -204,7 +194,7 @@
             <div class="modal-body">
               
               <div class="portlet-body form">
-              <input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">
+              <!--<input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">-->
                       
                         <div class="row">
                           <div class="col-md-12">
@@ -307,6 +297,370 @@
         </div>
     </div>
 </div>
+<!------------------      ---------------     MODAL ----------------        ----------------->
+<div class="modal fade bs-modal-lg" id="large" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Actualizar: <label id="encabezado"></label></h4>
+      </div>
+      <div class="modal-body">
+      <input hidden="true" type="text" name="idtramite" id="idtramite">
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Nombre de Consepto</label>                                             
+                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Tramite</label>                                                           
+                <input type="text" id="tramite" class="form-control"name="tramite" disabled="true">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Sujeto Aplicable</label>                                             
+                <select id="sujetoaplicable" class="select2me form-control" >
+                  <option value="limpia">-------</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Partida Presupuestal</label>                                                           
+                <select id="partidapresupuestal" class="select2me form-control" >
+                  <option value="limpia">-------</option>
+                </select>               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">            
+          <div class="col-md-12">            
+            <div class="form-group">
+              <div class="form-group form-md-radios">
+              <label >Metodo</label>
+              <div class="md-radio-inline">
+                <div class="md-radio">
+                  <input type="radio" id="radio1" name="radio1" class="md-radiobtn" value="fijo" onclick="changeMetodo()" checked>
+                    <label for="radio1">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    Fijo </label>
+                </div> | &nbsp;
+                <div class="md-radio">
+                  <input type="radio" id="radio2" name="radio1" class="md-radiobtn" value="variable" onclick="changeMetodo()" >
+                    <label for="radio2">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    Variable </label>
+                </div>        
+                </div>        
+              </div>
+            </div>           
+          </div>
+          </div>
+        </div> 
+        <div class="row">
+          <!--------------------------------- FIJO ------------------------------------------------------>
+          <div id="changeFijo">
+            <div class="col-md-12">
+            <div class="col-md-8"> 
+              <div class="form-group">
+                <label >Total</label>                                             
+                <input type="text" class="form-control" name="total" id="tatal" placeholder="Ingrese el Consepto">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Moneda (Total)</label>                                                           
+                <select id="monedaTotal" class="select2me form-control" >
+                  <option value="MXN">MXN</option>
+                </select>               
+              </div>
+            </div>
+          </div>
+          </div>
+          <!------------------------------- VARIABLE ----------------------------------->
+          <div id="changeVariable">
+            <div class="col-md-12">
+              <div class="col-md-3"> 
+                <div class="form-group">
+                  <span class='help-block'>&nbsp;</span>
+                  <div class='md-checkbox'>
+                    <input type='checkbox' id='checkbox30' class='md-check' onclick=''>   
+                    <label for='checkbox30'>    
+                      <span></span>  
+                      <span class='check'></span> 
+                      <span class='box'></span>  Tiene Maximo </label> 
+                  </div>
+                </div>
+              </div>
+            <div class="col-md-5"> 
+              <div class="form-group">
+                <label >Precio Maximo</label>                                             
+                <input type="text" class="form-control" name="precioMaximo" id="precioMaximo" placeholder="Ingrese el Precio Maximo">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Moneda (Precio Maximo)</label>                                                           
+                <select id="monedaPmaximo" class="select2me form-control" >
+                  <option value="MXN">MXN</option>
+                </select>               
+              </div>
+            </div>
+          </div>
+          <!------------------------------- MINIMO ------------------------------->
+          <div class="col-md-12">           
+            <div class="col-md-8"> 
+              <div class="form-group">
+                <label >Precio Minimo</label>                                             
+                <input type="text" class="form-control" name="precioMinimo" id="precioMinimo" placeholder="Ingrese el Precio Minimo">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Moneda (Precio Minimo)</label>                                                           
+                <select id="monedaPminimo" class="select2me form-control" >
+                  <option value="MXN">MXN</option>
+                </select>               
+              </div>
+            </div>
+          </div>
+          <!------------------------------------ Formula---------------------------------->
+          <div class="col-md-12">           
+            <div class="col-md-8"> 
+              <div class="form-group">
+                <label >Formula</label>                                             
+                <textarea class="form-control" rows="3" name="formula" id="fomula" placeholder="Ingrese la Formula"></textarea>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Moneda (Formula)</label>                                                           
+                <select id="monedaFormula" class="select2me form-control" >
+                  <option value="MXN">MXN</option>
+                </select>               
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-12">             
+            <div class="form-group">
+              <div class="form-group form-md-radios">
+              <label >Tiene Lote</label>
+              <div class="md-radio-inline">
+                <div class="md-radio">
+                  <input type="radio" id="radio3" name="radio2" class="md-radiobtn" value="undia" onclick="" >
+                    <label for="radio3">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    Si </label>
+                </div> | &nbsp;
+                <div class="md-radio">
+                  <input type="radio" id="radio4" name="radio2" class="md-radiobtn" value="undia" onclick="" checked>
+                    <label for="radio4">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    No </label>
+                </div>        
+              </div>
+              </div>
+              </div>
+            </div>           
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Cantidad</label>
+                <input type="text" name="cantidad" id="cantidad" class="form-control" placeholder="Ingrese Cantidad">
+              </div>
+            </div>
+          </div>
+        </div>        
+        <div class="row">
+          <div class="col-md-12">            
+          <div class="col-md-12">            
+            <div class="form-group">
+              <div class="form-group form-md-radios">
+              <label >Aplica Redondeo al Millar</label>
+              <div class="md-radio-inline">
+                <div class="md-radio">
+                  <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="undia" onclick="" >
+                    <label for="radio5">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    Si </label>
+                </div> | &nbsp;
+                <div class="md-radio">
+                    <input type="radio" id="radio6" name="radio3" class="md-radiobtn" value="undia" onclick="" >
+                    <label for="radio6">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                    No </label>
+                </div>        
+              </div>
+            </div>           
+            </div>           
+            </div>           
+          </div>
+        </div>
+      </div> 
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-12">             
+            <div class="form-group">
+              <button type="submit" class="btn blue" onclick=""><i class="fa fa-check"></i> Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn default" data-dismiss="modal">Cerrar</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<!------------------------------------- Subsidio Modal ------------------------------------->
+<div class="modal fade bs-modal-lg" id="modalSubsidio" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Actualizacion de Registro</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Tramite</label>                                                           
+                <input type="text" id="tramite" class="form-control"name="tramite" disabled="true">
+              </div>
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Moneda</label>
+                <select id="sujetoaplicable" class="select2me form-control" >
+                  <option value="uma">UMA</option>
+                </select>                                            
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Aplicar cuando el Total se Menor o Igual</label>                                             
+                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Total Despues de Aplicar Subsidio</label>                                                       
+                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+             </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Partida Presupuestal</label>                                                           
+                <select id="partidapresupuestal" class="select2me form-control" >
+                  <option value="limpia">-------</option>
+                </select>               
+              </div>
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Descripción</label>                                             
+                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                
+              </div>
+            </div>            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label >Descripción</label>                                             
+                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+              </div>
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <span class='help-block'>&nbsp;</span>
+                  <div class='md-checkbox'>
+                    <input type='checkbox' id='checkbox40' class='md-check' onclick=''>   
+                    <label for='checkbox40'>    
+                      <span></span>  
+                      <span class='check'></span> 
+                      <span class='box'></span>  Requiere Formato </label> 
+                  </div>
+              </div>
+            </div>            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="form-group">
+              </div>
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group">
+                <label >Tipo de Persina</label>
+                <select id="sujetoaplicable" class="select2me form-control" >
+                  <option value="fisica">FISICA</option>
+                </select>                                            
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-12">             
+            <div class="form-group">
+              <button type="submit" class="btn blue" onclick=""><i class="fa fa-check"></i> Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn default">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 @section('scripts')
@@ -316,6 +670,7 @@
         findLimiteReferencia();
         findTipoReferencia();
         FindEntidad();
+        ActualizaTabla();
         TableManaged.init();
         UIBlockUI.init();         
        //TableAdvanced.init();       
@@ -623,24 +978,17 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;Operacion&nbsp; &nbsp;</th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th> </tr>  </thead><tbody></tbody></table></div>");
         $.each(Resp, function(i, item) {
-            if(item.origen==null)
-            {
-              orig="";
-            }else{orig=item.origen;}
-            if(item.descripcion_gpm==null)
-            {
-              desc="";
-            }else{desc=item.descripcion_gpm;  }
+           
             $("#sample_2 tbody").append("<tr>"
-            +"<td>"+item.entidad+"</td>"
-            +"<td>"+item.descripcion+"</td>"
-            +"<td>"+orig+"</td>"
-            +"<td>"+desc+"</td>"
+            +"<td>"+item.Entidad+"</td>"
+            +"<td>"+item.Tipo_Descripcion+"</td>"
+            +"<td>"+item.Origen_URL+"</td>"
+            +"<td>"+item.descripcion_gpm+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td class='text-center'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a></td>"
+            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a>&nbsp;<a class='btn btn-icon-only green' href='#large' data-toggle='modal' data-original-title='' title='Calculo de Conseptos' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-cogs'></i></a>&nbsp;<a class='btn btn-icon-only grey' href='#modalSubsidio' data-toggle='modal' data-original-title='' title='Subsidio' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-eye'></i></a></td>"
             +"</tr>");
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
@@ -651,7 +999,42 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
 
+  }
+  function CalculoConsepto(id_)
+  {
+    document.getElementById('idtramite').value=id_;
+    changeMetodo();
+
   } 
+  function changeMetodo()
+  {
+    var radioValue1 = $("input[name='radio1']:checked"). val();
+    if(radioValue1=='fijo')
+    {
+      $("#changeFijo").css("display", "block");
+      $("#changeVariable").css("display", "none");
+    }else{
+      $("#changeFijo").css("display", "none");
+      $("#changeVariable").css("display", "block");
+    }
+    var id_=$("#idtramite").val();
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/tipo-servicio-Find-where') }}",
+           data: { id:id_, _token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) { 
+            
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) {  
+        document.getElementById('tramite').value=item.descripcion;       
+        $("#encabezado").text(item.descripcion);       
+        });
+        
+     })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
   function changeEntidadFind()
   {
     var entidad=$("#optionEntidad").val();
