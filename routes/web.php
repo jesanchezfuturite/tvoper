@@ -60,10 +60,12 @@ Route::post('/banco-update-imagen','MotorpagosController@updateBancoImagen');
 Route::get('/metodopago-find','MotorpagosController@findMetodopago');
 Route::get('/banco-find-all','MotorpagosController@findBancoAll');
 Route::get('/banco-find-allWhere','MotorpagosController@findBancoAllWhere');
-/****************** metodo tipo servicio  ***************/
+
+/******************  Tipo Servicio  ***************/
 Route::get('/tiposervicio-find-all-where','MotorpagosController@findTipoServicioAllWhere');
 Route::get('/tiposervicio-find-all','MotorpagosController@findTipoServicioAll');
 Route::post('/entidad-find-all','MotorpagosController@findEntidadAll');
+
 /********************  metodo tipo PagoTramite  ***************/
 
 Route::post('/pagotramite-find','MotorpagosController@findTipoServicio');
@@ -72,6 +74,7 @@ Route::post('/pagotramite-find-where','MotorpagosController@findPagoTramiteWhere
 Route::post('/pagotramite-update','MotorpagosController@updatePagoTramite');
 Route::post('/pagotramite-delete','MotorpagosController@deletePagoTramite');
 Route::post('/pagotramite-update-status','MotorpagosController@updateStatusPagoTramite');
+
 /****************** Metodo Entidad **********/
 Route::get('/entidad','MotorpagosController@entidadView');
 Route::get('/entidad-find','MotorpagosController@findentidad');
@@ -169,6 +172,10 @@ Route::post('/recargos-find-where','MotorpagosController@recargosFindWhere');
 Route::post('/recargos-insert','MotorpagosController@recargosInsert');
 Route::post('/recargos-update','MotorpagosController@recargosUpdate');
 Route::post('/recargos-deleted','MotorpagosController@recargosDeleted');
+
+
+/*******************************  UMA    ************************************/
+Route::get('/uma','MotorpagosController@uma');
 
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');

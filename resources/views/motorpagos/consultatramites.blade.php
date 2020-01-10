@@ -47,7 +47,7 @@
                         <span class="help-block">Selecciona una Opcion. </span>
                         <div class="md-radio-inline">
                             <div class="md-radio">
-                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn"value="undia" onclick="radiobuttons()" checked>
+                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()" checked>
                                     <label for="radio6">
                                     <span></span>
                                     <span class="check"></span>
@@ -399,19 +399,19 @@
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody></table></div> </div>");
     }
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-11 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function cargatabla1()
     {    var inin=0;
         $('#sample_3 thead tr').clone(true).appendTo( '#sample_3 thead' );
         $('#sample_3').DataTable( {
-        
-        initComplete: function () {
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+        initComplete: function () {            
             this.api().columns().every( function () {
                 var column = this;
                
@@ -446,7 +446,7 @@
          var inin=0;
         $('#sample_2 thead tr').clone(true).appendTo( '#sample_2 thead' );       
         $('#sample_2').DataTable( {
-       
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
         initComplete: function () {
             this.api().columns().every( function () {
                 var column = this;
