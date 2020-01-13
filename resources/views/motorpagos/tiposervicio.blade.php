@@ -297,7 +297,7 @@
         </div>
     </div>
 </div>
-<!------------------      ---------------     MODAL ----------------        ----------------->
+<!------------------      ---------------     MODAL CALCULO CONSEPTOS----------------        ----------------->
 <div class="modal fade bs-modal-lg" id="large" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -445,7 +445,7 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Formula</label>                                             
-                <textarea class="form-control" rows="3" name="formula" id="fomula" placeholder="Ingrese la Formula"></textarea>
+                <textarea class="form-control valida-decimal" rows="3" name="formula" id="formula" placeholder="Ingrese la Formula"></textarea>
               </div>
             </div>
             <div class="col-md-4">
@@ -530,7 +530,7 @@
         <div class="col-md-12">
           <div class="col-md-12">             
             <div class="form-group">
-              <button type="submit" class="btn blue" onclick=""><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue" onclick="ConseptosInsert()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
         </div>
@@ -555,7 +555,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Tramite</label>                                                           
-                <input type="text" id="tramite" class="form-control"name="tramite" disabled="true">
+                <input type="text" id="tramiteSubsidio" class="form-control"name="tramiteSubsidio" disabled="true">
               </div>
             </div>
             <div class="col-md-6"> 
@@ -574,13 +574,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Aplicar cuando el Total se Menor o Igual</label>                                             
-                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="menorIgual" id="menorIgual" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >Total Despues de Aplicar Subsidio</label>                                                       
-                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="totalSubsidio" id="totalSubsidio" placeholder="Ingrese el Consepto">
              </div>
             </div>
           </div>
@@ -590,7 +590,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Partida Presupuestal</label>                                                           
-                <select id="partidapresupuestal" class="select2me form-control" >
+                <select id="partidapresupuestalSubsidio" class="select2me form-control" >
                   <option value="limpia">-------</option>
                 </select>               
               </div>
@@ -598,7 +598,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Descripción</label>                                             
-                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="descripcionSubsido" id="descripcionSubsido" placeholder="Ingrese el Consepto">
                 
               </div>
             </div>            
@@ -608,8 +608,8 @@
           <div class="col-md-12">
             <div class="col-md-6">
               <div class="form-group">
-                <label >Descripción</label>                                             
-                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                <label >No Decreto/Oficio</label>                                             
+                <input type="text" class="form-control" name="decretoOficio" id="decretoOficio" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-6"> 
@@ -634,8 +634,8 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group">
-                <label >Tipo de Persina</label>
-                <select id="sujetoaplicable" class="select2me form-control" >
+                <label >Tipo de Persona</label>
+                <select id="tipoPersona" class="select2me form-control" >
                   <option value="fisica">FISICA</option>
                 </select>                                            
               </div>
@@ -988,7 +988,7 @@
             +"<td>"+item.descripcion_gpm+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a>&nbsp;<a class='btn btn-icon-only green' href='#large' data-toggle='modal' data-original-title='' title='Calculo de Conseptos' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-cogs'></i></a>&nbsp;<a class='btn btn-icon-only grey' href='#modalSubsidio' data-toggle='modal' data-original-title='' title='Subsidio' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-eye'></i></a></td>"
+            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a>&nbsp;<a class='btn btn-icon-only green' href='#large' data-toggle='modal' data-original-title='' title='Calculo de Conseptos' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-cogs'></i></a>&nbsp;<a class='btn btn-icon-only grey' href='#modalSubsidio' data-toggle='modal' data-original-title='' title='Subsidio' onclick=\"CalculoSubsidio(\'"+item.id+"\')\"><i class='fa fa-eye'></i></a></td>"
             +"</tr>");
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
@@ -1006,6 +1006,7 @@
     changeMetodo();
 
   } 
+
   function changeMetodo()
   {
     var radioValue1 = $("input[name='radio1']:checked"). val();
@@ -1029,6 +1030,31 @@
         $.each(Resp, function(i, item) {  
         document.getElementById('tramite').value=item.descripcion;       
         $("#encabezado").text(item.descripcion);       
+        });
+        
+     })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
+  function CalculoSubsidio(id_)
+  {
+    document.getElementById('tramite').value=id_;
+    changeSubsidio();
+  }
+  function changeSubsidio()
+  {
+    var id_=$("#tramite").val();
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/tipo-servicio-Find-where') }}",
+           data: { id:id_, _token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) { 
+            
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) {  
+        document.getElementById('tramiteSubsidio').value=item.descripcion;       
+              
         });
         
      })
@@ -1106,7 +1132,35 @@
         );
        document.getElementById('search').value="";
 
+}
+$('.valida-decimal').on('input', function () { 
+    this.value = this.value.replace(/[^0-9./*()VWXYZvwxyz-]/g,'');
+});
+function validarFormula()
+{
+  var formula=$("#formula").val();
+  var v=4,w=4,x = 2, y = 4,z=4;
+  //console.log(eval(formula));
+  try{
+  var res=eval(formula);
+  }catch(e){
+    if (e instanceof SyntaxError) {
+       Command: toastr.warning("Formula Error!", "Notifications")
+    }
+
   }
+  /*console.log(res);
+  if(res)
+  {
+    Command: toastr.success("Formula Bien!", "Notifications")
+
+  }*/
+
+}
+function ConseptosInsert()
+{
+ validarFormula();
+}
 function GuardarExcel()
 {
  var id_=$("#OptionEntidad").val();
