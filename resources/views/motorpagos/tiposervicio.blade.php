@@ -1134,15 +1134,23 @@
 
 }
 $('.valida-decimal').on('input', function () { 
-    this.value = this.value.replace(/[^0-9./*()VWXYZvwxyz-]/g,'');
+    this.value = this.value.replace(/[^0-9./*+()VWXYZvwxyz-]/g,'');
 });
 function validarFormula()
 {
   var formula=$("#formula").val();
-  var v=4,w=4,x = 2, y = 4,z=4;
+  var v=4,w=4,x = 2, y = 4,z=4,V=4,W=4,X = 2, Y = 4,Z=4;
+
+
   //console.log(eval(formula));
   try{
-  var res=eval(formula);
+    var res=eval(formula);
+    if(res)
+    {
+    Command: toastr.success("Formula Bien!", "Notifications")
+
+    }
+    //console.log(res);
   }catch(e){
     if (e instanceof SyntaxError) {
        Command: toastr.warning("Formula Error!", "Notifications")
@@ -1150,11 +1158,7 @@ function validarFormula()
 
   }
   /*console.log(res);
-  if(res)
-  {
-    Command: toastr.success("Formula Bien!", "Notifications")
-
-  }*/
+  */
 
 }
 function ConseptosInsert()
