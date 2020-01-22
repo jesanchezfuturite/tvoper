@@ -302,24 +302,23 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-        <h4 class="modal-title">Actualizar: <label id="encabezado"></label></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiaCalculoConcepto()"></button>
+          <input type="text" id="id_calculoConcepto" name="id_calculoConcepto" hidden="true">
+          <h4 class="modal-title">Actualizar: <label id="encabezado"></label></h4>
       </div>
       <div class="modal-body">
-      <input hidden="true" type="text" name="idtramite" id="idtramite">
-
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Nombre de Consepto</label>                                             
-                <input type="text" class="form-control" name="consepto" id="consepto" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="calculoConsepto" id="calculoConsepto" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >Tramite</label>                                                           
-                <input type="text" id="tramite" class="form-control"name="tramite" disabled="true">
+                <input type="text" id="calculoTramite" class="form-control"name="calculoTramite" disabled="true">
               </div>
             </div>
           </div>
@@ -329,7 +328,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Sujeto Aplicable</label>                                             
-                <select id="sujetoaplicable" class="select2me form-control" >
+                <select id="calculoSujetoAplicable" class="select2me form-control" >
                   <option value="limpia">-------</option>
                 </select>
               </div>
@@ -337,13 +336,14 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Partida Presupuestal</label>                                                           
-                <select id="partidapresupuestal" class="select2me form-control" >
+                <select id="calculoPartida" class="select2me form-control" >
                   <option value="limpia">-------</option>
                 </select>               
               </div>
             </div>
           </div>
         </div>
+        <!-----------------------------   METODO  ------------------------->
         <div class="row">
           <div class="col-md-12">            
           <div class="col-md-12">            
@@ -352,7 +352,7 @@
               <label >Metodo</label>
               <div class="md-radio-inline">
                 <div class="md-radio">
-                  <input type="radio" id="radio1" name="radio1" class="md-radiobtn" value="fijo" onclick="changeMetodo()" checked>
+                  <input type="radio" id="radio1" name="radio1" class="md-radiobtn" value="Fijo" onclick="changeMetodo()" checked>
                     <label for="radio1">
                     <span></span>
                     <span class="check"></span>
@@ -360,7 +360,7 @@
                     Fijo </label>
                 </div> | &nbsp;
                 <div class="md-radio">
-                  <input type="radio" id="radio2" name="radio1" class="md-radiobtn" value="variable" onclick="changeMetodo()" >
+                  <input type="radio" id="radio2" name="radio1" class="md-radiobtn" value="Variable" onclick="changeMetodo()" >
                     <label for="radio2">
                     <span></span>
                     <span class="check"></span>
@@ -380,14 +380,14 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Total</label>                                             
-                <input type="text" class="form-control" name="total" id="tatal" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="calculoTotal" id="calculoTotal" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >Moneda (Total)</label>                                                           
-                <select id="monedaTotal" class="select2me form-control" >
-                  <option value="MXN">MXN</option>
+                <select id="calculoMonedaTotal" class="select2me form-control" >
+                  <option value="limpia">-------</option>
                 </select>               
               </div>
             </div>
@@ -411,14 +411,14 @@
             <div class="col-md-5"> 
               <div class="form-group">
                 <label >Precio Maximo</label>                                             
-                <input type="text" class="form-control" name="precioMaximo" id="precioMaximo" placeholder="Ingrese el Precio Maximo">
+                <input type="text" class="form-control" name="calculoPrecioMaximo" id="calculoPrecioMaximo" placeholder="Ingrese el Precio Maximo">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >Moneda (Precio Maximo)</label>                                                           
-                <select id="monedaPmaximo" class="select2me form-control" >
-                  <option value="MXN">MXN</option>
+                <select id="calculoMonedaMaximo" class="select2me form-control" >
+                  <option value="limpia">-------</option>
                 </select>               
               </div>
             </div>
@@ -428,14 +428,14 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Precio Minimo</label>                                             
-                <input type="text" class="form-control" name="precioMinimo" id="precioMinimo" placeholder="Ingrese el Precio Minimo">
+                <input type="text" class="form-control" name="calculoPrecioMinimo" id="calculoPrecioMinimo" placeholder="Ingrese el Precio Minimo">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >Moneda (Precio Minimo)</label>                                                           
-                <select id="monedaPminimo" class="select2me form-control" >
-                  <option value="MXN">MXN</option>
+                <select id="calculoMonedaMinimo" class="select2me form-control" >
+                  <option value="limpia">-------</option>
                 </select>               
               </div>
             </div>
@@ -445,14 +445,14 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Formula</label>                                             
-                <textarea class="form-control valida-decimal" rows="3" name="formula" id="formula" placeholder="Ingrese la Formula"></textarea>
+                <textarea class="form-control validarFormula" rows="3" name="calculoFormula" id="calculoFormula" placeholder="Ingrese la Formula"></textarea>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >Moneda (Formula)</label>                                                           
-                <select id="monedaFormula" class="select2me form-control" >
-                  <option value="MXN">MXN</option>
+                <select id="calculoMonedaFormula" class="select2me form-control" >
+                  <option value="limpia">-------</option>
                 </select>               
               </div>
             </div>
@@ -467,7 +467,7 @@
               <label >Tiene Lote</label>
               <div class="md-radio-inline">
                 <div class="md-radio">
-                  <input type="radio" id="radio3" name="radio2" class="md-radiobtn" value="undia" onclick="" >
+                  <input type="radio" id="radio3" name="radio2" class="md-radiobtn" value="1" onclick="" >
                     <label for="radio3">
                     <span></span>
                     <span class="check"></span>
@@ -475,7 +475,7 @@
                     Si </label>
                 </div> | &nbsp;
                 <div class="md-radio">
-                  <input type="radio" id="radio4" name="radio2" class="md-radiobtn" value="undia" onclick="" checked>
+                  <input type="radio" id="radio4" name="radio2" class="md-radiobtn" value="0" onclick="" checked>
                     <label for="radio4">
                     <span></span>
                     <span class="check"></span>
@@ -491,7 +491,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label>Cantidad</label>
-                <input type="text" name="cantidad" id="cantidad" class="form-control" placeholder="Ingrese Cantidad">
+                <input type="text" name="calculoCantidad" id="calculoCantidad" class="form-control" placeholder="Ingrese Cantidad">
               </div>
             </div>
           </div>
@@ -504,7 +504,7 @@
               <label >Aplica Redondeo al Millar</label>
               <div class="md-radio-inline">
                 <div class="md-radio">
-                  <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="undia" onclick="" >
+                  <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="1" onclick="" >
                     <label for="radio5">
                     <span></span>
                     <span class="check"></span>
@@ -512,7 +512,7 @@
                     Si </label>
                 </div> | &nbsp;
                 <div class="md-radio">
-                    <input type="radio" id="radio6" name="radio3" class="md-radiobtn" value="undia" onclick="" >
+                    <input type="radio" id="radio6" name="radio3" class="md-radiobtn" value="0" onclick="" checked>
                     <label for="radio6">
                     <span></span>
                     <span class="check"></span>
@@ -530,24 +530,26 @@
         <div class="col-md-12">
           <div class="col-md-12">             
             <div class="form-group">
-              <button type="submit" class="btn blue" onclick="ConseptosInsert()"><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue" onclick="calculoVerifica()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn default" data-dismiss="modal" onclick="limpiaCalculoConcepto()">Cerrar</button>
         
       </div>
     </div>
   </div>
 </div>
-<!------------------------------------- Subsidio Modal ------------------------------------->
+<!----------------------------------------- Subsidio MODAL ----------------------------------------------->
 <div class="modal fade bs-modal-lg" id="modalSubsidio" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarSubsidio()"></button>
         <h4 class="modal-title">Actualizacion de Registro</h4>
+        <input hidden="true" type="text" name="idsubsidio" id="idsubsidio">
       </div>
       <div class="modal-body">
         <div class="row">
@@ -555,18 +557,17 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Tramite</label>                                                           
-                <input type="text" id="tramiteSubsidio" class="form-control"name="tramiteSubsidio" disabled="true">
+                <input type="text" id="subsidioTramite" class="form-control"name="subsidioTramite" disabled="true">
               </div>
             </div>
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Moneda</label>
-                <select id="sujetoaplicable" class="select2me form-control" >
-                  <option value="uma">UMA</option>
+                <select id="subsidioMoneda" class="select2me form-control" >
+                  <option value="limpia">-------</option>
                 </select>                                            
               </div>
-            </div>
-            
+            </div>            
           </div>
         </div>
         <div class="row">
@@ -574,13 +575,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Aplicar cuando el Total se Menor o Igual</label>                                             
-                <input type="text" class="form-control" name="menorIgual" id="menorIgual" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control valida-decimal" name="subsidioTotal" id="subsidioTotal" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >Total Despues de Aplicar Subsidio</label>                                                       
-                <input type="text" class="form-control" name="totalSubsidio" id="totalSubsidio" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control valida-decimal" name="subsidioTotalDesp" id="subsidioTotalDesp" placeholder="Ingrese el Consepto">
              </div>
             </div>
           </div>
@@ -590,7 +591,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Partida Presupuestal</label>                                                           
-                <select id="partidapresupuestalSubsidio" class="select2me form-control" >
+                <select id="subsidioPartida" class="select2me form-control" >
                   <option value="limpia">-------</option>
                 </select>               
               </div>
@@ -598,8 +599,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Descripción</label>                                             
-                <input type="text" class="form-control" name="descripcionSubsido" id="descripcionSubsido" placeholder="Ingrese el Consepto">
-                
+                <input type="text" class="form-control" name="subsidioDescripcion" id="subsidioDescripcion" placeholder="Ingrese el Consepto">                
               </div>
             </div>            
           </div>
@@ -609,7 +609,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >No Decreto/Oficio</label>                                             
-                <input type="text" class="form-control" name="decretoOficio" id="decretoOficio" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="subsidioDecreto" id="subsidioDecreto" placeholder="Ingrese el Consepto">
               </div>
             </div>
             <div class="col-md-6"> 
@@ -635,8 +635,11 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Tipo de Persona</label>
-                <select id="tipoPersona" class="select2me form-control" >
-                  <option value="fisica">FISICA</option>
+                <select id="subsidioTipoPersona" class="select2me form-control" >
+                  <option value="limpia">---------</option>
+                  <option value="FISICA">FISICA</option>
+                  <option value="MORAL">MORAL</option>
+                  <option value="TODOS">TODOS</option>
                 </select>                                            
               </div>
             </div>
@@ -648,18 +651,18 @@
         <div class="col-md-12">
           <div class="col-md-12">             
             <div class="form-group">
-              <button type="submit" class="btn blue" onclick=""><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue" onclick="subsidioVerifica()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn default">Cerrar</button>
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarSubsidio()">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
-
+<input hidden="true" type="text" name="idtramite" id="idtramite">
 
 @endsection
 
@@ -671,10 +674,69 @@
         findTipoReferencia();
         FindEntidad();
         ActualizaTabla();
-        TableManaged.init();
+        currenciesFind();
+        calculoSujetoFind();
         UIBlockUI.init();         
        //TableAdvanced.init();       
     });
+  function currenciesFind()
+  {
+    $.ajax({
+           method: "get",            
+           url: "{{ url('/currencies-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+    .done(function (responseinfo) {     
+      var Resp=$.parseJSON(responseinfo);
+      var item="";
+      //--------------------SUBSIDIO-------------//
+      $("#subsidioMoneda option").remove();
+      $("#subsidioMoneda").append("<option value='limpia'>-------</option>");
+
+      //---------------CALCULO CONCEPTO------------//
+      $("#calculoMonedaTotal option").remove();
+      $("#calculoMonedaTotal").append("<option value='limpia'>-------</option>");
+
+      $("#calculoMonedaMinimo option").remove();
+      $("#calculoMonedaMinimo").append("<option value='limpia'>-------</option>");
+
+      $("#calculoMonedaMaximo option").remove();
+      $("#calculoMonedaMaximo").append("<option value='limpia'>-------</option>");
+
+      $("#calculoMonedaFormula option").remove();
+      $("#calculoMonedaFormula").append("<option value='limpia'>-------</option>");
+
+        $.each(Resp, function(i, item) {                
+            $("#subsidioMoneda").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+            $("#calculoMonedaTotal").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+            $("#calculoMonedaMinimo").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+            $("#calculoMonedaMaximo").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+            $("#calculoMonedaFormula").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+        });
+      })
+    .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  
+    });
+  }
+  
+  function calculoSujetoFind()
+  {
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/applicable-subject-find-all') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+    .done(function (responseinfo) {     
+      var Resp=$.parseJSON(responseinfo);
+      var item="";
+      $("#calculoSujetoAplicable option").remove();
+      $("#calculoSujetoAplicable").append("<option value='limpia'>-------</option>");
+        $.each(Resp, function(i, item) {                
+          $("#calculoSujetoAplicable").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+        });
+      })
+      .fail(function( msg ) {
+       Command: toastr.warning("No Success", "Notifications")  
+      });
+  }
   function updateServiciosArray()
   {
     var tiporeferencia=$("#tiporeferencia2").val();
@@ -801,10 +863,10 @@
          console.log("Error al Cargar select Option Limite Referencia");  });
     
 	}
-    function OperacionTramite(id_)
-    {
-        document.getElementById('idupdate').value=id_;
-        $.ajax({
+  function OperacionTramite(id_)
+  {
+    document.getElementById('idupdate').value=id_;
+    $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-Find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
@@ -827,7 +889,7 @@
      })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-    }
+  }
   function savetramite()
   {
     var desc=$("#descripcion").val();
@@ -1002,15 +1064,55 @@
   }
   function CalculoConsepto(id_)
   {
-    document.getElementById('idtramite').value=id_;
+    document.getElementById('idtramite').value=id_;  
     changeMetodo();
+    calculoPartidasFind(id_);
+    
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/tipo-servicio-Find-where') }}",
+           data: { id:id_, _token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) { 
+        calculoConceptoFind(id_);
+        var Resp=$.parseJSON(response);
+        $.each(Resp, function(i, item) {  
+        document.getElementById('calculoTramite').value=item.descripcion;
+
+        $("#encabezado").text(item.descripcion);       
+        });
+        
+     })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+   
 
   } 
-
+  function calculoPartidasFind(id_)
+  {
+     $.ajax({
+           method: "post",            
+           url: "{{ url('/partidas-where') }}",
+           data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
+      .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#calculoPartida option").remove();
+          $("#calculoPartida").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#calculoPartida").append("<option value='"+item.id_partida+"'>"+item.descripcion+"</option>"
+            );  
+        });
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  
+      });
+  }
   function changeMetodo()
   {
     var radioValue1 = $("input[name='radio1']:checked"). val();
-    if(radioValue1=='fijo')
+    if(radioValue1=='Fijo')
     {
       $("#changeFijo").css("display", "block");
       $("#changeVariable").css("display", "none");
@@ -1018,33 +1120,297 @@
       $("#changeFijo").css("display", "none");
       $("#changeVariable").css("display", "block");
     }
-    var id_=$("#idtramite").val();
-        $.ajax({
+   
+  }
+  function calculoConceptoFind(id_)
+  {
+    $.ajax({
            method: "POST",
-           url: "{{ url('/tipo-servicio-Find-where') }}",
+           url: "{{ url('/calcula-find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
             
         var Resp=$.parseJSON(response);
-        $.each(Resp, function(i, item) {  
-        document.getElementById('tramite').value=item.descripcion;       
-        $("#encabezado").text(item.descripcion);       
+        $.each(Resp, function(i, item) {
+
+        document.getElementById('id_calculoConcepto').value=item.id;
+        document.getElementById('calculoConsepto').value=item.nombreconcepto;
+        $("#calculoSujetoAplicable").val(item.applicablesubject).change();
+        $("#calculoPartida").val(item.id_partida).change();
+        if(item.metodo=="Fijo")
+          {
+            $("#radio1").prop( "checked", true );
+          }else{
+            $("#radio2").prop( "checked", true );
+          }        
+        document.getElementById('calculoTotal').value=item.total;
+        $("#calculoMonedaTotal").val(item.moneda_total).change();
+        if(item.has_max==1) 
+        {
+          $("#checkbox30").prop("checked", true);
+        }else{
+          $("#checkbox30").prop("checked", false); 
+        }
+        document.getElementById('calculoPrecioMaximo').value=item.precio_max;
+        $("#calculoMonedaMaximo").val(item.moneda_max).change();
+        document.getElementById('calculoPrecioMinimo').value=item.precio_min;
+        $("#calculoMonedaMinimo").val(item.moneda_min).change();    
+        document.getElementById('calculoFormula').value=item.formula;
+        $("#calculoMonedaFormula").val(item.moneda_formula).change();
+        if(item.has_lot==1)
+        {
+          $("#radio3").prop( "checked", true );
+        }else{
+            $("#radio4").prop( "checked", true );
+        }        
+        document.getElementById('calculoCantidad').value=item.cantidad;
+        if(item.redondeo_millar==1)
+        {
+          $("#radio5").prop( "checked", true );
+        }else{
+          $("#radio6").prop( "checked", true );
+        }       
         });
+        changeMetodo();
         
      })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
+  function calculoVerifica()
+  {
+    var id_calculoConcepto=$("#id_calculoConcepto").val();
+    var id_tramite_=$("#idtramite").val();
+    var nombreconcepto_=$("#calculoConsepto").val();
+    var applicablesubject_=$("#calculoSujetoAplicable").val();
+    var id_partida_=$("#calculoPartida").val();    
+    var total_=$("#calculoTotal").val();
+    var moneda_total_=$("#calculoMonedaTotal").val();
+    var precio_max_=$("#calculoPrecioMaximo").val();
+    var moneda_max_=$("#calculoMonedaMaximo").val();
+    var precio_min_=$("#calculoPrecioMinimo").val();
+    var moneda_min_=$("#calculoMonedaMinimo").val();
+    var formula_=$("#calculoFormula").val();
+    var moneda_formula_=$("#calculoMonedaFormula").val();
+    var cantidad_=$("#calculoCantidad").val();
+    var metodo_ = $("input[name='radio1']:checked").val();
+    if(nombreconcepto_.length==0)
+    {
+       Command: toastr.warning("Campo Nombre Concepto, Requerido!", "Notifications") 
+    }else if(applicablesubject_=="limpia")
+    {
+      Command: toastr.warning("Campo Sujeto Aplicable, Requerido!", "Notifications") 
+    }else if(id_partida_=="limpia")
+    {
+      Command: toastr.warning("Campo Partida Presupuestal, Requerido!", "Notifications") 
+    }else if(cantidad_.length==0)
+    {
+      Command: toastr.warning("Campo Cantidad, Requerido!", "Notifications") 
+    }else{
+      console.log(metodo_);
+      if(metodo_=='Fijo')
+      {
+        if(total_.length==0)
+        {
+          Command: toastr.warning("Campo Total, Requerido!", "Notifications") 
+        }else if(moneda_total_=="limpia")
+        {
+          Command: toastr.warning("Campo Moneda Total, Requerido!", "Notifications") 
+        }else{
+          console.log(id_calculoConcepto);
+          if(id_calculoConcepto.length==0)
+          {
+            calculoInsert();
+
+          }else{
+            calculoUpdate();
+          } 
+        }
+      }else{      
+        if(precio_max_.length==0)
+        {
+          Command: toastr.warning("Campo , Requerido!", "Notifications") 
+        }else if(moneda_max_=="limpia")
+        {
+          Command: toastr.warning("Campo Moneda (Precio Maximo), Requerido!", "Notifications") 
+        }else if(precio_min_.length==0)
+        {
+          Command: toastr.warning("Campo Precio Minimo, Requerido!", "Notifications") 
+        }else if(moneda_min_=="limpia")
+        {
+          Command: toastr.warning("Campo Moneda (Precio Minimo), Requerido!", "Notifications") 
+        }else if(formula_.length==0)
+        {
+          Command: toastr.warning("Campo Formula, Requerido!", "Notifications") 
+        }else if(moneda_formula_=="limpia")
+        {
+          Command: toastr.warning("Campo Moneda (Formula), Requerido!", "Notifications") 
+        }else{
+          if(id_calculoConcepto.length==0)
+          {
+            if(validarFormula()){
+              calculoInsert();
+            }        
+          }else{
+            if(validarFormula()){
+              calculoUpdate();
+            } 
+          }
+        }       
+      }      
+    }
+
+  }
+  function calculoInsert()
+  {
+    var id_=$("#id_calculoConcepto").val();
+    var id_tramite_=$("#idtramite").val();
+    var nombreconcepto_=$("#calculoConsepto").val();
+    var applicablesubject_=$("#calculoSujetoAplicable").val();
+    var id_partida_=$("#calculoPartida").val();
+    var metodo_ = $("input[name='radio1']:checked").val();
+    var total_=$("#calculoTotal").val();
+    var moneda_total_=$("#calculoMonedaTotal").val();    
+    var check=$("#checkbox30").prop("checked");
+    var has_max_=0;
+    if(check==true)
+    {
+      has_max_=1;
+    }else{
+      has_max_=0;
+    }
+    var precio_max_=$("#calculoPrecioMaximo").val();
+    var moneda_max_=$("#calculoMonedaMaximo").val();
+    var precio_min_=$("#calculoPrecioMinimo").val();
+    var moneda_min_=$("#calculoMonedaMinimo").val();
+    var formula_=$("#calculoFormula").val();
+    var moneda_formula_=$("#calculoMonedaFormula").val();
+    var has_lot_ = $("input[name='radio2']:checked").val();
+    var cantidad_=$("#calculoCantidad").val();   
+    var redondeo_millar_ = $("input[name='radio3']:checked").val();
+    if(metodo_=='Fijo')
+    {
+      has_max_=0;
+      precio_max_='0.00';
+      moneda_max_='1';
+      precio_min_='0.00';
+      moneda_min_='1';
+      formula_=null;
+      moneda_formula_='1';
+    }else{
+      total_='0.00';
+      moneda_total_='1';
+    }
+
+    $.ajax({
+           method: "POST",
+           url: "{{ url('/calcula-insert') }}",
+           data: { id_tramite:id_tramite_,nombreconcepto:nombreconcepto_,applicablesubject:applicablesubject_,id_partida:id_partida_,metodo:metodo_,total:total_,moneda_total:moneda_total_,has_max:has_max_,precio_max:precio_max_,moneda_max:moneda_max_,precio_min:precio_min_,moneda_min:moneda_min_,formula:formula_,moneda_formula:moneda_formula_,has_lot:has_lot_,cantidad:cantidad_,redondeo_millar:redondeo_millar_, _token: '{{ csrf_token() }}' }
+    })
+    .done(function (response) {
+        if(response=="true")
+          {
+            Command: toastr.success("Success", "Notifications")
+          }
+    })
+    .fail(function( msg ) {
+      Command: toastr.warning("No Success", "Notifications")  
+    });
+
+  }
+  function calculoUpdate()
+  {
+    var id_=$("#id_calculoConcepto").val();
+    var id_tramite_=$("#idtramite").val();
+    var nombreconcepto_=$("#calculoConsepto").val();
+    var applicablesubject_=$("#calculoSujetoAplicable").val();
+    var id_partida_=$("#calculoPartida").val();
+    var metodo_ = $("input[name='radio1']:checked").val();
+    var total_=$("#calculoTotal").val();
+    var moneda_total_=$("#calculoMonedaTotal").val();    
+    var check=$("#checkbox30").prop("checked");
+    var has_max_=0;
+    if(check==true)
+    {
+      has_max_=1;
+    }else{
+      has_max_=0;
+    }
+    var precio_max_=$("#calculoPrecioMaximo").val();
+    var moneda_max_=$("#calculoMonedaMaximo").val();
+    var precio_min_=$("#calculoPrecioMinimo").val();
+    var moneda_min_=$("#calculoMonedaMinimo").val();
+    var formula_=$("#calculoFormula").val();
+    var moneda_formula_=$("#calculoMonedaFormula").val();
+    var has_lot_ = $("input[name='radio2']:checked").val();
+    var cantidad_=$("#calculoCantidad").val();   
+    var redondeo_millar_ = $("input[name='radio3']:checked").val();
+    if(metodo_=='Fijo')
+    {
+      has_max_=0;
+      precio_max_='0.00';
+      moneda_max_='1';
+      precio_min_='0.00';
+      moneda_min_='1';
+      formula_=null;
+      moneda_formula_='1';
+    }else{
+      total_='0.00';
+      moneda_total_='1';
+    }
+
+    $.ajax({
+           method: "POST",
+           url: "{{ url('/calcula-update') }}",
+           data: {id:id_,id_tramite:id_tramite_,nombreconcepto:nombreconcepto_,applicablesubject:applicablesubject_,id_partida:id_partida_,metodo:metodo_,total:total_,moneda_total:moneda_total_,has_max:has_max_,precio_max:precio_max_,moneda_max:moneda_max_,precio_min:precio_min_,moneda_min:moneda_min_,formula:formula_,moneda_formula:moneda_formula_,has_lot:has_lot_,cantidad:cantidad_,redondeo_millar:redondeo_millar_, _token: '{{ csrf_token() }}' }
+    })
+    .done(function (response) {
+        if(response=="true")
+          {
+            Command: toastr.success("Success", "Notifications")
+          }
+    })
+    .fail(function( msg ) {
+      Command: toastr.warning("No Success", "Notifications")  
+    });
+
+  }
+  function limpiaCalculoConcepto()
+  {
+    
+    document.getElementById('id_calculoConcepto').value="";
+    document.getElementById('calculoConsepto').value="";
+    $("#calculoSujetoAplicable").val("limpia").change();
+    $("#calculoPartida").val("limpia").change();
+    $("#radio1").prop( "checked", true );
+    document.getElementById('calculoTotal').value="";
+    $("#calculoMonedaTotal").val("limpia").change();  
+    $("#checkbox30").prop("checked", false);  
+    document.getElementById('calculoPrecioMaximo').value="";
+    $("#calculoMonedaMaximo").val("limpia").change();
+    document.getElementById('calculoPrecioMinimo').value="";
+    $("#calculoMonedaMinimo").val("limpia").change();    
+    document.getElementById('calculoFormula').value="";
+    $("#calculoMonedaFormula").val("limpia").change();
+    $("#radio4").prop( "checked", true );
+    document.getElementById('calculoCantidad').value="";
+    $("#radio6").prop( "checked", true );
+
+
+    
+  }
   function CalculoSubsidio(id_)
   {
-    document.getElementById('tramite').value=id_;
+    document.getElementById('idtramite').value=id_;
     changeSubsidio();
   }
   function changeSubsidio()
   {
-    var id_=$("#tramite").val();
-        $.ajax({
+    var id_=$("#idtramite").val();
+    partidasFind(id_);
+    subsidioFindWhere();
+    $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-Find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
@@ -1053,14 +1419,189 @@
             
         var Resp=$.parseJSON(response);
         $.each(Resp, function(i, item) {  
-        document.getElementById('tramiteSubsidio').value=item.descripcion;       
-              
-        });
-        
+        document.getElementById('subsidioTramite').value=item.descripcion;
+         });
      })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
+  function subsidioFindWhere()
+  {
+    var id_=$("#idtramite").val();
+     $.ajax({
+           method: "POST",
+           url: "{{ url('/subsidio-find-where') }}",
+           data: { id_tramite:id_, _token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) {             
+        var Resp=$.parseJSON(response);
+        //console.log(Resp);
+        $.each(Resp, function(i, item) {  
+          document.getElementById('idsubsidio').value=item.id;          
+          document.getElementById('subsidioDecreto').value=item.decretoficio;
+          document.getElementById('subsidioTotal').value=item.total;
+          document.getElementById('subsidioDescripcion').value=item.descripcion;
+          document.getElementById('subsidioTotalDesp').value=item.totaldespues;
+          $("#subsidioMoneda").val(item.moneda).change();
+          $("#subsidioPartida").val(item.id_partida).change();
+          $("#subsidioTipoPersona").val(item.tipopersona).change();
+          if(parseFloat(item.formato)==1)
+            {
+              $("#checkbox40").prop("checked", true);
+            }
+        });
+      })
+      .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+
+  }
+  function subsidioVerifica()
+  {
+    var id_subsidio=$("#idsubsidio").val();
+    var moneda_=$("#subsidioMoneda").val();
+    var total_=$("#subsidioTotal").val();
+    var totalDespues_=$("#subsidioTotalDesp").val();
+    var partida_=$("#subsidioPartida").val();
+    var descripcion_=$("#subsidioDescripcion").val();
+    var decreto_=$("#subsidioDecreto").val();
+    var tipopersona_=$("#subsidioTipoPersona").val();
+    if(moneda_=='limpia')
+    {
+      Command: toastr.warning("Campo Moneda, Requerido!", "Notifications")
+    }else if(total_.length==0)
+    {
+      Command: toastr.warning("Campo Total sea Menor o Igual, Requerido!", "Notifications")
+    }else if(totalDespues_.length==0)
+    {
+      Command: toastr.warning("Campo Total Despues de Aplicar Subsidio, Requerido!", "Notifications")
+    }else if(partida_=='limpia')
+    {
+      Command: toastr.warning("Campo Partida Presupuestal, Requerido!", "Notifications")
+    }else if(descripcion_.length==0)
+    {
+      Command: toastr.warning("Campo Descripcion, Requerido!", "Notifications")
+    }else if(decreto_.length==0)
+    {
+      Command: toastr.warning("Campo Decreto/Oficio, Requerido!", "Notifications")
+    }else if(tipopersona_=='limpia')
+    {
+      Command: toastr.warning("Campo Tipo Persona, Requerido!", "Notifications")
+    }else if(id_subsidio.length==0)
+    {
+      subsidioInsert();
+    }else{
+      subsidioUpdate();
+    }
+  }
+  function subsidioInsert()
+  {
+    var id_=$("#idtramite").val();
+    var moneda_=$("#subsidioMoneda").val();
+    var total_=$("#subsidioTotal").val();
+    var totalDespues_=$("#subsidioTotalDesp").val();
+    var partida_=$("#subsidioPartida").val();
+    var descripcion_=$("#subsidioDescripcion").val();
+    var decreto_=$("#subsidioDecreto").val();
+    var formato_='0';
+    var check=$("#checkbox40").prop("checked");
+    if(check==true)
+    {
+      formato_=1;
+    }
+    else{
+      formato_=0;
+    }
+    var tipopersona_=$("#subsidioTipoPersona").val();
+     $.ajax({
+           method: "POST",
+           url: "{{ url('/subsidio-insert') }}",
+           data: { id_tramite:id_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,_token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) {             
+       if(response=="true")
+        {           
+          Command: toastr.success("Success", "Notifications")
+        }else{
+         Command: toastr.warning("No Success", "Notifications")
+        }
+      })
+      .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
+  function subsidioUpdate()
+  {
+    var id_=$("#idsubsidio").val();
+    var id_tramite_=$("#idtramite").val();    
+    var moneda_=$("#subsidioMoneda").val();
+    var total_=$("#subsidioTotal").val();
+    var totalDespues_=$("#subsidioTotalDesp").val();
+    var partida_=$("#subsidioPartida").val();
+    var descripcion_=$("#subsidioDescripcion").val();
+    var decreto_=$("#subsidioDecreto").val();
+    var formato_='0';
+    var check=$("#checkbox40").prop("checked");
+    if(check==true)
+    {
+      formato_=1;
+    }
+    else{
+      formato_=0;
+    }
+    var tipopersona_=$("#subsidioTipoPersona").val();
+     $.ajax({
+           method: "POST",
+           url: "{{ url('/subsidio-update') }}",
+           data: { id:id_,id_tramite:id_tramite_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,_token: '{{ csrf_token() }}' }
+       })
+        .done(function (response) {             
+       if(response=="true")
+        {           
+          Command: toastr.success("Success", "Notifications")
+        }else{
+         Command: toastr.warning("No Success", "Notifications")
+        }
+      })
+      .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
+  function limpiarSubsidio()
+  {
+    document.getElementById('idtramite').value="";
+    document.getElementById('idsubsidio').value="";
+    document.getElementById('subsidioTramite').value="";
+    document.getElementById('subsidioDecreto').value="";
+    document.getElementById('subsidioTotal').value="";
+    document.getElementById('subsidioDescripcion').value="";
+    document.getElementById('subsidioTotalDesp').value="";
+    document.getElementById('subsidioTipoPersona').value="";
+    $("#subsidioMoneda").val("limpia").change();
+    $("#subsidioPartida").val("limpia").change();
+    $("#subsidioTipoPersona").val("limpia").change();
+    $("#checkbox40").prop("checked", false);
+
+  }
+  function partidasFind(id_)
+  {
+     $.ajax({
+           method: "post",            
+           url: "{{ url('/partidas-where') }}",
+           data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
+      .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#subsidioPartida option").remove();
+          $("#subsidioPartida").append("<option value='limpia'>-------</option>"
+            );
+        $.each(Resp, function(i, item) {                
+               $("#subsidioPartida").append("<option value='"+item.id_partida+"'>"+item.descripcion+"</option>"
+            );  
+        });
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  
+      });
+  }
+
   function changeEntidadFind()
   {
     var entidad=$("#optionEntidad").val();
@@ -1138,33 +1679,45 @@ $('.valida-decimal').on('input', function () {
 });
 function validarFormula()
 {
-  var formula=$("#formula").val();
+  var formula=$("#calculoFormula").val();
   var v=4,w=4,x = 2, y = 4,z=4,V=4,W=4,X = 2, Y = 4,Z=4;
 
-
+  var response=false;
   //console.log(eval(formula));
   try{
     var res=eval(formula);
     if(res)
     {
-    Command: toastr.success("Formula Bien!", "Notifications")
+    
+   response=true;
 
     }
     //console.log(res);
   }catch(e){
     if (e instanceof SyntaxError) {
-       Command: toastr.warning("Formula Error!", "Notifications")
+      
+   response=false;
+
     }
 
   }
   /*console.log(res);
   */
-
+  return response;
 }
 function ConseptosInsert()
 {
- validarFormula();
+  if(validarFormula())
+  {
+    
+  }else{ 
+    Command: toastr.warning("Formula Error!", "Notifications")
+  }
+ 
 }
+$('.valida-decimal').on('input', function () { 
+    this.value = this.value.replace(/[^0-9.]/g,'');
+    });
 function GuardarExcel()
 {
  var id_=$("#OptionEntidad").val();
@@ -1182,21 +1735,16 @@ function GuardarExcel()
             { 
               Command: toastr.warning("Sin Registros!", "Notifications")
               document.getElementById("blockui_sample_3_1_1").click();
-
             }else{
               //var Resp=$.parseJSON(responseTipoServicio);  
                var title="Tipo_Servicio";        
                JSONToCSVConvertor(responseTipoServicio, title, true);
-               
             }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications") 
          document.getElementById("blockui_sample_3_1_1").click(); }); 
-  
   }
-   
-     
 }
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
