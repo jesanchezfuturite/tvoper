@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateInpcsTable.
+ * Class CreateApplicableSubjectsTable.
  */
-class CreateInpcsTable extends Migration
+class CreateApplicableSubjectsTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateInpcsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('inpcs', function(Blueprint $table) {
+		Schema::create('applicable_subjects', function(Blueprint $table) {
             $table->increments('id');
 
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateInpcsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('inpcs');
+		Schema::drop('applicable_subjects');
 	}
 }
