@@ -136,7 +136,7 @@
             </div>
             <div class="modal-footer">
          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminarInpc()">Confirmar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="umaeliminar()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -146,23 +146,28 @@
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
-             //CargartablaUMA();
+             umaCargartabla();
     });    
     function limpiar()
     {
-        
+        document.getElementById('anio').value="";
+        document.getElementById('Vdiario').value="";
+        document.getElementById('Vmensual').value="";
+        document.getElementById('Vanual').value=""; 
+        document.getElementById('iddeleted').value=""; 
+        document.getElementById('idupdate').value=""; 
     }
     function addTable()
     {
         $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Mes</th><th>Indice</th><th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
+            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Valor Diario</th><th>Valor Mensual</th><th>Valor Anual</th><th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
         );
     }
-    function CargartablaINPC()
+    function umaCargartabla()
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/inpc-find-all') }}",
+           url: "{{ url('/uma-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            
@@ -171,10 +176,11 @@
          addTable();
         $.each(Resp, function(i, item) {                
             $('#sample_2 tbody').append("<tr>"
-                +"<td>"+item.anio+"</td>"
+                +"<td>"+item.year+"</td>"
+                +"<td>"+item.dia+"</td>"
                 +"<td>"+item.mes+"</td>"
-                +"<td>"+item.indice+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='InpcDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>"+item.anio+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='umaUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='umaDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -183,20 +189,21 @@
         .fail(function( msg ) {
          console.log("Error al Cargar Tabla Partidas");  });
     }
-    function InpcInsert()
+    function umaInsert()
     {
-        var anio_=$("#anio").val();
-        var mes_=$("#mes").val();
-        var indice_=$("#indice").val();
+        var year_=$("#anio").val();
+        var dia_=$("#Vdiario").val();
+        var mes_=$("#Vmensual").val();
+        var anio_=$("#Vanual").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-insert') }}",
-           data: {anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/uma-insert') }}",
+           data: {year:year_,dia:dia_,mes:mes_,anio:anio_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
           if(response=="true"){
             Command: toastr.success("Success", "Notifications")
-            CargartablaINPC();
+            umaCargartabla();
             limpiar();
           }else{
             Command: toastr.warning("Error al Guardar", "Notifications")
@@ -205,21 +212,22 @@
         .fail(function( msg ) {
          console.log("Error al Cargar Tabla Partidas");  });
     }
-    function InpcActualizar()
+    function umaActualizar()
     {
-        var anio_=$("#anio").val();
-        var id_=$("#idupdate").val();
-        var mes_=$("#mes").val();
-        var indice_=$("#indice").val();
+        var id_=$("#idupdate").val();        
+        var year_=$("#anio").val();
+        var dia_=$("#Vdiario").val();
+        var mes_=$("#Vmensual").val();
+        var anio_=$("#Vanual").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-update') }}",
-           data: {id:id_,anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/uma-update') }}",
+           data: {id:id_,year:year_,dia:dia_,mes:mes_,anio:anio_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
             {
                 Command: toastr.success("Success", "Notifications")
-                CargartablaINPC();
+                umaCargartabla();
             }else{
                 Command: toastr.warning("Error al Actualizar", "Notifications")
             }
@@ -228,70 +236,77 @@
         .fail(function( msg ) {
          console.log("Error al Cargar Tabla Partidas");  });
     }
-    function InpcUpdate(id_)
+    function umaUpdate(id_)
     {
         document.getElementById('idupdate').value=id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-find-where') }}",
+           url: "{{ url('/uma-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
           
             $.each(Resp, function(i, item) {                
-                document.getElementById('anio').value=item.anio;
-                document.getElementById('indice').value=item.indice;
-                $("#mes").val(item.mes).change();
+                document.getElementById('anio').value=item.year;
+                document.getElementById('Vdiario').value=item.dia;
+                document.getElementById('Vmensual').value=item.mes;
+                document.getElementById('Vanual').value=item.anio;
+               
             });
         })
         .fail(function( msg ) {
          console.log("Error al Cargar Tabla Partidas");  });
     } 
     function VerificaInsert()
-    {
-        var anio_=$("#anio").val();
+    {        
         var id_=$("#idupdate").val();
-        var mes_=$("#mes").val();
-        var indice_=$("#indice").val();
-        if(anio_.length<4)
+        var year_=$("#anio").val();
+        var dia_=$("#Vdiario").val();
+        var mes_=$("#Vmensual").val();
+        var anio_=$("#Vanual").val();
+        if(anio_.length==0)
+        {
+            Command: toastr.warning("Campo Valor Anual, Requerido!", "Notifications")
+
+        }else if(mes_.length==0)
+        {
+            Command: toastr.warning("Campo Valor Mensual, Requerido!", "Notifications")
+
+        }else if(dia_.length==0)
+        {
+            Command: toastr.warning("Campo Valor Diario, Requerido!", "Notifications")
+
+        }else if(year_.length>4)
         {
             Command: toastr.warning("Campo Año, Requerido!", "Notifications")
-
-        }else if(mes_=="limpia")
-        {
-            Command: toastr.warning("Campo Mes, Requerido!", "Notifications")
-
-        }else if(indice_.length==0)
-        {
-            Command: toastr.warning("Campo Indice, Requerido!", "Notifications")
 
         }else{
             if(id_.length==0)
             {
-                InpcInsert();
+                umaInsert();
             }else{
-                InpcActualizar();
+                umaActualizar();
             }
         }
 
     }
-    function InpcDeleted(id_)
+    function umaDeleted(id_)
     {
         document.getElementById('iddeleted').value=id_;
 
     }
-    function eliminarInpc()
+    function umaeliminar()
     {
         var id_=$("#iddeleted").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-deleted') }}",
+           url: "{{ url('/uma-deleted') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
             {
                 Command: toastr.success("Success", "Notifications")
-                CargartablaINPC();
+                umaCargartabla();
             }else{
                 Command: toastr.warning("Error al Actualizar", "Notifications")
             }
@@ -302,7 +317,7 @@
     function GuardarExcel()
     {
         var JSONData=$("#jsonCode").val();
-        JSONToCSVConvertor(JSONData, "INPC", true)
+        JSONToCSVConvertor(JSONData, "UMA", true)
     }
     $('.valida-num').on('input', function () { 
     this.value = this.value.replace(/[^0-9]/g,'');

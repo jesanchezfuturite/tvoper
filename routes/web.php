@@ -120,6 +120,8 @@ Route::post('/partidas-insert','MotorpagosController@partidasInsert');
 Route::post('/partidas-find-where','MotorpagosController@partidasFindWhere');
 Route::post('/partidas-update','MotorpagosController@partidasUpdate');
 Route::post('/partidas-deleted','MotorpagosController@partidasDeleted');
+Route::post('/partidas-where','MotorpagosController@partidasWhere');
+
 
 
 /*/***************************CLASIFICADOR*********************************/
@@ -175,8 +177,30 @@ Route::post('/recargos-deleted','MotorpagosController@recargosDeleted');
 
 
 /*******************************  UMA    ************************************/
-Route::get('/uma','MotorpagosController@uma');
+Route::get('/uma','MotorpagosController@umaHistory');
+Route::get('/uma-find-all','MotorpagosController@umaHistoryFindAll');
+Route::post('/uma-insert','MotorpagosController@umaHistoryInsert');
+Route::post('/uma-find-where','MotorpagosController@umaHistoryFindWhere');
+Route::post('/uma-update','MotorpagosController@umaHistoryUpdate');
+Route::post('/uma-deleted','MotorpagosController@umaHistoryDeleted');
 
+/****************************  CURRENCIES  ***********************************/
+Route::get('/currencies-find-all','MotorpagosController@currenciesFindAll');
+
+/**************************************/
+
+/**************************** SUBSIDIES  ******************************/
+Route::post('/subsidio-find-where','MotorpagosController@subsidioFindWhere');
+Route::post('/subsidio-insert','MotorpagosController@subsidioInsert');
+Route::post('/subsidio-update','MotorpagosController@subsidioUpdate');
+
+/******************************** APPLICABLE SUBJECT ***************************/
+Route::get('/applicable-subject-find-all','MotorpagosController@applicablesubjectFindAll');
+
+/******************************** CALCULATE CONCEPTS *************************/
+Route::post('/calcula-find-where','MotorpagosController@calculoconceptoFindWhere');
+Route::post('/calcula-insert','MotorpagosController@calculoconceptoInsert');
+Route::post('/calcula-update','MotorpagosController@calculoconceptoUpdate');
 
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');

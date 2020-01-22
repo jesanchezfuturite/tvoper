@@ -44,6 +44,12 @@ use App\Repositories\FamiliaRepositoryEloquent;
 use App\Repositories\FamiliaentidadRepositoryEloquent;
 use App\Repositories\InpcRepositoryEloquent;
 use App\Repositories\RecargonominaRepositoryEloquent;
+/*******/
+use App\Repositories\ConceptsCalculationRepositoryEloquent;
+use App\Repositories\ConceptsubsidiesRepositoryEloquent;
+use App\Repositories\UmahistoryRepositoryEloquent;
+use App\Repositories\CurrenciesRepositoryEloquent;
+use App\Repositories\ApplicableSubjectRepositoryEloquent;
 
 
 
@@ -83,6 +89,12 @@ class MotorpagosController extends Controller
     protected $inpcdb;
     protected $recargonominadb;
 
+    protected $conceptscalculationdb;
+    protected $conceptsubsidiesdb;
+    protected $umahistorydb;
+    protected $currenciesdb;
+    protected $applicablesubjectdb;
+
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -117,8 +129,12 @@ class MotorpagosController extends Controller
         FamiliaRepositoryEloquent $familiadb,
         FamiliaentidadRepositoryEloquent $familiaentidaddb,
         InpcRepositoryEloquent $inpcdb,
-        RecargonominaRepositoryEloquent $recargonominadb
-
+        RecargonominaRepositoryEloquent $recargonominadb,
+        ConceptsCalculationRepositoryEloquent $conceptscalculationdb,
+        ConceptsubsidiesRepositoryEloquent $conceptsubsidiesdb,
+        UmahistoryRepositoryEloquent $umahistorydb,
+        CurrenciesRepositoryEloquent $currenciesdb,
+        ApplicableSubjectRepositoryEloquent $applicablesubjectdb
 
     )
     {
@@ -155,6 +171,11 @@ class MotorpagosController extends Controller
         $this->familiaentidaddb=$familiaentidaddb;
         $this->inpcdb=$inpcdb;
         $this->recargonominadb=$recargonominadb;
+        $this->conceptscalculationdb=$conceptscalculationdb;
+        $this->conceptsubsidiesdb=$conceptsubsidiesdb;
+        $this->umahistorydb=$umahistorydb;
+        $this->currenciesdb=$currenciesdb;
+        $this->applicablesubjectdb=$applicablesubjectdb;
     }
 
     /**
@@ -2616,9 +2637,337 @@ return json_encode($response);
         return json_encode($response);
     }
 
-    public function uma()
+    public function umaHistory()
     {
         return view('motorpagos/uma');
+    }
+    public function umaHistoryFindAll()
+    {
+        $response=array();
+        $findAll=$this->umahistorydb->all();
+        foreach ($findAll as $e) {
+            $response []=array(
+                'id' =>$e->id ,
+                'dia' =>$e->daily ,
+                'mes' =>$e->monthly ,
+                'anio' =>$e->yearly ,
+                'year' =>$e->year 
+            );
+        }
+        return json_encode($response);
+
+    }
+     public function umaHistoryFindWhere(Request $request)
+    {
+        $id=$request->id;
+        $response=array();
+        $UmafindWhere=$this->umahistorydb->findWhere(['id'=>$id]);
+        foreach ($UmafindWhere as $e) {
+            $response []=array(
+                'id' =>$e->id ,
+                'dia' =>$e->daily ,
+                'mes' =>$e->monthly ,
+                'anio' =>$e->yearly ,
+                'year' =>$e->year 
+            );
+        }
+        return json_encode($response);
+
+    }
+    public function umaHistoryInsert(Request $request)
+    {
+        $dia=$request->dia;
+        $mes=$request->mes;
+        $anio=$request->anio;
+        $year=$request->year;
+        $response='false';
+        try{
+        $UmaInsert=$this->umahistorydb->create(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year]);
+        $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method umaHistoryInsert: '.$e->getMessage());
+            $response = 'false';
+        }
+        return $response;
+
+    }
+    public function umaHistoryUpdate(Request $request)
+    {
+        $id=$request->id;
+        $dia=$request->dia;
+        $mes=$request->mes;
+        $anio=$request->anio;
+        $year=$request->year;
+        $response='false';
+        try{
+        $UmaUpdate=$this->umahistorydb->update(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year],$id);
+        $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method umaHistoryUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+
+    }
+    public function umaHistoryDeleted(Request $request)
+    {
+        $id=$request->id;        
+        $response='false';
+        try{
+        $UmaDeleted=$this->umahistorydb->deleteWhere(['id'=>$id]);
+        $response='true';
+        } catch( \Exception $e ){
+            Log::info('Error Method umaHistoryUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+
+    }
+    public function subsidioFindWhere(Request $request)
+    {
+        $response=array();
+        $id_tramite=$request->id_tramite;
+        $findSubsidio=$this->conceptsubsidiesdb->findWhere(['id_procedure'=>$id_tramite]);
+        foreach ($findSubsidio as $e) {
+            $response []= array(
+                'id' =>$e->id, 
+                'totaldespues' =>$e->total_after_subsidy, 
+                'moneda' =>$e->currency_total , 
+                'descripcion' =>$e->subsidy_description , 
+                'decretoficio' =>$e->no_subsidy , 
+                'formato' =>$e->format, 
+                'total' =>$e->total_max_to_apply , 
+                'id_partida' =>$e->id_budget_heading , 
+                'uma_type' =>$e->uma_type ,
+                'uma_type_after_subsidy' =>$e->uma_type_after_subsidy , 
+                'tipopersona' =>$e->person_to_apply  
+            );
+        }
+        return json_encode($response);
+    }
+    public function subsidioInsert(Request $request)
+    {
+        $response='false';
+        $id_tramite=$request->id_tramite;
+        $totaldespues=$request->totaldespues;
+        $moneda=$request->moneda;
+        $descripcion=$request->descripcion;
+        $decretoficio=$request->decretoficio;
+        $formato=$request->formato;
+        $total=$request->total;
+        $id_partida=$request->id_partida;
+        $uma_type="ANUAL";
+        $uma_type_after_subsidy="DIARIO";
+        $tipopersona=$request->tipopersona;
+
+        try{
+            $insert=$this->conceptsubsidiesdb->create(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona]);
+            $response = "true";
+
+         } catch( \Exception $e ){
+            Log::info('Error Method subsidioInsert: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+
+    }
+    public function subsidioUpdate(Request $request)
+    {
+        $response='false';
+        $id=$request->id;
+        $id_tramite=$request->id_tramite;
+        $total=$request->total;
+        $moneda=$request->moneda;
+        $descripcion=$request->descripcion;
+        $decretoficio=$request->decretoficio;
+        $formato=$request->formato;
+        //log::info($formato);
+        $totaldespues=$request->totaldespues;
+        $id_partida=$request->id_partida;
+        $uma_type="ANUAL";
+        $uma_type_after_subsidy="DIARIO";
+        $tipopersona=$request->tipopersona;
+
+        try{
+            $insert=$this->conceptsubsidiesdb->update(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona],$id);
+            $response = "true";
+
+         } catch( \Exception $e ){
+            Log::info('Error Method subsidioUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+
+    }
+    public  function currenciesFindAll()
+    {
+        $response=array();
+        $find=$this->currenciesdb->all();
+        foreach ($find as $k) {
+            $response []= array(
+                'id' =>$k->id , 
+                'nombre' =>$k->name  
+            );
+        }
+        return json_encode($response);
+
+    }
+    public function partidasWhere(Request $request)
+    {
+        $response= array();
+        $id_tramite=$request->id_tramite;
+         $findpartida=$this->partidasdb->findWhere(['id_servicio'=>$id_tramite]);
+         foreach ($findpartida as $part) {
+            $response []= array(
+                'id_partida' => $part->id_partida, 
+                'id_servicio' => $part->id_servicio,
+                'descripcion' => $part->descripcion 
+
+            );
+         }
+         return json_encode($response);
+    }
+
+    public function applicablesubjectFindAll()
+    {
+        $response=array();
+        $find=$this->applicablesubjectdb->all();
+        foreach ($find as $i) {
+            $response []= array(
+                'id' => $i->id, 
+                'nombre' => $i->name, 
+            );
+        }
+        return json_encode($response);
+    }
+    public function calculoconceptoFindWhere(Request $request)
+    {
+        $id=$request->id;
+        $response=array();
+        $findConcepts=$this->conceptscalculationdb->findWhere(['id_procedure'=>$id]);
+        foreach ($findConcepts as $i) {
+            $response []= array(
+                'id' => $i->id,
+                'applicablesubject' => $i->id_applicable_subject,
+                'id_partida' => $i->id_budget_heading,
+                'metodo' => $i->method,
+                'total' => $i->total,
+                'precio_max' => $i->max_price,
+                'precio_min' => $i->min_price,
+                'is_right' => $i->is_right,
+                'percent' => $i->percent,
+                'formula' => $i->formula,
+                'expiration' => $i->expiration,
+                'has_expiration' => $i->has_expiration,
+                'is_creditable' => $i->is_creditable,
+                'concept_to_apply' => $i->concept_to_apply,
+                'data' => $i->data,
+                'id_tramite' => $i->id_procedure,
+                'cantidad' => $i->quantity,
+                'nombreconcepto' => $i->name_concept,
+                'has_lot' => $i->has_lot,
+                'lot_equivalence' => $i->lot_equivalence,
+                'moneda_total' => $i->currency_total,
+                'moneda_formula' => $i->currency_formula,
+                'moneda_max' => $i->currency_max,
+                'moneda_min' => $i->currency_min,
+                'currency_lot_equivalence' => $i->currency_lot_equivalence,
+                'subsidy_description' => $i->subsidy_description,
+                'no_subsidy' => $i->no_subsidy,
+                'has_max' => $i->has_max,
+                'round_total' => $i->round_total,
+                'redondeo_millar' => $i->round_amount_thousand
+            );
+        }
+        return json_encode($response);
+    }
+    public function calculoconceptoInsert(Request $request)
+    {
+        //$id=$request->id;
+        $response='false';
+        $applicablesubject=$request->applicablesubject; //
+        $id_partida=$request->id_partida; ///
+        $metodo=$request->metodo; ///
+        $total=$request->total; ///
+        $precio_max=$request->precio_max; //
+        $precio_min=$request->precio_min; //
+        $is_right="1";
+        $percent=NULL;
+        $formula=$request->formula;///
+        $expiration=NULL;
+        $has_expiration="0";
+        $is_creditable="1";
+        $concept_to_apply="0";
+        $data=NULL;
+        $id_tramite=$request->id_tramite; ///
+        $cantidad=$request->cantidad;  ///
+        $nombreconcepto=$request->nombreconcepto; ///
+        $has_lot=$request->has_lot; ////
+        $lot_equivalence='0';
+        $moneda_total=$request->moneda_total;///
+        $moneda_formula=$request->moneda_formula; //
+        $moneda_max=$request->moneda_max; //
+        $moneda_min=$request->moneda_min; //
+        $currency_lot_equivalence=NULL;
+        $subsidy_description=NULL;
+        $no_subsidy=NULL;
+        $has_max=$request->has_max;
+        $round_total=NULL;
+        $redondeo_millar=$request->redondeo_millar; ///
+        try{
+        $findConcepts=$this->conceptscalculationdb->create(['id_applicable_subject'=>$applicablesubject,'id_budget_heading'=>$id_partida,'method'=>$metodo,'total'=>$total,'max_price'=>$precio_max,'min_price'=>$precio_min,'is_right'=>$is_right,'percent'=>$percent,'formula'=>$formula,'expiration'=>$expiration,'has_expiration'=>$has_expiration,'is_creditable'=>$is_creditable,'concept_to_apply'=>$concept_to_apply,'data'=>$data,'id_procedure'=>$id_tramite,'quantity'=>$cantidad,'name_concept'=>$nombreconcepto,'has_lot'=>$has_lot,'lot_equivalence'=>$lot_equivalence,'currency_total'=>$moneda_total,'currency_formula'=>$moneda_formula,'currency_max'=>$moneda_max,'currency_min'=>$moneda_min,'currency_lot_equivalence'=>$currency_lot_equivalence,'subsidy_description'=>$subsidy_description,'no_subsidy'=>$no_subsidy,'has_max'=>$has_max,'round_total'=>$round_total,'round_amount_thousand'=>$redondeo_millar]);
+        $response = "true";
+
+         } catch( \Exception $e ){
+            Log::info('Error Method calculoconceptoInsert: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+            
+    }
+    public function calculoconceptoUpdate(Request $request)
+    {
+        $id=$request->id;
+        $response='false';
+        $applicablesubject=$request->applicablesubject;
+        $id_partida=$request->id_partida;
+        $metodo=$request->metodo;
+        $total=$request->total;
+        $precio_max=$request->precio_max;
+        $precio_min=$request->precio_min;
+        $is_right="1";
+        $percent=NULL;
+        $formula=$request->formula;
+        $expiration=NULL;
+        $has_expiration="0";
+        $is_creditable="1";
+        $concept_to_apply="0";
+        $data=NULL;
+        $id_tramite=$request->id_tramite;
+        $cantidad=$request->cantidad;
+        $nombreconcepto=$request->nombreconcepto;
+        $has_lot=$request->has_lot;
+        $lot_equivalence='0';
+        $moneda_total=$request->moneda_total;
+        $moneda_formula=$request->moneda_formula;
+        $moneda_max=$request->moneda_max;
+        $moneda_min=$request->moneda_min;
+        $currency_lot_equivalence=NULL;
+        $subsidy_description=NULL;
+        $no_subsidy=NULL;
+        $has_max=$request->has_max;
+        $round_total=NULL;
+        $redondeo_millar=$request->redondeo_millar;
+        try{
+        $findConcepts=$this->conceptscalculationdb->update(['id_applicable_subject'=>$applicablesubject,'id_budget_heading'=>$id_partida,'method'=>$metodo,'total'=>$total,'max_price'=>$precio_max,'min_price'=>$precio_min,'is_right'=>$is_right,'percent'=>$percent,'formula'=>$formula,'expiration'=>$expiration,'has_expiration'=>$has_expiration,'is_creditable'=>$is_creditable,'concept_to_apply'=>$concept_to_apply,'data'=>$data,'id_procedure'=>$id_tramite,'quantity'=>$cantidad,'name_concept'=>$nombreconcepto,'has_lot'=>$has_lot,'lot_equivalence'=>$lot_equivalence,'currency_total'=>$moneda_total,'currency_formula'=>$moneda_formula,'currency_max'=>$moneda_max,'currency_min'=>$moneda_min,'currency_lot_equivalence'=>$currency_lot_equivalence,'subsidy_description'=>$subsidy_description,'no_subsidy'=>$no_subsidy,'has_max'=>$has_max,'round_total'=>$round_total,'round_amount_thousand'=>$redondeo_millar],$id);
+        $response = "true";
+
+         } catch( \Exception $e ){
+            Log::info('Error Method calculoconceptoUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+        return $response;
+            
     }
 
 }
