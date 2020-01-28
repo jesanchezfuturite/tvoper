@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\currenciesRepository;
+use App\Repositories\CurrenciesRepository;
 use App\Entities\Currencies;
 use App\Validators\CurrenciesValidator;
 
