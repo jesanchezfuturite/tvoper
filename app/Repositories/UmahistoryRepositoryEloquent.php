@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\umahistoryRepository;
+use App\Repositories\UmahistoryRepository;
 use App\Entities\Umahistory;
 use App\Validators\UmahistoryValidator;
 

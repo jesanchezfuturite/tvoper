@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\conceptsubsidiesRepository;
+use App\Repositories\ConceptsubsidiesRepository;
 use App\Entities\Conceptsubsidies;
 use App\Validators\ConceptsubsidiesValidator;
 
