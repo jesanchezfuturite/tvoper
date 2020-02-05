@@ -76,7 +76,7 @@
                     </tr>
                     </thead>
                     <tbody>                   
-                                  
+                          <tr> <td>Cargando...</td> </tr>         
                     </tbody>
                     </table>
                
@@ -380,7 +380,7 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Total</label>                                             
-                <input type="text" class="form-control" name="calculoTotal" id="calculoTotal" placeholder="Ingrese el Consepto">
+                <input type="text" class="valida-decimal form-control" name="calculoTotal" id="calculoTotal" placeholder="Ingrese el Total">
               </div>
             </div>
             <div class="col-md-4">
@@ -411,7 +411,7 @@
             <div class="col-md-5"> 
               <div class="form-group">
                 <label >Precio Maximo</label>                                             
-                <input type="text" class="form-control" name="calculoPrecioMaximo" id="calculoPrecioMaximo" placeholder="Ingrese el Precio Maximo">
+                <input type="text" class="valida-decimal form-control" name="calculoPrecioMaximo" id="calculoPrecioMaximo" placeholder="Ingrese el Precio Maximo">
               </div>
             </div>
             <div class="col-md-4">
@@ -428,7 +428,7 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Precio Minimo</label>                                             
-                <input type="text" class="form-control" name="calculoPrecioMinimo" id="calculoPrecioMinimo" placeholder="Ingrese el Precio Minimo">
+                <input type="text" class="valida-decimal form-control" name="calculoPrecioMinimo" id="calculoPrecioMinimo" placeholder="Ingrese el Precio Minimo">
               </div>
             </div>
             <div class="col-md-4">
@@ -445,7 +445,7 @@
             <div class="col-md-8"> 
               <div class="form-group">
                 <label >Formula</label>                                             
-                <textarea class="form-control validarFormula" rows="3" name="calculoFormula" id="calculoFormula" placeholder="Ingrese la Formula"></textarea>
+                <textarea class="valida-formula form-control" rows="3" name="calculoFormula" id="calculoFormula" placeholder="Ingrese la Formula"></textarea>
               </div>
             </div>
             <div class="col-md-4">
@@ -491,7 +491,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label>Cantidad</label>
-                <input type="text" name="calculoCantidad" id="calculoCantidad" class="form-control" placeholder="Ingrese Cantidad">
+                <input type="text" name="calculoCantidad" id="calculoCantidad" class="valida-decimal form-control" placeholder="Ingrese Cantidad">
               </div>
             </div>
           </div>
@@ -575,13 +575,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Aplicar cuando el Total se Menor o Igual</label>                                             
-                <input type="text" class="form-control valida-decimal" name="subsidioTotal" id="subsidioTotal" placeholder="Ingrese el Consepto">
+                <input type="text" class="valida-decimal form-control" name="subsidioTotal" id="subsidioTotal" placeholder="Cuando el Total se Menor o Igual">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >Total Despues de Aplicar Subsidio</label>                                                       
-                <input type="text" class="form-control valida-decimal" name="subsidioTotalDesp" id="subsidioTotalDesp" placeholder="Ingrese el Consepto">
+                <input type="text" class="valida-decimal form-control" name="subsidioTotalDesp" id="subsidioTotalDesp" placeholder="Total Despues de Aplicar Subsidio">
              </div>
             </div>
           </div>
@@ -599,7 +599,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Descripción</label>                                             
-                <input type="text" class="form-control" name="subsidioDescripcion" id="subsidioDescripcion" placeholder="Ingrese el Consepto">                
+                <input type="text" class="form-control" name="subsidioDescripcion" id="subsidioDescripcion" placeholder="Ingrese la Descripción">                
               </div>
             </div>            
           </div>
@@ -609,7 +609,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >No Decreto/Oficio</label>                                             
-                <input type="text" class="form-control" name="subsidioDecreto" id="subsidioDecreto" placeholder="Ingrese el Consepto">
+                <input type="text" class="form-control" name="subsidioDecreto" id="subsidioDecreto" placeholder="Ingrese No Decreto/Oficio">
               </div>
             </div>
             <div class="col-md-6"> 
@@ -626,6 +626,26 @@
             </div>            
           </div>
         </div>
+         <div class="row">
+                    <div class="col-md-12"> 
+                        <div class=' date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                            <div class="form-group">    
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label >Fecha Inicio </label>
+                                        <input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'> 
+                                    </div>
+                                </div>
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label>Fecha Fin </label>
+                                        <input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'>
+                                </div>                                
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-6">
@@ -676,7 +696,8 @@
         ActualizaTabla();
         currenciesFind();
         calculoSujetoFind();
-        UIBlockUI.init();         
+        UIBlockUI.init();  
+        ComponentsPickers.init();       
        //TableAdvanced.init();       
     });
   function currenciesFind()
@@ -1040,7 +1061,8 @@
          var orig="";
          var desc="";
          $("#table_2").remove();
-         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th> </tr>  </thead><tbody></tbody></table></div>");
+         $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th> </tr>  </thead><tbody> <tr> <td><p>Cargando...</p></td> </tr></tbody></table></div>");
+         $("#sample_2 tbody tr").remove();
         $.each(Resp, function(i, item) {
            
             $("#sample_2 tbody").append("<tr>"
@@ -1503,7 +1525,9 @@
     var descripcion_=$("#subsidioDescripcion").val();
     var decreto_=$("#subsidioDecreto").val();
     var formato_='0';
-    var check=$("#checkbox40").prop("checked");
+    var check=$("#checkbox40").prop("checked");    
+    var fechafin=$("#fechafin").val();
+    var fechainicio=$("#fechainicio").val();
     if(check==true)
     {
       formato_=1;
@@ -1515,7 +1539,7 @@
      $.ajax({
            method: "POST",
            url: "{{ url('/subsidio-insert') }}",
-           data: { id_tramite:id_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,_token: '{{ csrf_token() }}' }
+           data: { id_tramite:id_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token: '{{ csrf_token() }}' }
        })
         .done(function (response) {             
        if(response=="true")
@@ -1540,6 +1564,8 @@
     var decreto_=$("#subsidioDecreto").val();
     var formato_='0';
     var check=$("#checkbox40").prop("checked");
+    var fechafin=$("#fechafin").val();
+    var fechainicio=$("#fechainicio").val();
     if(check==true)
     {
       formato_=1;
@@ -1551,7 +1577,7 @@
      $.ajax({
            method: "POST",
            url: "{{ url('/subsidio-update') }}",
-           data: { id:id_,id_tramite:id_tramite_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,_token: '{{ csrf_token() }}' }
+           data: { id:id_,id_tramite:id_tramite_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token: '{{ csrf_token() }}' }
        })
         .done(function (response) {             
        if(response=="true")
@@ -1578,6 +1604,8 @@
     $("#subsidioPartida").val("limpia").change();
     $("#subsidioTipoPersona").val("limpia").change();
     $("#checkbox40").prop("checked", false);
+    $('#fechafin').datepicker('setDate',null );
+    $('#fechainicio').datepicker('setDate',null );
 
   }
   function partidasFind(id_)
@@ -1674,9 +1702,7 @@
        document.getElementById('search').value="";
 
 }
-$('.valida-decimal').on('input', function () { 
-    this.value = this.value.replace(/[^0-9./*+()VWXYZvwxyz-]/g,'');
-});
+
 function validarFormula()
 {
   var formula=$("#calculoFormula").val();
@@ -1705,19 +1731,7 @@ function validarFormula()
   */
   return response;
 }
-function ConseptosInsert()
-{
-  if(validarFormula())
-  {
-    
-  }else{ 
-    Command: toastr.warning("Formula Error!", "Notifications")
-  }
- 
-}
-$('.valida-decimal').on('input', function () { 
-    this.value = this.value.replace(/[^0-9.]/g,'');
-    });
+
 function GuardarExcel()
 {
  var id_=$("#OptionEntidad").val();
@@ -1746,6 +1760,12 @@ function GuardarExcel()
          document.getElementById("blockui_sample_3_1_1").click(); }); 
   }
 }
+$('.valida-formula').on('input', function () { 
+    this.value = this.value.replace(/[^0-9./*+()VWXYZvwxyz-]/g,'');
+});
+$('.valida-decimal').on('input', function () { 
+    this.value = this.value.replace(/[^0-9.]/g,'');
+});
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";

@@ -17,8 +17,10 @@ class CreateOperUmaHistoryTable extends Migration
             $table->bigIncrements('id');
             $table->decimal('daily',10,2);
             $table->decimal('monthly',10,2);
-            $table->decimal('yearly',10,2);
+            $table->decimal('yearly',10,2);            
             $table->year('year');
+            $table->date('fecha_inicio');
+            $table->date('fecha_fin');
             $table->timestamps();
         });
     }

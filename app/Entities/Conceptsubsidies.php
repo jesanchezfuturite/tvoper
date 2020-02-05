@@ -22,7 +22,7 @@ class Conceptsubsidies extends Model implements Transformable
      */
       protected $connection = "mysql";
 
-    protected $fillable = ['id','id_procedure','total_after_subsidy','currency_total','subsidy_description','no_subsidy','format','total_max_to_apply','id_budget_heading','uma_type','uma_type_after_subsidy','person_to_apply','created_at','updated_at'];
+    protected $fillable = ['id','id_procedure','total_after_subsidy','currency_total','subsidy_description','no_subsidy','format','total_max_to_apply','id_budget_heading','uma_type','uma_type_after_subsidy','person_to_apply','fecha_inicio','fecha_fin','created_at','updated_at'];
 
     protected $table = "oper_concept_subsidies";
 

@@ -22,7 +22,7 @@ class Umahistory extends Model implements Transformable
      */
    protected $connection = "mysql";
 
-    protected $fillable = ['id','daily','monthly','yearly','year','created_at','updated_at'];
+    protected $fillable = ['id','daily','monthly','yearly','year','fecha_inicio','fecha_fin','created_at','updated_at'];
 
     protected $table = "oper_uma_history";
 

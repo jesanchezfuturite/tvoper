@@ -50,12 +50,16 @@
                     <th>Valor Diario</th> 
                     <th>Valor Mensual</th>                                       
                     <th>Valor Anual</th>                                       
+                    <th>Fecha Inicio</th>                                       
+                    <th>Fecha Fin</th>                                       
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
                     <td><span class="help-block">No Found</span></td>
                     <td></td>                         
+                    <td></td>                                                               
+                    <td></td>                                                               
                     <td></td>                                                               
                     <td></td>                                                               
                 </tbody>
@@ -67,52 +71,77 @@
     <!-- END SAMPLE TABLE PORTLET-->    
 
 </div>
-<div class="modal fade" id="portlet-config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade bs-modal-lg" id="portlet-config" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
                 <h4 class="modal-title">Agregar</h4>
             </div>
             <div class="modal-body">
-                 <form action="#" class="form-horizontal">
-                    <div class="form-body">
                          <input hidden="true" type="text"  id="idupdate">
-                       <div class="form-group">
-                            <label class="col-md-3 control-label ">Año</label>
-                            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                            <label >Año</label>                            
                                 <input id="anio" class="valida-num form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
                             </div>
-                        </div>                        
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Valor Diario</label>
-                            <div class="col-md-8">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                            <label>Valor Diario</label>                            
                                 <input id="Vdiario" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Diario">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Valor Mensual</label>
-                            <div class="col-md-8">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12"> 
+                        <div class="col-md-6">
+                            <div class="form-group">
+                            <label >Valor Mensual</label>
                                 <input id="Vmensual" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Mensual">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Valor Anual</label>
-                            <div class="col-md-8">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                            <label >Valor Anual</label>
                                 <input id="Vanual" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Valor Anual">
                             </div>
                         </div>
-                        <br>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-offset-3 col-md-6">
-                                    <button type="submit" data-dismiss="modal" class="btn blue" onclick="VerificaInsert()">Guardar</button>
-                                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12"> 
+                        <div class=' date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                            <div class="form-group">    
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label >Fecha Inicio </label>
+                                        <input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'> 
+                                    </div>
                                 </div>
-                            </div>
+                                <div class='col-md-6'>
+                                    <div class="form-group">
+                                        <label>Fecha Fin </label>
+                                        <input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'>
+                                </div>                                
+                            </div>  
                         </div>
                     </div>
-                </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">            
+                    <div class="form-group">
+                        <button type="submit" class="btn blue" onclick="VerificaInsert()"><i class="fa fa-check"></i> Guardar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+            </div>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -146,7 +175,8 @@
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
-             umaCargartabla();
+        umaCargartabla();
+        ComponentsPickers.init();
     });    
     function limpiar()
     {
@@ -154,13 +184,17 @@
         document.getElementById('Vdiario').value="";
         document.getElementById('Vmensual').value="";
         document.getElementById('Vanual').value=""; 
+        //document.getElementById('fechafin').value=""; 
+        //document.getElementById('fechainicio').value=""; 
         document.getElementById('iddeleted').value=""; 
         document.getElementById('idupdate').value=""; 
+        $('#fechafin').datepicker('setDate',null );
+        $('#fechainicio').datepicker('setDate',null );
     }
     function addTable()
     {
         $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Valor Diario</th><th>Valor Mensual</th><th>Valor Anual</th><th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
+            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th>Año</th><th>Valor Diario</th><th>Valor Mensual</th><th>Valor Anual</th><th>Fecha Inicio</th><th>Fecha Fin</th><th> &nbsp; </th> </tr> </thead> <tbody><tr><td><p>Cargando...<p></td></tr></tbody> </table> </div>"
         );
     }
     function umaCargartabla()
@@ -174,12 +208,15 @@
           var Resp=$.parseJSON(response);
            $("#Removetable").remove();
          addTable();
+         $('#sample_2 tbody tr').remove();
         $.each(Resp, function(i, item) {                
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.year+"</td>"
                 +"<td>"+item.dia+"</td>"
                 +"<td>"+item.mes+"</td>"
                 +"<td>"+item.anio+"</td>"
+                +"<td>"+item.fecha_inicio+"</td>"
+                +"<td>"+item.fecha_fin+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='umaUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='umaDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
@@ -194,11 +231,13 @@
         var year_=$("#anio").val();
         var dia_=$("#Vdiario").val();
         var mes_=$("#Vmensual").val();
-        var anio_=$("#Vanual").val();
+        var anio_=$("#Vanual").val();        
+        var fechafin=$("#fechafin").val();
+        var fechainicio=$("#fechainicio").val();
          $.ajax({
            method: "post",           
            url: "{{ url('/uma-insert') }}",
-           data: {year:year_,dia:dia_,mes:mes_,anio:anio_,_token:'{{ csrf_token() }}'}  })
+           data: {year:year_,dia:dia_,mes:mes_,anio:anio_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
           if(response=="true"){
@@ -218,11 +257,13 @@
         var year_=$("#anio").val();
         var dia_=$("#Vdiario").val();
         var mes_=$("#Vmensual").val();
-        var anio_=$("#Vanual").val();
+        var anio_=$("#Vanual").val        
+        var fechafin=$("#fechafin").val();
+        var fechainicio=$("#fechainicio").val();
          $.ajax({
            method: "post",           
            url: "{{ url('/uma-update') }}",
-           data: {id:id_,year:year_,dia:dia_,mes:mes_,anio:anio_,_token:'{{ csrf_token() }}'}  })
+           data: {id:id_,year:year_,dia:dia_,mes:mes_,anio:anio_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
             {
@@ -251,6 +292,10 @@
                 document.getElementById('Vdiario').value=item.dia;
                 document.getElementById('Vmensual').value=item.mes;
                 document.getElementById('Vanual').value=item.anio;
+                //document.getElementById('fechainicio').value=item.fecha_inicio;
+                //document.getElementById('fechafin').value=item.fecha_fin;
+                 $('#fechainicio').datepicker('setDate',item.fecha_inicio ); 
+                 $('#fechafin').datepicker('setDate',item.fecha_fin );
                
             });
         })
@@ -264,6 +309,8 @@
         var dia_=$("#Vdiario").val();
         var mes_=$("#Vmensual").val();
         var anio_=$("#Vanual").val();
+        var fechafin=$("#fechafin").val();
+        var fechainicio=$("#fechainicio").val();
         if(anio_.length==0)
         {
             Command: toastr.warning("Campo Valor Anual, Requerido!", "Notifications")
@@ -279,6 +326,14 @@
         }else if(year_.length>4)
         {
             Command: toastr.warning("Campo Año, Requerido!", "Notifications")
+
+        }else if(fechainicio.length==0)
+        {
+            Command: toastr.warning("Campo Fecha Inicio, Requerido!", "Notifications")
+
+        }else if(fechafin.length==0)
+        {
+            Command: toastr.warning("Campo Fecha Fin, Requerido!", "Notifications")
 
         }else{
             if(id_.length==0)
