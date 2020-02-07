@@ -141,7 +141,7 @@
 
     $.validator.addMethod("FOLIO",function(value, element){
         if(value !== ''){
-            var patt = new RegExp("^[0-9]{1,30}$");
+            var patt = new RegExp("^[0-9,A-Z]{1,30}$");
             return patt.test(value);
         } else {
             return false;
