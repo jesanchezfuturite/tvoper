@@ -45,13 +45,13 @@
 				</thead>
 				<tbody>							
 					 @foreach( $saved_days as $sd)
-                        <tr>
-                            <td>{{$sd["descripcion"]}}</td>
-                            <td>{{$sd["periodicidad"]}}</td>
-                            <td class="text-center">{{$sd["vencimiento"]}}</td>
-                           <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='update({{$sd["id"]}})'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted({{$sd["id"]}})'><i class='fa fa-minus'></i></a></td>
-                        </tr>
-                        @endforeach
+              <tr>
+                <td>{{$sd["descripcion"]}}</td>
+                <td>{{$sd["periodicidad"]}}</td>
+                <td class="text-center">{{$sd["vencimiento"]}}</td>
+                <td class="text-center"><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='' title='static2' onclick='update({{$sd["id"]}})'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted({{$sd["id"]}})'><i class='fa fa-minus'></i></a></td>
+              </tr>
+            @endforeach
 				</tbody>
 			</table>
     </div>

@@ -26,6 +26,8 @@ class CreateOperConceptSubsidiesTable extends Migration
             $table->string('uma_type',15);
             $table->string('uma_type_after_subsidy',15);
             $table->string('person_to_apply',100);
+            $table->date('fecha_inicio');
+            $table->date('fecha_fin');
             $table->timestamps();
         });
     }

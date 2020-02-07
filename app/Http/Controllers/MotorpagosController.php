@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Log;
@@ -2651,7 +2651,9 @@ return json_encode($response);
                 'dia' =>$e->daily ,
                 'mes' =>$e->monthly ,
                 'anio' =>$e->yearly ,
-                'year' =>$e->year 
+                'year' =>$e->year,
+                'fecha_inicio' =>$e->fecha_inicio,
+                'fecha_fin' =>$e->fecha_fin
             );
         }
         return json_encode($response);
@@ -2668,7 +2670,9 @@ return json_encode($response);
                 'dia' =>$e->daily ,
                 'mes' =>$e->monthly ,
                 'anio' =>$e->yearly ,
-                'year' =>$e->year 
+                'year' =>$e->year,
+                'fecha_inicio' =>$e->fecha_inicio,
+                'fecha_fin' =>$e->fecha_fin 
             );
         }
         return json_encode($response);
@@ -2680,9 +2684,11 @@ return json_encode($response);
         $mes=$request->mes;
         $anio=$request->anio;
         $year=$request->year;
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
         $response='false';
         try{
-        $UmaInsert=$this->umahistorydb->create(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year]);
+        $UmaInsert=$this->umahistorydb->create(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year,'fecha_inicio'=>$fecha_inicio,'fecha_fin'=>$fecha_fin]);
         $response='true';
         } catch( \Exception $e ){
             Log::info('Error Method umaHistoryInsert: '.$e->getMessage());
@@ -2697,10 +2703,13 @@ return json_encode($response);
         $dia=$request->dia;
         $mes=$request->mes;
         $anio=$request->anio;
-        $year=$request->year;
+        $year=$request->year;        
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
+
         $response='false';
         try{
-        $UmaUpdate=$this->umahistorydb->update(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year],$id);
+        $UmaUpdate=$this->umahistorydb->update(['daily'=>$dia,'monthly'=>$mes,'yearly'=>$anio,'year'=>$year,'fecha_inicio'=>$fecha_inicio,'fecha_fin'=>$fecha_fin],$id);
         $response='true';
         } catch( \Exception $e ){
             Log::info('Error Method umaHistoryUpdate: '.$e->getMessage());
@@ -2740,7 +2749,9 @@ return json_encode($response);
                 'id_partida' =>$e->id_budget_heading , 
                 'uma_type' =>$e->uma_type ,
                 'uma_type_after_subsidy' =>$e->uma_type_after_subsidy , 
-                'tipopersona' =>$e->person_to_apply  
+                'tipopersona' =>$e->person_to_apply,
+                'fecha_inicio'=>$e->fecha_inicio,
+                'fecha_fin'=>$e->fecha_fin 
             );
         }
         return json_encode($response);
@@ -2759,9 +2770,11 @@ return json_encode($response);
         $uma_type="ANUAL";
         $uma_type_after_subsidy="DIARIO";
         $tipopersona=$request->tipopersona;
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
 
         try{
-            $insert=$this->conceptsubsidiesdb->create(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona]);
+            $insert=$this->conceptsubsidiesdb->create(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona,'fecha_inicio'=>$fecha_inicio,'fecha_fin'=>$fecha_fin]);
             $response = "true";
 
          } catch( \Exception $e ){
@@ -2786,10 +2799,12 @@ return json_encode($response);
         $id_partida=$request->id_partida;
         $uma_type="ANUAL";
         $uma_type_after_subsidy="DIARIO";
-        $tipopersona=$request->tipopersona;
+        $tipopersona=$request->tipopersona;        
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
 
         try{
-            $insert=$this->conceptsubsidiesdb->update(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona],$id);
+            $insert=$this->conceptsubsidiesdb->update(['id_procedure'=>$id_tramite,'total_after_subsidy'=>$totaldespues,'currency_total'=>$moneda,'subsidy_description'=>$descripcion,'no_subsidy'=>$decretoficio,'format'=>$formato,'total_max_to_apply'=>$total,'id_budget_heading'=>$id_partida,'uma_type'=>$uma_type,'uma_type_after_subsidy'=>$uma_type_after_subsidy,'person_to_apply'=>$tipopersona,'fecha_inicio'=>$fecha_inicio,'fecha_fin'=>$fecha_fin],$id);
             $response = "true";
 
          } catch( \Exception $e ){
@@ -2968,6 +2983,14 @@ return json_encode($response);
         }
         return $response;
             
+    }
+    public function ConsultaWS()
+    {
+        $baseUrl = env('API_ENDPOINT');
+        $this->app->singleton(Client::class, function($app) use ($baseUrl) {
+            return new Client(['base_uri' => $baseUrl]);
+        });
+        
     }
 
 }
