@@ -202,6 +202,10 @@ Route::post('/calcula-find-where','MotorpagosController@calculoconceptoFindWhere
 Route::post('/calcula-insert','MotorpagosController@calculoconceptoInsert');
 Route::post('/calcula-update','MotorpagosController@calculoconceptoUpdate');
 
+
+/************************   WS  ***********************/
+
+Route::get('/ws','MotorpagosController@ConsultaWS');
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');
 

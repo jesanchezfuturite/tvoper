@@ -85,21 +85,26 @@
                 <h4 class="modal-title">Registro Partidas</h4>
             </div>
             <div class="modal-body">
-                 <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                         <input hidden="true" type="text"  id="idupdate">
+                <div class="form-body">
+                    <input hidden="true" type="text"  id="idupdate">
+                    <div class="row">
                         <div class="form-group">
                             <label class="col-md-3 control-label">Partida</label>
                             <div class="col-md-8">
                                 <input type="number" autocomplete="off" class="form-control" placeholder="Ingresa la Partida No." oninput="valida(this);"  id="idpartida">
                             </div>
                         </div>
+                    </div>
+                    <br>
+                    <div class="row">                    
                         <div class="form-group">
                             <label class="col-md-3 control-label">Descripcion Partida</label>
                             <div class="col-md-8">
                                 <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa la Descripcion de la Partida" id="partidaDesc">
                             </div>
                         </div>
+                    </div>
+                    <div class="row">                    
                         <div class="form-group">
                             <label class="col-md-3 control-label">Tipo Servicio</label>
                             <div class="col-md-8">
@@ -108,22 +113,22 @@
                                 </select>
                             </div>
                         </div>
-                        <br>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-offset-3 col-md-6">
-                                    <button type="submit" data-dismiss="modal" class="btn blue" onclick="saveUpdatePartida()">Guardar</button>
-                                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
-                                </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">            
+                            <div class="form-group">
+                                <button type="submit" class="btn blue" onclick="saveUpdatePartida()"><i class="fa fa-check"></i> Guardar</button>
                             </div>
                         </div>
                     </div>
-                </form>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+                    </div>                   
+                </div>                
             </div>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
 </div>
 
 <!-- modal-dialog -->

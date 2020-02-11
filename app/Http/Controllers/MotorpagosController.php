@@ -2986,11 +2986,50 @@ return json_encode($response);
     }
     public function ConsultaWS()
     {
-        $baseUrl = env('API_ENDPOINT');
-        $this->app->singleton(Client::class, function($app) use ($baseUrl) {
-            return new Client(['base_uri' => $baseUrl]);
-        });
-        
+        $data=array();
+        $json=array();
+
+        $url_token_ = env('API_ENDPOINT_TOKEN');
+        $url_token=$url_token_;
+        $username = env('API_USERNAME');
+        $password = env('API_PASSWORD');
+        $client = new \GuzzleHttp\Client();     
+        $request = $client->request('POST',$url_token,  [
+            'form_params' => array(
+            'username' => $username,
+            'password' => $password 
+            )
+        ]);
+        $response = $request->getBody()->getContents();
+        $response=json_decode($response);
+        $token=$response->token;
+        //log::info('TOKEN: '.$token);
+        $data []= array(
+            'id_procedure' => "19",
+            'isai'=> "35",
+            'valor_catastral'=> "100000.00",
+            'valor_de_operacion'=> "495000.00",
+            'no_lotes'=> "",
+            'id_applicable_subject'=> "1",
+            'copia_tramite'=> null,
+            'reingresar'=> null,
+            'oficio'=> "AFV2020",
+            'tipo_persona'=>"Fisica",
+            'array_reingresar'=>[]
+            );
+        $json=array("data"=>$data);
+        /***************REQUEST******/
+        $url_procedure=env('API_ENDPOINT_PROCESS_PROCEDURE'); 
+        $request_procedure = $client->request('POST',$url_procedure,[
+        'form_params' => array(
+            'access_token' => $token, 
+            'json'=>$json
+            )
+        ]);
+        $response_procedure = $request_procedure->getBody()->getContents();
+        //$response_procedure=json_decode($response_procedure);
+        log::info($response_procedure);
+
     }
 
 }
