@@ -58,7 +58,7 @@ class ConsultasController extends Controller
 
     public function calculoconceptos(Request $request)
     {
-        
+        try {
         $data=json_encode($request->data);
         $json_response=array();
         if(empty($data))
@@ -69,6 +69,10 @@ class ConsultasController extends Controller
 
             $json_response=$this->calulo_servicio($data);
         }
+        } catch (\Exception $e) {
+            $json_response=$this->messagerror();
+            
+        }
         return response()->json($json_response);
     }
     private function calulo_servicio($data)
@@ -76,13 +80,7 @@ class ConsultasController extends Controller
        
         $json_response=array();
         $datos=array();
-        $total=0;
-        $total_derechos=0;
-        $total_subsidio=0;
-        $motivo_subsidio=0;
-        $total_curr=0;
-        $total_derechos_curr=0;
-        $total_subsidio_curr=0;
+        $total=0; $total_derechos=0; $total_subsidio=0; $motivo_subsidio=''; $total_curr=0;
         $date = Carbon::now();
         $date = $date->format('Y');
         $uma='';
@@ -97,10 +95,7 @@ class ConsultasController extends Controller
             //log::info($uma);
         }
         foreach (json_decode($data) as $key) {
-            $nombre_servicio='';
-            $nombre_concepto='';
-            $formula='';
-            $partida='';
+            $nombre_servicio=''; $nombre_concepto='';$formula='';$partida='';    
             $conceptos=array();           
 
             $findTipoServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>(string)$key->id_servicio]);
@@ -114,21 +109,34 @@ class ConsultasController extends Controller
                 $partida=$f->id_budget_heading;
                 $max=$f->max_price;
                 $min=$f->min_price;
+                $moneda_min=$f->currency_min;
+                $moneda_max=$f->currency_max;
+                $moneda_total=$f->currency_total;
                 $round_millar=$f->round_amount_thousand;
                 $method=$f->method;
                 $valor_fijo=$f->total;
-                //log::info($min.' '.$max.' '.$round_millar.' '.$method);
                 if($method=='Variable'){
                     $v=$key->valor_de_operacion;
                     $formula = str_replace('v', '$v', $formula);
                     $resultado=eval('return '.$formula.';');
                     $resultado=(double)$resultado;
                 }else{
-                    $resultado=$valor_fijo*$uma;
+                    if($moneda_total==2)
+                    {
+                        $resultado=$valor_fijo*$uma;
+                    }else{
+                        $resultado=$valor_fijo;
+                    }
                     $resultado=(double)$resultado;                    
                 }
-                               $max=(double)$max*$uma;
-                $min=(double)$min*$uma;
+                if($moneda_max==2){
+                    $max=(double)$max*$uma;
+                }
+                if($moneda_min==2)
+                {
+                  $min=(double)$min*$uma;  
+                }
+                
                 if($min==0)
                 {
                     $min=$resultado;
@@ -152,7 +160,7 @@ class ConsultasController extends Controller
                     }
                 }
                  $decimal=explode(".", $resultado);
-                log::info($decimal);
+                //log::info($decimal);
                 if($decimal>=.51)
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_UP);
@@ -175,26 +183,78 @@ class ConsultasController extends Controller
                 'tramite_nombre'=> $nombre_servicio,
                 'conceptos'=>$conceptos 
             );
+            $subsidio=$this->calculoSubsidios($key->id_servicio,$uma,$resultado);
+            $total_subsidio=$total_subsidio+$subsidio;
         }
        
        $json_response= array(
         'total' =>(string)number_format($total, 2, '.', ''),
         'datos'=>$datos,
         'total_derechos'=>(string)number_format($total, 2, '.', ''),
-        'total_subsidio'=>(string)$total_subsidio,
+        'total_subsidio'=>(string)number_format($total_subsidio, 2, '.', ''),
         'motivo_subsidio'=>(string)$motivo_subsidio,
-        'total_curr'=>(string)$total_curr,
+        'total_curr'=>'$'.(string)number_format($total, 2, '.', ','),
         'total_derechos_curr'=>'$'.(string)number_format($total, 2, '.', ','),
-        'total_subsidio_curr'=>(string)$total_subsidio_curr
+        'total_subsidio_curr'=>'$'.(string)number_format($total_subsidio, 2, '.', ',')
         );
        return $json_response;
+    }
+    private function calculoSubsidios($id,$uma,$resultado)
+    {
+        $valor=0;
+        $total_after=0;
+        $moneda_sub=1;
+        $total_maxi=0;
+        $calculo=0;
+        $calculo_max=0;
+        $findcalculosubsidio=$this->conceptsubsidiesdb->findWhere(['id_procedure'=>$id]);
+        foreach ($findcalculosubsidio as $e) {
+            $total_after=$e->total_after_subsidy;
+            $moneda_sub=$e->currency_total;
+            $total_max=$e->total_max_to_apply;
+            $subsidy_des=$e->subsidy_description;
+        }
+        if($moneda_sub==2)
+        {
+            $calculo=$uma*$total_after;
+            $calculo_max=$uma*$total_max;
+            $valor=$calculo;
+        }
+        $decimal_min=explode(".", $calculo);
+        if($decimal_min>=.51)
+        {
+            $calculo=round($calculo, 0, PHP_ROUND_HALF_UP);
+        }else
+        {
+            $calculo=round($calculo, 0, PHP_ROUND_HALF_DOWN);
+        }
+        $decimal_max=explode(".", $calculo_max);
+        if($decimal_max>=.51)
+        {
+            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_UP);
+        }else
+        {
+            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_DOWN);
+        }
+        if($calculo==0)
+        {
+            $valor=0;
+        }else{
+            if($resultado>=$calculo && $resultado<=$calculo_max)
+            {
+                $valor=$resultado-$calculo;
+            }else{
+                $valor=0;
+            }
+        }
+        return $valor;
     }
     private function messagerror()
     {
         $error=array();
         $error=array(
                     "Code" => 400,
-                    "Message" => 'field required' );
+                    "Message" => 'fields required' );
         return $error;
     }
 }
