@@ -175,8 +175,8 @@
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
-        umaCargartabla();
-        ComponentsPickers.init();
+             umaCargartabla();
+             ComponentsPickers.init();
     });    
     function limpiar()
     {
