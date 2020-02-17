@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\Egobtransacciones::class,
         Commands\updateStatus::class,
         Commands\CorteSendEmail::class,
+        Commands\SendEmails::class,
     ];
 
     /**
@@ -49,6 +50,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('CorteSendEmail:SendEmail')
                ->everyMinute();
                 /*->dailyAt('15:26');*/
+        /*$schedule->command('SendEmails:EmailGrid')
+               ->everyMinute();*/
     }   
 
     /**

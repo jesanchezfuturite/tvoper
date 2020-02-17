@@ -185,14 +185,14 @@
                                 <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max" oninput="prueba(this);"min="1" max="999999999.99" step="0.01">
                             </div>
                         </div>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-offset-3 col-md-6">
-                                    <button type="button" class="btn blue" onclick="metodoSaveUpdate()">Guardar</button>
-                                    <button type="button" data-dismiss="modal" class="btn default" class="close" onclick="limpiaCuentapago()">Cancelar</button>
-                                </div>
-                            </div>
+                    <div class="form-group">
+                        <div class="col-md-10"> 
+                            <button type="submit" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiaCuentapago()">Cerrar</button>
+                    </div>
                     </div>
                 </form>
             </div>
