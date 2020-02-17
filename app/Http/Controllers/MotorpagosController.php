@@ -2989,7 +2989,7 @@ return json_encode($response);
         $data=array();
         $json=array();
 
-        $url_token_ = env('API_ENDPOINT_TOKEN');
+        $url_token_ = env('API_URL_TOKEN');
         $url_token=$url_token_;
         $username = env('API_USERNAME');
         $password = env('API_PASSWORD');
@@ -3019,7 +3019,7 @@ return json_encode($response);
             );
         $json=array("data"=>$data);
         /***************REQUEST******/
-        $url_procedure=env('API_ENDPOINT_PROCESS_PROCEDURE'); 
+        $url_procedure=env('API_URL_PROCESS_PROCEDURE'); 
         $request_procedure = $client->request('POST',$url_procedure,[
         'form_params' => array(
             'access_token' => $token, 

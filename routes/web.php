@@ -205,7 +205,9 @@ Route::post('/calcula-update','MotorpagosController@calculoconceptoUpdate');
 
 /************************   WS  ***********************/
 
-Route::get('/ws','MotorpagosController@ConsultaWS');
+//Route::post('/ws','ConsultasController@prueba');
+
+
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');
 
