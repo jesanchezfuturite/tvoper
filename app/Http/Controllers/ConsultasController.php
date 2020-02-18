@@ -121,13 +121,16 @@ class ConsultasController extends Controller
                 $moneda_lot=$f->currency_lot_equivalence;
                 if($method=='Variable'){
                     $v=$key->valor_de_operacion;
-                    if($moneda_formula==2)
-                    {
-                        $v=$v*$uma;
-                    }                    
+                                       
                     $formula = str_replace('v', '$v', $formula);
                     $resultado=eval('return '.$formula.';');
                     $resultado=(double)$resultado;
+                    log::info($resultado);
+                    if($moneda_formula==2)
+                    {
+                        $resultado=$resultado*$uma;
+                    } 
+                    
                 }else{
                     if($moneda_total==2)
                     {
@@ -140,11 +143,7 @@ class ConsultasController extends Controller
                 if($has_lot==1)
                 {
                     $resultado=$this->calculoLotes($no_lotes,$uma,$valor_fijo);
-                }
-                if($reingresar=="si")
-                {
-                    $resultado=$resultado-$total_reingresar;
-                }
+                }               
 
                 if($moneda_max==2){
                     $max=(double)$max*$uma;
@@ -152,8 +151,7 @@ class ConsultasController extends Controller
                 if($moneda_min==2)
                 {
                   $min=(double)$min*$uma;  
-                }
-                
+                }                
                 if($min==0)
                 {
                     $min=$resultado;
@@ -176,7 +174,11 @@ class ConsultasController extends Controller
                         $resultado=$min;
                     }
                 }
-                 $decimal=explode(".", $resultado);
+                if($reingresar=="si")
+                {
+                    $resultado=$resultado-$total_reingresar;
+                }
+                $decimal=explode(".", $resultado);
                 if($decimal>=.51)
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_UP);
