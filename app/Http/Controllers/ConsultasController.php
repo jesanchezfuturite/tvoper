@@ -58,7 +58,7 @@ class ConsultasController extends Controller
 
     public function calculoconceptos(Request $request)
     {
-        //try {
+        try {
             $data=json_encode($request->data);
             $json_response=array();
             if(empty($data))
@@ -67,15 +67,13 @@ class ConsultasController extends Controller
             }else{
                 $json_response=$this->calulo_servicio($data);
             }
-        /*} catch (\Exception $e) {
-            $json_response=$this->messagerror();
-            
-        }*/
+        } catch (\Exception $e) {
+            $json_response=$this->messagerror();            
+        }
         return response()->json($json_response);
     }
     private function calulo_servicio($data)
-    {
-       
+    {       
         $json_response=array();
         $datos=array();
         $total=0; $total_derechos=0; $total_subsidio=0; $motivo_subsidio=''; $total_curr=0;
@@ -120,17 +118,12 @@ class ConsultasController extends Controller
                 $lot_equivalent=$f->lot_equivalence;
                 $moneda_lot=$f->currency_lot_equivalence;
                 if($method=='Variable'){
-                    $v=$key->valor_de_operacion;
-                                       
+                    $v=$key->valor_de_operacion;                                       
                     $formula = str_replace('v', '$v', $formula);
                     $resultado=eval('return '.$formula.';');
                     $resultado=(double)$resultado;
-                    log::info($resultado);
-                    if($moneda_formula==2)
-                    {
-                        $resultado=$resultado*$uma;
-                    } 
-                    
+                    /*if($moneda_formula==2)
+                    { $resultado=$resultado*$uma;  } */                    
                 }else{
                     if($moneda_total==2)
                     {
@@ -145,34 +138,27 @@ class ConsultasController extends Controller
                     $resultado=$this->calculoLotes($no_lotes,$uma,$valor_fijo);
                 }               
 
-                if($moneda_max==2){
-                    $max=(double)$max*$uma;
-                }
+                if($moneda_max==2)
+                { $max=(double)$max*$uma;   }
+
                 if($moneda_min==2)
-                {
-                  $min=(double)$min*$uma;  
-                }                
+                { $min=(double)$min*$uma;  }
+
                 if($min==0)
-                {
-                    $min=$resultado;
-                }
+                { $min=$resultado;  }
+
                 if($max==0)
-                {
-                    $max=$resultado;
-                }
+                { $max=$resultado;  }
+
                 if($resultado>=$min && $resultado<=$max)
                 {
                     $resultado=$resultado;
                 }else{
-
                     if($resultado>=$max)
-                    {
-                        $resultado=$max;
-                    }
+                    { $resultado=$max;  }
+
                     if($resultado<=$min)
-                    {
-                        $resultado=$min;
-                    }
+                    { $resultado=$min;  }
                 }
                 if($reingresar=="si")
                 {
@@ -186,7 +172,6 @@ class ConsultasController extends Controller
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_DOWN);
                 }
-
                 $total=$total+$resultado;
                 $conceptos []= array(
                     'nombre' =>$nombre_concepto,  
@@ -194,8 +179,7 @@ class ConsultasController extends Controller
                     'partida' => (string)$partida, 
                     'total_c' => (string)number_format($resultado, 2, '.', '')
                 );
-            }
-            
+            }            
             $datos []= array(
                 'id_tramite' => $key->id_procedure,
                 'tramite_nombre'=> $nombre_servicio,
