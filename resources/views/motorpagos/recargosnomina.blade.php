@@ -74,15 +74,18 @@
                 <h4 class="modal-title">Agregar</h4>
             </div>
             <div class="modal-body">
-                 <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                         <input hidden="true" type="text"  id="idupdate">
+                
+                    <input hidden="true" type="text"  id="idupdate">
+                    <div class="row">
                        <div class="form-group">
                             <label class="col-md-3 control-label">Año</label>
                             <div class="col-md-8">
                                 <input id="anio" class="valida-num form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
                             </div>
                         </div>
+                    </div>
+                    <br>
+                    <div class="row">
                         <div class="form-group">
                             <label class="col-md-3 control-label">Mes</label>
                             <div class="col-md-8">
@@ -103,29 +106,37 @@
                                 </select>
                             </div>
                         </div>
+                    </div>
+                    <br>
+                    <div class="row">
                         <div class="form-group">
                             <label class="col-md-3 control-label">% Vencido</label>
                             <div class="col-md-8">
                                 <input id="vencido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
                             </div>
                         </div>
+                    </div>
+                    <br>
+                    <div class="row">
                         <div class="form-group">
                             <label class="col-md-3 control-label">% Requerido</label>
                             <div class="col-md-8">
                                 <input id="requerido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
                             </div>
                         </div>
-                        <br>
-                        <div class="form-actions">
-                            <div class="row">
-                                <div class="col-md-offset-3 col-md-6">
-                                    <button type="submit" data-dismiss="modal" class="btn blue" onclick="VerificaInsert()">Guardar</button>
-                                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
-                                </div>
+                    </div>
+                    <br>                    
+                    <div class="row">
+                        <div class="col-md-12">            
+                            <div class="form-group">
+                                <button type="submit" class="btn blue" onclick="VerificaInsert()"><i class="fa fa-check"></i> Guardar</button>
                             </div>
                         </div>
                     </div>
-                </form>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- /.modal-content -->

@@ -40,7 +40,13 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+/*
+$app->configure('mail');
+$app->configure('services');
+$app->register(Sichikawa\LaravelSendgridDriver\MailServiceProvider::class);
 
+unset($app->availableBindings['mailer']);
+*/
 /*
 |--------------------------------------------------------------------------
 | Return The Application

@@ -1706,7 +1706,7 @@
 function validarFormula()
 {
   var formula=$("#calculoFormula").val();
-  var v=4,w=4,x = 2, y = 4,z=4,V=4,W=4,X = 2, Y = 4,Z=4;
+  var v=4;
 
   var response=false;
   //console.log(eval(formula));
@@ -1761,7 +1761,7 @@ function GuardarExcel()
   }
 }
 $('.valida-formula').on('input', function () { 
-    this.value = this.value.replace(/[^0-9./*+()VWXYZvwxyz-]/g,'');
+    this.value = this.value.replace(/[^0-9./*+()v-]/g,'');
 });
 $('.valida-decimal').on('input', function () { 
     this.value = this.value.replace(/[^0-9.]/g,'');

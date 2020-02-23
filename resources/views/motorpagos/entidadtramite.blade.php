@@ -153,12 +153,14 @@
                              </div>
                         </div>
                     </div>
-                    <br>
-                 <div class="form-actions">
-
-                     <button type="submit" class="btn blue" onclick="savetramiteEntidad()"><i class="fa fa-check"></i> Guardar</button>
-                     <button type="button" onclick="Limpiar()" data-dismiss="modal" class="btn default" >Cancelar</button>
-                 </div>
+                  <div class="row">
+                <div class="col-md-12">            
+                    <div class="form-group">
+                        <button type="submit" class="btn blue" onclick="savetramiteEntidad()"><i class="fa fa-check"></i> Guardar</button>
+                    </div>
+                </div>
+              </div>
+                 
             </div>
         </div>
         <!-- /.modal-content -->
@@ -199,7 +201,7 @@
                  <div class="col-md-8"><div class='form-group'><input type="text" name="search" id="search" class="form-control" placeholder="Escribe..."></div></div>
                 <div class="col-md-4"><div class='form-group'> <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check' onclick='MostrarTodos()'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div><span class='help-block'>Muestra Todo los Registros</span> 
               </div></div>
-                <br>
+                
                <div  id="demo">              
                  <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
                     <thead>
@@ -211,12 +213,19 @@
                         
                     </tbody>
                   </table>
-               </div> 
+               </div>
+               <div class="col-md-12">            
+                  <div class="form-group">
+                    <button type="submit" class="btn blue" onclick="obtenerTodocheck()"><i class="fa fa-check"></i> Guardar</button>
+                    </div>
+                </div> 
+                <br>
+                <br>
             </div>
             <div class="modal-footer">
-         <button type="button" data-dismiss="modal" onclick="limpiarr()" class="btn default">Cancelar</button>
-            <button type="button" class="btn green" onclick="obtenerTodocheck()">Confirmar</button>
+                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarr()">Cerrar</button>
             </div>
+            
         </div>
     </div>
     <!-- added jesv-->
