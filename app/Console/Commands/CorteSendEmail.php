@@ -167,6 +167,7 @@ class CorteSendEmail extends Command
     public function handle()
     {
        $this->BuscarFechas();
+        //$this-> gArchivo_Generico_prueba();
     }
     
     public function BuscarFechas()
@@ -331,7 +332,7 @@ class CorteSendEmail extends Command
                     $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
                     $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                     $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
-                    $RowReferencia=str_pad('',30,"0",STR_PAD_LEFT);                           
+                    $RowReferencia=str_pad($concilia->Linea,30,"0",STR_PAD_LEFT);                           
                     $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                     $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                     $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
@@ -1144,7 +1145,98 @@ class CorteSendEmail extends Command
             }
         }
     }
-   
+   private function gArchivo_Generico_prueba()
+    {        
+        $fecha=Carbon::now();      
+        $path=storage_path('app/');
+        
+        $cadena='';
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
+            for ($i=100; $i < 151; $i++) { 
+               array_push($Servicios ,$i );
+            }
+       $referencia='';
+        $conciliacion=$this->oper_transaccionesdb->findWhere(['estatus'=>'0','entidad'=>'3']);
+        if($conciliacion<>null)
+        {     
+            foreach ($conciliacion as $concilia) 
+            {   $banco_id=$concilia->banco_id;
+                $id_tipo_servicio='';
+                $id_transaccion_motor=$concilia->id_transaccion_motor;
+                $referencia=$concilia->referencia;
+                $tramitesFind=$this->tramitedb->findWhere(['id_transaccion_motor'=>$concilia->id_transaccion_motor]);
+                foreach ($tramitesFind as $t) 
+                {   
+
+                     $id_tipo_servicio=$t->id_tipo_servicio;
+                    $existe=true;                               
+                    
+                    if($existe)
+                    {   
+                        
+                        $cuentabanco='';
+                        $beneficiario;
+                        $alias='';
+                        $cuenta='';
+                        $concepto='';
+                        $partida='';
+                        $CartImporte='';
+                        
+                        log::info($id_tipo_servicio);
+                        
+                        $findcuentabanco=$this->cuentasbancodb->findWhere(['banco_id'=>$banco_id]);
+                        foreach ($findcuentabanco as $e) {
+                           
+                            if($banco_id==$e->banco_id)
+                            { $beneficiario=$e->beneficiario;}
+                            else{
+                                $banco_id=$e->banco_id;
+                               $beneficiario=$e->beneficiario;
+                            }
+                        }
+
+                        foreach (json_decode($beneficiario) as $be) {
+                            $alias=$be->alias;
+                            $cuenta=$be->cuenta;
+                            
+                        }
+                        $findDetalleTramite=$this->tramite_detalledb->findWhere(['id_tramite_motor'=>$t->id_tramite_motor]);
+                        foreach ($findDetalleTramite as $det) {
+                            $partida=$det->partida;
+                            $concepto=$det->concepto;
+                            $CartImporte=$det->importe_concepto;
+                        }
+                        $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
+                        $Directorio=$path.$nombreArchivo;
+
+                        $RowClaveltramite=str_pad($id_tipo_servicio,6,"0",STR_PAD_LEFT);                    
+                        $RowFechaDis=str_replace("Por Operacion", "", $concilia->fecha_transaccion);
+                        //$fechaVerif=explode("-", $RowFechaDis);                                                     
+                        $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Ymd'),8);
+                        $RowHoraDis=str_pad(Carbon::parse($RowFechaDis)->format('Hms'),6);                        
+                    
+                        $RowFechapago=str_pad(Carbon::parse($RowFechaDis)->format('Ymd'),8);
+                        $RowHorapago=str_pad(Carbon::parse($RowFechaDis)->format('hms'),6);
+                        $RowPartida=str_pad($partida,5,"0",STR_PAD_LEFT);
+                        $RowConsepto=str_pad(mb_convert_encoding($concepto, "Windows-1252", "UTF-8"),120);
+                        $RowFolio=str_pad($id_transaccion_motor,20,"0",STR_PAD_LEFT);
+                        $RowTotalpago=str_pad(str_replace(".","",$CartImporte) ,13,"0",STR_PAD_LEFT);
+                        $RowReferencia=str_pad($referencia,30,"0",STR_PAD_LEFT);                           
+                        $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
+                        $RowMedio_pago=str_pad($banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
+                        $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
+                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowCuentaPago=str_pad($cuenta,30,"0",STR_PAD_LEFT);
+                        $RowAlias=str_pad($alias,6,"0",STR_PAD_LEFT); 
+                        $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
+                       // $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
+                        File::append($Directorio,$cadena."\r\n");                    
+                    
+                    }
+                }
+            }
+        }
+    }
     private function enviacorreo()
     {   
          $nombreArchivo=Carbon::now();

@@ -51,7 +51,8 @@ class Kernel extends ConsoleKernel
                ->everyMinute();
                 /*->dailyAt('15:26');*/
         /*$schedule->command('SendEmails:EmailGrid')
-               ->everyMinute();*/
+               ->everyMinute();
+               /*->dailyAt('15:26');*/
     }   
 
     /**
