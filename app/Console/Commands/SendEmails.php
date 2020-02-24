@@ -169,20 +169,56 @@ class SendEmails extends Command
     }
     private function SendEmailTransaccion()
     {
-        $email_name="";//$email_name='Nombre Prueba';        
-        $email_address="";///$email_address='juancarlos96.15.02@gmail.com';
-
-        /*$findTransaccion=$this->transaccionesdb->findWhere(['estatus'=>'60']);
-
+        $this->SendEmial_pagado();
+        //$this->SendEmial_referencia();
+        //$this->SendEmial_proceso();
+    }
+    private function SendEmial_pagado(){
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['estatus'=>'0','envio_email'=>null]);       
         foreach ($findTransaccion as $k) {
-           
-        }*/
-        $this->SendGridMail($email_name,$email_address);
-        
+             $correo='';
+             $nombre='';
+             $id=$k->id_transaccion_motor;
+             $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findtramite as $e) {
+             $correo=$e->email;
+             $nombre=$e->nombre.' '.$e->apellido_paterno;
+            }
+            $enviar=$this->SendGridMail($nombre,$correo);
+            if($enviar==202)
+            {
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['envio_email'=>'1'],['id_transaccion_motor'=>$id]);
+            }else{
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['envio_email'=>'0'],['id_transaccion_motor'=>$id]);
+            }
+        }
+
+    }
+    private function SendEmial_referencia(){
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['estatus'=>'60','envio_email'=>null]);       
+        foreach ($findTransaccion as $k) {
+             $correo='';
+             $nombre='';
+             $id=$k->id_transaccion_motor;
+             $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findtramite as $e) {
+             $correo=$e->email;
+             $nombre=$e->nombre.' '.$e->apellido_paterno;
+            }
+            $enviar=$this->SendGridMail($nombre,$correo);
+            if($enviar==202)
+            {
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['envio_email'=>'1'],['id_transaccion_motor'=>$id]);
+            }else{
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['envio_email'=>'0'],['id_transaccion_motor'=>$id]);
+            }
+        }
+
     }
     private function SendGridMail($email_name,$email_address)
     {
-        $message="Mensaje Prueba";        
+        $message="Mensaje Prueba";
+
         $email_from=env('MAIL_FROM_ADDRESS');
         $email_from_name=env('MAIL_FROM_NAME');
         $email = new \SendGrid\Mail\Mail();
@@ -190,12 +226,7 @@ class SendEmails extends Command
         $email->setSubject("Mensaje Prueba");
         $email->addTo($email_address,$email_name);
         $email->addContent("text/plain", $message);
-        /*$att1 = new \SendGrid\Mail\Attachment();
-        $att1->setContent(file_get_contents(storage_path('app/archivo.txt')));
-        $att1->setType("application/octet-stream");
-        $att1->setFilename(basename(storage_path('app/archivo.txt')));
-        $att1->setDisposition("attachment");
-        $email->addAttachment($att1);*/
+        
         $sendgrid = new \SendGrid(getenv('MAIL_API_KEY'));
         try {
         $response = $sendgrid->send($email);        
@@ -206,4 +237,11 @@ class SendEmails extends Command
         $res=$response->statusCode();
         return $res;
     }
+    ////adjuntar imagen
+    /*$att1 = new \SendGrid\Mail\Attachment();
+        $att1->setContent(file_get_contents(storage_path('app/archivo.txt')));
+        $att1->setType("application/octet-stream");
+        $att1->setFilename(basename(storage_path('app/archivo.txt')));
+        $att1->setDisposition("attachment");
+        $email->addAttachment($att1);*/
 }

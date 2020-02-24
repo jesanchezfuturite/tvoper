@@ -58,7 +58,7 @@ class ConsultasController extends Controller
 
     public function calculoconceptos(Request $request)
     {
-        try {
+        //try {
             $data=json_encode($request->data);
             $json_response=array();
             if(empty($data))
@@ -67,9 +67,9 @@ class ConsultasController extends Controller
             }else{
                 $json_response=$this->calulo_servicio($data);
             }
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
             $json_response=$this->messagerror();            
-        }
+        }*/
         return response()->json($json_response);
     }
     private function calulo_servicio($data)
@@ -164,7 +164,10 @@ class ConsultasController extends Controller
                 {
                     $resultado=$resultado-$total_reingresar;
                 }
-                $decimal=explode(".", $resultado);
+
+                $resultado=(string)number_format($resultado, 2, '.', '');
+                $decimal=explode(".", $resultado);             
+                $decimal='0.'.$decimal[1];
                 if($decimal>=.51)
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_UP);
@@ -214,8 +217,10 @@ class ConsultasController extends Controller
         $total_after=0;
         $moneda_sub=1;
         $total_maxi=0;
+        $total_max=0;
         $calculo=0;
         $calculo_max=0;
+        $subsidy_des=0;
         $findcalculosubsidio=$this->conceptsubsidiesdb->findWhere(['id_procedure'=>$id]);
         foreach ($findcalculosubsidio as $e) {
             $total_after=$e->total_after_subsidy;
@@ -229,22 +234,11 @@ class ConsultasController extends Controller
             $calculo_max=$uma*$total_max;
             $valor=$calculo;
         }
-        $decimal_min=explode(".", $calculo);
-        if($decimal_min>=.51)
-        {
-            $calculo=round($calculo, 0, PHP_ROUND_HALF_UP);
-        }else
-        {
-            $calculo=round($calculo, 0, PHP_ROUND_HALF_DOWN);
-        }
-        $decimal_max=explode(".", $calculo_max);
-        if($decimal_max>=.51)
-        {
-            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_UP);
-        }else
-        {
-            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_DOWN);
-        }
+        else{
+            $calculo=$total_after;
+            $calculo_max=$total_max;
+            $valor=$calculo;
+        }        
         if($calculo==0)
         {
             $valor=0;
@@ -255,6 +249,16 @@ class ConsultasController extends Controller
             }else{
                 $valor=0;
             }
+        }
+        $valor=(string)number_format($valor, 2, '.', '');
+        $decimal=explode(".", $valor);             
+        $decimal='0.'.$decimal[1];
+        if($decimal>=.51)
+        {
+            $valor=round($valor, 0, PHP_ROUND_HALF_UP);
+        }else
+        {
+            $valor=round($valor, 0, PHP_ROUND_HALF_DOWN);
         }
         return $valor;
     }
