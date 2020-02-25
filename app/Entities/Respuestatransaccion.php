@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Transacciones.
+ * Class Respuestatransaccion.
  *
  * @package namespace App\Entities;
  */
-class Transacciones extends Model implements Transformable
+class Respuestatransaccion extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -24,20 +24,10 @@ class Transacciones extends Model implements Transformable
 
     protected $fillable = [
         'id_transaccion_motor',
-        'estatus',
-        'referencia',
-        'importe_transaccion',
-        'fecha_transaccion',
-        'id_transaccion',
-        'fecha_limite_referencia',
-        'entidad',
-        'tipo_pago',
-        'id_transaccion',
-        'email_referencia',
-        'email_pago',
+       'json_respuesta'
     ];
 
-    protected $table = "oper_transacciones";
+    protected $table = "oper_respuestatransaccion";
     public $timestamps = false;
 
 }
