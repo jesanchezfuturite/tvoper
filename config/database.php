@@ -46,7 +46,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '10.153.144.139'),
+            'host' => env('DB_HOST', '10.153.144.167'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'operacion'),
             'username' => env('DB_USERNAME', 'laravel'),
@@ -84,7 +84,7 @@ return [
         'mysql3' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST_THIRD', '10.153.144.139'),
+            'host' => env('DB_HOST_THIRD', '10.153.144.167'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE_THIRD', 'egob'),
             'username' => env('DB_USERNAME_THIRD', 'laravel'),
