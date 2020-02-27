@@ -38,6 +38,7 @@ use App\Repositories\ContdetimpisopRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\CorteArchivosRepositoryEloquent;
 use App\Repositories\CortesolicitudRepositoryEloquent;
+use App\Repositories\RespuestatransaccionRepositoryEloquent;
 
 class SendEmails extends Command
 {
@@ -90,6 +91,7 @@ class SendEmails extends Command
     protected $partidasdb;
     protected $cortearchivosdb;
     protected $cortesolicituddb;
+    protected $respuestatransacciondb;
 
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
@@ -121,7 +123,8 @@ class SendEmails extends Command
         ContdetimpisopRepositoryEloquent $detimpisopdb,
         EgobiernopartidasRepositoryEloquent $partidasdb,
         CorteArchivosRepositoryEloquent $cortearchivosdb,
-        CortesolicitudRepositoryEloquent $cortesolicituddb
+        CortesolicitudRepositoryEloquent $cortesolicituddb,
+        RespuestatransaccionRepositoryEloquent $respuestatransacciondb
     )
     {
          parent::__construct();        
@@ -155,6 +158,8 @@ class SendEmails extends Command
         $this->partidasdb=$partidasdb;
         $this->cortearchivosdb=$cortearchivosdb;
         $this->cortesolicituddb=$cortesolicituddb;
+        $this->respuestatransacciondb=$respuestatransacciondb;
+
 
     }
 
@@ -169,20 +174,70 @@ class SendEmails extends Command
     }
     private function SendEmailTransaccion()
     {
-        $email_name="";//$email_name='Nombre Prueba';        
-        $email_address="";///$email_address='juancarlos96.15.02@gmail.com';
-
-        /*$findTransaccion=$this->transaccionesdb->findWhere(['estatus'=>'60']);
-
-        foreach ($findTransaccion as $k) {
-           
-        }*/
-        $this->SendGridMail($email_name,$email_address);
-        
+        $this->SendEmial_referencia();
+        $this->SendEmial_pagado();
+        //$this->SendEmial_proceso();
     }
-    private function SendGridMail($email_name,$email_address)
+    private function SendEmial_referencia(){
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['estatus'=>'60','email_referencia'=>null]);      
+        foreach ($findTransaccion as $k) {
+             $correo='';
+             $nombre='';
+             $url='';
+             $referencia=$k->referencia;
+             $id=$k->id_transaccion_motor;
+             $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findtramite as $e) {
+                $correo=$e->email;
+                $nombre=$e->nombre.' '.$e->apellido_paterno;
+             //$nombre='';
+             //$correo='juancarlos96.15.02@gmail.com';             
+            }
+            $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findRespuesta as $r) {
+                $url=json_decode($r->json_respuesta);
+            }
+            //log::info($url->url_recibo);
+            $message="Se ha generado la Referencia: ".$referencia."/n"."URL: ".$url->url_recibo;
+            $enviar=$this->SendGridMail($nombre,$correo,$message);
+            if($enviar==202)
+            {
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
+            }else{
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]);
+            }
+        }
+
+    }
+    private function SendEmial_pagado(){
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['estatus'=>'0','email_pago'=>null]);       
+        foreach ($findTransaccion as $k) {
+             $correo='';
+             $nombre='';
+             $id=$k->id_transaccion_motor;
+             $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findtramite as $e) {
+             //$correo=$e->email;
+            $correo='juancarlos96.15.02@gmail.com';
+             $nombre=$e->nombre.' '.$e->apellido_paterno;
+            }
+            $message="Se ha realizado el PAGO";
+            $enviar=$this->SendGridMail($nombre,$correo,$message);
+            if($enviar==202)
+            {
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
+            }else{
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]);
+            }
+        }
+
+    }
+    private function SendGridMail($email_name,$email_address,$message)
     {
-        $message="Mensaje Prueba";        
+        //$message="Mensaje Prueba";
+        if($email_address==''){
+            $res=404;
+        }else{
         $email_from=env('MAIL_FROM_ADDRESS');
         $email_from_name=env('MAIL_FROM_NAME');
         $email = new \SendGrid\Mail\Mail();
@@ -190,20 +245,25 @@ class SendEmails extends Command
         $email->setSubject("Mensaje Prueba");
         $email->addTo($email_address,$email_name);
         $email->addContent("text/plain", $message);
-        /*$att1 = new \SendGrid\Mail\Attachment();
+        
+        $sendgrid = new \SendGrid(getenv('MAIL_API_KEY'));
+        try {
+        $response = $sendgrid->send($email);        
+        } catch (Exception $e) {
+             $res=404;
+            log::info($e->getMessage() );
+        }
+        //log::info($response->statusCode());
+        $res=$response->statusCode();
+        }
+        return $res;
+    }
+    ////adjuntar imagen
+    /*$att1 = new \SendGrid\Mail\Attachment();
         $att1->setContent(file_get_contents(storage_path('app/archivo.txt')));
         $att1->setType("application/octet-stream");
         $att1->setFilename(basename(storage_path('app/archivo.txt')));
         $att1->setDisposition("attachment");
         $email->addAttachment($att1);*/
-        $sendgrid = new \SendGrid(getenv('MAIL_API_KEY'));
-        try {
-        $response = $sendgrid->send($email);        
-        } catch (Exception $e) {
-            log::info($e->getMessage() );
-        }
-        log::info($response->statusCode());
-        $res=$response->statusCode();
-        return $res;
-    }
+
 }

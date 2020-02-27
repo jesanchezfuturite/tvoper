@@ -58,32 +58,28 @@ class ConsultasController extends Controller
 
     public function calculoconceptos(Request $request)
     {
-        try {
-        $data=json_encode($request->data);
-        $json_response=array();
-        if(empty($data))
-        {
-            $json_response=$this->messagerror();
-        }
-        else{
-
-            $json_response=$this->calulo_servicio($data);
-        }
-        } catch (\Exception $e) {
-            $json_response=$this->messagerror();
-            
-        }
+        //try {
+            $data=json_encode($request->data);
+            $json_response=array();
+            if(empty($data))
+            {
+                $json_response=$this->messagerror();
+            }else{
+                $json_response=$this->calulo_servicio($data);
+            }
+        /*} catch (\Exception $e) {
+            $json_response=$this->messagerror();            
+        }*/
         return response()->json($json_response);
     }
     private function calulo_servicio($data)
-    {
-       
+    {       
         $json_response=array();
         $datos=array();
         $total=0; $total_derechos=0; $total_subsidio=0; $motivo_subsidio=''; $total_curr=0;
         $date = Carbon::now();
         $date = $date->format('Y');
-        $uma='';
+        $uma='';        
         $findUMA=$this->umahistorydb->findWhere(['year'=>$date]);
         if($findUMA->count()==0)
         {
@@ -92,17 +88,19 @@ class ConsultasController extends Controller
         }
         foreach ($findUMA as $u) {
             $uma=$u->daily;
-            //log::info($uma);
         }
         foreach (json_decode($data) as $key) {
+            $reingresar=$key->reingresar;
+            $total_reingresar=$key->copia_tramite;
+            $no_lotes=$key->no_lotes;
             $nombre_servicio=''; $nombre_concepto='';$formula='';$partida='';    
             $conceptos=array();           
 
-            $findTipoServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>(string)$key->id_servicio]);
+            $findTipoServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>(string)$key->id_procedure]);
             foreach ($findTipoServicio as $e) {
                $nombre_servicio=$e->Tipo_Descripcion;
             }
-            $findcalculoconcepto=$this->conceptscalculationdb->findWhere(['id_procedure'=>$key->id_servicio]);
+            $findcalculoconcepto=$this->conceptscalculationdb->findWhere(['id_procedure'=>$key->id_procedure]);
             foreach ($findcalculoconcepto as $f) {
                 $formula=$f->formula;
                 $nombre_concepto=$f->name_concept;
@@ -112,14 +110,20 @@ class ConsultasController extends Controller
                 $moneda_min=$f->currency_min;
                 $moneda_max=$f->currency_max;
                 $moneda_total=$f->currency_total;
+                $moneda_formula=$f->currency_formula;
                 $round_millar=$f->round_amount_thousand;
                 $method=$f->method;
                 $valor_fijo=$f->total;
+                $has_lot=$f->has_lot;
+                $lot_equivalent=$f->lot_equivalence;
+                $moneda_lot=$f->currency_lot_equivalence;
                 if($method=='Variable'){
-                    $v=$key->valor_de_operacion;
+                    $v=$key->valor_de_operacion;                                       
                     $formula = str_replace('v', '$v', $formula);
                     $resultado=eval('return '.$formula.';');
                     $resultado=(double)$resultado;
+                    /*if($moneda_formula==2)
+                    { $resultado=$resultado*$uma;  } */                    
                 }else{
                     if($moneda_total==2)
                     {
@@ -129,38 +133,41 @@ class ConsultasController extends Controller
                     }
                     $resultado=(double)$resultado;                    
                 }
-                if($moneda_max==2){
-                    $max=(double)$max*$uma;
-                }
+                if($has_lot==1)
+                {
+                    $resultado=$this->calculoLotes($no_lotes,$uma,$valor_fijo);
+                }               
+
+                if($moneda_max==2)
+                { $max=(double)$max*$uma;   }
+
                 if($moneda_min==2)
-                {
-                  $min=(double)$min*$uma;  
-                }
-                
+                { $min=(double)$min*$uma;  }
+
                 if($min==0)
-                {
-                    $min=$resultado;
-                }
+                { $min=$resultado;  }
+
                 if($max==0)
-                {
-                    $max=$resultado;
-                }
+                { $max=$resultado;  }
+
                 if($resultado>=$min && $resultado<=$max)
                 {
                     $resultado=$resultado;
                 }else{
-
                     if($resultado>=$max)
-                    {
-                        $resultado=$max;
-                    }
+                    { $resultado=$max;  }
+
                     if($resultado<=$min)
-                    {
-                        $resultado=$min;
-                    }
+                    { $resultado=$min;  }
                 }
-                 $decimal=explode(".", $resultado);
-                //log::info($decimal);
+                if($reingresar=="si")
+                {
+                    $resultado=$resultado-$total_reingresar;
+                }
+
+                $resultado=(string)number_format($resultado, 2, '.', '');
+                $decimal=explode(".", $resultado);             
+                $decimal='0.'.$decimal[1];
                 if($decimal>=.51)
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_UP);
@@ -168,7 +175,6 @@ class ConsultasController extends Controller
                 {
                     $resultado=round($resultado, 0, PHP_ROUND_HALF_DOWN);
                 }
-
                 $total=$total+$resultado;
                 $conceptos []= array(
                     'nombre' =>$nombre_concepto,  
@@ -176,14 +182,13 @@ class ConsultasController extends Controller
                     'partida' => (string)$partida, 
                     'total_c' => (string)number_format($resultado, 2, '.', '')
                 );
-            }
-            
+            }            
             $datos []= array(
-                'id_tramite' => $key->id_servicio,
+                'id_tramite' => $key->id_procedure,
                 'tramite_nombre'=> $nombre_servicio,
                 'conceptos'=>$conceptos 
             );
-            $subsidio=$this->calculoSubsidios($key->id_servicio,$uma,$resultado);
+            $subsidio=$this->calculoSubsidios($key->id_procedure,$uma,$resultado);
             $total_subsidio=$total_subsidio+$subsidio;
         }
        
@@ -199,14 +204,23 @@ class ConsultasController extends Controller
         );
        return $json_response;
     }
+    private function calculoLotes($no_lotes,$uma,$valor_lote)
+    {
+        $resultado=0;
+        $resultado=$no_lotes*$valor_lote*$uma;
+        return $resultado;
+
+    }
     private function calculoSubsidios($id,$uma,$resultado)
     {
         $valor=0;
         $total_after=0;
         $moneda_sub=1;
         $total_maxi=0;
+        $total_max=0;
         $calculo=0;
         $calculo_max=0;
+        $subsidy_des=0;
         $findcalculosubsidio=$this->conceptsubsidiesdb->findWhere(['id_procedure'=>$id]);
         foreach ($findcalculosubsidio as $e) {
             $total_after=$e->total_after_subsidy;
@@ -220,22 +234,11 @@ class ConsultasController extends Controller
             $calculo_max=$uma*$total_max;
             $valor=$calculo;
         }
-        $decimal_min=explode(".", $calculo);
-        if($decimal_min>=.51)
-        {
-            $calculo=round($calculo, 0, PHP_ROUND_HALF_UP);
-        }else
-        {
-            $calculo=round($calculo, 0, PHP_ROUND_HALF_DOWN);
-        }
-        $decimal_max=explode(".", $calculo_max);
-        if($decimal_max>=.51)
-        {
-            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_UP);
-        }else
-        {
-            $calculo_max=round($calculo_max, 0, PHP_ROUND_HALF_DOWN);
-        }
+        else{
+            $calculo=$total_after;
+            $calculo_max=$total_max;
+            $valor=$calculo;
+        }        
         if($calculo==0)
         {
             $valor=0;
@@ -246,6 +249,16 @@ class ConsultasController extends Controller
             }else{
                 $valor=0;
             }
+        }
+        $valor=(string)number_format($valor, 2, '.', '');
+        $decimal=explode(".", $valor);             
+        $decimal='0.'.$decimal[1];
+        if($decimal>=.51)
+        {
+            $valor=round($valor, 0, PHP_ROUND_HALF_UP);
+        }else
+        {
+            $valor=round($valor, 0, PHP_ROUND_HALF_DOWN);
         }
         return $valor;
     }
