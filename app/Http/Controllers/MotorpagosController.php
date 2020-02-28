@@ -2197,7 +2197,7 @@ return json_encode($response);
                     $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
             }
         }    
-        log::info($transaccion);      
+        //log::info($transaccion);      
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
             $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->id_transaccion]);

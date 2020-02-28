@@ -30,27 +30,27 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         /* carga las tablas con los procesos de archivos */
-        $schedule->command('conciliacion:processFiles')
+        /*$schedule->command('conciliacion:processFiles')
                 ->everyFiveMinutes();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
-        $schedule->command('conciliacion:egobt')
+        /*$schedule->command('conciliacion:egobt')
                  ->everyFiveMinutes();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
-        $schedule->command('conciliacion:operaciont')
+        /*$schedule->command('conciliacion:operaciont')
                  ->everyFiveMinutes();
 
         /*cambia el estatus de la transaccion todos los dias a las 03:00:00 hrs*/
-        $schedule->command('updateStatus:status')
+        /*$schedule->command('updateStatus:status')
                 //->everyMinute();
                ->dailyAt('03:00');
 
         /*  Genera el Archivo para corte y envia por correo  */
-        $schedule->command('CorteSendEmail:SendEmail')
+        /*$schedule->command('CorteSendEmail:SendEmail')
                ->everyMinute();
                 /*->dailyAt('15:26');*/
-        /*$schedule->command('SendEmails:EmailGrid')
+        $schedule->command('SendEmails:EmailGrid')
                ->everyMinute();
                /*->dailyAt('15:26');*/
     }   
