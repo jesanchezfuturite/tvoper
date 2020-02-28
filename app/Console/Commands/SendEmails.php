@@ -190,16 +190,14 @@ class SendEmails extends Command
              $id=$k->id_transaccion_motor;
              $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findtramite as $e) {
-                //$correo=$e->email;
+                $correo=$e->email;
                 $nombre=$e->nombre.' '.$e->apellido_paterno;
-             //$nombre='';
-             $correo='juancarlos96.15.02@gmail.com';             
+             //$correo='juancarlos96.15.02@gmail.com';             
             }
             $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findRespuesta as $r) {
                 $url=json_decode($r->json_respuesta);
             }
-            log::info($url);
             if($url==""){
                 $url_recibo="#";
 
@@ -244,7 +242,6 @@ class SendEmails extends Command
     }
     private function SendGridMail($email_name,$email_address,$url,$referencia)
     {
-        //$message="Mensaje Prueba";
         if($email_address==''){
             $res=404;
         }else{
@@ -267,7 +264,6 @@ class SendEmails extends Command
              $res=404;
             log::info($e->getMessage() );
         }
-        //log::info($response->statusCode());
         $res=$response->statusCode();
         }
         return $res;
@@ -279,35 +275,4 @@ class SendEmails extends Command
         $att1->setFilename(basename(storage_path('app/archivo.txt')));
         $att1->setDisposition("attachment");
         $email->addAttachment($att1);*/
-    
-    private function email_template()
-    {
-        $email_address='juancarlos96.15.02@gmail.com';
-        $email_name='JUANC CARLOS';
-        $email_from='juan.carlos.cruz.bautista@hotmail.com';
-        $email_from_name='Test';
-        $api_key='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';
-        $template='d-da9fde4b030544708cb92264bac949b0';
-        $email = new \SendGrid\Mail\Mail();
-        $email->setFrom($email_from, $email_from_name);
-        $email->setSubject("Referencia");
-        $email->addTo($email_address,$email_name);
-        $email->addContent("text/html",'html');
-        $email->setTemplateId($template);
-        $email->addSubstitution("referencia",'0000000000000');
-        $email->addSubstitution("url_recibo",'#');
-
-        $sendgrid = new \SendGrid($api_key);
-        try {
-        $response = $sendgrid->send($email);        
-        } catch (Exception $e) {
-             $res=404;
-            log::info($e->getMessage() );
-        }
-        log::info($response->statusCode());
-        $res=$response->statusCode();
-        
-    
-    
-    }
 }
