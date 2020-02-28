@@ -83,8 +83,6 @@ class Operaciontransacciones extends Command
         $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();
 
         // actualizar los errores en la tabla de process
-
-
         Log::info('[Conciliacion:OperTransacciones] - Proceso Finalizado');
     }
 
