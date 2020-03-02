@@ -72,16 +72,20 @@ class Operaciontransacciones extends Command
 
         // verificar si existen todos los movimientos de los archivos en la base de datos
         $responseTransactions = $this->checkTransactions();
-        
-        // verificar los montos de las operaciones
-        $responseAmounts = $this->validateAmount();
 
-        // obtener los registros que van actualizar la tabla de transacciones con estatus 0
-        $reponseValidated = $this->getValidated();
+        if($responseTransactions ==  true)
+        {
+            // verificar los montos de las operaciones
+            $responseAmounts = $this->validateAmount();
 
-        // actualizar los registros en la tabla de egobierno Transacciones
-        $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();
+            // obtener los registros que van actualizar la tabla de transacciones con estatus 0
+            $reponseValidated = $this->getValidated();
 
+            // actualizar los registros en la tabla de egobierno Transacciones
+            $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();    
+        }else{
+            Log::info('[Conciliacion:OperTransacciones] - No existen referencias del repositorio por validar');    
+        }
         // actualizar los errores en la tabla de process
         Log::info('[Conciliacion:OperTransacciones] - Proceso Finalizado');
     }
@@ -140,9 +144,7 @@ class Operaciontransacciones extends Command
         {
             $this->transacciones_relacionadas = $this->tr->findWhereIn( 
                 'referencia', 
-                $this->temporal, 
-                [ 'referencia', 'importe_transaccion', 'estatus' ] // se quita el costo de la mensajeria, todavia no esta considerada en esta etapa 
-            );
+                $this->temporal);
         }catch( \Exception $e ){
             Log::info('[Conciliacion:OperTransacciones] @checkBalanceRegisters - Error al buscar transacciones en Egobierno - ' . $e->getMessage());    
         }
@@ -165,23 +167,32 @@ class Operaciontransacciones extends Command
         // en $this->temporal estan todas las transacciones pendientes las voy a buscar en transacciones_relacionadas
         // cargar en el arreglo temporal
         Log::info('[Conciliacion:OperTransacciones] @checkTransactions - Revisar que existan los registros de los archivos de conciliacion en la Base de Datos Egobierno.Transacciones');
-        foreach($this->transacciones_relacionadas as $tr)
-        {
-            $encontrados []= $tr->referencia;
-        }
 
-        // en el arreglo encontrados debo de buscar cada elemento de temporal sino existen entonces es una anomalia
 
-        foreach($this->temporal as $tm)
+        if($this->transacciones_relacionadas->count() > 0)
         {
-            if(!in_array($tm, $encontrados))
+            foreach($this->transacciones_relacionadas as $tr)
             {
-                $this->ane []        = $tm; // ANE => anomalia no existe
-                $this->discarted []  = $tm;
+                $encontrados []= $tr->referencia;
             }
+
+            // en el arreglo encontrados debo de buscar cada elemento de temporal sino existen entonces es una anomalia
+
+            foreach($this->temporal as $tm)
+            {
+                if(!in_array($tm, $encontrados))
+                {
+                    $this->ane []        = $tm; // ANE => anomalia no existe
+                    $this->discarted []  = $tm;
+                }
+            }
+
+            return true;    
+        }else{
+            return false;
         }
 
-        return true;
+        
     }
 
     /**
