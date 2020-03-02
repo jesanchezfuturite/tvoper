@@ -18,3 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/ws','ConsultasController@calculoconceptos');
+Route::get('/uma','ConsultasController@valorUma');
+Route::get('/subsidies/{id_tramite?}','ConsultasController@consultaSubsidio');
+
+

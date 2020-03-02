@@ -58,7 +58,7 @@ class ConsultasController extends Controller
 
     public function calculoconceptos(Request $request)
     {
-        //try {
+        try {
             $data=json_encode($request->data);
             $json_response=array();
             if(empty($data))
@@ -67,9 +67,9 @@ class ConsultasController extends Controller
             }else{
                 $json_response=$this->calulo_servicio($data);
             }
-        /*} catch (\Exception $e) {
+        } catch (\Exception $e) {
             $json_response=$this->messagerror();            
-        }*/
+        }
         return response()->json($json_response);
     }
     private function calulo_servicio($data)
@@ -269,5 +269,66 @@ class ConsultasController extends Controller
                     "Code" => 400,
                     "Message" => 'fields required' );
         return $error;
+    }
+
+    public function valorUma()
+    {
+        $date = Carbon::now();
+        $date = $date->format('Y');
+        $datos=array(); 
+        $responseJson=array();       
+        $findUMA=$this->umahistorydb->findWhere(['year'=>$date]);
+        if($findUMA->count()==0)
+        {
+            $date=$date-1;
+            $findUMA=$this->umahistorydb->findWhere(['year'=>$date]);            
+        }
+        foreach ($findUMA as $u) {
+            $datos = array(
+                'daily' => $u->daily ,
+                'monthly' => $u->monthly, 
+                'yearly' => $u->yearly 
+            );           
+        }
+        $responseJson = array(
+            'status' => 'ok',
+            'datos' => $datos
+        );
+        return response()->json($responseJson);
+
+    }
+    public function consultaSubsidio($id_tramite='')
+    {
+        $responseJson=array();
+        if($id_tramite=='')
+        {
+            $responseJson= array(
+                'status' => 'error',
+                'error' => 'id tramite required',
+                'tiene_subsidio' => 'no',
+            );
+        }else{
+            $findcalculosubsidio=$this->conceptsubsidiesdb->findWhere(['id_procedure'=>$id_tramite]);
+            if($findcalculosubsidio->count()>0)
+            {
+                $responseJson= array(
+                    'status' => 'ok',
+                    'error' => '',
+                    'tiene_subsidio' => 'si',
+                 );
+            }else{
+                {
+                $responseJson= array(
+                    'status' => 'ok',
+                    'error' => '',
+                    'tiene_subsidio' => 'no',
+                 );
+            }
+            }
+        }
+        
+        return response()->json($responseJson);
+        
+       
     }
 }
