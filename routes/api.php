@@ -18,8 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/ws','ConsultasController@calculoconceptos');
+Route::get('/uma','ConsultasController@valorUma');
+Route::get('/subsidies/{id_tramite?}','ConsultasController@consultaSubsidio');
 
-Route::fallback(function(){
-    return response()->json([
-        'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
-});
+

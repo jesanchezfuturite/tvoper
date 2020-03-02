@@ -88,6 +88,28 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
             Log::info('[TransaccionesRepositoryEloquent@consultaTransaccionesWhere] Error ' . $e->getMessage());
         }      
     }
+    public function updateEnvioCorreo($estatus,$id_transaccion_motor)
+    {
+        try{
+
+            return Transacciones::where( $id_transaccion_motor )->update($estatus);    
+        
+         }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@updateEnvioCorreo] Error ' . $e->getMessage());
+        }       
+
+    }
+    public function ConsultaCorreo($estatus)
+    {
+        try{
+
+            return Transacciones::where($estatus)->take(100);    
+        
+         }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@ConsultaCorreo] Error ' . $e->getMessage());
+        }       
+
+    }
     
     
 }
