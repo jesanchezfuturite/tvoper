@@ -242,7 +242,6 @@ class Egobtransacciones extends Command
                     $this->valid []= $r->transaccion_id;
                 }    
             }else{
-                dd("1",$r);
                 $this->valid []= $r->transaccion_id;
             }
         }
