@@ -181,12 +181,14 @@ class CorteSendEmail extends Command
         if($findFechaEjec<>null)
         {
             foreach ($findFechaEjec as $e) {
-                //log::info($e->fecha_ejecucion);
-                $this->GeneraArchivo($e->fecha_ejecucion);
+                $banco_id=$k->banco_id;
+                $alias=$k->cuenta_alias;
+                $cuenta=$k->cuenta_banco;
+                //$this->GeneraDirectorio($e->fecha_ejecucion,$banco_id,$alias,$cuenta);
             }
         }
     }
-    private function GeneraArchivo($fechaB)
+    private function GeneraDirectorio($fechaB,$banco_id,$alias,$cuenta)
     {
         
         $fecha=Carbon::parse($fechaB);
@@ -195,6 +197,7 @@ class CorteSendEmail extends Command
         $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
         $path2=$path1.'/'.$fecha->format('m');
         $path3=$path2.'/'.$fecha->format('d');        
+        $path4=$path3.'/'.$banco_id;        
              
         if (!File::exists($path1))
                 {File::makeDirectory($path1);}
@@ -202,25 +205,12 @@ class CorteSendEmail extends Command
                 {File::makeDirectory($path2);}
         if (!File::exists($path3))
                 {File::makeDirectory($path3);}
-
-        /*******Consulta Bancos*********/
-        $buscaFecha=(string)$fecha->format('Y-m-d');
-        $findBancos=$this->cuentasbancodb->all();
-       foreach ($findBancos as $k) {
-          $banco_id=$k->banco_id;
-          foreach (json_decode($k->beneficiario) as $e) {
-            $alias=$e->alias;
-            $cuenta=$e->cuenta;
-          }
-            $path4=$path3.'/'.$banco_id;
-            if (!File::exists($path4))
+        if (!File::exists($path4))
                 {File::makeDirectory($path4);}
-           $this->gArchivos($path4,$buscaFecha,$banco_id,$cuenta,$alias);
-       }
-                      
-        //$this->enviacorreo();
+        $this->gArchivos($path4,$fechaB,$banco_id,$cuenta,$alias);
+               
     }
-      private function gArchivos($path,$fecha,$banco_id,$cuenta,$alias)
+    private function gArchivos($path,$fecha,$banco_id,$cuenta,$alias)
     {   
         $existe=false;
         $findConciliacion=$this->pr->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias,'archivo_corte'=>'','status'=>'p']);
@@ -261,7 +251,7 @@ class CorteSendEmail extends Command
             if($findCorte->count()==1)
             {
                 foreach ($findCorte as $k) {
-                    $insetCorte=$this->cortesolicituddb->update(['status'=>'1'],$k->id);
+                    $updateCorte=$this->cortesolicituddb->update(['status'=>'1'],$k->id);
                 }
                 
             }
