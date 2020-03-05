@@ -311,12 +311,14 @@ class Conciliacion extends Command
                         strcmp(substr($line, 0,1), "1") == 0 // condicion banamexVentanilla
                     )
                     {
+
+                        $monto = (integer)substr($line, $amountStart, $amountLength) / 100;
                         $data =
                             [
                                 "day"            => substr($line, $dayStart, $dayLength),
                                 "month"          => substr($line, $monthStart, $monthLength),
                                 "year"           => substr($line, $yearStart, $yearLength),
-                                "monto"          => str_replace(".","",substr($line, $amountStart, $amountLength)) / 100,
+                                "monto"          => $monto,
                                 "transaccion_id" => substr($line, $idStart, $idLength),
                                 "status"         => "np",
                                 "filename"       => $filename,
