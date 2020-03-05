@@ -313,6 +313,7 @@ class Conciliacion extends Command
                     {
 
                         $monto = (integer)substr($line, $amountStart, $amountLength) / 100;
+                        Log::info($line,$monto);
                         $data =
                             [
                                 "day"            => substr($line, $dayStart, $dayLength),
