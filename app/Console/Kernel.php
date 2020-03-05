@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
         //
         Commands\Conciliacion::class,
         Commands\Egobtransacciones::class,
-        Commands\updateStatus::class,
-        Commands\CorteSendEmail::class,
-        Commands\SendEmails::class,
+        // Commands\updateStatus::class,
+        // Commands\CorteSendEmail::class,
+        // Commands\SendEmails::class,
     ];
 
     /**
