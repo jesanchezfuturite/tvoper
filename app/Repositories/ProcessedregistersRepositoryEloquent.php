@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
  */
 class ProcessedregistersRepositoryEloquent extends BaseRepository implements ProcessedregistersRepository
 {
+    protected $bd='egobierno';
     /**
      * Specify Model class name
      *
@@ -72,7 +73,6 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }
     }
-
     public function Generico_Corte($fecha,$banco,$cuenta,$alias)
     {
        try{        
@@ -82,10 +82,10 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
-        ->join('egob.partidas','egob.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
-        ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join('egob.referenciabancaria','egob.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones','egob.partidas.id_partida','egob.partidas.descripcion','egob.folios.Folio','egob.folios.CartImporte','egob.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
+        ->join($db . '.partidas',$db . '.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
+        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($db . '.referenciabancaria',$db . '.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones',$db . '.partidas.id_partida',$db . '.partidas.descripcion',$db . '.folios.Folio',$db . '.folios.CartImporte',$db . '.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -93,6 +93,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
    
@@ -116,6 +117,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
 
@@ -129,9 +131,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
-        ->join('egob.transacciones','egob.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join('egob.nomina','egob.nomina.idtran','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones','egob.transacciones.fuente','egob.transacciones.TipoPago','egob.nomina.folio','egob.nomina.munnom','egob.nomina.cvenom','egob.nomina.rfcalf','egob.nomina.rfcnum','egob.nomina.rfchomo','egob.nomina.tipopago','egob.nomina.mesdec','egob.nomina.tridec','egob.nomina.anodec','egob.nomina.numemp','egob.nomina.remuneracion','egob.nomina.base','egob.nomina.actualiza','egob.nomina.recargos','egob.nomina.gtoeje','egob.nomina.sancion','egob.nomina.compensacion')
+        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($db . '.nomina',$db . '.nomina.idtran','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.fuente',$db . '.transacciones.TipoPago',$db . '.nomina.folio',$db . '.nomina.munnom',$db . '.nomina.cvenom',$db . '.nomina.rfcalf',$db . '.nomina.rfcnum',$db . '.nomina.rfchomo',$db . '.nomina.tipopago',$db . '.nomina.mesdec',$db . '.nomina.tridec',$db . '.nomina.anodec',$db . '.nomina.numemp',$db . '.nomina.remuneracion',$db . '.nomina.base',$db . '.nomina.actualiza',$db . '.nomina.recargos',$db . '.nomina.gtoeje',$db . '.nomina.sancion',$db . '.nomina.compensacion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -139,6 +141,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@NominaCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
     public function ISAN_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
@@ -152,9 +155,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_isan','cont.detalle_isan.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join('egob.transacciones','egob.transacciones.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones','egob.transacciones.TipoPago','egob.folios.Folio','egob.folios.CartKey1','cont.detalle_isan.cuenta','cont.detalle_isan.curp','cont.detalle_isan.nombre_razonS','cont.detalle_isan.tipo_declaracion','cont.detalle_isan.tipo_tramite','cont.detalle_isan.anio_1','cont.detalle_isan.mes_1','cont.detalle_isan.num_complementaria','cont.detalle_isan.folio_anterior','cont.detalle_isan.declaracion_anterior','cont.detalle_isan.tipo_establecimiento','cont.detalle_isan.tipo_contribuyente','cont.detalle_isan.ALR','cont.detalle_isan.autos_enajenados_unidades','cont.detalle_isan.camiones_enajenados_unidades','cont.detalle_isan.autos_exentos_unidades','cont.detalle_isan.vehiculos_exentos_unidades','cont.detalle_isan.autos_enajenados_valor','cont.detalle_isan.camiones_enajenados_valor','cont.detalle_isan.autos_exentos_valor','cont.detalle_isan.vehiculos_exentos_valor','cont.detalle_isan.total_unidades','cont.detalle_isan.total_valor','cont.detalle_isan.vehiculos_incorporados','cont.detalle_isan.facturas_expedidas_inicial','cont.detalle_isan.facturas_expedidas_final','cont.detalle_isan.vehiculos_enajenados_periodo','cont.detalle_isan.valor_total_enajenacion','cont.detalle_isan.impuesto','cont.detalle_isan.actualizacion','cont.detalle_isan.recargos','cont.detalle_isan.dif_impuesto','cont.detalle_isan.dif_actualizacion','cont.detalle_isan.dif_recargos','egob.transacciones.tipopago')
+        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')
+        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_isan.cuenta','cont.detalle_isan.curp','cont.detalle_isan.nombre_razonS','cont.detalle_isan.tipo_declaracion','cont.detalle_isan.tipo_tramite','cont.detalle_isan.anio_1','cont.detalle_isan.mes_1','cont.detalle_isan.num_complementaria','cont.detalle_isan.folio_anterior','cont.detalle_isan.declaracion_anterior','cont.detalle_isan.tipo_establecimiento','cont.detalle_isan.tipo_contribuyente','cont.detalle_isan.ALR','cont.detalle_isan.autos_enajenados_unidades','cont.detalle_isan.camiones_enajenados_unidades','cont.detalle_isan.autos_exentos_unidades','cont.detalle_isan.vehiculos_exentos_unidades','cont.detalle_isan.autos_enajenados_valor','cont.detalle_isan.camiones_enajenados_valor','cont.detalle_isan.autos_exentos_valor','cont.detalle_isan.vehiculos_exentos_valor','cont.detalle_isan.total_unidades','cont.detalle_isan.total_valor','cont.detalle_isan.vehiculos_incorporados','cont.detalle_isan.facturas_expedidas_inicial','cont.detalle_isan.facturas_expedidas_final','cont.detalle_isan.vehiculos_enajenados_periodo','cont.detalle_isan.valor_total_enajenacion','cont.detalle_isan.impuesto','cont.detalle_isan.actualizacion','cont.detalle_isan.recargos','cont.detalle_isan.dif_impuesto','cont.detalle_isan.dif_actualizacion','cont.detalle_isan.dif_recargos',$db . '.transacciones.tipopago')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -162,6 +165,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@ISANCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
     public function ISH_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
@@ -175,9 +179,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_ish','cont.detalle_ish.idTrans','=','oper_processedregisters.transaccion_id') 
-        ->join('egob.transacciones','egob.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones','egob.transacciones.TipoPago','egob.folios.Folio','egob.folios.CartKey1','cont.detalle_ish.cuenta','cont.detalle_ish.curp','cont.detalle_ish.nombre_razonS','cont.detalle_ish.tipo_declaracion','cont.detalle_ish.anio','cont.detalle_ish.mes','cont.detalle_ish.num_complementaria','cont.detalle_ish.folio_anterior','cont.detalle_ish.declaracion_anterior','cont.detalle_ish.erogaciones','cont.detalle_ish.impuesto','cont.detalle_ish.actualizacion','cont.detalle_ish.recargos','cont.detalle_ish.dif_imp','cont.detalle_ish.dif_act','cont.detalle_ish.dif_rec','egob.transacciones.tipopago')
+        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_ish.cuenta','cont.detalle_ish.curp','cont.detalle_ish.nombre_razonS','cont.detalle_ish.tipo_declaracion','cont.detalle_ish.anio','cont.detalle_ish.mes','cont.detalle_ish.num_complementaria','cont.detalle_ish.folio_anterior','cont.detalle_ish.declaracion_anterior','cont.detalle_ish.erogaciones','cont.detalle_ish.impuesto','cont.detalle_ish.actualizacion','cont.detalle_ish.recargos','cont.detalle_ish.dif_imp','cont.detalle_ish.dif_act','cont.detalle_ish.dif_rec',$db . '.transacciones.tipopago')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -185,6 +189,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@ISHCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
    
@@ -199,9 +204,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_isop','cont.detalle_isop.idTrans','=','oper_processedregisters.transaccion_id') 
-        ->join('egob.transacciones','egob.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones','egob.transacciones.TipoPago','egob.folios.Folio','egob.folios.CartKey1','cont.detalle_isop.cuenta','cont.detalle_isop.curp','cont.detalle_isop.nombre_razonS','cont.detalle_isop.mes','cont.detalle_isop.anio','cont.detalle_isop.premio','cont.detalle_isop.impuesto','cont.detalle_isop.actualizacion','cont.detalle_isop.recargos','cont.detalle_isop.total_contribuciones')
+        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_isop.cuenta','cont.detalle_isop.curp','cont.detalle_isop.nombre_razonS','cont.detalle_isop.mes','cont.detalle_isop.anio','cont.detalle_isop.premio','cont.detalle_isop.impuesto','cont.detalle_isop.actualizacion','cont.detalle_isop.recargos','cont.detalle_isop.total_contribuciones')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -209,6 +214,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@ISOPCorte] Error ' . $e->getMessage());
+            return null;
         }        
     }
     public function PrestadoraServicios_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
@@ -230,6 +236,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@PrestadoraServicios_Corte] Error ' . $e->getMessage());
+            return null;
         }        
     }
     public function RetenedoraServicios_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
@@ -252,6 +259,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@RetenedoraServicios_Corte] Error ' . $e->getMessage());
+            return null;
         }        
     }
     public function Juegos_Apuestas_Corte($fecha,$banco,$tipoServicio,$cuenta,$alias)
@@ -265,8 +273,8 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','')
         ->join('cont.det_imp_isop','cont.det_imp_isop.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join('egob.folios','egob.folios.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones','egob.folios.Folio','egob.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
+        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.folios.Folio',$db . '.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -274,32 +282,39 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
        
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@Juegos_Apuestas_Corte] Error ' . $e->getMessage());
+            return null;
         }        
     }  
 
     public function UpdatePorTransaccion($campos,$id_transaccion)
     {
         try{
-            $data= Processedregisters::where('transaccion_id','=',$id_transaccion)->update(['archivo_corte'=>$campos]);  
-
+            $data= Processedregisters::where('transaccion_id','=',$id_transaccion)->update(['archivo_corte'=>$campos]);
         
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@UpdatePorTransaccion] Error ' . $e->getMessage());
+            return null;
         }
 
     } 
 
     public function ConsultaFechaEjecucion($fechaIn,$fechaFin)
     {
-        try{
-            $data= Processedregisters::whereBetween('created_at',[$fechaIn,$fechaFin])
-            ->select('fecha_ejecucion')
-            ->groupBy('fecha_ejecucion')  
-            ->get();
-            return $data;
+        try{        
+        $data = Processedregisters::where('oper_processedregisters.status','=','p')
+        ->where('oper_processedregisters.created_at','>',$fechaIn)      
+        ->where('oper_processedregisters.created_at','<',$fechaFin)            
+        ->where('oper_processedregisters.archivo_corte','=','')
+        ->select('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
+        ->groupBy('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
+        ->distinct()
+        ->get();
+
+        return $data;      
         
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@ConsultaFechaEjecucion] Error ' . $e->getMessage());
+            return null;
         }
 
     }
