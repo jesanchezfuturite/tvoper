@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
  */
 class ProcessedregistersRepositoryEloquent extends BaseRepository implements ProcessedregistersRepository
 {
-    protected $bd='egobierno';
+    protected $db='egobierno';
     /**
      * Specify Model class name
      *
