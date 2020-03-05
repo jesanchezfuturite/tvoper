@@ -85,6 +85,8 @@ class Operaciontransacciones extends Command
             $actualizarTransacciones = $this->udpdateTransactionsAsProcessed();    
         }else{
             Log::info('[Conciliacion:OperTransacciones] - No existen referencias del repositorio por validar');    
+
+            /* aqui todos los registros de $temporal se actualizan con estatus */
         }
         // actualizar los errores en la tabla de process
         Log::info('[Conciliacion:OperTransacciones] - Proceso Finalizado');
