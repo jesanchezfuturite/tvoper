@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
  */
 class ProcessedregistersRepositoryEloquent extends BaseRepository implements ProcessedregistersRepository
 {
-    protected $db='egobierno';
+    protected $db="egobierno";
     /**
      * Specify Model class name
      *
@@ -82,10 +82,10 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
-        ->join($db . '.partidas',$db . '.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
-        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join($db . '.referenciabancaria',$db . '.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones',$db . '.partidas.id_partida',$db . '.partidas.descripcion',$db . '.folios.Folio',$db . '.folios.CartImporte',$db . '.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
+        ->join($this->db . '.partidas',$this->db . '.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
+        ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($this->db . '.referenciabancaria',$this->db . '.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones',$this->db . '.partidas.id_partida',$this->db . '.partidas.descripcion',$this->db . '.folios.Folio',$this->db . '.folios.CartImporte',$this->db . '.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -131,9 +131,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
-        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join($db . '.nomina',$db . '.nomina.idtran','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.fuente',$db . '.transacciones.TipoPago',$db . '.nomina.folio',$db . '.nomina.munnom',$db . '.nomina.cvenom',$db . '.nomina.rfcalf',$db . '.nomina.rfcnum',$db . '.nomina.rfchomo',$db . '.nomina.tipopago',$db . '.nomina.mesdec',$db . '.nomina.tridec',$db . '.nomina.anodec',$db . '.nomina.numemp',$db . '.nomina.remuneracion',$db . '.nomina.base',$db . '.nomina.actualiza',$db . '.nomina.recargos',$db . '.nomina.gtoeje',$db . '.nomina.sancion',$db . '.nomina.compensacion')
+        ->join($this->db . '.transacciones',$this->db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($this->db . '.nomina',$this->db . '.nomina.idtran','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.transacciones.fuente',$this->db . '.transacciones.TipoPago',$this->db . '.nomina.folio',$this->db . '.nomina.munnom',$this->db . '.nomina.cvenom',$this->db . '.nomina.rfcalf',$this->db . '.nomina.rfcnum',$this->db . '.nomina.rfchomo',$this->db . '.nomina.tipopago',$this->db . '.nomina.mesdec',$this->db . '.nomina.tridec',$this->db . '.nomina.anodec',$this->db . '.nomina.numemp',$this->db . '.nomina.remuneracion',$this->db . '.nomina.base',$this->db . '.nomina.actualiza',$this->db . '.nomina.recargos',$this->db . '.nomina.gtoeje',$this->db . '.nomina.sancion',$this->db . '.nomina.compensacion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -155,9 +155,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_isan','cont.detalle_isan.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_isan.cuenta','cont.detalle_isan.curp','cont.detalle_isan.nombre_razonS','cont.detalle_isan.tipo_declaracion','cont.detalle_isan.tipo_tramite','cont.detalle_isan.anio_1','cont.detalle_isan.mes_1','cont.detalle_isan.num_complementaria','cont.detalle_isan.folio_anterior','cont.detalle_isan.declaracion_anterior','cont.detalle_isan.tipo_establecimiento','cont.detalle_isan.tipo_contribuyente','cont.detalle_isan.ALR','cont.detalle_isan.autos_enajenados_unidades','cont.detalle_isan.camiones_enajenados_unidades','cont.detalle_isan.autos_exentos_unidades','cont.detalle_isan.vehiculos_exentos_unidades','cont.detalle_isan.autos_enajenados_valor','cont.detalle_isan.camiones_enajenados_valor','cont.detalle_isan.autos_exentos_valor','cont.detalle_isan.vehiculos_exentos_valor','cont.detalle_isan.total_unidades','cont.detalle_isan.total_valor','cont.detalle_isan.vehiculos_incorporados','cont.detalle_isan.facturas_expedidas_inicial','cont.detalle_isan.facturas_expedidas_final','cont.detalle_isan.vehiculos_enajenados_periodo','cont.detalle_isan.valor_total_enajenacion','cont.detalle_isan.impuesto','cont.detalle_isan.actualizacion','cont.detalle_isan.recargos','cont.detalle_isan.dif_impuesto','cont.detalle_isan.dif_actualizacion','cont.detalle_isan.dif_recargos',$db . '.transacciones.tipopago')
+        ->join($this->db . '.transacciones',$this->db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')
+        ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.transacciones.TipoPago',$this->db . '.folios.Folio',$this->db . '.folios.CartKey1','cont.detalle_isan.cuenta','cont.detalle_isan.curp','cont.detalle_isan.nombre_razonS','cont.detalle_isan.tipo_declaracion','cont.detalle_isan.tipo_tramite','cont.detalle_isan.anio_1','cont.detalle_isan.mes_1','cont.detalle_isan.num_complementaria','cont.detalle_isan.folio_anterior','cont.detalle_isan.declaracion_anterior','cont.detalle_isan.tipo_establecimiento','cont.detalle_isan.tipo_contribuyente','cont.detalle_isan.ALR','cont.detalle_isan.autos_enajenados_unidades','cont.detalle_isan.camiones_enajenados_unidades','cont.detalle_isan.autos_exentos_unidades','cont.detalle_isan.vehiculos_exentos_unidades','cont.detalle_isan.autos_enajenados_valor','cont.detalle_isan.camiones_enajenados_valor','cont.detalle_isan.autos_exentos_valor','cont.detalle_isan.vehiculos_exentos_valor','cont.detalle_isan.total_unidades','cont.detalle_isan.total_valor','cont.detalle_isan.vehiculos_incorporados','cont.detalle_isan.facturas_expedidas_inicial','cont.detalle_isan.facturas_expedidas_final','cont.detalle_isan.vehiculos_enajenados_periodo','cont.detalle_isan.valor_total_enajenacion','cont.detalle_isan.impuesto','cont.detalle_isan.actualizacion','cont.detalle_isan.recargos','cont.detalle_isan.dif_impuesto','cont.detalle_isan.dif_actualizacion','cont.detalle_isan.dif_recargos',$this->db . '.transacciones.tipopago')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -179,9 +179,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_ish','cont.detalle_ish.idTrans','=','oper_processedregisters.transaccion_id') 
-        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_ish.cuenta','cont.detalle_ish.curp','cont.detalle_ish.nombre_razonS','cont.detalle_ish.tipo_declaracion','cont.detalle_ish.anio','cont.detalle_ish.mes','cont.detalle_ish.num_complementaria','cont.detalle_ish.folio_anterior','cont.detalle_ish.declaracion_anterior','cont.detalle_ish.erogaciones','cont.detalle_ish.impuesto','cont.detalle_ish.actualizacion','cont.detalle_ish.recargos','cont.detalle_ish.dif_imp','cont.detalle_ish.dif_act','cont.detalle_ish.dif_rec',$db . '.transacciones.tipopago')
+        ->join($this->db . '.transacciones',$this->db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.transacciones.TipoPago',$this->db . '.folios.Folio',$this->db . '.folios.CartKey1','cont.detalle_ish.cuenta','cont.detalle_ish.curp','cont.detalle_ish.nombre_razonS','cont.detalle_ish.tipo_declaracion','cont.detalle_ish.anio','cont.detalle_ish.mes','cont.detalle_ish.num_complementaria','cont.detalle_ish.folio_anterior','cont.detalle_ish.declaracion_anterior','cont.detalle_ish.erogaciones','cont.detalle_ish.impuesto','cont.detalle_ish.actualizacion','cont.detalle_ish.recargos','cont.detalle_ish.dif_imp','cont.detalle_ish.dif_act','cont.detalle_ish.dif_rec',$this->db . '.transacciones.tipopago')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -204,9 +204,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)  
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('cont.detalle_isop','cont.detalle_isop.idTrans','=','oper_processedregisters.transaccion_id') 
-        ->join($db . '.transacciones',$db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.transacciones.TipoPago',$db . '.folios.Folio',$db . '.folios.CartKey1','cont.detalle_isop.cuenta','cont.detalle_isop.curp','cont.detalle_isop.nombre_razonS','cont.detalle_isop.mes','cont.detalle_isop.anio','cont.detalle_isop.premio','cont.detalle_isop.impuesto','cont.detalle_isop.actualizacion','cont.detalle_isop.recargos','cont.detalle_isop.total_contribuciones')
+        ->join($this->db . '.transacciones',$this->db . '.transacciones.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.transacciones.TipoPago',$this->db . '.folios.Folio',$this->db . '.folios.CartKey1','cont.detalle_isop.cuenta','cont.detalle_isop.curp','cont.detalle_isop.nombre_razonS','cont.detalle_isop.mes','cont.detalle_isop.anio','cont.detalle_isop.premio','cont.detalle_isop.impuesto','cont.detalle_isop.actualizacion','cont.detalle_isop.recargos','cont.detalle_isop.total_contribuciones')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -273,8 +273,8 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','')
         ->join('cont.det_imp_isop','cont.det_imp_isop.idTrans','=','oper_processedregisters.transaccion_id')
-        ->join($db . '.folios',$db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$db . '.folios.Folio',$db . '.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
+        ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.folios.Folio',$this->db . '.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
