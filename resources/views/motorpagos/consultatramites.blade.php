@@ -415,7 +415,7 @@
             this.api().columns().every( function () {
                 var column = this;
                
-                console.log(inin);
+                //console.log(inin);
                
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
                 
