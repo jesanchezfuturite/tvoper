@@ -181,10 +181,10 @@ class CorteSendEmail extends Command
         if($findFechaEjec<>null)
         {
             foreach ($findFechaEjec as $e) {
-                $banco_id=$k->banco_id;
-                $alias=$k->cuenta_alias;
-                $cuenta=$k->cuenta_banco;
-                //$this->GeneraDirectorio($e->fecha_ejecucion,$banco_id,$alias,$cuenta);
+                $banco_id=$e->banco_id;
+                $alias=$e->cuenta_alias;
+                $cuenta=$e->cuenta_banco;
+                $this->GeneraDirectorio($e->fecha_ejecucion,$banco_id,$alias,$cuenta);
             }
         }
     }

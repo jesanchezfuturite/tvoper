@@ -7,6 +7,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\EgobfoliosRepository;
 use App\Entities\Egobfolios;
 use App\Validators\EgobfoliosValidator;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class EgobfoliosRepositoryEloquent.
@@ -36,8 +37,8 @@ class EgobfoliosRepositoryEloquent extends BaseRepository implements EgobfoliosR
     }
     public function consultaRFCegob($rfc,$fechaIn,$fechaFin)
     {
-        //try{        
-       $data = Egobfolios::where($rfc)
+        try{        
+        $data = Egobfolios::where($rfc)
             ->join('transacciones','transacciones.idTrans', '=','folios.idTrans')       
             ->join('status','status.Status','=','transacciones.Status')
             ->join('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
@@ -53,9 +54,9 @@ class EgobfoliosRepositoryEloquent extends BaseRepository implements EgobfoliosR
             ->get();
             return $data;
        
-       /*}catch( \Exception $e){
+       }catch( \Exception $e){
             Log::info('[TramitesRepositoryEloquent@ConsultaRFC] Error ' . $e->getMessage());
-        } */
+        } 
     }
     
 }
