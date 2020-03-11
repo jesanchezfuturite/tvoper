@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
+        "phpmailer/phpmailer": "^6.1",
         "prettus/l5-repository": "^2.6",
         "s-ichikawa/laravel-sendgrid-driver": "^2.1",
         "sendgrid/sendgrid": "^7.4",
