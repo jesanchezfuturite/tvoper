@@ -202,12 +202,6 @@ Route::post('/calcula-find-where','MotorpagosController@calculoconceptoFindWhere
 Route::post('/calcula-insert','MotorpagosController@calculoconceptoInsert');
 Route::post('/calcula-update','MotorpagosController@calculoconceptoUpdate');
 
-
-/************************   WS  ***********************/
-
-//Route::post('/ws','ConsultasController@prueba');
-
-
 //Route::get('/envia-correo','ConciliacionController@enviacorreo');
 Route::get('/genera-archivo','CorteController@GeneraArchivo');
 
@@ -218,6 +212,16 @@ Route::get('/foo', function () {
 /* ws estado de cuenta icv */
 
 Route::get('/icv-consulta-placa/{info}/{key}','IcvrestserviceController@icvconsultaplaca');
+
+/******************SERVICIOS GENERALES******************/
+Route::get('/retencionesalmillar','ServiciosgeneralesController@retencionesAlMillar');
+Route::post('/acceso-partidas','ServiciosgeneralesController@accesopartidasFind');
+Route::post('/proyecto-programas','ServiciosgeneralesController@proyectoprogramasFind');
+
+
+
+/************ WS **************/
+Route::post('/generate','ServiciosgeneralesController@wsReferencia');
 
 /*/*******************************************************************************/
 

@@ -166,7 +166,7 @@ class CorteSendEmail extends Command
      */
     public function handle()
     {
-       $this->BuscarFechas();
+        $this->BuscarFechas();
         //$this-> gArchivo_Generico_prueba();
     }
     
@@ -1146,11 +1146,13 @@ class CorteSendEmail extends Command
                array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->oper_transaccionesdb->findWhere(['estatus'=>'0','entidad'=>'3']);
+        $conciliacion=$this->oper_transaccionesdb->findWhere(['fecha_limite_referencia'=>'2020-03-09 00:00:00','estatus'=>'0']);
+
         if($conciliacion<>null)
         {     
             foreach ($conciliacion as $concilia) 
-            {   $banco_id=$concilia->banco_id;
+            {   $banco_id=$concilia->banco;
+                log::info($banco_id);
                 $id_tipo_servicio='';
                 $id_transaccion_motor=$concilia->id_transaccion_motor;
                 $referencia=$concilia->referencia;
@@ -1172,9 +1174,10 @@ class CorteSendEmail extends Command
                         $partida='';
                         $CartImporte='';
                         
-                        log::info($id_tipo_servicio);
+                        //log::info($id_tipo_servicio);
                         
                         $findcuentabanco=$this->cuentasbancodb->findWhere(['banco_id'=>$banco_id]);
+                        //log::info($banco_id);
                         foreach ($findcuentabanco as $e) {
                            
                             if($banco_id==$e->banco_id)

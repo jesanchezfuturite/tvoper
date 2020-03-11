@@ -13,7 +13,7 @@ class CreateOperProyectoProgramasTable extends Migration
      */
     public function up()
     {
-        Schema::create('oper_proyecto_programas', function (Blueprint $table) {
+        Schema::create('serv_proyecto_programas', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('clave_fuente_financiamiento',250);
             $table->string('descripcion_fuente_financiamiento',250);
