@@ -36,18 +36,15 @@
                         <div class="tabbable-line boxless tabbable-reversed">
                             <ul class="nav nav-tabs">
                                 <!-----style="pointer-events:none;"  -->
-                                <li class="active" >
+                                <li class="active" style="pointer-events:none;">
                                     <a href="#tab_0" data-toggle="tab"><div id="circle_0"><i class="fa fa-circle-o"></i></div></a>
                                 </li>
-                                <li >
+                                <li style="pointer-events:none;">
                                     <a href="#tab_1" data-toggle="tab"><div id="circle_1"><i class="fa fa-circle-o"></i></div></a>
-                                </li> 
-                                <li >
+                                </li > 
+                                <li style="pointer-events:none;">
                                     <a href="#tab_2" data-toggle="tab"><div id="circle_2"><i class="fa fa-circle-o"></i></div></a>
-                                </li> 
-                                <li >
-                                    <a href="#tab_3" data-toggle="tab"><div id="circle_3"><i class="fa fa-circle-o"></i></div></a>
-                                </li>                            
+                                </li>                        
                             </ul>
                             <div class="tab-content">                               
                                 <div class="tab-pane active" id="tab_0">
@@ -212,10 +209,10 @@
                                     <div class="row">
                                         <div class="col-md-1"></div>
                                         <div class="col-md-5">
-                                            <button type="submit" class="btn green" onclick="limpiar()"><i class="fa fa-eraser"></i> limpiar</button>
+                                            <button type="button" class="btn green" onclick="limpiar()"><i class="fa fa-eraser"></i> limpiar</button>
                                         </div>
                                         <div class="col-md-6">
-                                            <button type="submit" class="btn blue" onclick="continuarprimary()"><i class="fa fa-check"></i> Continuar</button>
+                                            <button type="button" class="btn blue" onclick="continuarprimary()"><i class="fa fa-check"></i> Continuar</button>
                                         </div>
                                     </div>
                                 </div>
@@ -319,50 +316,39 @@
                                     <div class="row">
                                         <div class="col-md-1"></div>
                                         <div class="col-md-5">
-                                            <button type="submit" class="btn green" onclick="atras_primary()"><i class="fa fa-undo"></i> Atras</button>
+                                            <button type="button" class="btn green" onclick="atras_primary()"><i class="fa fa-undo"></i> Atras</button>
                                         </div>
                                         <div class="col-md-6 ">
-                                            <button type="submit" class="btn blue"  data-toggle='modal' href='#static' ><i class="fa fa-check"></i> Continuar</button>
+                                            <button type="button" class="btn blue"  data-toggle='modal' href='#static' ><i class="fa fa-check"></i> Continuar</button>
                                         </div>
                                      </div>
                                 </div>
 
                                 <div class="tab-pane" id="tab_2">
-                                    <div class="row">
-                                        <div class="container">
-                                            <div class="row">
-                                                <div class="col">
-                                                    For example, here are two grid layouts that apply to every device and viewport, from xs to xl. Add any number of unit-less classes for each breakpoint you need and every column will be the same width.
-                                                </div>
+                                    <h4><strong>Generando Referencia Bancaria:</strong></h4>
+                                    <hr><br>
+                                    <div class="row">                                        
+                                        
+                                            <div class="col-md-12">
+                                            
+                                               <i class="fa fa-circle"></i> <label>El Formato de pago unico en ventanilla bancaria se emitiracon fecha de vencimiento del </label>
+                                               <label id="resp_fecha" style="font-weight: bold;">--------</label>. 
+                                               <br>
+                                               <i class="fa fa-circle"></i> <label>Una vez efectuando el pago en ventanilla bancaria, despues de 3 dias habiles, podra imprimir su formato electronico, capturando el numero de folio &nbsp; </label><label id="resp_folio"  style="font-weight: bold;">0000000</label> <label>en la opcion consultar folio en el <a href="#">portal tesoreria virtual</a>.</label>
+                                               <br>
+                                               <i class="fa fa-circle"></i> <label>En Caso de NO recibir el pago, a la fecha de vencimiento, el formato de pago unico en ventanilla, sera cancelado automaticamente. </label> 
                                             </div>
-                                        </div>
                                     </div>
+                                    
                                     <hr>
                                     <br>
                                     <div class="row">
                                         <div class="col-md-1"></div>
                                         <div class="col-md-5">
-                                            <button type="submit" class="btn green" onclick="atras_primary()"><i class="fa fa-undo"></i> Atras</button>
+                                            <button type="button" class="btn green" data-toggle='modal' href='#static2' ><i class="fa fa-undo"></i> Inicio</button>
                                         </div>
                                         <div class="col-md-6 ">
-                                            <button type="submit" class="btn blue" onclick="continuarthird()" ><i class="fa fa-check"></i> Continuar</button>
-                                        </div>
-                                     </div>
-                                </div>
-                                <div class="tab-pane" id="tab_3">
-                                    <div class="row">
-                                        <div id=""></div>                                         
-                                         <ol id="mostrarAqui"></ol>    
-                                    </div>
-                                    <hr>
-                                    <br>
-                                    <div class="row">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-5">
-
-                                        </div>
-                                        <div class="col-md-6 ">
-                                            <button type="submit" class="btn blue" onclick="continuarthird()" ><i class="fa fa-check"></i> Continuar</button>
+                                            <button type="button" class="btn blue" onclick="continuarthird()" ><i class="fa fa-file-pdf-o"></i> Ver Recibo</button>
                                         </div>
                                      </div>
                                 </div>
@@ -384,7 +370,6 @@
             </div>
             <div class="modal-body">
                 <p>¿Continuar?</p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
             </div>
             <div class="modal-footer">
          <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
@@ -393,7 +378,26 @@
         </div>
     </div>
 </div>
+<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>¿Continuar?</p>
+                
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="atras_second()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="text" name="consulta" id="consulta" hidden="true">
+<input type="text" name="link" id="link" hidden="true">
 @endsection
 @section('scripts')
 <script type="text/javascript">
@@ -408,12 +412,8 @@
     });
     function continuarthird()
     {   
-        /*$('.nav-tabs a[href="#tab_3"]').tab('show');
-            $("#circle_2 i").remove();
-            $("#circle_2").append("<i class='fa fa-check-circle-o'></i>");
-            $("#circle_3 i").remove();
-            $("#circle_3").append("<i class='fa fa-check-circle-o'></i>");*/
-        $("#mostrarAqui").load("http://motorgenlqa.nl.gob.mx:8080/WsGobNL/Recibo.aspx?Folio=258424");
+        var link=$("#link").val();
+        window.open(link, "ventana1" , "width=820,height=720,scrollbars=si");
         
     }
     function continuarsecondary()
@@ -430,19 +430,30 @@
         var razonsoc_=$("#razonsoc").val();
         var depnomativa_=$("#depnomativa").val();
         var depejecutora_=$("#depejecutora").val();
-        $('.nav-tabs a[href="#tab_2"]').tab('show');
-            $("#circle_1 i").remove();
-            $("#circle_1").append("<i class='fa fa-check-circle-o'></i>");
+        
         $.ajax({
            method: "post",           
            url: "{{ url('/generate') }}",
            data: {ejercicio:ejercicio_,partida:partida_,folio:folio_,modejecucion:modejecucion_,refcontrato:refcontrato_,nofactura:nofactura_,estpagada:estpagada_,fecharet:fecharet_,montoret:montoret_,razonsoc:razonsoc_,depnomativa:depnomativa_,depejecutora:depejecutora_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-            console.log(response);
-            /*var Resp=$.parseJSON(response);          
+            //console.log(response);
+            if(response=='[]'){
+                Command: toastr.warning("Error al Generar la Referencia", "Notifications")
+            }else{
+            $('.nav-tabs a[href="#tab_2"]').tab('show');
+            $("#circle_1 i").remove();
+            $("#circle_1").append("<i class='fa fa-check-circle-o'></i>");
+            $("#circle_2 i").remove();
+            $("#circle_2").append("<i class='fa fa-check-circle-o'></i>");
+             Command: toastr.success("Referencia Generado Correctamente!", "Notifications")
+            var Resp=$.parseJSON(response);          
             $.each(Resp, function(i, item) { 
-               
-            });*/
+               $('#resp_folio').text(item.folio);
+               document.getElementById('link').value=item.url;
+               window.open(item.url, "ventana1" , "width=820,height=720,scrollbars=si");
+
+            });
+            }
         })
         .fail(function( msg ) {
          console.log("Error al Cargar Partidas");  });
@@ -543,11 +554,16 @@
         $("#circle_0 i").remove();
         $("#circle_0").append("<i class='fa fa-circle-o'></i>");
     }
-    function atras_primary()
+    function atras_second()
     {
-        $('.nav-tabs a[href="#tab_1"]').tab('show');
+        $('.nav-tabs a[href="#tab_0"]').tab('show');
+        $("#circle_0 i").remove();
+        $("#circle_0").append("<i class='fa fa-circle-o'></i>");
         $("#circle_1 i").remove();
         $("#circle_1").append("<i class='fa fa-circle-o'></i>");
+        $("#circle_2 i").remove();
+        $("#circle_2").append("<i class='fa fa-circle-o'></i>");
+        limpiar();
     }
     function findprograma()
     {
@@ -655,6 +671,7 @@
         document.getElementById('depnomativa').value="";
         document.getElementById('depejecutora').value="";
         document.getElementById('consulta').value="0";
+        document.getElementById('link').value='';
         limpialabels();
 
     }

@@ -111,6 +111,7 @@
                         <th>Servicio / CIE / CLABE</th>
                         <th>Leyenda</th>
                         <th>Alias</th>
+                        <th>En Linea</th>
                         <th>Método de pago</th>
                         <th>Monto Mínimo</th>
                         <th>Monto Máximo</th>
@@ -141,6 +142,7 @@
                     <div class="form-body">
                         <input hidden="true" type="text"  placeholder="Ingrese una Cuenta" id="idCuenta">
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Método de Pago</label>
                             <div class="col-md-6">
                                 <select class="select2me form-control"  id="itemMetodopago">
@@ -149,18 +151,21 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Cuenta</label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" placeholder="Ingrese una Cuenta" id="cuenta">
                             </div>
                         </div>
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Servicio / CIE / CLABE</label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio" maxlength="18">
                             </div>
                         </div>
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Leyenda</label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" placeholder="Ingrese la Leyenda" id="leyenda">
@@ -168,18 +173,30 @@
                             
                         </div>
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Alias</label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" placeholder="Ingrese el Alias" id="alias">
                             </div>                            
                         </div>
                         <div class="form-group">
+                            <div class="col-md-4"></div>
+                            
+                            <div class="col-md-6">
+                                <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check'>   
+                                    <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>  En Linea </label> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Monto Mínimo</label>
                             <div class="col-md-6">
                                 <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_min">
                             </div>
                         </div>
                         <div class="form-group">
+                            <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Monto Máximo</label>
                             <div class="col-md-6">
                                 <input type="number" class="form-control" placeholder="Ingrese el Monto" id="monto_max" oninput="prueba(this);"min="1" max="999999999.99" step="0.01">
@@ -187,7 +204,7 @@
                         </div>
                     <div class="form-group">
                         <div class="col-md-10"> 
-                            <button type="submit" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+                            <button type="button" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -536,12 +553,15 @@
         var Cuent=""; 
         var Ley=""; 
         var ali=""; 
+        var enli="";
+        var enlinea="";
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
                 Serv=item2.servicio;
                 Cuent=item2.cuenta;                
                 Ley=item2.leyenda;                
                 ali=item2.alias;                
+                enli=item2.enlinea;                
             });            
             status=item.status;    
             if (status=='1') 
@@ -552,13 +572,19 @@
                { label="danger";
                      msgg="Inactiva"; 
                      icon="green";  }
-                     max=item.monto_max;
-                     min=item.monto_min;
+                max=item.monto_max;
+                min=item.monto_min;
+            if(enli=='1'){
+                enlinea="Si";
+            }else{
+                enlinea="No";
+            }
             $('#table tbody').append("<tr>"
             +"<td>"+Cuent+"</td>"
             +"<td>"+Serv+" &nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
             +"<td>"+Ley+"</td>"
             +"<td>"+ali+"</td>"
+            +"<td>"+enlinea+"</td>"
             +"<td>"+item.metodopago+"</td>"
             +"<td>$"+min.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
             +"<td>$"+max.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+"</td>"
@@ -576,8 +602,17 @@
         var leyenda=$("#leyenda").val();
         var alias=$("#alias").val();
         var monto_max_=$("#monto_max").val();
-        var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'"}]';             
+        var monto_min_=$("#monto_min").val(); 
+        var check=$("#checkbox30").prop("checked");
+        var enlinea='0';
+        if(check==true)
+        {
+            enlinea='1';
+        }
+        else{
+            enlinea='0';
+        }       
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'","enlinea":"'+enlinea+'"}]';             
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();  
 
@@ -613,6 +648,8 @@
          //document.getElementById('itemMetodopago').value="limpia";
          $("#itemMetodopago").val("limpia").change();
          document.getElementById('idCuenta').value="";
+        $("#checkbox30").prop("checked", false);            
+        
     }
     function itemMetodopago()
     {
@@ -684,6 +721,7 @@
             var Cuent="";             
             var ley="";             
             var ali="";
+            var enli="";
 
             var Mtdo=$.parseJSON(item.beneficiario);
             $.each(Mtdo, function(ii, item2) {
@@ -691,6 +729,7 @@
                 Cuent=item2.cuenta;
                 ley=item2.leyenda; 
                 ali=item2.alias;               
+                enli=item2.enlinea;               
             });
              document.getElementById('cuenta').value=Cuent;
             document.getElementById('servicio').value=Serv;
@@ -699,7 +738,12 @@
             document.getElementById('monto_max').value=item.monto_max;
              document.getElementById('monto_min').value=item.monto_min; 
             //document.getElementById('itemMetodopago').value=item.metodopago_id;
-              $("#itemMetodopago").val(item.metodopago_id).change();
+            $("#itemMetodopago").val(item.metodopago_id).change();
+            if(enli=='1'){
+                $("#checkbox30").prop("checked", true);
+            }else{
+                $("#checkbox30").prop("checked", false);            
+            }
 
             });
           
@@ -720,7 +764,16 @@
         var alias=$("#alias").val();
         var monto_max_=$("#monto_max").val();
         var monto_min_=$("#monto_min").val();        
-        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'"}]';             
+        var check=$("#checkbox30").prop("checked");
+        var enlinea='0';
+        if(check==true)
+        {
+            enlinea='1';
+        }
+        else{
+            enlinea='0';
+        }       
+        var formdata = '[{"cuenta":"'+cuenta+'","servicio":"'+servicio+'","leyenda":"'+leyenda+'","alias":"'+alias+'","enlinea":"'+enlinea+'"}]';            
         var fecha_=new Date();
         var fechaIn_=fecha_.getFullYear() + "-" + (fecha_.getMonth() + 1) + "-" + fecha_.getDate() + " " + fecha_.getHours() + ":" + fecha_.getMinutes() + ":" + fecha_.getSeconds();     
        if(metodopago_=="limpia")
