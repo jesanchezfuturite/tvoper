@@ -39,7 +39,7 @@ class ServiciosgeneralesController extends Controller
 
     public function retencionesAlMillar()
     {
-    	return view('Serviciosgenerales/retencionesalmillar');
+    	return view('serviciosgenerales/retencionesalmillar');
     }
     public function accesopartidasFind(Request $request)
     {
@@ -201,8 +201,8 @@ class ServiciosgeneralesController extends Controller
 			'subsidios' => $subsidios
     	);
 
-    	$req_tramite []=$arrayName = array(
-    		'id_tipo_servicio' => $servicio_id, 
+    	$tramite []=$arrayName = array(
+    		'id_tipo_servicio' => '1', //$servicio_id
     		'id_tramite' => '12', 
     		'importe_tramite' => $montoret, 
     		'auxiliar_1' => '', 
@@ -215,13 +215,14 @@ class ServiciosgeneralesController extends Controller
     	$request_json= array(
     		'token' => $token,
     		'importe_transaccion' =>$montoret,
-    		'id_transaccion' =>'12345678660',
+    		'id_transaccion' =>'12345678676',
     		'url_retorno' =>'www.prueba.com',
-    		'entidad' =>'1'/*$entidad*/,
+    		'entidad' =>'1',//$entidad
     		'tramite' =>$tramite
     	);
-
+	
     	$json=json_encode($request_json);
+    	//log::info($json);
     	$sopaBody='<tem:GeneraReferencia>';
 		$sopaBody=$sopaBody.'<tem:json>'.$json.'</tem:json>';
 		$sopaBody=$sopaBody.'</tem:GeneraReferencia>';
@@ -239,23 +240,34 @@ class ServiciosgeneralesController extends Controller
             ]
 
         ]);
-		$token='';
+		$repuesta;
+		$datos;
         $xmlResponse=$response->getBody()->getContents();
     	$soap = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $xmlResponse);
 		$xml = new \SimpleXMLElement($soap);
 		$body = $xml->xpath('//soapBody')[0];
 		$array = json_decode(json_encode((array)$body), TRUE);
-		/*foreach ($array as $e) {
+		foreach ($array as $e) {
 			foreach ($e as $k) {
-				$datos=json_decode(json_encode($k));
-				$token=$datos->sToken;				
+				$datos=json_decode($k,true);
+				//$repuesta=$datos->id_transaccion_motor;				
 			}			
-		}*/
+		}
+		$json_d =json_decode(json_encode($datos));
+
+		$json_response=array();
+		$json_response []=array(
+			'folio'=>$json_d->id_transaccion_motor,
+			'url'=>$json_d->url_recibo
+		);
+
+		//log::info($repuesta);
 		} catch (\Exception $e) {
     		log::info('Exception:' . $e->getMessage());
+    		$json_response=array();
 		}
 
-		return json_encode($array);
+		return json_encode($json_response);
     }
     private function wsToken($entidad,$clave)
     {	
@@ -299,5 +311,10 @@ class ServiciosgeneralesController extends Controller
 		}
 		
 		return $token;
+    }
+
+    public function reporteretencionesalmillar()
+    {
+    	return view('serviciosgenerales/reporteretencionesalmillar');
     }
 }
