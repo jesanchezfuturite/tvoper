@@ -217,6 +217,7 @@ Route::get('/icv-consulta-placa/{info}/{key}','IcvrestserviceController@icvconsu
 Route::get('/retencionesalmillar','ServiciosgeneralesController@retencionesAlMillar');
 Route::post('/acceso-partidas','ServiciosgeneralesController@accesopartidasFind');
 Route::post('/proyecto-programas','ServiciosgeneralesController@proyectoprogramasFind');
+Route::get('/reporte-retencionesalmillar','ServiciosgeneralesController@reporteretencionesalmillar');
 
 
 

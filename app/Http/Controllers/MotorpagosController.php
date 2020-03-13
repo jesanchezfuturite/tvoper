@@ -1671,12 +1671,16 @@ return json_encode($response);
         $nombrebanco;
         $metodopago;
         $cuentas;
+        $cuenta_id;
         $servicio;
         $estatus;
+        $banco_id;
+
         $response=array(); 
         $oper_entidadtramite=$this->entidadtramitedb->findWhere(['entidad_id'=>$Id_entidad]);
         foreach ($oper_entidadtramite as $i) {
-           
+            $id_tiposervicio=$i->tipo_servicios_id;
+
             $tiposervicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$i->tipo_servicios_id]);
             foreach ($tiposervicio as $ii) {
                $descripcion=$ii->Tipo_Descripcion;
@@ -1688,6 +1692,8 @@ return json_encode($response);
                 $oper_cuentasbanco=$this->cuentasbancodb->findWhere(['id'=>$key->cuentasbanco_id]);
 
                 foreach ($oper_cuentasbanco as $cuenta) {
+                    $cuenta_id=$cuenta->id;
+                    $banco_id=$cuenta->banco_id;
                     $oper_banco=$this->bancodb->findWhere(['id'=>$cuenta->banco_id]);
                         foreach ($oper_banco as $ban) {
                         $nombrebanco=$ban->nombre;
@@ -1705,9 +1711,13 @@ return json_encode($response);
                        $servicio=$b->servicio;
                    }
                     $response []= array(
-                    "id"=> $idpagotramite,                    
+                    "id"=> $idpagotramite,
+                    "entidad_id"=>$Id_entidad,
+                    "id_tiposervicio"=>$id_tiposervicio,                    
                     "descripcion" => $descripcion,
+                    "banco_id"=>$banco_id,
                     "banco"=>$nombrebanco,
+                    "id_cuenta"=>$cuenta_id,
                     "cuenta"=>$cuentas,
                     "servicio"=>$servicio,
                     "metodopago"=>$metodopago,
