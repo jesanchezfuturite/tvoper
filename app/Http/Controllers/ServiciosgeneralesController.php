@@ -12,6 +12,7 @@ use App\Repositories\ServpartidasRepositoryEloquent;
 use App\Repositories\ServproyectoprogramasRepositoryEloquent;
 use App\Repositories\EntidadtramiteRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
+use App\Repositories\ServdetalleaportacionRepositoryEloquent;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -20,13 +21,15 @@ class ServiciosgeneralesController extends Controller
 	protected $servproyectoprogramasdb;
 	protected $entidadtramitedb;
 	protected $entidaddb;
+	protected $servdetalleaportaciondb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
     	ServpartidasRepositoryEloquent $servpartidasdb,
     	ServproyectoprogramasRepositoryEloquent $servproyectoprogramasdb,
     	EntidadtramiteRepositoryEloquent $entidadtramitedb,
-    	EntidadRepositoryEloquent $entidaddb
+    	EntidadRepositoryEloquent $entidaddb,
+    	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb
 
     ){
     	$this->middleware('auth');
@@ -35,6 +38,7 @@ class ServiciosgeneralesController extends Controller
 		$this->servproyectoprogramasdb=$servproyectoprogramasdb;
 		$this->entidadtramitedb=$entidadtramitedb;
 		$this->entidaddb=$entidaddb;
+		$this->servdetalleaportaciondb=$servdetalleaportaciondb;
     }
 
     public function retencionesAlMillar()
@@ -215,7 +219,7 @@ class ServiciosgeneralesController extends Controller
     	$request_json= array(
     		'token' => $token,
     		'importe_transaccion' =>$montoret,
-    		'id_transaccion' =>'12345678676',
+    		'id_transaccion' =>'12345678678',
     		'url_retorno' =>'www.prueba.com',
     		'entidad' =>'1',//$entidad
     		'tramite' =>$tramite
@@ -317,4 +321,36 @@ class ServiciosgeneralesController extends Controller
     {
     	return view('serviciosgenerales/reporteretencionesalmillar');
     }
+
+    public function detalleaportacionFind(Request $request)
+    {
+    	$partida=$request->partida;
+    	$pagado=$request->pagado;
+    	$fechaInicio=$request->fechaInicio;
+    	$fechaFin=$request->fechaFin;
+    	$response=array();
+    	$finddetalleaport=$this->servdetalleaportaciondb->findWhere(['partida'=>$partida,['fecha_retencion','>=',$fechaInicio],['fecha_retencion','<=',$fechaFin]]);
+    	foreach ($finddetalleaport as $k)
+    	{
+    		$response []= array(
+    			'id_transaccion' => $k->id_transaccion, 
+    			'ejercicio_fiscal' => $k->ejercicio_fiscal, 
+    			'folio_sie' => $k->folio_sie, 
+    			'modalidad_ejecucion' => $k->modalidad, 
+    			'referencia_contrato' => $k->contrato, 
+    			'numero_factura' => $k->numero_factura, 
+    			'estimacion_pagada' => $k->estimacion_pagada, 
+    			'id_retencion' => $k->id, 
+    			'fecha_retencion' => $k->fecha_retencion, 
+    			'monto_retenido' => $k->monto_retencion, 
+    			'razon_social' => $k->razon_social_contrato, 
+    			'dependencia_normativa' => $k->desc_dependencia_normativa, 
+    			'dependencia_ejecutora' => $k->desc_dependencia_ejecutora, 
+    			'fecha_tramite' => $k->created_at
+    		);
+    	}
+    	return json_encode($response);
+    }
+
+
 }

@@ -120,7 +120,7 @@
                                                     <div class="form-group">
                                                         <label for="estpagada"class="col-md-6 control-label text-right"><strong>Estimación Pagada: <br>(Numero de Control de Pago)</strong></label>
                                                         <div class="col-md-6">
-                                                            <input type="text" name="estpagada" id="estpagada" class="form-control" placeholder="Estimación Pagada...">
+                                                            <input type="text" name="estpagada" id="estpagada" class="form-control valida-decimal" placeholder="Estimación Pagada...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -136,7 +136,7 @@
                                                     <div class="form-group">
                                                         <label for="montoret"class="col-md-6 control-label text-right"><strong>Monto Retenido:</strong></label>
                                                         <div class="col-md-6">
-                                                            <input type="text" name="montoret" id="montoret" class="form-control" placeholder="Monto Retenido...">
+                                                            <input type="text" name="montoret" id="montoret" class="form-control valida-decimal" placeholder="Monto Retenido...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -473,7 +473,7 @@
         var razonsoc_=$("#razonsoc").val();
         var depnomativa_=$("#depnomativa").val();
         var depejecutora_=$("#depejecutora").val();
-        var depejecutora_=$("#consulta").val();
+        var consulta=$("#consulta").val();
         if(ejercicio_=="limpia")
         {
             Command: toastr.warning("Campo Ejercicio Fiscal, Requerido!", "Notifications")
@@ -689,6 +689,9 @@
         $('#descnormativa').text("Sin Asignar");
         $('#descejecutora').text("Sin Asignar");
     }
+    $('.valida-decimal').on('input', function () { 
+        this.value = this.value.replace(/[^0-9.]/g,'');
+    });
     function mayus(e) {
         e.value = e.value.toUpperCase();
         //onkeyup="mayus(this);"
