@@ -94,7 +94,7 @@
                                                         <div class="col-md-6">
                                                             <select id="modejecucion" class="select2me form-control" >
                                                                 <option value="limpia">Seleccionar</option>
-                                                                <option value="Contrato">Contrato</option>
+                                                                <option value="2">Contrato</option>
                                                                 <option value=""></option>
                                                             </select>
                                                         </div>
@@ -120,7 +120,7 @@
                                                     <div class="form-group">
                                                         <label for="estpagada"class="col-md-6 control-label text-right"><strong>Estimación Pagada: <br>(Numero de Control de Pago)</strong></label>
                                                         <div class="col-md-6">
-                                                            <input type="text" name="estpagada" id="estpagada" class="form-control" placeholder="Estimación Pagada...">
+                                                            <input type="text" name="estpagada" id="estpagada" class="form-control valida-decimal" placeholder="Estimación Pagada...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -128,7 +128,7 @@
                                                     <div class="form-group">
                                                         <label for="fecharet"class="col-md-6 control-label text-right"><strong>Fecha de Retención:</strong></label>
                                                         <div class="col-md-6">
-                                                            <input type="text" name="fecharet" id="fecharet" class="form-control date-picker" size="16" value="" placeholder="Selecciona..." />
+                                                            <input type="text" name="fecharet" id="fecharet" class="form-control date-picker" data-date-format='yyyy-mm-dd' size="16" value="" placeholder="Selecciona..." />
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -136,7 +136,7 @@
                                                     <div class="form-group">
                                                         <label for="montoret"class="col-md-6 control-label text-right"><strong>Monto Retenido:</strong></label>
                                                         <div class="col-md-6">
-                                                            <input type="text" name="montoret" id="montoret" class="form-control" placeholder="Monto Retenido...">
+                                                            <input type="text" name="montoret" id="montoret" class="form-control valida-decimal" placeholder="Monto Retenido...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -163,7 +163,15 @@
                                                             <input type="text" name="depejecutora" id="depejecutora" class="form-control" placeholder="Dependencia Ejecutora...">
                                                         </div>
                                                     </div>
-                                                </div> 
+                                                </div><br>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <label for="correo"class="col-md-6 control-label text-right"><strong>Correo Electronico:</strong></label>
+                                                        <div class="col-md-6">
+                                                            <input type="text" name="correo" id="correo" class="form-control" placeholder="Correo Electronico...">
+                                                        </div>
+                                                    </div>
+                                                </div>  
                                             </div>                                           
                                             <div class="col-md-6">
                                                 <dl>
@@ -271,6 +279,10 @@
                                                 <div class="row">
                                                         <label class="col-md-6 text-right"><strong>Dependencia Ejecutora:</strong></label>
                                                         <label class="col-md-6" id="lbl_depejecutora">Sin Asignar</label>        
+                                                </div><br>
+                                                <div class="row">
+                                                        <label class="col-md-6 text-right"><strong>Correo Electronico:</strong></label>
+                                                        <label class="col-md-6" id="lbl_correo">Sin Asignar</label>        
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -421,7 +433,7 @@
         var ejercicio_=$("#ejercicio option:selected").text();
         var partida_=$("#identretenciones").val();
         var folio_=$("#folio").val();        
-        var modejecucion_=$("#modejecucion option:selected").text();
+        var modejecucion_=$("#modejecucion").val();
         var refcontrato_=$("#refcontrato").val();
         var nofactura_=$("#nofactura").val();
         var estpagada_=$("#estpagada").val();
@@ -430,11 +442,12 @@
         var razonsoc_=$("#razonsoc").val();
         var depnomativa_=$("#depnomativa").val();
         var depejecutora_=$("#depejecutora").val();
+        var correo=$("#correo").val();
         
         $.ajax({
            method: "post",           
            url: "{{ url('/generate') }}",
-           data: {ejercicio:ejercicio_,partida:partida_,folio:folio_,modejecucion:modejecucion_,refcontrato:refcontrato_,nofactura:nofactura_,estpagada:estpagada_,fecharet:fecharet_,montoret:montoret_,razonsoc:razonsoc_,depnomativa:depnomativa_,depejecutora:depejecutora_,_token:'{{ csrf_token() }}'}  })
+           data: {ejercicio_fiscal:ejercicio_,partida:partida_,folio:folio_,modalidad_ejecucion:modejecucion_,referencia_contrato:refcontrato_,numero_factura:nofactura_,estimacion_pagada:estpagada_,fecha_retencion:fecharet_,monto_retencion:montoret_,razon_social:razonsoc_,dependencia_normativa:depnomativa_,dependencia_ejecutora:depejecutora_,email:correo,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);
             if(response=='[]'){
@@ -473,7 +486,7 @@
         var razonsoc_=$("#razonsoc").val();
         var depnomativa_=$("#depnomativa").val();
         var depejecutora_=$("#depejecutora").val();
-        var depejecutora_=$("#consulta").val();
+        var consulta=$("#consulta").val();
         if(ejercicio_=="limpia")
         {
             Command: toastr.warning("Campo Ejercicio Fiscal, Requerido!", "Notifications")
@@ -534,6 +547,7 @@
         var razonsoc_=$("#razonsoc").val();
         var depnomativa_=$("#depnomativa").val();
         var depejecutora_=$("#depejecutora").val();
+        var correo=$("#correo").val();
         $('#lbl_ejercicio').text(ejercicio_);
         $('#lbl_identretenciones').text(partida_);
         $('#lbl_folio').text(folio_);
@@ -546,6 +560,7 @@
         $('#lbl_razonsoc').text(razonsoc_);
         $('#lbl_depnomativa').text(depnomativa_);
         $('#lbl_depejecutora').text(depejecutora_);
+        $('#lbl_correo').text(correo);
 
     }
     function atras_primary()
@@ -672,6 +687,7 @@
         document.getElementById('depejecutora').value="";
         document.getElementById('consulta').value="0";
         document.getElementById('link').value='';
+        document.getElementById('correo').value='';
         limpialabels();
 
     }
@@ -689,6 +705,9 @@
         $('#descnormativa').text("Sin Asignar");
         $('#descejecutora').text("Sin Asignar");
     }
+    $('.valida-decimal').on('input', function () { 
+        this.value = this.value.replace(/[^0-9.]/g,'');
+    });
     function mayus(e) {
         e.value = e.value.toUpperCase();
         //onkeyup="mayus(this);"

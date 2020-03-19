@@ -90,7 +90,9 @@ class AdminMenuController extends Controller
     	$first_level = json_decode($request->first_level,true);
     	$second_level = json_decode($request->second_level,true);
     	$third_level = json_decode($request->third_level,true);
-
+        log::info($first_level );
+        log::info($second_level );
+        log::info($third_level );
     	// reads the third level and identify the fathers
     	$fathers_second_level = array();
     	

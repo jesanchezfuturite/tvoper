@@ -282,7 +282,7 @@ class CorteSendEmail extends Command
                   
                 if($existe)
                 {
-                    $RowClaveltramite=str_pad($concilia->tipo_servicio,6,"0",STR_PAD_LEFT);
+                    $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
                    $k=json_decode($concilia->info_transacciones);
                         $RowFechaDis=str_replace("Por Operacion", "", $k->fecha_disp);         
                         $RowHoraDis=str_replace("Por Operacion", "",$k->fecha_disp);
@@ -359,7 +359,7 @@ class CorteSendEmail extends Command
                 }                  
                 if($existe)
                 {
-                    $RowClaveltramite=str_pad($concilia->tipo_servicio,6,"0",STR_PAD_LEFT);
+                    $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
                     
                     $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
                     $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);                  
@@ -1146,12 +1146,12 @@ class CorteSendEmail extends Command
                array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->oper_transaccionesdb->findWhere(['fecha_limite_referencia'=>'2020-03-09 00:00:00','estatus'=>'0']);
+        $conciliacion=$this->oper_transaccionesdb->findWhere(['id_transaccion_motor'=>'258207','estatus'=>'0']);
 
         if($conciliacion<>null)
         {     
             foreach ($conciliacion as $concilia) 
-            {   $banco_id=$concilia->banco;
+            {   $banco_id='2';//$concilia->banco;
                 log::info($banco_id);
                 $id_tipo_servicio='';
                 $id_transaccion_motor=$concilia->id_transaccion_motor;
@@ -1202,7 +1202,7 @@ class CorteSendEmail extends Command
                         $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
                         $Directorio=$path.$nombreArchivo;
 
-                        $RowClaveltramite=str_pad($id_tipo_servicio,6,"0",STR_PAD_LEFT);                    
+                        $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);                    
                         $RowFechaDis=str_replace("Por Operacion", "", $concilia->fecha_transaccion);
                         //$fechaVerif=explode("-", $RowFechaDis);                                                     
                         $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Ymd'),8);

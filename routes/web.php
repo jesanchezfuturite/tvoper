@@ -218,6 +218,7 @@ Route::get('/retencionesalmillar','ServiciosgeneralesController@retencionesAlMil
 Route::post('/acceso-partidas','ServiciosgeneralesController@accesopartidasFind');
 Route::post('/proyecto-programas','ServiciosgeneralesController@proyectoprogramasFind');
 Route::get('/reporte-retencionesalmillar','ServiciosgeneralesController@reporteretencionesalmillar');
+Route::post('/detallleaportacion-find','ServiciosgeneralesController@detalleaportacionFind');
 
 
 
