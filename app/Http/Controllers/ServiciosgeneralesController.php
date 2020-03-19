@@ -7,12 +7,16 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use File;
 use Illuminate\Support\Str;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 use App\Repositories\ServaccesopartidasRepositoryEloquent;
 use App\Repositories\ServpartidasRepositoryEloquent;
 use App\Repositories\ServproyectoprogramasRepositoryEloquent;
 use App\Repositories\EntidadtramiteRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
 use App\Repositories\ServdetalleaportacionRepositoryEloquent;
+use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -22,6 +26,7 @@ class ServiciosgeneralesController extends Controller
 	protected $entidadtramitedb;
 	protected $entidaddb;
 	protected $servdetalleaportaciondb;
+	protected $servgeneratransacciondb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -29,7 +34,8 @@ class ServiciosgeneralesController extends Controller
     	ServproyectoprogramasRepositoryEloquent $servproyectoprogramasdb,
     	EntidadtramiteRepositoryEloquent $entidadtramitedb,
     	EntidadRepositoryEloquent $entidaddb,
-    	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb
+    	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb,
+    	ServgenerartransaccionRepositoryEloquent $servgeneratransacciondb
 
     ){
     	$this->middleware('auth');
@@ -39,6 +45,7 @@ class ServiciosgeneralesController extends Controller
 		$this->entidadtramitedb=$entidadtramitedb;
 		$this->entidaddb=$entidaddb;
 		$this->servdetalleaportaciondb=$servdetalleaportaciondb;
+		$this->servgeneratransacciondb=$servgeneratransacciondb;
     }
 
     public function retencionesAlMillar()
@@ -124,19 +131,48 @@ class ServiciosgeneralesController extends Controller
     public function wsReferencia(Request $request)
     {
     	
-    	$ejercicio=$request->ejercicio;
+    	$ejercicio_fiscal=$request->ejercicio_fiscal;
         $partida=$request->partida;
         $folio=$request->folio;        
-        $modejecucion=$request->modejecucion;
-        $refcontrato=$request->refcontrato;
-        $nofactura=$request->nofactura;
-        $estpagada=$request->estpagada;
-        $fecharet=$request->fecharet;
-        $montoret=$request->montoret;
-        $razonsoc=$request->razonsoc;
-        $depnomativa=$request->depnomativa;
-        $depejecutora=$request->depejecutora;
-    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+        $modalidad_ejecucion=$request->modalidad_ejecucion;
+        $referencia_contrato=$request->referencia_contrato;
+        $numero_factura=$request->numero_factura;
+        $estimacion_pagada=$request->estimacion_pagada;
+        $fecha_retencion=$request->fecha_retencion;
+        $fecha_retencion=Carbon::parse($fecha_retencion)->format('Y-m-d');
+        $monto_retencion=$request->monto_retencion;
+        $razon_social=$request->razon_social;
+        $dependencia_normativa=$request->dependencia_normativa;
+        $dependencia_ejecutora=$request->dependencia_ejecutora;
+        $email=$request->email;
+        $proyecto; 
+    	$descripcion_proyecto;    			
+    	$programa;
+    	$descripcion_programa; 
+    	$subprograma;
+    	$descripcion_subprograma; 
+    	$oficio;
+    	$descripcion_oficio;
+    	$descripcion_clasificacion_geografica; 
+    	$descripcion_dependencia_normativa; 
+    	$descripcion_dependencia_ejecutora;
+    	$id_programa='0';        
+        $findprogramas=$this->servproyectoprogramasdb->findWhere(['folio'=>$folio,'ejercicio'=>$ejercicio_fiscal,'partida'=>$partida]);
+    	foreach ($findprogramas as $e) {
+    		
+    			$proyecto = $e->proyecto; 
+    			$descripcion_proyecto = $e->descripcion_proyecto;    			
+    			$programa = $e->programa;
+    			$descripcion_programa = $e->descripcion_programa; 
+    			$subprograma = $e->subprograma;
+    			$descripcion_subprograma = $e->descripcion_subprograma; 
+    			$oficio =$e->oficio;
+    			$descripcion_oficio = $e->descripcion_oficio;
+    			$descripcion_clasificacion_geografica = $e->descripcion_clasificacion_geografica; 
+    			$descripcion_dependencia_normativa = $e->descripcion_dependencia_normativa; 
+    			$descripcion_dependencia_ejecutora = $e->descripcion_dependencia_ejecutora; 
+    		
+    	}
     	$request_json=array();
     	$tramite=array();
     	$datos_solicitante=array();
@@ -158,6 +194,9 @@ class ServiciosgeneralesController extends Controller
     	foreach ($findEntidad as $k) {
     		$clave=$k->clave;
     	}
+    	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$folio]);
+    	$id_trans=$insert->id;
+    	log::info($fecha_retencion);
     	$entidad='1';
     	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
     	$token=$this->wsToken($entidad,$clave);
@@ -208,7 +247,7 @@ class ServiciosgeneralesController extends Controller
     	$tramite []=$arrayName = array(
     		'id_tipo_servicio' => '1', //$servicio_id
     		'id_tramite' => '12', 
-    		'importe_tramite' => $montoret, 
+    		'importe_tramite' => $monto_retencion, 
     		'auxiliar_1' => '', 
     		'auxiliar_2' => '', 
     		'auxiliar_3' => '',
@@ -218,8 +257,8 @@ class ServiciosgeneralesController extends Controller
     	);
     	$request_json= array(
     		'token' => $token,
-    		'importe_transaccion' =>$montoret,
-    		'id_transaccion' =>'12345678678',
+    		'importe_transaccion' =>$monto_retencion,
+    		'id_transaccion' =>$id_trans,
     		'url_retorno' =>'www.prueba.com',
     		'entidad' =>'1',//$entidad
     		'tramite' =>$tramite
@@ -258,13 +297,20 @@ class ServiciosgeneralesController extends Controller
 			}			
 		}
 		$json_d =json_decode(json_encode($datos));
-
+		$url_resp=$json_d->id_transaccion_motor;
+		$folio_resp=$json_d->id_transaccion_motor;
 		$json_response=array();
 		$json_response []=array(
-			'folio'=>$json_d->id_transaccion_motor,
-			'url'=>$json_d->url_recibo
+			'folio'=>$folio_resp,
+			'url'=>$url_resp
 		);
-
+		$fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d');
+		
+		$insertdetalle=$this->servdetalleaportaciondb->create(['id_transaccion'=>$folio_resp,'folio'=>$id_trans,'nombre_proyecto'=>$proyecto,'folio_sie'=>$folio,'id_programa'=>$id_programa,'nombre_programa'=>$programa,'ejercicio_fiscal'=>$ejercicio_fiscal,'modalidad'=>$modalidad_ejecucion,'contrato'=>$referencia_contrato,'numero_factura'=>$numero_factura,'estimacion_pagada'=>$estimacion_pagada,'partida'=>$partida,'fecha_retencion'=>$fecha_retencion,'monto_retencion'=>$monto_retencion,'razon_social_contratado'=>$razon_social,'dependencia_normativa'=>$dependencia_normativa,'dependencia_ejecutora'=>$dependencia_ejecutora,'proyecto'=>$proyecto,'desc_proyecto'=>$descripcion_proyecto,'programa'=>$programa,'desc_programa'=>$descripcion_programa,'subprograma','desc_subprograma'=>$descripcion_subprograma,'oficio'=>$oficio,'desc_oficio'=>$descripcion_oficio,'desc_clasificacion_geografica'=>$descripcion_clasificacion_geografica,'desc_dependencia_normativa'=>$descripcion_dependencia_normativa,'desc_dependencia_ejecutora'=>$descripcion_dependencia_ejecutora,'fecha_tramite'=>$date]);
+		if($email<>''){
+			$this->SendEmial($url_resp,$folio_resp,$email);
+		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
     		log::info('Exception:' . $e->getMessage());
@@ -316,7 +362,30 @@ class ServiciosgeneralesController extends Controller
 		
 		return $token;
     }
-
+    public function SendEmial($url,$referencia,$email)
+    {
+        //$url='http://localhost:8080';
+        //$referencia='222222444424';
+         $mail = new PHPMailer(true);
+         $message=$this->plantillaEmail($url,$referencia);
+        try{
+            $mail->isSMTP();
+            $mail->CharSet = 'utf-8';
+            $mail->SMTPAuth =true;
+            $mail->SMTPSecure = 'tls';
+            $mail->Host = 'smtp.outlook.com';
+            $mail->Port = '587'; 
+            $mail->Username = 'juan.carlos.cruz.bautista@hotmail.com';
+            $mail->Password = 'yashiro96';
+            $mail->setFrom('juan.carlos.cruz.bautista@hotmail.com', 'NAME'); 
+            $mail->Subject = 'MENSAJE PRUEBA';
+            $mail->MsgHTML($message);
+            $mail->addAddress($email , 'NAME'); 
+            $mail->send();
+        }catch(phpmailerException $e){
+            log::info($e);
+        }
+    }
     public function reporteretencionesalmillar()
     {
     	return view('serviciosgenerales/reporteretencionesalmillar');
@@ -329,7 +398,7 @@ class ServiciosgeneralesController extends Controller
     	$fechaInicio=$request->fechaInicio;
     	$fechaFin=$request->fechaFin;
     	$response=array();
-    	$finddetalleaport=$this->servdetalleaportaciondb->findWhere(['partida'=>$partida,['fecha_retencion','>=',$fechaInicio],['fecha_retencion','<=',$fechaFin]]);
+    	$finddetalleaport=$this->servdetalleaportaciondb->findWhere(['partida'=>$partida,['fecha_tramite','>=',$fechaInicio],['fecha_tramite','<=',$fechaFin]]);
     	foreach ($finddetalleaport as $k)
     	{
     		$response []= array(
@@ -350,6 +419,335 @@ class ServiciosgeneralesController extends Controller
     		);
     	}
     	return json_encode($response);
+    }
+    private function plantillaEmail($url,$referencia)
+    {
+        $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
+      img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%; 
+      }
+      body {
+        background-color: #f6f6f6;
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        padding: 0;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%; 
+      }
+      table {
+        border-collapse: separate;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        width: 100%; }
+        table td {
+          font-family: sans-serif;
+          font-size: 14px;
+          vertical-align: top; 
+      }
+      .body {
+        background-color: #f6f6f6;
+        width: 100%; 
+      }
+      .container {
+        display: block;
+        margin: 0 auto !important;
+        /* makes it centered */
+        max-width: 580px;
+        padding: 10px;
+        width: 580px; 
+      }
+      .content {
+        box-sizing: border-box;
+        display: block;
+        margin: 0 auto;
+        max-width: 580px;
+        padding: 10px; 
+      }
+      .main {
+        background: #ffffff;
+        border-radius: 3px;
+        width: 100%; 
+      }
+
+      .wrapper {
+        box-sizing: border-box;
+        padding: 20px; 
+      }
+
+      .content-block {
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+
+      .footer {
+        clear: both;
+        margin-top: 10px;
+        text-align: center;
+        width: 100%; 
+      }
+        .footer td,
+        .footer p,
+        .footer span,
+        .footer a {
+          color: #999999;
+          font-size: 12px;
+          text-align: center; 
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: #000000;
+        font-family: sans-serif;
+        font-weight: 400;
+        line-height: 1.4;
+        margin: 0;
+        margin-bottom: 30px; 
+      }
+
+      h1 {
+        font-size: 35px;
+        font-weight: 300;
+        text-align: center;
+        text-transform: capitalize; 
+      }
+
+      p,
+      ul,
+      ol {
+        font-family: sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0;
+        margin-bottom: 15px; 
+      }
+        p li,
+        ul li,
+        ol li {
+          list-style-position: inside;
+          margin-left: 5px; 
+      }
+
+      a {
+        color: #3498db;
+        text-decoration: underline; 
+      }
+      .btn {
+        box-sizing: border-box;
+        width: 100%; }
+        .btn > tbody > tr > td {
+          padding-bottom: 15px; }
+        .btn table {
+          width: auto; 
+      }
+        .btn table td {
+          background-color: #ffffff;
+          border-radius: 5px;
+          text-align: center; 
+      }
+        .btn a {
+          background-color: #ffffff;
+          border: solid 1px #3498db;
+          border-radius: 5px;
+          box-sizing: border-box;
+          color: #3498db;
+          cursor: pointer;
+          display: inline-block;
+          font-size: 14px;
+          font-weight: bold;
+          margin: 0;
+          padding: 12px 25px;
+          text-decoration: none;
+          text-transform: capitalize; 
+      }
+      .btn-primary table td {
+        background-color: #3498db; 
+      }
+
+      .btn-primary a {
+        background-color: #3498db;
+        border-color: #3498db;
+        color: #ffffff; 
+      }
+      .last {
+        margin-bottom: 0; 
+      }
+
+      .first {
+        margin-top: 0; 
+      }
+
+      .align-center {
+        text-align: center; 
+      }
+
+      .align-right {
+        text-align: right; 
+      }
+
+      .align-left {
+        text-align: left; 
+      }
+
+      .clear {
+        clear: both; 
+      }
+
+      .mt0 {
+        margin-top: 0; 
+      }
+
+      .mb0 {
+        margin-bottom: 0; 
+      }
+
+      .preheader {
+        color: transparent;
+        display: none;
+        height: 0;
+        max-height: 0;
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        mso-hide: all;
+        visibility: hidden;
+        width: 0; 
+      }
+
+      .powered-by a {
+        text-decoration: none; 
+      }
+
+      hr {
+        border: 0;
+        border-bottom: 1px solid #f6f6f6;
+        margin: 20px 0; 
+      }
+      @media only screen and (max-width: 620px) {
+        table[class=body] h1 {
+          font-size: 28px !important;
+          margin-bottom: 10px !important; 
+        }
+        table[class=body] p,
+        table[class=body] ul,
+        table[class=body] ol,
+        table[class=body] td,
+        table[class=body] span,
+        table[class=body] a {
+          font-size: 16px !important; 
+        }
+        table[class=body] .wrapper,
+        table[class=body] .article {
+          padding: 10px !important; 
+        }
+        table[class=body] .content {
+          padding: 0 !important; 
+        }
+        table[class=body] .container {
+          padding: 0 !important;
+          width: 100% !important; 
+        }
+        table[class=body] .main {
+          border-left-width: 0 !important;
+          border-radius: 0 !important;
+          border-right-width: 0 !important; 
+        }
+        table[class=body] .btn table {
+          width: 100% !important; 
+        }
+        table[class=body] .btn a {
+          width: 100% !important; 
+        }
+        table[class=body] .img-responsive {
+          height: auto !important;
+          max-width: 100% !important;
+          width: auto !important; 
+        }
+      }
+      @media all {
+        .ExternalClass {
+          width: 100%; 
+        }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+          line-height: 100%; 
+        }
+        .apple-link a {
+          color: inherit !important;
+          font-family: inherit !important;
+          font-size: inherit !important;
+          font-weight: inherit !important;
+          line-height: inherit !important;
+          text-decoration: none !important; 
+        }
+        #MessageViewBody a {
+          color: inherit;
+          text-decoration: none;
+          font-size: inherit;
+          font-family: inherit;
+          font-weight: inherit;
+          line-height: inherit;
+        }
+        .btn-primary table td:hover {
+          background-color: #34495e !important; 
+        }
+        .btn-primary a:hover {
+          background-color: #34495e !important;
+          border-color: #34495e !important; 
+        } 
+      }
+    </style>
+  </head>
+  <body class="">  
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+            <table role="pre<sentation" class="main">
+              <tr>
+                <td class="wrapper">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <p>Referencia:</p>
+                        <p>'.$referencia.'</p>
+                        <br><br>
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                          <tbody>
+                            <tr>
+                              <td align="left">
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tbody >
+                                    <tr> </td>
+                                      <td whidth="100%" align="center"> <a href="'.$url.'" target="_blank">Ver Recibo</a> </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <div class="footer">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr><td class="content-block"><span class="apple-link">Emial Prueba</span></td></tr><tr> </tr></table></div></div></td><td>&nbsp;</td></tr></table></body></html>
+    ';
+    return $email;
     }
 
 
