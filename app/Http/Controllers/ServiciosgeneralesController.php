@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use GuzzleHttp\Client;
 use App\Repositories\ServaccesopartidasRepositoryEloquent;
 use App\Repositories\ServpartidasRepositoryEloquent;
 use App\Repositories\ServproyectoprogramasRepositoryEloquent;
@@ -196,7 +197,7 @@ class ServiciosgeneralesController extends Controller
     	}
     	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$folio]);
     	$id_trans=$insert->id;
-    	log::info($fecha_retencion);
+    	//log::info($fecha_retencion);
     	$entidad='1';
     	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
     	$token=$this->wsToken($entidad,$clave);
@@ -272,7 +273,7 @@ class ServiciosgeneralesController extends Controller
     	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
 		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
 		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
-		$client = new \GuzzleHttp\Client();
+		$client = new Client();
 
 		try {
     		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
@@ -297,8 +298,8 @@ class ServiciosgeneralesController extends Controller
 			}			
 		}
 		$json_d =json_decode(json_encode($datos));
-		$url_resp=$json_d->id_transaccion_motor;
 		$folio_resp=$json_d->id_transaccion_motor;
+		$url_resp=$json_d->url_recibo;
 		$json_response=array();
 		$json_response []=array(
 			'folio'=>$folio_resp,
@@ -332,7 +333,7 @@ class ServiciosgeneralesController extends Controller
 		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
 		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
 		//log::info($xmlRequest);
-		$client = new \GuzzleHttp\Client();
+		$client = new Client();
 		$token='';
 		try {
     		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
