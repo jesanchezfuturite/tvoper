@@ -41,7 +41,9 @@
                                 @elseif($valid == 0)
                                     Archivo incorrecto - por favor verifique lo que intenta subir
                                 @else
+                                <h1>
                                     Archivo cargado correctamente
+                                </h1>
                                 @endif
                                  
                             </p>
