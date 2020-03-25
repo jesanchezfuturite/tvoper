@@ -53,6 +53,8 @@ class ConciliacionController extends Controller
         $this->egobTrans = $egobTrans; 
 
         $this->loadBankDetails();
+
+        Log::info(json_encode($this->bank_details));
     }
 
 
@@ -95,7 +97,7 @@ class ConciliacionController extends Controller
             if(!$this->checkValidFilename($fileName))
             {
                 // Throws an error with the file invalid status file code 
-                dd($fileName);
+                dd("El archivo tiene un nombre que no coincide con la codificacion definida bancoV_alias_fecha","o bien banco_alias_fecha",$fileName);
                 return view('conciliacion/loadFile', [ "report" => false, "valid" => 0 ]);             
             }else{
                 // save the file in the storage folder
@@ -287,7 +289,6 @@ class ConciliacionController extends Controller
                 );
             }
 
-
             $final [$b->id]= array(
                 "descripcion"   => $b->nombre,
                 "info"          => $details
@@ -311,6 +312,9 @@ class ConciliacionController extends Controller
     {
         $info = array();
         $final = array();
+
+        // descartar los duplicados
+        $discarded = array();
         foreach ($accounts as $a)
         {
             if($bank == $a->banco_id)
@@ -322,16 +326,30 @@ class ConciliacionController extends Controller
 
         foreach($info as $i => $data)
         {   
-
+            
             foreach($data as $f){
-
                 $final []= array(
                     "cuenta" => $f->cuenta,
                     "alias"  => $f->alias
                 );
-            }
+            } 
             
         }
+        /*code to delete duplicated*/
+        foreach($final as $f)
+        {
+            $discarded [$f["cuenta"]]= $f["alias"];
+        }
+
+        $final = array();
+        
+        foreach($discarded as $d => $e){
+            $final []= array(
+                "cuenta"    => $d,
+                "alias"     => $e
+            );
+        }
+        /* end code to delete duplicated*/
 
         return $final;
 
