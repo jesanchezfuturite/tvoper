@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use File;
 use Illuminate\Support\Str;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+use phpmailer\phpmailer\PHPMailer;
+use phpmailer\phpMailer\SMTP;
+use phpmailer\phpmailer\Exception;
 use GuzzleHttp\Client;
 use App\Repositories\ServaccesopartidasRepositoryEloquent;
 use App\Repositories\ServpartidasRepositoryEloquent;
@@ -18,6 +18,7 @@ use App\Repositories\EntidadtramiteRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
 use App\Repositories\ServdetalleaportacionRepositoryEloquent;
 use App\Repositories\ServgenerartransaccionRepositoryEloquent;
+use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -28,6 +29,7 @@ class ServiciosgeneralesController extends Controller
 	protected $entidaddb;
 	protected $servdetalleaportaciondb;
 	protected $servgeneratransacciondb;
+	protected $servdetalleserviciosdb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -36,7 +38,8 @@ class ServiciosgeneralesController extends Controller
     	EntidadtramiteRepositoryEloquent $entidadtramitedb,
     	EntidadRepositoryEloquent $entidaddb,
     	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb,
-    	ServgenerartransaccionRepositoryEloquent $servgeneratransacciondb
+    	ServgenerartransaccionRepositoryEloquent $servgeneratransacciondb,
+    	ServdetalleserviciosRepositoryEloquent $servdetalleserviciosdb
 
     ){
     	$this->middleware('auth');
@@ -47,6 +50,7 @@ class ServiciosgeneralesController extends Controller
 		$this->entidaddb=$entidaddb;
 		$this->servdetalleaportaciondb=$servdetalleaportaciondb;
 		$this->servgeneratransacciondb=$servgeneratransacciondb;
+		$this->servdetalleserviciosdb=$servdetalleserviciosdb;
     }
 
     public function retencionesAlMillar()
@@ -294,6 +298,7 @@ class ServiciosgeneralesController extends Controller
 		foreach ($array as $e) {
 			foreach ($e as $k) {
 				$datos=json_decode($k,true);
+				
 				//$repuesta=$datos->id_transaccion_motor;				
 			}			
 		}
@@ -310,7 +315,7 @@ class ServiciosgeneralesController extends Controller
 		
 		$insertdetalle=$this->servdetalleaportaciondb->create(['id_transaccion'=>$folio_resp,'folio'=>$id_trans,'nombre_proyecto'=>$proyecto,'folio_sie'=>$folio,'id_programa'=>$id_programa,'nombre_programa'=>$programa,'ejercicio_fiscal'=>$ejercicio_fiscal,'modalidad'=>$modalidad_ejecucion,'contrato'=>$referencia_contrato,'numero_factura'=>$numero_factura,'estimacion_pagada'=>$estimacion_pagada,'partida'=>$partida,'fecha_retencion'=>$fecha_retencion,'monto_retencion'=>$monto_retencion,'razon_social_contratado'=>$razon_social,'dependencia_normativa'=>$dependencia_normativa,'dependencia_ejecutora'=>$dependencia_ejecutora,'proyecto'=>$proyecto,'desc_proyecto'=>$descripcion_proyecto,'programa'=>$programa,'desc_programa'=>$descripcion_programa,'subprograma','desc_subprograma'=>$descripcion_subprograma,'oficio'=>$oficio,'desc_oficio'=>$descripcion_oficio,'desc_clasificacion_geografica'=>$descripcion_clasificacion_geografica,'desc_dependencia_normativa'=>$descripcion_dependencia_normativa,'desc_dependencia_ejecutora'=>$descripcion_dependencia_ejecutora,'fecha_tramite'=>$date]);
 		if($email<>''){
-			$this->SendEmial($url_resp,$folio_resp,$email);
+			//$this->SendEmial($url_resp,$folio_resp,$email);
 		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
@@ -421,6 +426,192 @@ class ServiciosgeneralesController extends Controller
     	}
     	return json_encode($response);
     }
+
+    public function pagoArrendamiento()
+    {
+    	return view('serviciosgenerales/pagoarrendamientos');
+    }
+    public function wsArrendamientoR(Request $request)
+    {
+    	
+    	$nombre=$request->nombre;
+    	$rfc=$request->rfc;
+    	$curp=$request->curp;
+    	$calle=$request->calle;
+    	$nointerior=$request->nointerior;
+    	$noexterior=$request->noexterior;
+    	$colonia=$request->colonia;
+    	$municipio=$request->municipio;
+    	$estado=$request->estado;
+    	$cp=$request->cp;
+    	$pagos=$request->pagos;
+ 		
+        
+        
+    	$request_json=array();
+    	$tramite=array();
+    	$datos_solicitante=array();
+    	$datos_factura=array();
+    	$detalle=array();
+    	$subsidios=array();
+    	$clave='';
+    	$entidad='';
+    	$servicio_id='';
+    	$pagosJson=json_decode($pagos);
+    	$partida;
+    	$sumMonto=0;
+    	foreach ($pagosJson as $p) {
+    		$partida=$p->partida;
+    		$sumMonto=$sumMonto+floatval($p->monto);    		
+    	}
+    	$tipo_servicio=$this->servpartidasdb->findWhere(['id_partida'=>$partida]);
+    	foreach ($tipo_servicio as $s) {
+    		$servicio_id=$s->id_servicio;
+    	}
+    	$findEntidadTramite=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$servicio_id]);
+    	foreach ($findEntidadTramite as $i) {
+    		$entidad=$i->entidad_id;
+    	}
+    	$findEntidad=$this->entidaddb->findWhere(['id'=>$entidad]);
+    	foreach ($findEntidad as $k) {
+    		$clave=$k->clave;
+    	}
+    	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$partida]);
+    	$id_trans=$insert->id;
+    	//log::info($fecha_retencion);
+    	$entidad='1';
+    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+    	$token=$this->wsToken($entidad,$clave);
+    	$datos_solicitante= array(
+    		'nombre' =>'IVAN' , 
+    		'apellido_paterno' => 'LEDEZMA', 
+    		'apellido_materno' => 'SOSA', 
+    		'razon_social' => '', 
+    		'rfc' => '', 
+    		'curp' => '', 
+    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'calle' =>'' , 
+    		'colonia' => '', 
+    		'numexterior' => '', 
+    		'nombre' =>'',  
+    		'numinterior' =>'',  
+    		'municipio' =>'',  
+    		'codigopostal' =>'0'  
+    	);
+    	$datos_factura= array(
+    		'nombre' =>'IVAN' , 
+    		'apellido_paterno' => 'LEDEZMA', 
+    		'apellido_materno' => 'SOSA', 
+    		'razon_social' => '',//$nombre, 
+    		'rfc' =>'' ,//$rfc, 
+    		'curp' => '',//$curp, 
+    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'calle' =>'',//$calle , 
+    		'colonia' =>'',//$colonia, 
+    		'numexterior' =>'',//$noexterior, 
+    		'nombre' =>'',  
+    		'numinterior' =>'',//$nointerior,  
+    		'municipio' =>'',//$municipio,  
+    		'codigopostal' =>''//$cp 
+    	);
+    	$subsidios [] = array(
+    		 'concepto' => 'prueba laravel',
+    		 'importe_subsidio' => '1.0',
+    		 'partida' => $partida
+    		);
+    	$detalle []= array(
+    		'concepto' => 'prueba laravel',
+    		'importe_concepto' => '1.0', 
+			'partida' => $partida, 
+			'subsidios' => $subsidios
+    	);
+
+    	$tramite []=$arrayName = array(
+    		'id_tipo_servicio' => '1', //$servicio_id
+    		'id_tramite' => '12', 
+    		'importe_tramite' => $sumMonto, 
+    		'auxiliar_1' => '', 
+    		'auxiliar_2' => '', 
+    		'auxiliar_3' => '',
+    		'datos_solicitante'=>$datos_solicitante,
+    		'datos_factura'=>$datos_factura,
+    		'detalle'=>$detalle
+    	);
+    	$request_json= array(
+    		'token' => $token,
+    		'importe_transaccion' =>$sumMonto,
+    		'id_transaccion' =>$id_trans,
+    		'url_retorno' =>'www.prueba.com',
+    		'entidad' =>$entidad,
+    		'tramite' =>$tramite
+    	);
+	
+    	$json=json_encode($request_json);
+    	//log::info($request_json);
+    	$sopaBody='<tem:GeneraReferencia>';
+		$sopaBody=$sopaBody.'<tem:json>'.$json.'</tem:json>';
+		$sopaBody=$sopaBody.'</tem:GeneraReferencia>';
+    	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
+		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
+		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
+		$client = new Client();
+
+		try {
+    		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
+            'Authenticate' => [],
+            'body' => $xmlRequest,
+            'headers' => [
+                "Content-Type" => "text/xml; charset=utf-8"
+            ]
+
+        ]);
+		$repuesta;
+		$datos;
+        $xmlResponse=$response->getBody()->getContents();
+    	$soap = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $xmlResponse);
+		$xml = new \SimpleXMLElement($soap);
+		$body = $xml->xpath('//soapBody')[0];
+		$array = json_decode(json_encode((array)$body), TRUE);
+		foreach ($array as $e) {
+			log::info($e);
+			foreach ($e as $k) {
+				$datos=json_decode($k,true);
+				log::info($datos);
+				//$repuesta=$datos->id_transaccion_motor;				
+			}			
+		}
+		$json_d =json_decode(json_encode($datos));
+		$folio_resp=$json_d->id_transaccion_motor;
+		$url_resp=$json_d->url_recibo;
+		$json_response=array();
+		$json_response []=array(
+			'folio'=>$folio_resp,
+			'url'=>$url_resp
+		);
+		$fechaActual=Carbon::now();
+        $date=$fechaActual->format('Y-m-d');
+		foreach ($pagosJson as $j) {
+			$desc_partida='';
+			$findPartida=$this->servpartidasdb->findWhere(['id_partida'=>$j->partida]);
+    		foreach ($findPartida as $s) {
+    			$desc_partida=$s->descripcion;
+    		}
+    		$insertdetalle=$this->servdetalleserviciosdb->create(['idTrans'=>$folio_resp,'Folio'=>$folio_resp,'rfc'=>$rfc,'curp'=>$curp,'calle'=>$calle,'no_ext'=>$noexterior,'no_int'=>$nointerior,'colonia'=>$colonia,'municipio_delegacion'=>$municipio,'cp'=>$cp,'monto'=>$j->monto,'partida'=>$j->partida,'estado_pais'=>$estado,'consepto'=>$j->consepto,'nombre_razonS'=>'IVAN','desc_partida'=>$desc_partida]);    		
+    	}
+		
+		/*if($email<>''){
+			$this->SendEmial($url_resp,$folio_resp,$email);
+		}*/
+		//log::info($repuesta);
+		} catch (\Exception $e) {
+    		log::info('Exception:' . $e->getMessage());
+    		$json_response=array();
+		}
+
+		return json_encode($json_response);
+    }
+
+
     private function plantillaEmail($url,$referencia)
     {
         $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
