@@ -213,17 +213,18 @@ Route::get('/foo', function () {
 
 Route::get('/icv-consulta-placa/{info}/{key}','IcvrestserviceController@icvconsultaplaca');
 
-/******************SERVICIOS GENERALES******************/
+/******************SERVICIOS GENERALES ---RETENCIONES AL MILLAR---******************/
 Route::get('/retencionesalmillar','ServiciosgeneralesController@retencionesAlMillar');
 Route::post('/acceso-partidas','ServiciosgeneralesController@accesopartidasFind');
 Route::post('/proyecto-programas','ServiciosgeneralesController@proyectoprogramasFind');
 Route::get('/reporte-retencionesalmillar','ServiciosgeneralesController@reporteretencionesalmillar');
 Route::post('/detallleaportacion-find','ServiciosgeneralesController@detalleaportacionFind');
-
-
-
-/************ WS **************/
 Route::post('/generate','ServiciosgeneralesController@wsReferencia');
+/***********************PAGO ARRENDAMIENTO **************************/
+Route::get('/pagoarrendamiento','ServiciosgeneralesController@pagoArrendamiento');
+Route::post('/pagoarrendamiento-insert','ServiciosgeneralesController@wsArrendamientoR');
+
+
 
 /*/*******************************************************************************/
 
