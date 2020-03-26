@@ -7,11 +7,10 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use File;
 use Illuminate\Support\Str;
-use phpmailer\phpmailer\PHPMailer;
-use phpmailer\phpmailer\SMTP;
-use phpmailer\phpmailer\Exception;
-//use GuzzleHttp\Client;
-use guzzlehttp\Client;
+use PHPMailer\PHPMailer\PHPMailer;
+use phpmailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+use GuzzleHttp\Client;
 use App\Repositories\ServaccesopartidasRepositoryEloquent;
 use App\Repositories\ServpartidasRepositoryEloquent;
 use App\Repositories\ServproyectoprogramasRepositoryEloquent;
@@ -278,7 +277,7 @@ class ServiciosgeneralesController extends Controller
     	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
 		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
 		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
-		$client = new GuzzleHttp\Client();
+		$client = new Client();
 
 		try {
     		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
