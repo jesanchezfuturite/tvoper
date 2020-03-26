@@ -244,6 +244,7 @@ Route::group(['middleware' => 'permissions'], function () {
 Route::group(['middleware' => ['verifyassignment']],function(){
 	Route::get('/cfdi-correccion', 'CorreccioncfdiController@index')->name('cfdi-tool');
 	Route::get('/cfdi-manual','ManualcfdiController@index')->name('cfdi-captura');
+    Route::get('/cfdi-cancel','CorreccioncfdiController@cancel')->name('cfdi-cancel');
 });
 Route::post('/cfdi-correccion/busca-rfc','CorreccioncfdiController@searchrfc');
 Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@searchfoliounico');
