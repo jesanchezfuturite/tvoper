@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
@@ -354,7 +355,7 @@ class Conciliacion extends Command
             }
         }
 
-        // unlink(storage_path("app/".$filename)); quitamos esto para que no se eliminen los archivos
+        $this->backupfilesprocessed("app/".$filename);
 
         return true;
 
@@ -436,7 +437,9 @@ class Conciliacion extends Command
             }
         }
 
-        unlink(storage_path("app/".$filename));
+        /**/
+
+        $this->backupfilesprocessed("app/".$filename);
 
         return true;
 
@@ -526,7 +529,7 @@ class Conciliacion extends Command
             }
         }
 
-        unlink(storage_path("app/".$filename));
+        $this->backupfilesprocessed("app/".$filename);
 
         return true;
 
@@ -616,7 +619,7 @@ class Conciliacion extends Command
             }
         }
 
-        unlink(storage_path("app/".$filename));
+        $this->backupfilesprocessed("app/".$filename);
 
         return true;
 
@@ -747,6 +750,37 @@ class Conciliacion extends Command
 
         return $final;
 
+    }
+
+    /**
+     * Backupfiles uploaded 
+     *
+     * @param null $path = "app/".$filename
+     *
+     * @return array with x => [account => , alias =>] 
+     */ 
+
+    private function backupfilesprocessed($path)
+    {
+        try
+        {
+            $destination = 'app/Processed/';
+
+            $ex = explode("/",$path);
+
+            $destination .= $ex[2];
+
+            $path = storage_path($path);
+
+            $destination = storage_path($destination);
+
+            File::move($path, $destination);
+        
+        }catch( \Exception $e ){
+            Log::info("[Conciliacion:ProcessFiles] Error Method backupfilesprocessed => " . $e->getMessage());
+            Log::info("[Conciliacion:ProcessFiles] path => " . $path);
+            Log::info("[Conciliacion:ProcessFiles] backup => " . $destination);
+        }
     }
 
 }

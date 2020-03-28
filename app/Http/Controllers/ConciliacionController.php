@@ -67,6 +67,7 @@ class ConciliacionController extends Controller
     public function index()
     {
 
+        $this->getFilesandStatus();
     	// valid 1 is init status 
     	return view('conciliacion/loadFile', [ "valid" => 1 ]);
     }
@@ -642,6 +643,30 @@ class ConciliacionController extends Controller
         }   
 
         return $results;
+    }
+
+
+    /**
+     *
+     * Resumen de archivos procesados o por procesar
+     *
+     * @param ninguno
+     *
+     * 
+     * @return json_array con el listado de los archivos procesados 
+     * y de los pendientes por procesar en el servidor    
+     *
+     **/
+
+    private function getFilesandStatus()
+    {
+
+        $directory = 'toProcess'; 
+        
+        $available_files = Storage::files($directory);
+
+        /* obtener los detalles de los que no se van a procesar */
+
     }
 
 }
