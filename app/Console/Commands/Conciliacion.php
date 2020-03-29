@@ -285,12 +285,7 @@ class Conciliacion extends Command
                                 "fecha_ejecucion"   => $this->executedDate,
                             ];
 
-                        if(strcmp('010000000000125500841025278275', $referencia) == 0){
-                            dd($data,"line",$line,$dayStart,$dayLength,$monthStart,$monthLength,$yearStart,$yearLength,$amountStart,$amountLength,$idStart,$idLength,$origenStart,$origenLength,$referenciaStart,$referenciaLength);
-                        }
-                        
-
-
+            
                         try{
 
                             if((int)$data["transaccion_id"] > 0)
