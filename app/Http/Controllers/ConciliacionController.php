@@ -67,9 +67,9 @@ class ConciliacionController extends Controller
     public function index()
     {
 
-        $this->getFilesandStatus();
+        $files = $this->getFilesandStatus();
     	// valid 1 is init status 
-    	return view('conciliacion/loadFile', [ "valid" => 1 ]);
+    	return view('conciliacion/loadFile', [ "valid" => 1, "files" => $files ]);
     }
 
 
@@ -113,7 +113,9 @@ class ConciliacionController extends Controller
         }
     	
         # return to the view with the status file uploaded
-        return view('conciliacion/loadFile', [ "report" => false, "valid" => 3 ]);
+        $files = $this->getFilesandStatus();
+
+        return view('conciliacion/loadFile', [ "report" => false, "valid" => 3, "files" => $files ]);
     }
 
     /**
@@ -659,13 +661,30 @@ class ConciliacionController extends Controller
      **/
 
     private function getFilesandStatus()
-    {
-
-        $directory = 'toProcess'; 
+    { 
+        $final = array();
         
-        $available_files = Storage::files($directory);
+        $pending = Storage::files('toProcess');
 
-        /* obtener los detalles de los que no se van a procesar */
+        $processed = Storage::files('Processed');
+
+        if(count($pending) > 0)
+        {
+            foreach($pending as $p)
+            {
+                $final []= array("file" => $p, "status" => "NP", "path" => Storage::url($p));
+            }
+        }
+
+        if(count($processed) > 0)
+        {
+            foreach($processed as $pr)
+            {
+                $final []= array("file" => $pr, "status" => "PR", "path" => Storage::url($pr));
+            }
+        }
+
+        return $final;
 
     }
 
