@@ -1700,7 +1700,6 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
 <!-- TABLE SCRIPT -->
 <script type="text/javascript" src="assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
-
 <script type="text/javascript" src="assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
 <script type="text/javascript" src="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
@@ -1710,14 +1709,15 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- END TABLE SCRIPT -->
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
 <script src="assets/admin/pages/scripts/table-managed.js"></script>
+<script src="assets/admin/pages/scripts/table-editable.js"></script>
 <script>
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components
 		Layout.init(); // init current layout
 		QuickSidebar.init(); // init quick sidebar
 		Demo.init();
-
  		UIToastr.init();// init demo features
+ 		TableEditable.init();
       });
    </script>
    @yield('scripts')
