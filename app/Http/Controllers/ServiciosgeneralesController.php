@@ -10,7 +10,11 @@ use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use phpmailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-use GuzzleHttp\Client;
+//use GuzzleHttp\Client;
+use SimpleXMLElement;
+use Artisaninweb\SoapWrapper\SoapWrapper;
+use App\Soap\Request\GetConversionAmount;
+use App\Soap\Response\GetConversionAmountResponse;
 use App\Repositories\ServaccesopartidasRepositoryEloquent;
 use App\Repositories\ServpartidasRepositoryEloquent;
 use App\Repositories\ServproyectoprogramasRepositoryEloquent;
@@ -270,39 +274,15 @@ class ServiciosgeneralesController extends Controller
     	);
 	
     	$json=json_encode($request_json);
-    	//log::info($json);
-    	$sopaBody='<tem:GeneraReferencia>';
-		$sopaBody=$sopaBody.'<tem:json>'.$json.'</tem:json>';
-		$sopaBody=$sopaBody.'</tem:GeneraReferencia>';
-    	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
-		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
-		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
-		$client = new Client();
-
-		try {
-    		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
-            'Authenticate' => [],
-            'body' => $xmlRequest,
-            'headers' => [
-                "Content-Type" => "text/xml; charset=utf-8"
-            ]
-
+    	try {
+        $parameters=['json'=>$json];
+		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+            'encoding' => 'UTF-8',
+            'verifypeer'=>false,
+            'trace' => true
         ]);
-		$repuesta;
-		$datos;
-        $xmlResponse=$response->getBody()->getContents();
-    	$soap = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $xmlResponse);
-		$xml = new \SimpleXMLElement($soap);
-		$body = $xml->xpath('//soapBody')[0];
-		$array = json_decode(json_encode((array)$body), TRUE);
-		foreach ($array as $e) {
-			foreach ($e as $k) {
-				$datos=json_decode($k,true);
-				
-				//$repuesta=$datos->id_transaccion_motor;				
-			}			
-		}
-		$json_d =json_decode(json_encode($datos));
+		$datos =$server->GeneraReferencia($parameters)->GeneraReferenciaResult;
+		$json_d =json_decode($datos);
 		$folio_resp=$json_d->id_transaccion_motor;
 		$url_resp=$json_d->url_recibo;
 		$json_response=array();
@@ -315,7 +295,7 @@ class ServiciosgeneralesController extends Controller
 		
 		$insertdetalle=$this->servdetalleaportaciondb->create(['id_transaccion'=>$folio_resp,'folio'=>$id_trans,'nombre_proyecto'=>$proyecto,'folio_sie'=>$folio,'id_programa'=>$id_programa,'nombre_programa'=>$programa,'ejercicio_fiscal'=>$ejercicio_fiscal,'modalidad'=>$modalidad_ejecucion,'contrato'=>$referencia_contrato,'numero_factura'=>$numero_factura,'estimacion_pagada'=>$estimacion_pagada,'partida'=>$partida,'fecha_retencion'=>$fecha_retencion,'monto_retencion'=>$monto_retencion,'razon_social_contratado'=>$razon_social,'dependencia_normativa'=>$dependencia_normativa,'dependencia_ejecutora'=>$dependencia_ejecutora,'proyecto'=>$proyecto,'desc_proyecto'=>$descripcion_proyecto,'programa'=>$programa,'desc_programa'=>$descripcion_programa,'subprograma','desc_subprograma'=>$descripcion_subprograma,'oficio'=>$oficio,'desc_oficio'=>$descripcion_oficio,'desc_clasificacion_geografica'=>$descripcion_clasificacion_geografica,'desc_dependencia_normativa'=>$descripcion_dependencia_normativa,'desc_dependencia_ejecutora'=>$descripcion_dependencia_ejecutora,'fecha_tramite'=>$date]);
 		if($email<>''){
-			//$this->SendEmial($url_resp,$folio_resp,$email);
+			$this->SendEmial($url_resp,$folio_resp,$email);
 		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
@@ -326,42 +306,19 @@ class ServiciosgeneralesController extends Controller
 		return json_encode($json_response);
     }
     private function wsToken($entidad,$clave)
-    {	
-    	
-    	$sopaBody='<tem:GeneraToken>';
-
-		$sopaBody=$sopaBody.'<tem:entidad>'.$entidad.'</tem:entidad>';
-		$sopaBody=$sopaBody.'<tem:clave>'.$clave.'</tem:clave>';
-
-		$sopaBody=$sopaBody.'</tem:GeneraToken>';
-    	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
-		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
-		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
-		//log::info($xmlRequest);
-		$client = new Client();
+    {
+		
 		$token='';
 		try {
-    		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
-            'Authenticate' => [],
-            'body' => $xmlRequest,
-            'headers' => [
-                "Content-Type" => "text/xml; charset=utf-8"
-            ]
-
+        $parameters=['entidad'=>$entidad,'clave'=>$clave];
+		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+            'encoding' => 'UTF-8',
+            'verifypeer'=>false,
+            'trace' => true
         ]);
-		
-        $xmlResponse=$response->getBody()->getContents();
-    	$soap = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $xmlResponse);
-		$xml = new \SimpleXMLElement($soap);
-		$body = $xml->xpath('//soapBody')[0];
-		$array = json_decode(json_encode((array)$body), TRUE);
-		//log::info($array);
-		foreach ($array as $e) {
-			foreach ($e as $k) {
-				$datos=json_decode(json_encode($k));
-				$token=$datos->sToken;				
-			}			
-		}
+		$responseXML =$server->GeneraToken($parameters)->GeneraTokenResult->sToken;
+		$token=(string)$responseXML;
+
 		} catch (\Exception $e) {
     		log::info('Exception:' . $e->getMessage());
 		}
@@ -545,42 +502,20 @@ class ServiciosgeneralesController extends Controller
     		'entidad' =>$entidad,
     		'tramite' =>$tramite
     	);
-	
-    	$json=json_encode($request_json);
-    	//log::info($request_json);
-    	$sopaBody='<tem:GeneraReferencia>';
-		$sopaBody=$sopaBody.'<tem:json>'.$json.'</tem:json>';
-		$sopaBody=$sopaBody.'</tem:GeneraReferencia>';
-    	$soapHeader = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body>';
-		$soapFooter = '</soapenv:Body></soapenv:Envelope>';
-		$xmlRequest = $soapHeader . $sopaBody . $soapFooter;
-		$client = new Client();
 
-		try {
-    		$response = $client->request('POST', 'http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx', [
-            'Authenticate' => [],
-            'body' => $xmlRequest,
-            'headers' => [
-                "Content-Type" => "text/xml; charset=utf-8"
-            ]
-
-        ]);
 		$repuesta;
 		$datos;
-        $xmlResponse=$response->getBody()->getContents();
-    	$soap = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $xmlResponse);
-		$xml = new \SimpleXMLElement($soap);
-		$body = $xml->xpath('//soapBody')[0];
-		$array = json_decode(json_encode((array)$body), TRUE);
-		foreach ($array as $e) {
-			log::info($e);
-			foreach ($e as $k) {
-				$datos=json_decode($k,true);
-				log::info($datos);
-				//$repuesta=$datos->id_transaccion_motor;				
-			}			
-		}
-		$json_d =json_decode(json_encode($datos));
+       	$json=json_encode($request_json);
+    	try {
+        $parameters=['json'=>$json];
+		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+            'encoding' => 'UTF-8',
+            'verifypeer'=>false,
+            'trace' => true
+        ]);
+		$datos =$server->GeneraReferencia($parameters)->GeneraReferenciaResult;
+		$json_d =json_decode($datos);
+		
 		$folio_resp=$json_d->id_transaccion_motor;
 		$url_resp=$json_d->url_recibo;
 		$json_response=array();
@@ -610,7 +545,10 @@ class ServiciosgeneralesController extends Controller
 
 		return json_encode($json_response);
     }
-
+    public function pagoserviciosgenerales()
+    {
+    	return view('serviciosgenerales/pagoserviciosgenerales');
+    }
 
     private function plantillaEmail($url,$referencia)
     {
