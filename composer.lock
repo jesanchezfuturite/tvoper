@@ -4,8 +4,61 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6571ffc9e1bc913a3785ba9fd6c6a02b",
+    "content-hash": "96669b59851656aee4c8121283850170",
     "packages": [
+        {
+            "name": "artisaninweb/laravel-soap",
+            "version": "0.3.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/artisaninweb/laravel-soap.git",
+                "reference": "48f16b0d56c565bbe776d3242865e4b5c47d53e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/artisaninweb/laravel-soap/zipball/48f16b0d56c565bbe776d3242865e4b5c47d53e4",
+                "reference": "48f16b0d56c565bbe776d3242865e4b5c47d53e4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-soap": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Artisaninweb\\SoapWrapper\\ServiceProvider"
+                    ],
+                    "aliases": {
+                        "SoapWrapper": "Artisaninweb\\SoapWrapper\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Artisaninweb\\SoapWrapper": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael van de Rijt",
+                    "email": "me@mvdrijt.com"
+                }
+            ],
+            "description": "A SoapClient wrapper integration for Laravel",
+            "keywords": [
+                "client",
+                "laravel",
+                "soap",
+                "wrapper"
+            ],
+            "time": "2018-05-28T08:54:07+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
@@ -840,6 +893,7 @@
                     "email": "jakub.onderka@gmail.com"
                 }
             ],
+            "abandoned": "php-parallel-lint/php-console-color",
             "time": "2018-09-29T17:23:10+00:00"
         },
         {
@@ -886,6 +940,7 @@
                 }
             ],
             "description": "Highlight PHP code in terminal",
+            "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
