@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Servicios Generales <small>Pago Arrendamiento</small></h3>
+<h3 class="page-title">Servicios Generales <small>Pago Servicios Generales</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -13,7 +13,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Pago Arrendamiento</a>
+            <a href="#">Pago Servicios Generales</a>
         </li>
     </ul>
 </div>
@@ -27,7 +27,7 @@
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-cogs"></i>Pago Arrendamiento
+                <i class="fa fa-cogs"></i>Pago Servicios Generales
             </div>
         </div>
         <div class="portlet-body" id="divRemove">            
@@ -530,7 +530,7 @@
             contador=contador+1;
             document.getElementById('contar').value=contador;
             var nRegistro={id:contador,partida:partida_,consepto:consepto_,monto:monto_};
-            if(arrayP.length ==0){
+            if(arrayP.length =='[]'){
                 arrayP = [];
             }else{
                 arrayP = JSON.parse(arrayP);
@@ -608,9 +608,6 @@
         document.getElementById('estado').value="";
         document.getElementById('nointerior').value="";
         document.getElementById('nointerior').value="";
-        document.getElementById('cp').value="";
-        document.getElementById('').value="";
-        document.getElementById('cp').value="";
         document.getElementById('cp').value="";
         document.getElementById('arrayP').value="[]";
         $("#addtable table").remove();

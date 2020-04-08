@@ -40,6 +40,8 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+//$app->register(Artisaninweb\SoapWrapper\ServiceProvider::class);
+//class_alias('Artisaninweb\SoapWrapper\Facade', 'SoapWrapper');
 /*
 $app->configure('mail');
 $app->configure('services');
