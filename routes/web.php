@@ -224,7 +224,8 @@ Route::post('/generate','ServiciosgeneralesController@wsReferencia');
 Route::get('/pagoarrendamiento','ServiciosgeneralesController@pagoArrendamiento');
 Route::post('/pagoarrendamiento-insert','ServiciosgeneralesController@wsArrendamientoR');
 
-
+/************************ PAGO SERVICIOS GENERALES *******************/
+Route::get('/pagoservicios','ServiciosgeneralesController@pagoserviciosgenerales');
 
 /*/*******************************************************************************/
 
