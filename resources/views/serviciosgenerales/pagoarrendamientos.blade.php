@@ -134,6 +134,14 @@
                                                         </div>
                                                     </div>
                                                 </div><br>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <label for="correo"class="col-md-5 control-label text-left"><strong>Correo Electronico:</strong></label>
+                                                        <div class="col-md-7">
+                                                            <input type="text" name="correo" id="correo" class="form-control valida-num" placeholder="Correo Electronico...">
+                                                        </div>
+                                                    </div>
+                                                </div><br>
                                                 <hr>
                                                     
                                                 <div class="row">
@@ -240,6 +248,10 @@
                                                 <div class="row">
                                                         <label class="col-md-6 text-left"><strong>CP:</strong></label>
                                                         <label class="col-md-6" id="lbl_cp">Sin Asignar</label>
+                                                </div><br>
+                                                <div class="row">
+                                                        <label class="col-md-6 text-left"><strong>Correo Electronico:</strong></label>
+                                                        <label class="col-md-6" id="lbl_correo">Sin Asignar</label>
                                                 </div><br>
                                                 <div class="row">
                                                     <div id="addtable2">
@@ -384,10 +396,11 @@
         var estado_=$("#estado").val();
         var cp_=$("#cp").val();
         var pagos_=$("#arraypagos").val();
+        var correo=$("#correo").val();
         $.ajax({
            method: "post",           
            url: "{{ url('/pagoarrendamiento-insert') }}",
-           data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
+           data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,email:correo,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {             
             if(response=='[]'){
                 Command: toastr.warning("Error al Generar la Referencia", "Notifications")
@@ -482,6 +495,7 @@
         var municipio_=$("#municipio").val();
         var estado_=$("#estado").val();
         var cp_=$("#cp").val();
+        var correo=$("#correo").val();
         $('#lbl_nombre').text(nombre_);
         $('#lbl_rfc').text(rfc_);
         $('#lbl_curp').text(curp_);
@@ -492,6 +506,7 @@
         $('#lbl_municipio').text(municipio_);
         $('#lbl_estado').text(estado_);
         $('#lbl_cp').text(cp_);
+        $('#lbl_correo').text(correo);
 
         var arrayP=$("#arraypagos").val();
          arrayP = JSON.parse(arrayP);
@@ -609,10 +624,8 @@
         document.getElementById('nointerior').value="";
         document.getElementById('nointerior').value="";
         document.getElementById('cp').value="";
-        document.getElementById('').value="";
-        document.getElementById('cp').value="";
-        document.getElementById('cp').value="";
-        document.getElementById('arrayP').value="[]";
+        document.getElementById('correo').value="";
+        document.getElementById('arraypagos').value="[]";
         $("#addtable table").remove();
         limpiaP();
 
