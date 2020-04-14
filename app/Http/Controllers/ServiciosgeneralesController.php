@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use phpmailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-//use GuzzleHttp\Client;
+use GuzzleHttp\Client;
 use SimpleXMLElement;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 use App\Soap\Request\GetConversionAmount;
@@ -325,6 +325,17 @@ class ServiciosgeneralesController extends Controller
 		
 		return $token;
     }
+    private function loadXmlStringAsArray($xml)
+    {
+    	$array=(array)@simplexml_load_string($xml);
+    	if(!$array)
+    	{
+    		$array=(array)json_decode($xml,true);
+    	}else{
+    		$array=(array)json_decode(json_encode($array),true);
+    	}
+    	return $array;
+    }
     public function SendEmial($url,$referencia,$email)
     {
         //$url='http://localhost:8080';
@@ -402,7 +413,7 @@ class ServiciosgeneralesController extends Controller
     	$estado=$request->estado;
     	$cp=$request->cp;
     	$pagos=$request->pagos;
- 		
+ 		$email=$request->email;
         
         
     	$request_json=array();
@@ -534,9 +545,9 @@ class ServiciosgeneralesController extends Controller
     		$insertdetalle=$this->servdetalleserviciosdb->create(['idTrans'=>$folio_resp,'Folio'=>$folio_resp,'rfc'=>$rfc,'curp'=>$curp,'calle'=>$calle,'no_ext'=>$noexterior,'no_int'=>$nointerior,'colonia'=>$colonia,'municipio_delegacion'=>$municipio,'cp'=>$cp,'monto'=>$j->monto,'partida'=>$j->partida,'estado_pais'=>$estado,'consepto'=>$j->consepto,'nombre_razonS'=>'IVAN','desc_partida'=>$desc_partida]);    		
     	}
 		
-		/*if($email<>''){
+		if($email<>''){
 			$this->SendEmial($url_resp,$folio_resp,$email);
-		}*/
+		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
     		log::info('Exception:' . $e->getMessage());
