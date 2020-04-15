@@ -539,7 +539,7 @@ class ConciliacionController extends Controller
         try{
 
             //$info = $this->pr->findWhereBetween('created_at',$between);
-            $info = $this->pr->findWhere( [ 'fecha_ejecucion' => $date ] );
+            $info = $this->pr->groupBy('referencia')->findWhere( [ 'fecha_ejecucion' => $date ] );
 
             return $info;
                
