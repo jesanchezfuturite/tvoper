@@ -297,6 +297,7 @@
                 var tabla = '<div class="portlet-body"><table class="table table-hover"><thead><tr><th>Índice de transacción</th><th>Referencia</th><th>Monto en archivo</th><th>Monto total</th><th>Monto de mensajeria</th><th>Archivo fuente</th><th>Fecha de carga para conciliar</th><th>Estatus</th></tr></thead><tbody>';
                     
                 $.each(info, function(i,d){
+                    
                     var internet = d.internet;
                     var repositorio = d.repositorio;
 
