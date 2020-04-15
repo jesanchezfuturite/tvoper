@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "96669b59851656aee4c8121283850170",
+    "content-hash": "f9beb6d8c80c3d4084da94f35d446f9c",
     "packages": [
         {
             "name": "artisaninweb/laravel-soap",
@@ -3992,7 +3992,7 @@
                 }
             ],
             "description": "PDO userspace driver proxying calls to PHP OCI8 driver",
-            "time": "2019-05-09T02:45:31+00:00"
+            "time": "2019-05-09T02:45:31+00:00:00"
         }
     ],
     "packages-dev": [
