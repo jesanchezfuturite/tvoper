@@ -539,7 +539,7 @@ class ConciliacionController extends Controller
         try{
 
             //$info = $this->pr->findWhereBetween('created_at',$between);
-            $info = $this->pr->findWhere( [ 'fecha_ejecucion' => $date ] );
+            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('transaccion_id')->get();
 
             return $info;
                
@@ -576,16 +576,13 @@ class ConciliacionController extends Controller
         $fuente = $request->fuente;
 
         try{
-            $data = $this->pr->findWhere(
-                [
-                    'cuenta_banco' => $cuenta,
-                    'cuenta_alias' => $alias,
-                    // ['created_at','>', $date_from],
-                    // ['created_at','<', $date_to],
-                    'fecha_ejecucion' => $f,
-                    ['status','<>','p'],
-                ]
-            );
+
+            $data = $this->pr
+                        ->where('cuenta_banco',$cuenta)
+                        ->where('cuenta_alias',$alias)
+                        ->where('fecha_ejecucion',$f)
+                        ->where('status','<>','p')
+                        ->groupBy('transaccion_id')->get();
 
         }catch( \Exception $e){
            Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -614,13 +611,6 @@ class ConciliacionController extends Controller
                                     "repositorio"  => $d
                                 );
                             }
-                        }else{
-                            Log::info('[Conciliacion:getAnomalia] ERROR detalle transaccion internet ... ' );     
-                            Log::info('... Transaccion ID >' . $d->transaccion_id);
-                            Log::info('... ID' . $d->id);
-                            $folio_id []= array(
-                                    "conciliacion"  => $d
-                                );
                         }
 
                     }catch( \Exception $e ){
