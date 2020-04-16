@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Servicios Generales <small>Retenciones al Millar</small></h3>
+<h3 class="page-title">Servicios <small>Retenciones al Millar</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -9,7 +9,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Servicios Generales </a>
+            <a href="#">Servicios </a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
