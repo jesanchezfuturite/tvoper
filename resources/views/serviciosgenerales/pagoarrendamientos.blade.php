@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Servicios Generales <small>Pago Arrendamiento</small></h3>
+<h3 class="page-title">Servicios <small>Pago Arrendamiento</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -9,7 +9,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Servicios Generales </a>
+            <a href="#">Servicios </a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
@@ -138,7 +138,7 @@
                                                     <div class="form-group">
                                                         <label for="correo"class="col-md-5 control-label text-left"><strong>Correo Electronico:</strong></label>
                                                         <div class="col-md-7">
-                                                            <input type="text" name="correo" id="correo" class="form-control valida-num" placeholder="Correo Electronico...">
+                                                            <input type="text" name="correo" id="correo" class="form-control" placeholder="Correo Electronico...">
                                                         </div>
                                                     </div>
                                                 </div><br>
