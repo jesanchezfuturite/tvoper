@@ -348,7 +348,7 @@
               Command: toastr.warning("Ninguno Fue Agregado!", "Notifications")
             }else{ 
              
-              Command: toastr.success(" "+response+" Registados!", "Notifications")}
+              Command: toastr.success(" "+response+" Registrados!", "Notifications")}
               TableTramiteEntidad();
             })
         .fail(function( msg ) {

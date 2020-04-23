@@ -65,6 +65,8 @@ Route::get('/banco-find-allWhere','MotorpagosController@findBancoAllWhere');
 Route::get('/tiposervicio-find-all-where','MotorpagosController@findTipoServicioAllWhere');
 Route::get('/tiposervicio-find-all','MotorpagosController@findTipoServicioAll');
 Route::post('/entidad-find-all','MotorpagosController@findEntidadAll');
+Route::post('/entidad-familia','MotorpagosController@entidadfamilia');
+
 
 /********************  metodo tipo PagoTramite  ***************/
 

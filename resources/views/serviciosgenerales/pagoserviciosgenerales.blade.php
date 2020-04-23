@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Servicios Generales <small>Pago Servicios Generales</small></h3>
+<h3 class="page-title">Servicios <small>Pago Servicios Generales</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -9,7 +9,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Servicios Generales </a>
+            <a href="#">Servicios</a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
@@ -134,6 +134,14 @@
                                                         </div>
                                                     </div>
                                                 </div><br>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <label for="correo"class="col-md-5 control-label text-left"><strong>Correo Electronico:</strong></label>
+                                                        <div class="col-md-7">
+                                                            <input type="text" name="correo" id="correo" class="form-control" placeholder="Correo Electronico...">
+                                                        </div>
+                                                    </div>
+                                                </div><br>
                                                 <hr>
                                                     
                                                 <div class="row">
@@ -157,9 +165,9 @@
                                                 </div><br>
                                                 <div class="row">
                                                     <div class="form-group">
-                                                        <label for="consepto"class="col-md-5 control-label text-left"><strong>Consepto:</strong></label>
+                                                        <label for="concepto"class="col-md-5 control-label text-left"><strong>Concepto:</strong></label>
                                                         <div class="col-md-7">
-                                                            <input type="text" name="consepto" id="consepto" class="form-control" placeholder="Consepto...">
+                                                            <input type="text" name="concepto" id="concepto" class="form-control" placeholder="Concepto...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -240,6 +248,10 @@
                                                 <div class="row">
                                                         <label class="col-md-6 text-left"><strong>CP:</strong></label>
                                                         <label class="col-md-6" id="lbl_cp">Sin Asignar</label>
+                                                </div><br>
+                                                <div class="row">
+                                                        <label class="col-md-6 text-left"><strong>Correo Electronico:</strong></label>
+                                                        <label class="col-md-6" id="lbl_correo">Sin Asignar</label>
                                                 </div><br>
                                                 <div class="row">
                                                     <div id="addtable2">
@@ -384,10 +396,11 @@
         var estado_=$("#estado").val();
         var cp_=$("#cp").val();
         var pagos_=$("#arraypagos").val();
+        var correo=$("#correo").val();
         $.ajax({
            method: "post",           
            url: "{{ url('/pagoarrendamiento-insert') }}",
-           data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
+           data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,email:correo,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {             
             if(response=='[]'){
                 Command: toastr.warning("Error al Generar la Referencia", "Notifications")
@@ -457,7 +470,7 @@
         var arrayP=$("#arraypagos").val();
         arrayP = JSON.parse(arrayP);
 
-        if(nombre_.length<3)
+        if(nombre_.length<6)
         {
             Command: toastr.warning("Campo Nombre, Razón o Denominación Social, Requerido!", "Notifications")
         }else if(arrayP.length==0)
@@ -482,6 +495,7 @@
         var municipio_=$("#municipio").val();
         var estado_=$("#estado").val();
         var cp_=$("#cp").val();
+        var correo=$("#correo").val();
         $('#lbl_nombre').text(nombre_);
         $('#lbl_rfc').text(rfc_);
         $('#lbl_curp').text(curp_);
@@ -492,16 +506,17 @@
         $('#lbl_municipio').text(municipio_);
         $('#lbl_estado').text(estado_);
         $('#lbl_cp').text(cp_);
+        $('#lbl_correo').text(correo);
 
         var arrayP=$("#arraypagos").val();
          arrayP = JSON.parse(arrayP);
         
         $("#addtable2 table").remove();
-        $("#addtable2").append('<table class="table" id="table2"><thead><tr><th>partida</th><th>Consepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
+        $("#addtable2").append('<table class="table" id="table2"><thead><tr><th>partida</th><th>Concepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
         $.each(arrayP, function(i, item) {
             $("#table2 tbody").append('<tr>'
                 +'<td>'+item.partida+'</td>'
-                +'<td>'+item.consepto+'</td>'
+                +'<td>'+item.concepto+'</td>'
                 +'<td>'+item.monto+'</td>'
                 +'</tr>'
             );
@@ -512,14 +527,14 @@
     {
         var arrayP=$("#arraypagos").val();
         var partida_=$("#partida").val();
-        var consepto_=$("#consepto").val();
+        var concepto_=$("#concepto").val();
         var monto_=$("#monto").val();
         if(partida_=="limpia")
         {
             Command: toastr.warning("Seleccione una Partida, Requerido!", "Notifications")
-        }else if(consepto_.length<1)
+        }else if(concepto_.length<1)
         {
-            Command: toastr.warning("Campo Consepto, Requerido!", "Notifications")
+            Command: toastr.warning("Campo Concepto, Requerido!", "Notifications")
         }else if(monto_.length<1)
         {   
             Command: toastr.warning("Campo Monto, Requerido!", "Notifications")
@@ -529,15 +544,15 @@
             var contador=$("#contar").val();
             contador=contador+1;
             document.getElementById('contar').value=contador;
-            var nRegistro={id:contador,partida:partida_,consepto:consepto_,monto:monto_};
-            if(arrayP.length =='[]'){
+            var nRegistro={id:contador,partida:partida_,concepto:concepto_,monto:monto_};
+            if(arrayP.length ==0){
                 arrayP = [];
             }else{
                 arrayP = JSON.parse(arrayP);
 
             }
             var contador=arrayP.length;
-            if(contador==2)
+            if(contador==5)
             {
                 Command: toastr.warning("Maximo 2 Registros", "Notifications")
             }else{
@@ -554,7 +569,7 @@
     function limpiaP() {
         document.getElementById('monto').value="";
         $("#partida").val("limpia").change();
-        document.getElementById('consepto').value="";
+        document.getElementById('concepto').value="";
     }
     function eliminarpartida(id)
     {
@@ -584,11 +599,11 @@
             $("#addtable table").remove();
         }else{
             $("#addtable table").remove();
-            $("#addtable").append('<table class="table" id="table"><thead><tr><th>partida</th><th>Consepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
+            $("#addtable").append('<table class="table" id="table"><thead><tr><th>partida</th><th>Concepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
             $.each(arrayP, function(i, item) {
                 $("#table tbody").append('<tr>'
                     +'<td>'+item.partida+'</td>'
-                    +'<td>'+item.consepto+'</td>'
+                    +'<td>'+item.concepto+'</td>'
                     +'<td>'+item.monto+'</td>'
                     +'<td> <a class="btn btn-icon-only red" href="#static3" data-toggle="modal" data-original-title="" title="Quitar" onclick="eliminarpartida(\''+item.id+'\')"><i class="fa fa-trash-o"></i></a></td>'
                     +'</tr>'
@@ -609,7 +624,8 @@
         document.getElementById('nointerior').value="";
         document.getElementById('nointerior').value="";
         document.getElementById('cp').value="";
-        document.getElementById('arrayP').value="[]";
+        document.getElementById('correo').value="";
+        document.getElementById('arraypagos').value="[]";
         $("#addtable table").remove();
         limpiaP();
 

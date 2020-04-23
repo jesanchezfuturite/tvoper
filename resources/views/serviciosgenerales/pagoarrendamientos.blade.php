@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">Servicios Generales <small>Pago Arrendamiento</small></h3>
+<h3 class="page-title">Servicios <small>Pago Arrendamiento</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -9,7 +9,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Servicios Generales </a>
+            <a href="#">Servicios </a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
@@ -138,7 +138,7 @@
                                                     <div class="form-group">
                                                         <label for="correo"class="col-md-5 control-label text-left"><strong>Correo Electronico:</strong></label>
                                                         <div class="col-md-7">
-                                                            <input type="text" name="correo" id="correo" class="form-control valida-num" placeholder="Correo Electronico...">
+                                                            <input type="text" name="correo" id="correo" class="form-control" placeholder="Correo Electronico...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -165,9 +165,9 @@
                                                 </div><br>
                                                 <div class="row">
                                                     <div class="form-group">
-                                                        <label for="consepto"class="col-md-5 control-label text-left"><strong>Consepto:</strong></label>
+                                                        <label for="concepto"class="col-md-5 control-label text-left"><strong>Concepto:</strong></label>
                                                         <div class="col-md-7">
-                                                            <input type="text" name="consepto" id="consepto" class="form-control" placeholder="Consepto...">
+                                                            <input type="text" name="concepto" id="concepto" class="form-control" placeholder="Concepto...">
                                                         </div>
                                                     </div>
                                                 </div><br>
@@ -512,11 +512,11 @@
          arrayP = JSON.parse(arrayP);
         
         $("#addtable2 table").remove();
-        $("#addtable2").append('<table class="table" id="table2"><thead><tr><th>partida</th><th>Consepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
+        $("#addtable2").append('<table class="table" id="table2"><thead><tr><th>partida</th><th>Concepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
         $.each(arrayP, function(i, item) {
             $("#table2 tbody").append('<tr>'
                 +'<td>'+item.partida+'</td>'
-                +'<td>'+item.consepto+'</td>'
+                +'<td>'+item.concepto+'</td>'
                 +'<td>'+item.monto+'</td>'
                 +'</tr>'
             );
@@ -527,14 +527,14 @@
     {
         var arrayP=$("#arraypagos").val();
         var partida_=$("#partida").val();
-        var consepto_=$("#consepto").val();
+        var concepto_=$("#concepto").val();
         var monto_=$("#monto").val();
         if(partida_=="limpia")
         {
             Command: toastr.warning("Seleccione una Partida, Requerido!", "Notifications")
-        }else if(consepto_.length<1)
+        }else if(concepto_.length<1)
         {
-            Command: toastr.warning("Campo Consepto, Requerido!", "Notifications")
+            Command: toastr.warning("Campo Concepto, Requerido!", "Notifications")
         }else if(monto_.length<1)
         {   
             Command: toastr.warning("Campo Monto, Requerido!", "Notifications")
@@ -544,7 +544,7 @@
             var contador=$("#contar").val();
             contador=contador+1;
             document.getElementById('contar').value=contador;
-            var nRegistro={id:contador,partida:partida_,consepto:consepto_,monto:monto_};
+            var nRegistro={id:contador,partida:partida_,concepto:concepto_,monto:monto_};
             if(arrayP.length ==0){
                 arrayP = [];
             }else{
@@ -569,7 +569,7 @@
     function limpiaP() {
         document.getElementById('monto').value="";
         $("#partida").val("limpia").change();
-        document.getElementById('consepto').value="";
+        document.getElementById('concepto').value="";
     }
     function eliminarpartida(id)
     {
@@ -599,11 +599,11 @@
             $("#addtable table").remove();
         }else{
             $("#addtable table").remove();
-            $("#addtable").append('<table class="table" id="table"><thead><tr><th>partida</th><th>Consepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
+            $("#addtable").append('<table class="table" id="table"><thead><tr><th>partida</th><th>Concepto</th> <th>Monto</th><th></th> </tr> </thead><tbody></tbody></table>');
             $.each(arrayP, function(i, item) {
                 $("#table tbody").append('<tr>'
                     +'<td>'+item.partida+'</td>'
-                    +'<td>'+item.consepto+'</td>'
+                    +'<td>'+item.concepto+'</td>'
                     +'<td>'+item.monto+'</td>'
                     +'<td> <a class="btn btn-icon-only red" href="#static3" data-toggle="modal" data-original-title="" title="Quitar" onclick="eliminarpartida(\''+item.id+'\')"><i class="fa fa-trash-o"></i></a></td>'
                     +'</tr>'
