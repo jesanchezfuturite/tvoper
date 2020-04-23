@@ -106,7 +106,7 @@
 														</div>
 													</div>
 													<!--/span-->
-													<div class="col-md-6">
+													<div class="col-md-6"  hidden="true">
 														<div class="form-group">
 															<label class="control-label">Origen URL</label>
 															<input type="text" name="origen"class="form-control"id="origen" placeholder="Escribe la url..." autocomplete="off" >
@@ -115,7 +115,7 @@
 													<!--/span-->
 												</div>
 												<!--/row-->
-												<div class="row">
+												<div class="row" hidden="true">
 													<div class="col-md-6">
 														<div class="form-group">
 															<label class="control-label">Gpo Trans</label>
@@ -123,7 +123,7 @@
 														</div>
 													</div>
 													<!--/span-->
-													<div class="col-md-6">
+													<div class="col-md-6" hidden="true">
 														<div class="form-group">
 															<label class="control-label">Gpm</label>
 															<input type="text" name="gpm"class="form-control"id="gpm" placeholder="Escribe..." autocomplete="off" >
@@ -134,7 +134,7 @@
 												<div class="row">
 													
 													<!--/span-->
-													<div class="col-md-6">
+													<div class="col-md-6" hidden="true">
 														<div class="form-group">
 															<label class="control-label">Gpm Descripcion</label>
 															<input type="text" name="gpmdescripcion"class="form-control"id="gpmdescripcion" row="2" placeholder="Escribe..." autocomplete="off" >
@@ -165,8 +165,30 @@
 																Seleccione una Opcion </span>
 														</div>
 													</div>
-													<!--/span-->
-												</div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Familia</label>
+
+                                <select id="familia" class="select2me form-control" onchange="changeFamilia()">
+                                    <option value="limpia">-------</option>
+                                </select>
+                                <span class="help-block">
+                                Seleccione una Opcion </span>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="control-label">Entidad</label>
+
+                                <select id="entidadfamilia" class="select2me form-control">
+                                    <option value="limpia">-------</option>
+                                </select>
+                                <span class="help-block">
+                                Seleccione una Opcion </span>
+                            </div>
+                          </div>
+                          <!--/span-->
+                        </div>
 												<!--/row-->
 											</div>
 											<div class="form-actions left">
@@ -698,8 +720,52 @@
         calculoSujetoFind();
         UIBlockUI.init();  
         ComponentsPickers.init();       
-       //TableAdvanced.init();       
+       ItemsFamilia();       
     });
+  function ItemsFamilia()
+    {
+        $.ajax({
+        method: "get",            
+        url: "{{ url('/familia-find-all') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            $("#familia option").remove();
+            var Resp=$.parseJSON(response);
+            $('#familia').append(
+                "<option value='limpia'>------</option>"
+            );
+            $.each(Resp, function(i, item) {                
+                 $('#familia').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select", "Notifications")   });
+    }
+  function changeFamilia()
+  {
+    var familia_=$("#familia").val();
+     $.ajax({
+        method: "post",            
+        url: "{{ url('/entidad-familia') }}",
+        data: {id:familia_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            $("#entidadfamilia option").remove();
+            var Resp=$.parseJSON(response);
+            $('#entidadfamilia').append(
+                "<option value='limpia'>------</option>"
+            );
+            $.each(Resp, function(i, item) {                
+                 $('#entidadfamilia').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select", "Notifications")   });
+
+  }
   function currenciesFind()
   {
     $.ajax({
@@ -903,6 +969,8 @@
         document.getElementById('gpmdescripcion').value=item.descripcion_gpm;          
         $("#limitereferencia").val(item.limitereferencia).change();
         $("#tiporeferencia").val(item.tiporeferencia).change();
+        $("#familia").val(item.familia_id).change();
+        $("#entidadfamilia").val(item.entidad_id).change();
        console.log(item.tiporeferencia +" "+item.limitereferencia);
        
         });
@@ -920,6 +988,8 @@
     var gpmdescripcion=$("#gpmdescripcion").val();
     var limitereferencia=$("#limitereferencia").val();
     var tiporeferencia=$("#tiporeferencia").val();
+    var familia_=$("#familia").val();
+    var entidad_=$("#entidadfamilia").val();
     var id=$("#idupdate").val();
     if(desc.length<1)
     {
@@ -951,13 +1021,30 @@
         Command: toastr.warning("Tipo de Referencia Requerido!", "Notifications")
         document.getElementById('tiporeferencia').focus();
     }else
-    {
-        if(id=="")
+    { 
+      if(familia_=="limpia")
+      {
+      if(id=="")
         {
             insertTipoServicio();
         }else{
             updateTipoServicio();
+        } 
+        
+      }else{
+         if(entidad_=="limpia"){
+         Command: toastr.warning("Entidad Requerido!", "Notifications")
+          document.getElementById('entidadfamilia').focus(); 
+        }else{
+          if(id=="")
+          {
+            insertTipoServicio();
+          }else{
+            updateTipoServicio();
+          }
         }
+      }
+        
 
     }
   }
@@ -970,6 +1057,7 @@
     var gpmdescripcion=$("#gpmdescripcion").val();
     var limitereferencia_=$("#limitereferencia").val();
     var tiporeferencia_=$("#tiporeferencia").val();
+    var entidad_=$("#entidadfamilia").val();
     if(origen.length==0)
     {origen="url";}
     if(gpo.length==0)
@@ -981,7 +1069,7 @@
     $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-insert') }}",
-           data: { descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_, _token: '{{ csrf_token() }}' }
+           data: { descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad:entidad_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
      
@@ -1004,11 +1092,13 @@
     var gpmdescripcion=$("#gpmdescripcion").val();
     var limitereferencia_=$("#limitereferencia").val();
     var tiporeferencia_=$("#tiporeferencia").val();
+    var entidad_=$("#entidadfamilia").val();
+
     var id_=$("#idupdate").val();
     $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-update') }}",
-           data: { id:id_,descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_, _token: '{{ csrf_token() }}' }
+           data: { id:id_,descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad:entidad_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
      
@@ -1681,13 +1771,14 @@
   {
     $("#tiporeferencia").val("limpia").change();
     $("#limitereferencia").val("limpia").change();
+    $("#familia").val("limpia").change();
+    $("#entidadfamilia").val("limpia").change();
     document.getElementById('gpmdescripcion').value="";
     document.getElementById('gpm').value="";
     document.getElementById('gpo').value="";
     document.getElementById('origen').value="";
     document.getElementById('descripcion').value="";
     document.getElementById('idupdate').value="";
-
   }
   function limpiar_modal() {
     $("#tiporeferencia2").val("limpia").change();
