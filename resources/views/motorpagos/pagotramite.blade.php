@@ -32,62 +32,70 @@
         <div class="portlet-title">
             <div class="caption">
                 <i class="fa fa-bank"></i>Entidad
-            </div>
-            
+            </div>            
         </div>
         <div class="portlet-body">
         <div class="form-body">
+           <div class="row">
+              <div class="col-md-12 text-left"> 
+                <span class="help-block">&nbsp;</span>
+                  <span class="help-block">Selecciona una Opcion de Busqueda. </span>
+                        <div class="md-radio-inline">
+                            <div class="md-radio">
+                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="portramites" onclick="radiobuttons()" checked>
+                                    <label for="radio6">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>Tramites por Entidad.</label>
+                                    
+                                </div>|
+                                <div class="md-radio">
+                                    <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="soloentidad" onclick="radiobuttons()">
+                                    <label for="radio7">
+                                    <span></span>
+                                    <span class="check"></span>
+                                    <span class="box"></span>Solo Entidad.</label>
+                                </div>                                
+                        </div>                                                                 
+                    </div>                   
+        </div> 
+        <span class="help-block">&nbsp;</span>
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
-                    <label >&nbsp;&nbsp;Selecciona la Entidad para Mostrar los Tramites</label> 
+                    <label >Selecciona la Entidad para Mostrar los Tramites:</label> 
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                                       
-                        <select class="select2me form-control" id="optionEntidad" onchange="ChangeEntidadTramite()">
+                    <select class="select2me form-control" id="optionEntidad" onchange="ChangeEntidadTramite()">
                             <option>------</option>                           
                     </select>
                 </div>
            </div>
             </div>
-        </div>
-    </div>
-</div>
-</div>
-<div class="row">
-    <div class="portlet box blue">
-        <div class="portlet-title">
-            <div class="caption">
-                <i class="fa fa-bank"></i>Trámite
-            </div>
-            
-        </div>
-        <div class="portlet-body">
-        <div class="form-body">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="form-group">
-                    <label >&nbsp;&nbsp;Selecciona el trámite para configurar</label> 
+            <div id="showtramites">
+              <div class="row">            
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label >Selecciona el trámite para configurar:</label> 
+                  </div>
                 </div>
-            </div>
-            <div class="col-md-5">
-                <div class="form-group">
-                                       
-                        <select  class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
+                <div class="col-md-5">
+                  <div class="form-group">
+                    <select  class="select2me form-control" id="itemsTipoServicio" onchange="ChangeTitleTipoServicio()">
                             <option value="limpia">------</option>                           
                     </select>
+                  </div>
                 </div>
-           </div>
+              </div>
             </div>
         </div>
     </div>
 </div>
 </div>
-<div id="tituloTamite">
-<h3 class="page-title">TRAMITE NO SELECCIONADA: </h3>
-</div>
+
+<h2 class="page-title"><p id="tituloTramite">TRAMITE NO SELECCIONADA:</p> </h2>
 <div class="row">
     <div class="portlet box blue">
         <div class="portlet-title">
@@ -232,19 +240,35 @@
 <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
 <script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
 <script type="text/javascript">
-    jQuery(document).ready(function() {       
-       ComponentsPickers.init();
-       AddOptionBanco();
-       
-       FindEntidad();
-    }); 
-     function FindEntidad()
+  jQuery(document).ready(function() {       
+    ComponentsPickers.init();
+    AddOptionBanco();
+    FindEntidad();
+  });
+  function radiobuttons()
     {
-         $.ajax({
-           method: "get",            
-           url: "{{ url('/entidad-find') }}",
-           data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (responseinfo) {     
+        var option = document.querySelector('input[name = radio2]:checked').value;
+        $("#optionEntidad").val("limpia").change();
+        $("#itemsBancos").val("limpia").change();
+         $("#addTables div").remove();        
+        if(option=="soloentidad")
+        {
+           $("#showtramites").hide();
+           $("#tituloTramite").text("ENTIDAD NO SELECCIONADA:");
+
+        }else{
+          
+          $("#tituloTramite").text("TRAMITE NO SELECCIONADA:");
+          $("#showtramites").show();
+        }
+  }
+  function FindEntidad()
+  {
+    $.ajax({
+        method: "get",            
+        url: "{{ url('/entidad-find') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
           var item="";
           $("#optionEntidad option").remove();
@@ -257,40 +281,35 @@
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-    }
-    function ChangeEntidadTramite()
-    {
-      var entidad=$("#optionEntidad").val();
-      if(entidad=="limpia")
+  }
+  function ChangeEntidadTramite()
+  {
+    var option = document.querySelector('input[name = radio2]:checked').value;
+    $("#addTables div").remove();
+    $("#itemsBancos").val("limpia").change();       
+    if(option=="soloentidad")
       {
+        ChangeTitleEntidad();
+      }else{
+          
+        var entidad=$("#optionEntidad").val();
         $("#itemsTipoServicio option").remove();
-          $("#itemsTipoServicio").append("<option value='limpia'>-------</option>"
-            );
-           $("#itemsTipoServicio").val("limpia").change();
-             $("#tituloTamite h3").remove();
-        $("#tituloTamite").append("<h3 class='page-title'>TRAMITE NO SELECCIONADA: </h3>");
-       //document.getElementById('itemsBancos').value="limpia"; 
-         $("#itemsBancos").val("limpia").change();
-       $("#addTables div").remove();
-
-
+        $("#itemsTipoServicio").append("<option value='limpia'>-------</option>");
+        $("#tituloTramite").text("TRAMITE NO SELECCIONADA:");
+        if(entidad=="limpia")
+        {
+          $("#itemsTipoServicio").val("limpia").change();
+        }
+        else{        
+          AddOptionTipoServicio();
+        }
       }
-      else{
-        $("#itemsTipoServicio option").remove();
-          $("#itemsTipoServicio").append("<option value='limpia'>-------</option>"
-            );
-           $("#itemsTipoServicio").val("limpia").change();
-             $("#tituloTamite h3").remove();
-        $("#tituloTamite").append("<h3 class='page-title'>TRAMITE NO SELECCIONADA: </h3>");
-       //document.getElementById('itemsBancos').value="limpia"; 
-         $("#itemsBancos").val("limpia").change();
-       $("#addTables div").remove();
-        AddOptionTipoServicio();
-      }
+
+      
     }
     function AddOptionBanco() 
     {          
-            $.ajax({
+        $.ajax({
            method: "get",            
            url: "{{ url('/banco-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
@@ -339,56 +358,92 @@
     }
     function ChangeTitleTipoServicio()
     {
-         var title;
-         var titletramite=$("#itemsTipoServicio option:selected").text();
-         var tramite=$("#itemsTipoServicio").val();
-         if(tramite=="limpia"){
-            title="TRAMITE NO SELECCIONADA";
-             
-         }else{
-            title=titletramite; 
-            
-         }
-        $("#tituloTamite h3").remove();
-        $("#tituloTamite").append("<h3 class='page-title'>"+title+": </h3>");
-       //document.getElementById('itemsBancos').value="limpia"; 
-         $("#itemsBancos").val("limpia").change();
-       $("#addTables div").remove();
+      var title;
+      var titletramite=$("#itemsTipoServicio option:selected").text();
+      var tramite=$("#itemsTipoServicio").val();
+      if(tramite=="limpia"){
+        title="TRAMITE NO SELECCIONADA";
+      }else{
+        title=titletramite; 
+      }
+      $("#tituloTramite").text(title+":");
+      $("#itemsBancos").val("limpia").change();
+      $("#addTables div").remove();
+
+    }
+    function ChangeTitleEntidad()
+    {
+      var title;
+      var titletramite=$("#optionEntidad option:selected").text();
+      var tramite=$("#optionEntidad").val();
+      if(tramite=="limpia"){
+        title="ENTIDAD NO SELECCIONADA";
+      }else{
+        title=titletramite; 
+      }
+      $("#tituloTramite").text(title+":");
+      $("#itemsBancos").val("limpia").change();
+      $("#addTables div").remove();
 
     }
     function existeID()
     {
         
          var valueBanco=$("#itemsBancos").val();
-          var valueServicio=$("#itemsTipoServicio").val();
-         //console.log(valueBanco);
-         if(valueBanco==null)
-          {
-            Command: toastr.warning("Bancos No Seleccionados!", "Notifications")
-          }else if(valueServicio=="limpia")
+        var valueServicio=$("#itemsTipoServicio").val();
+        var valueEntidad=$("#optionEntidad").val();
+         var option = document.querySelector('input[name = radio2]:checked').value; 
+        if(valueBanco==null)
+        {
+          Command: toastr.warning("Bancos No Seleccionados!", "Notifications")
+        }else if(option=="portramites")
+        {
+          if(valueServicio=="limpia")
           {
             Command: toastr.warning("Servicio No Seleccionado!", "Notifications")
           }else{
-          valueBanco.forEach(function(element) { 
-          var titlebanco=$("#itemsBancos option[value="+element+"]").text();
-          if ( $("#Add"+element+"").length > 0 ) 
-            {                
+            valueBanco.forEach(function(element) { 
+              var titlebanco=$("#itemsBancos option[value="+element+"]").text();
+              if( $("#Add"+element+"").length > 0 ) 
+              {                
             
-            }
-            else{          
-            
-                FindTipoServicio(element,titlebanco);
+              }
+              else{
+                FindTipoServicio(element,titlebanco,option);
               }
             }); 
-        }    
+          }
+        }else{
+          if(valueEntidad=="limpia")
+          {
+            Command: toastr.warning("Entidad No Seleccionado!", "Notifications")
+          }else{
+            valueBanco.forEach(function(element) { 
+              var titlebanco=$("#itemsBancos option[value="+element+"]").text();
+              if( $("#Add"+element+"").length > 0 ) 
+              {                
+            
+              }
+              else{
+                FindTipoServicio(element,titlebanco,option);
+              }
+            }); 
+          }    
+        } 
     
     }
-    function FindTipoServicio(id_,nombreBanco)
+    function FindTipoServicio(id_,nombreBanco,option_)
     {
         var valueBanco= id_;//$("#itemsBancos").val();
         var titlebanco=nombreBanco;//$("#itemsBancos option:selected").text();       
-        var valueServicio=$("#itemsTipoServicio").val();          
-        if(valueServicio=="limpia")
+        //var valueServicio=$("#itemsTipoServicio").val();
+        if(option_=="portramites")
+          {
+            var TipoServ=$("#itemsTipoServicio").val();
+          }else{
+            var TipoServ=$("#optionEntidad").val();
+        }          
+        if(TipoServ=="limpia")
         {
             Command: toastr.warning("Tramite No Seleccionado", "Notifications")
              document.getElementById('itemsBancos').value="limpia";
@@ -399,15 +454,14 @@
             
         }else
         {
-            addTablaVacio(titlebanco,valueBanco);
-            FindCuentasBancarias(valueBanco);
-
-        var TipoServ=$("#itemsTipoServicio").val();
-        var IdBanc= valueBanco;//$("#itemsBancos").val();
+          addTablaVacio(titlebanco,valueBanco);
+          FindCuentasBancarias(valueBanco);           
+        
+          var IdBanc= valueBanco;
          $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-find') }}",
-           data: {idBanco:IdBanc,idTiposervicio:TipoServ,_token:'{{ csrf_token() }}'}  })
+           data: {idBanco:IdBanc,idTiposervicio:TipoServ,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             var Resp=$.parseJSON(responseTipoServicio);          
           var item="";
@@ -419,14 +473,14 @@
           var min=0;
           $("#table"+IdBanc+" tbody tr").remove();
         $.each(Resp, function(i, item) {
-                 var benef=$.parseJSON(item.beneficiario);
-                  $.each(benef, function(ii, item2) {
-                        Servicio=item2.servicio;
-                        Cuenta=item2.cuenta;
-                  });
-                  max=item.monto_max;
-                  min=item.monto_min;
-                 $("#table"+IdBanc+"").append("<tr>"
+            var benef=$.parseJSON(item.beneficiario);
+            $.each(benef, function(ii, item2) {
+              Servicio=item2.servicio;
+              Cuenta=item2.cuenta;
+          });
+              max=item.monto_max;
+              min=item.monto_min;
+              $("#table"+IdBanc+"").append("<tr>"
                     +"<td>"+Cuenta+"</td>"
                     +"<td>"+Servicio+"</td>"
                     +"<td>"+item.metodopago+"</td>"                     
@@ -477,11 +531,14 @@ function FindCuentasBancarias(banco_)
 function findPagoTramite(id_,banco_,idbanco_)
 {
 
- document.getElementById('idTramite').value=id_;
+    document.getElementById('idTramite').value=id_;
+    var valueEntidad=$("#optionEntidad").val();
+    var option_ = document.querySelector('input[name = radio2]:checked').value;
+
     $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-find-where') }}",
-           data: {id:id_,_token:'{{ csrf_token() }}'}  })
+           data: {id:id_,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
         var Resp=$.parseJSON(responseinfo);         
         var item="";
@@ -501,7 +558,8 @@ function findPagoTramite(id_,banco_,idbanco_)
 }
 function updatePagoTramite(banco_,idbanco_)
 {
-      var id_=$("#idTramite").val();
+    
+    var id_=$("#idTramite").val();
     var descripcion_=$("#descripcion").val();
     var fechaInicio=$("#datetime1").val();
     var fechaFin=$("#datetime2").val();
@@ -549,6 +607,8 @@ function actualizaPagoTramite(idbanco_)
     fechaInicio=fechaInicio.replace("/","-");    
     fechaFin=fechaFin.replace("/","-");
     fechaFin=fechaFin.replace("/","-");
+    var valueEntidad=$("#optionEntidad").val();
+    var option_ = document.querySelector('input[name = radio2]:checked').value;
      if(fechaInicio=="30-11-1")
      {
       fechaInicio="00-00-0000";
@@ -560,7 +620,7 @@ function actualizaPagoTramite(idbanco_)
     $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-update') }}",
-           data: {id:id_,descripcion:descripcion_,fecha_inicio:fechaInicio,fecha_fin:fechaFin,_token:'{{ csrf_token() }}'}  })
+           data: {id:id_,descripcion:descripcion_,fecha_inicio:fechaInicio,fecha_fin:fechaFin,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
             if(responseinfo=="true")
                 {Command: toastr.success("Success", "Notifications")
@@ -582,10 +642,13 @@ function deletedPagoTramite(id_,banco_,idbanco_)
 function eliminarRegistro(banco_,idbanco_)
 {
     var id_=$("#idregistro").val();
+     var valueEntidad=$("#optionEntidad").val();
+    var option_ = document.querySelector('input[name = radio2]:checked').value;
+
     $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-delete') }}",
-           data: {id:id_,_token:'{{ csrf_token() }}'}  
+           data: {id:id_,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  
        })
         .done(function (responseinfo) {
             if(responseinfo=="true")
@@ -612,22 +675,29 @@ function InsertPagoTramite(id_)
 }
 function PagoTramite(id_)
 {
-     var Serv=$("#itemsTipoServicio").val();
-     var CuentaB=$("#CuentasOption"+id_+"").val();
-     if(Serv=="limpia")
+    
+     var idcuentaBanco=$("#CuentasOption"+id_+"").val(); 
+     var entidad_=$("#optionEntidad").val();
+     var option_ = document.querySelector('input[name = radio2]:checked').value;
+     if(option_=="soloentidad")
+      {
+         var TipoServ=$("#optionEntidad").val();
+      }else{
+         var TipoServ=$("#itemsTipoServicio").val();
+      }
+
+     if(TipoServ=="limpia")
      {
-        Command: toastr.warning("No Success, No Selected Tipo Tramite", "Notifications")
-     }else if(CuentaB=="limpia")
-        {
+        Command: toastr.warning("No Success, Entidad O Tramite Sin Seleccionar", "Notifications")
+     }else if(idcuentaBanco=="limpia")
+      {
         Command: toastr.warning("Cuenta Banco Sin Seleccionar, Requerido!", "Notifications")
-     }else{
-     var TipoServ=$("#itemsTipoServicio").val();
-     var idcuentaBanco=$("#CuentasOption"+id_+"").val();       
+     }else{      
 
          $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-insert') }}",
-           data: {Id_Banco:idcuentaBanco,Id_tiposervicio:TipoServ,_token:'{{ csrf_token() }}'}  })
+           data: {Id_Banco:idcuentaBanco,Id_tiposervicio:TipoServ,option:option_,entidad:entidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {           
           if(responseTipoServicio=="true")        
          {
@@ -644,11 +714,17 @@ function PagoTramite(id_)
 }
 function ActualizarTabla(idbanco_)
 {
-    var TipoServ=$("#itemsTipoServicio").val();
+    var option_ = document.querySelector('input[name = radio2]:checked').value;
+    if(option_=="soloentidad"){
+      var TipoServ=$("#optionEntidad").val();
+    }else{
+      var TipoServ=$("#itemsTipoServicio").val();
+    }
+    
       $.ajax({
            method: "POST",            
            url: "{{ url('/pagotramite-find') }}",
-           data: {idBanco:idbanco_,idTiposervicio:TipoServ,_token:'{{ csrf_token() }}'}  })
+           data: {idBanco:idbanco_,idTiposervicio:TipoServ,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);
             var Resp=$.parseJSON(responseTipoServicio);          

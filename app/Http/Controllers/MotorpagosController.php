@@ -630,38 +630,51 @@ return json_encode($response);
     {
         $idBanco=$request->idBanco;
         $idTiposervicio=$request->idTiposervicio;
+        $option=$request->option;
         /*atributos cuentas Banco*/        
         $beneficiario;
         $metodopago;
         $monto_min;
         $montop_max;
         /*end*/
-        $responseTipoServicio = array();        
-        $infoCuentasBanco=$this->cuentasbancodb->findWhere(['banco_id'=>$idBanco]);
-        foreach($infoCuentasBanco as $i)
-        {
-            $info2 = $this->metodopagodb->findWhere(['id' => $i->metodopago_id]);
-             foreach($info2 as $iii)
+        log::info($option);
+        $responseTipoServicio = array();  
+        if($option=="portramites"){      
+            $infoCuentasBanco=$this->cuentasbancodb->findWhere(['banco_id'=>$idBanco]);
+            foreach($infoCuentasBanco as $i)
+            {
+                $info2 = $this->metodopagodb->findWhere(['id' => $i->metodopago_id]);
+                foreach($info2 as $iii)
                 {
                     $metodopago=$iii->nombre;
                 }
                 $beneficiario=$i->beneficiario;
                 $monto_min=$i->moto_min;
                 $monto_max=$i->monto_max;
-
-            $infoTipoServicio = $this->pagotramitedb->findWhere(['cuentasbanco_id'=>$i->id,'tramite_id'=>$idTiposervicio]);
-             foreach($infoTipoServicio as $ii)
+                $infoTipoServicio = $this->pagotramitedb->findWhere(['cuentasbanco_id'=>$i->id,'tramite_id'=>$idTiposervicio]);
+                foreach($infoTipoServicio as $ii)
+                {
+                    $responseTipoServicio []= array(
+                    "id"=>$ii->id,              
+                    "metodopago" => $metodopago,
+                    "beneficiario" => $i->beneficiario,
+                    "monto_min" => $i->monto_min,
+                    "monto_max" => $i->monto_max
+                    );
+                }
+            }
+        }else{
+            $infoCuentasBanco=$this->entidadtramitedb->consultaCuenstasBanco(['entidad_id'=>$idTiposervicio],$idBanco);
+            foreach($infoCuentasBanco as $i)
             {
                 $responseTipoServicio []= array(
-                "id"=>$ii->id,              
-                "metodopago" => $metodopago,
-                "beneficiario" => $i->beneficiario,
-                "monto_min" => $i->monto_min,
-                "monto_max" => $i->monto_max
-
+                    "id"=>$i->cuentasbanco_id,              
+                    "metodopago" => $i->nombre,
+                    "beneficiario" => $i->beneficiario,
+                    "monto_min" => $i->monto_min,
+                    "monto_max" => $i->monto_max
                 );
             }
-            
         }
         return json_encode($responseTipoServicio);
     }
@@ -670,17 +683,34 @@ return json_encode($response);
     {
         $Id_tiposervicio=$request->Id_tiposervicio;
         $Id_Banco=$request->Id_Banco;
+        $option=$request->option;
+        $entidad=$request->entidad;
         $fechaActual=Carbon::now();
         $date=$fechaActual->format('Y-m-d h:i:s');
         $response = "false";
-        try{  
-            $buscapagotramite=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio]);
-            if($buscapagotramite->count()==0){
-                $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>'----','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
-                $response="true";
-            }else{
-                $response="false";
+        try{ 
+            $response="true";
+            if($option=="soloentidad"){
+
+                $findEntidadTram=$this->entidadtramitedb->findWhere(['entidad_id'=>$entidad]);
+                foreach ($findEntidadTram as $e) {
+
+                   $findCuentasBanco=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$e->tipo_servicios_id]);
+                   if($findCuentasBanco->count()==0)
+                   {
+                    $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$e->tipo_servicios_id,'descripcion'=>'----','estatus'=>'1','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
+                   }
+                }
+            } else{
+                $buscapagotramite=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio]);
+                if($buscapagotramite->count()==0){
+                    $info = $this->pagotramitedb->create(['cuentasbanco_id'=>$Id_Banco,'tramite_id'=>$Id_tiposervicio,'descripcion'=>'----','estatus'=>'1','fecha_inicio'=>'0000-00-00 00:00:00','fecha_fin'=>'0000-00-00 00:00:00','created_at'=>$date,'updated_at'=>$date]);
+                    
+                }else{
+                    $response="false";
+                }
             }
+            
         }
             catch( \Exception $e ){
             Log::info('Error Method limitereferencia: '.$e->getMessage());
@@ -742,10 +772,12 @@ return json_encode($response);
      public function findPagoTramiteWhere(Request $request)
     {
         $id=$request->id;
-        $response = array();   
-        $info = $this->pagotramitedb->findWhere(['id'=>$id]);
-
-           foreach($info as $i)
+        $option=$request->option;
+        $entidad=$request->entidad;
+        $response = array();  
+        if($option=="soloentidad"){
+            $info = $this->entidadtramitedb->consultaPagoTramite(['entidad_id'=>$entidad],$id);
+            foreach($info as $i)
             {
                 $date = Carbon::parse($i->fecha_inicio)->format('d/m/Y');
                 $date2 = Carbon::parse($i->fecha_fin)->format('d/m/Y');
@@ -755,7 +787,22 @@ return json_encode($response);
                 "fecha_fin" => $date2
 
                 );
-            } 
+            }
+        }else{
+            $info = $this->pagotramitedb->findWhere(['id'=>$id]);
+            foreach($info as $i)
+            {
+                $date = Carbon::parse($i->fecha_inicio)->format('d/m/Y');
+                $date2 = Carbon::parse($i->fecha_fin)->format('d/m/Y');
+                $response []= array(              
+                "descripcion" => $i->descripcion,
+                "fecha_inicio" =>$date,
+                "fecha_fin" => $date2
+
+                );
+            }
+        }
+         
 
        return json_encode($response);
     }
@@ -765,12 +812,25 @@ return json_encode($response);
         $descripcion=$request->descripcion;
         $fecha_inicio=$request->fecha_inicio;
         $fecha_fin=$request->fecha_fin;
+        $entidad=$request->entidad;
+        $option=$request->option;
         $response = "false";
         $date = Carbon::parse($fecha_inicio)->format('Y-m-d');
         $date2 = Carbon::parse($fecha_fin)->format('Y-m-d');
-        try{   
-        $info = $this->pagotramitedb->update(['descripcion'=>$descripcion,'fecha_inicio'=>$date,'fecha_fin'=>$date2],$id);
-         $response = "true";
+        try{ 
+            if($option=="soloentidad"){
+                $findEntidadTram=$this->entidadtramitedb->findWhere(['entidad_id'=>$entidad]);
+                foreach ($findEntidadTram as $e) {
+                    $findCuentas=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$id,'tramite_id'=>$e->tipo_servicios_id]);
+                    foreach ($findCuentas as $c) {
+                        $info = $this->pagotramitedb->update(['descripcion'=>$descripcion,'fecha_inicio'=>$date,'fecha_fin'=>$date2],$c->id);
+                    }
+                     
+                }
+            }else{
+                $info = $this->pagotramitedb->update(['descripcion'=>$descripcion,'fecha_inicio'=>$date,'fecha_fin'=>$date2],$id);  
+            }  
+            $response = "true";
         } catch( \Exception $e ){
             Log::info('Error Method limitereferencia: '.$e->getMessage());
         $response = "false";
@@ -781,10 +841,26 @@ return json_encode($response);
      public function deletePagoTramite(Request $request)
     {
         $id=$request->id;
+        $entidad=$request->entidad;
+        $option=$request->option;
         $response = "false";
-        try{   
-        $info = $this->pagotramitedb->deleteWhere(['id'=>$id]);
-         $response = "true";
+        try{
+            if($option=="soloentidad")
+            {
+                $findEntidadTram=$this->entidadtramitedb->findWhere(['entidad_id'=>$entidad]);
+                foreach ($findEntidadTram as $e) {
+                    $findCuentas=$this->pagotramitedb->findWhere(['cuentasbanco_id'=>$id,'tramite_id'=>$e->tipo_servicios_id]);
+                    foreach ($findCuentas as $c) {
+                        $info = $this->pagotramitedb->deleteWhere(['id'=>$c->id]);
+                    }
+                     
+                }
+
+            }else{
+                $info = $this->pagotramitedb->deleteWhere(['id'=>$id]);
+            }
+            
+            $response = "true";
         } catch( \Exception $e ){
             Log::info('Error Method limitereferencia: '.$e->getMessage());
         $response = "false";
@@ -1335,7 +1411,18 @@ return json_encode($response);
     public function findTipoServicio_whereId(Request $request)
     {
          $id=$request->id;
+
         $info=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$id]);
+        $findentidad=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id]);
+        $entidad;
+        $familia;
+        foreach ($findentidad as $k) {
+            $entidad=$k->entidad_id;
+        }
+        $findFamilia=$this->familiaentidaddb->findWhere(['entidad_id'=>$entidad]);
+        foreach ($findFamilia as $e) {
+            $familia=$e->familia_id;
+        }
         foreach ($info as $i) 
         {
              $response []= array(
@@ -1346,7 +1433,9 @@ return json_encode($response);
                 "gpm" => $i->id_gpm,
                 "descripcion_gpm" => $i->descripcion_gpm,
                 "tiporeferencia" => $i->tiporeferencia_id,
-                "limitereferencia" => $i->limitereferencia_id
+                "limitereferencia" => $i->limitereferencia_id,
+                "familia_id"=>$familia,
+                "entidad_id"=>$entidad
             );
         }
         return json_encode($response);
@@ -1360,11 +1449,20 @@ return json_encode($response);
         $descripcion_gpm=$request->descripcion_gpm;
         $tiporeferencia=$request->tiporeferencia;
         $limitereferencia=$request->limitereferencia;
+        $entidad=$request->entidad;
         $response="false";
-       
-
-             $info=$this->tiposerviciodb->create(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia]);
+        $info=$this->tiposerviciodb->create(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia]);
              $response="true";
+        $id=$info->id;
+        if($entidad !== 'limpia')
+        {
+            $findentidad=$this->entidadtramitedb->findWhere(['entidad_id'=>$entidad,'tipo_servicios_id'=>$id]);
+            if($findentidad->count()==0)
+            {
+                $insertEntidad=$this->entidadtramitedb->create(['entidad_id'=>$entidad,'tipo_servicios_id'=>$id]);
+            }
+        }
+
         
         return  $response;
     }
@@ -1377,11 +1475,29 @@ return json_encode($response);
         $descripcion_gpm=$request->descripcion_gpm;
         $tiporeferencia=$request->tiporeferencia;
         $limitereferencia=$request->limitereferencia;
+        $entidad_id=$request->entidad_id;
         $id=$request->id;
         $response="false";
     
-             $info=$this->tiposerviciodb->updateMenuByName(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$id]);
-             $response="true";
+        $info=$this->tiposerviciodb->updateMenuByName(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$id]);
+        $findentidad=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id,'entidad_id'=>$entidad_id]);
+        if($findentidad->count()==0)
+        {
+            $insertentidatram=$this->entidadtramitedb->create(['tipo_servicios_id'=>$id,'entidad_id'=>$entidad_id]);
+        }else{
+            $findentidadtram=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id]);
+            if($findentidadtram->count()==1)
+            {
+                $entidadtramite_id;
+                foreach ($findentidadtram as $v) {
+                    $entidadtramite_id=$v->id;
+                }
+                $updateEntidad=$this->entidadtramitedb->update(['entidad_id'=>$entidad_id],$id);
+            }else{
+
+            }
+        }
+        $response="true";
       
         return  $response;
     }public function deleteTipoServicio(Request $request) 
@@ -2301,6 +2417,7 @@ return json_encode($response);
         }else{
             
             $insert=$this->familiadb->create(['nombre'=>$nombre]);
+            log::info($insert->id);
             $response="true";
         }
 
@@ -3039,8 +3156,30 @@ return json_encode($response);
         ]);
         $response_procedure = $request_procedure->getBody()->getContents();
         //$response_procedure=json_decode($response_procedure);
-        log::info($response_procedure);
+        //log::info($response_procedure);
 
     }
+    public function entidadfamilia(Request $request)
+    {
+        $response=array();
+        $id=$request->id;
+        $findEntidadFamilia=$this->familiaentidaddb->findWhere(['familia_id'=>$id]);
+        foreach ($findEntidadFamilia as $f) {
+            $findEntidad=$this->entidaddb->findWhere(['id'=>$f->entidad_id]);
+            foreach ($findEntidad as $e) {
+               $response []=array(
+                'id'=>$e->id,
+                'nombre'=>$e->nombre
+               ); 
+            }
+        }
+        return json_encode($response);
+    }
+
+    public function insertEntidadTramites(Request $request)
+    {
+
+    }
+
 
 }
