@@ -236,7 +236,7 @@
                     as400 += '<td>'+cuenta_as400.cuenta_alias+'</td><td>'+cuenta_as400.cuenta+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.registros+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.registros_conciliados+'</td>';
-                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",1) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
+                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",3) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
                     as400 += '<td align="right">'+cuenta_as400.monto_conciliado+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.monto_no_conciliado+'</td>';
                     as400 += '</tr>';
