@@ -1084,7 +1084,7 @@ return json_encode($response);
         $id=$request->id;
         $tiporeferencia=$request->tiporeferencia;
         $limitereferencia=$request->limitereferencia;
-         Log::info($id);   
+         //Log::info($id);   
         $response = "false";
         try{ 
         foreach ($id as $i) {         
@@ -2417,7 +2417,7 @@ return json_encode($response);
         }else{
             
             $insert=$this->familiadb->create(['nombre'=>$nombre]);
-            log::info($insert->id);
+            //log::info($insert->id);
             $response="true";
         }
 

@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('CorteSendEmail:SendEmail')
                ->everyMinute();
                 /*->dailyAt('15:26');*/
-        /*$schedule->command('SendEmails:EmailGrid')
+        $schedule->command('SendEmails:EmailGrid')
                ->everyMinute();
                /*->dailyAt('15:26');*/
     }   

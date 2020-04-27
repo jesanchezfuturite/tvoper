@@ -179,8 +179,8 @@ class SendEmails extends Command
     }
     private function SendEmailTransaccion()
     {
-        //$this->SendEmial_referencia();
-        $this->SendEmial();
+        $this->SendEmial_referencia();
+        //$this->SendEmial();
         //$this->SendEmial_pagado();
         //$this->email_template();
     }
@@ -209,7 +209,7 @@ class SendEmails extends Command
                 $url_recibo=$url->url_recibo;
             }
 
-            $enviar=$this->SendGridMail($nombre,$correo,$url_recibo,$referencia);
+            $enviar=$this->SendEmial($nombre,$correo,$url_recibo,$referencia);
             if($enviar==202)
             {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
@@ -234,7 +234,7 @@ class SendEmails extends Command
              $nombre=$e->nombre.' '.$e->apellido_paterno;
             }
             $message="Se ha realizado el PAGO";
-            $enviar=$this->SendGridMail($nombre,$correo,$url,$referencia);
+            $enviar=$this->SendEmial($nombre,$correo,$url,$referencia);
             if($enviar==202)
             {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
@@ -244,10 +244,10 @@ class SendEmails extends Command
         }
 
     }
-    public function SendEmial()
+    public function SendEmial($nombre,$correo,$url,$referencia)
     {
-        $url='http://localhost:8080';
-        $referencia='222222444424';
+       // $url='http://localhost:8080';
+        //$referencia='222222444424';
          $mail = new PHPMailer(true);
          $message=$this->plantillaEmail($url,$referencia);
         try{
@@ -262,48 +262,13 @@ class SendEmails extends Command
             $mail->setFrom('juan.carlos.cruz.bautista@hotmail.com', 'NAME'); 
             $mail->Subject = 'MENSAJE PRUEBA';
             $mail->MsgHTML($message);
-            $mail->addAddress('juancarlos96.15.02@gmail.com' , 'Juan Carlos'); 
+            $mail->addAddress($correo , $nombre); 
             $mail->send();
         }catch(phpmailerException $e){
             log::info($e);
         }
     }
-    private function SendGridMail($email_name,$email_address,$url,$referencia)
-    {
-        if($email_address==''){
-            $res=404;
-        }else{
-        $api_key='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';
-        $template='d-da9fde4b030544708cb92264bac949b0';
-        $email_from='juan.carlos.cruz.bautista@hotmail.com';
-        $email_from_name='Test';
-        $email = new \SendGrid\Mail\Mail();
-        $email->setFrom($email_from, $email_from_name);
-        $email->setSubject("Mensaje Prueba");
-        $email->addTo($email_address,$email_name);
-        $email->addContent("text/html",'html');
-        $email->setTemplateId($template);
-        $email->addSubstitution("referencia",$referencia);
-        $email->addSubstitution("url_recibo",$url);
-        $sendgrid = new \SendGrid($api_key);
-        try {
-        $response = $sendgrid->send($email);        
-        } catch (Exception $e) {
-             $res=404;
-            log::info($e->getMessage() );
-        }
-        $res=$response->statusCode();
-        }
-        return $res;
-    }
-    ////adjuntar imagen
-    /*$att1 = new \SendGrid\Mail\Attachment();
-        $att1->setContent(file_get_contents(storage_path('app/archivo.txt')));
-        $att1->setType("application/octet-stream");
-        $att1->setFilename(basename(storage_path('app/archivo.txt')));
-        $att1->setDisposition("attachment");
-        $email->addAttachment($att1);*/
-
+    
     private function plantillaEmail($url,$referencia)
     {
         $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
