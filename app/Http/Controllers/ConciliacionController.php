@@ -486,8 +486,6 @@ class ConciliacionController extends Controller
                                     $monto_no_conciliado_otros += $t["amount"];
                                 }
                                 break;
-
-                                break;
                         }
                     
                     }
