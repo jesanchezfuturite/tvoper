@@ -411,6 +411,12 @@ class ConciliacionController extends Controller
                     $monto_conciliado_as400     = 0;
                     $monto_no_conciliado_as400  = 0;
 
+                    $total_conciliados_otros    = 0;
+                    $total_no_conciliados_otros = 0;
+                    $monto_conciliado_otros     = 0;
+                    $monto_no_conciliado_otros  = 0;
+
+
                     $cuenta = $b["cuenta"];
                     $alias  = $b["cuenta_alias"];
 
@@ -470,6 +476,17 @@ class ConciliacionController extends Controller
                                 }
                                 break;
                             default:
+                                // son los de AS400
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_otros ++;
+                                    $monto_conciliado_otros += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_otros ++;
+                                    $monto_no_conciliado_otros += $t["amount"];
+                                }
+                                break;
+
                                 break;
                         }
                     
@@ -504,12 +521,23 @@ class ConciliacionController extends Controller
                         "monto_no_conciliado"               => number_format($monto_no_conciliado_as400,2),
                         "registros"                         => $total_conciliados_as400 +$total_no_conciliados_as400,
                     );
+                        // otros
+                    $info_otros []= array(
+                        "cuenta"                            => $cuenta,
+                        "cuenta_alias"                      => $alias,
+                        "registros_conciliados"             => $total_conciliados_otros,
+                        "registros_no_conciliados"          => $total_no_conciliados_otros,
+                        "monto_conciliado"                  => number_format($monto_conciliado_otros,2),
+                        "monto_no_conciliado"               => number_format($monto_no_conciliado_otros,2),
+                        "registros"                         => $total_conciliados_otros +$total_no_conciliados_otros,
+                    );
                 }
                 $final [$bd]= array(
                     "descripcion"       => $info["descripcion"],
                     "info"              => $info_internet,
                     "info_repositorio"  => $info_repositorio, 
                     "info_as400"        => $info_as400, 
+                    "info_otros"        => $info_otros, 
                 );
             }        
         }else{

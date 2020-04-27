@@ -244,11 +244,34 @@
 
                 as400 += '</tbody></table>';
 
+
+                otros = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">AS400</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+
+                accounts_otros = info.info_otros;
+
+                $.each(accounts_otros,function(j,cuenta_as400){
+                    as400 += '<tr>';
+                    as400 += '<td>'+cuenta_otros.cuenta_alias+'</td><td>'+cuenta_otros.cuenta+'</td>';
+                    as400 += '<td align="right">'+cuenta_otros.registros+'</td>';
+                    as400 += '<td align="right">'+cuenta_otros.registros_conciliados+'</td>';
+                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_otros.cuenta_alias+'","'+cuenta_otros.cuenta+'",3) id="noconc">'+cuenta_otros.registros_no_conciliados+'</a></td>';
+                    as400 += '<td align="right">'+cuenta_otros.monto_conciliado+'</td>';
+                    as400 += '<td align="right">'+cuenta_otros.monto_no_conciliado+'</td>';
+                    as400 += '</tr>';
+                });
+
+                otros += '</tbody></table>';
+
+
+
+
                 content += internet;
 
                 content += repo;
 
                 content += as400;
+
+                content += otros;
 
                 content += '</div></div>';
 
