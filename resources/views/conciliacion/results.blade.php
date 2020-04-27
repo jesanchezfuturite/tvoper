@@ -249,14 +249,14 @@
                 accounts_otros = info.info_otros;
 
                 $.each(accounts_otros,function(j,cuenta_otros){
-                    as400 += '<tr>';
-                    as400 += '<td>'+cuenta_otros.cuenta_alias+'</td><td>'+cuenta_otros.cuenta+'</td>';
-                    as400 += '<td align="right">'+cuenta_otros.registros+'</td>';
-                    as400 += '<td align="right">'+cuenta_otros.registros_conciliados+'</td>';
-                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_otros.cuenta_alias+'","'+cuenta_otros.cuenta+'",3) id="noconc">'+cuenta_otros.registros_no_conciliados+'</a></td>';
-                    as400 += '<td align="right">'+cuenta_otros.monto_conciliado+'</td>';
-                    as400 += '<td align="right">'+cuenta_otros.monto_no_conciliado+'</td>';
-                    as400 += '</tr>';
+                    otros += '<tr>';
+                    otros += '<td>'+cuenta_otros.cuenta_alias+'</td><td>'+cuenta_otros.cuenta+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.registros+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.registros_conciliados+'</td>';
+                    otros += '<td align="right"><a href="#" onclick=noconc("'+cuenta_otros.cuenta_alias+'","'+cuenta_otros.cuenta+'",3) id="noconc">'+cuenta_otros.registros_no_conciliados+'</a></td>';
+                    otros += '<td align="right">'+cuenta_otros.monto_conciliado+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.monto_no_conciliado+'</td>';
+                    otros += '</tr>';
                 });
 
                 otros += '</tbody></table>';
