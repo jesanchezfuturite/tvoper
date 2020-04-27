@@ -278,7 +278,8 @@
 
                 internet = ""; 
                 repo = ""; 
-                as400 = "";                
+                as400 = "";  
+                otros = "";              
 
                 element ++;
             });
