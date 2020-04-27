@@ -205,14 +205,18 @@ class Egobtransacciones extends Command
         // revisar los montos en registers
         foreach($this->registers as $r)
         {
-            if( $encontrados[$r->transaccion_id] != $r->monto )
+            if(isset($encontrados[$r->transaccion_id]))
             {
+                if( $encontrados[$r->transaccion_id] != $r->monto)
+                {
 
-                // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
-                $this->ad []= $r->transaccion_id; 
+                    // esta es la anomalia de los montos ad = ANOMALIA DIFERENCIA
+                    $this->ad []= $r->transaccion_id; 
 
-                $this->discarted [] = $r->transaccion_id;
+                    $this->discarted [] = $r->transaccion_id;
+                }    
             }
+            
         }
 
         return true;
