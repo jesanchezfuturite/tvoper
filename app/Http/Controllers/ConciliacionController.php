@@ -54,7 +54,7 @@ class ConciliacionController extends Controller
 
         $this->loadBankDetails();
 
-        Log::info(json_encode($this->bank_details));
+        //Log::info(json_encode($this->bank_details));
     }
 
 
@@ -411,6 +411,12 @@ class ConciliacionController extends Controller
                     $monto_conciliado_as400     = 0;
                     $monto_no_conciliado_as400  = 0;
 
+                    $total_conciliados_otros    = 0;
+                    $total_no_conciliados_otros = 0;
+                    $monto_conciliado_otros     = 0;
+                    $monto_no_conciliado_otros  = 0;
+
+
                     $cuenta = $b["cuenta"];
                     $alias  = $b["cuenta_alias"];
 
@@ -470,6 +476,17 @@ class ConciliacionController extends Controller
                                 }
                                 break;
                             default:
+                                // son los de AS400
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_otros ++;
+                                    $monto_conciliado_otros += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_otros ++;
+                                    $monto_no_conciliado_otros += $t["amount"];
+                                }
+                                break;
+
                                 break;
                         }
                     
@@ -504,12 +521,23 @@ class ConciliacionController extends Controller
                         "monto_no_conciliado"               => number_format($monto_no_conciliado_as400,2),
                         "registros"                         => $total_conciliados_as400 +$total_no_conciliados_as400,
                     );
+                        // otros
+                    $info_otros []= array(
+                        "cuenta"                            => $cuenta,
+                        "cuenta_alias"                      => $alias,
+                        "registros_conciliados"             => $total_conciliados_otros,
+                        "registros_no_conciliados"          => $total_no_conciliados_otros,
+                        "monto_conciliado"                  => number_format($monto_conciliado_otros,2),
+                        "monto_no_conciliado"               => number_format($monto_no_conciliado_otros,2),
+                        "registros"                         => $total_conciliados_otros +$total_no_conciliados_otros,
+                    );
                 }
                 $final [$bd]= array(
                     "descripcion"       => $info["descripcion"],
                     "info"              => $info_internet,
                     "info_repositorio"  => $info_repositorio, 
                     "info_as400"        => $info_as400, 
+                    "info_otros"        => $info_otros, 
                 );
             }        
         }else{
@@ -539,7 +567,7 @@ class ConciliacionController extends Controller
         try{
 
             //$info = $this->pr->findWhereBetween('created_at',$between);
-            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('transaccion_id')->get();
+            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('referencia')->get();
 
             return $info;
                
@@ -575,35 +603,37 @@ class ConciliacionController extends Controller
 
         $fuente = $request->fuente;
 
-        try{
-
-            $data = $this->pr
-                        ->where('cuenta_banco',$cuenta)
-                        ->where('cuenta_alias',$alias)
-                        ->where('fecha_ejecucion',$f)
-                        ->where('status','<>','p')
-                        ->groupBy('transaccion_id')->get();
-
-        }catch( \Exception $e){
-           Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
-        }
-
+        Log::info("Fuente = " . $fuente);
         
-        if($data->count() > 0)
+        $folio_id = array();
+        // checar si el movimiento esta en repositorio o en internet
+        if($fuente == 1)
         {
-            $folio_id = array();
-            // checar si el movimiento esta en repositorio o en internet
-            if($fuente == 1)
+            try{
+
+                $data = $this->pr
+                            ->where('cuenta_banco',$cuenta)
+                            ->where('cuenta_alias',$alias)
+                            ->where('fecha_ejecucion',$f)
+                            ->where('status','<>','p')
+                            ->where('origen',1 )
+                            ->groupBy('transaccion_id')->get();
+
+            }catch( \Exception $e){
+               Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
+            }
+
+            if($data->count() > 0)
             {
                 foreach($data as $d)
                 {
                     try
                     {
-
+                        
                         $info = $this->egobTrans->findWhere( ["idTrans" => $d->transaccion_id] );
 
                         if($info->count())
-                        {
+                        {                      
                             foreach($info as $i)
                             {
                                 $folio_id []= array(
@@ -612,7 +642,6 @@ class ConciliacionController extends Controller
                                 );
                             }
                         }
-
                     }catch( \Exception $e ){
                     Log::info('[Conciliacion:getAnomalia] ERROR buscando informacion en transacciones de internet ... ' . $e->getMessage());     
                     Log::info('... Transaccion ID >' . $d->transaccion_id);
@@ -624,16 +653,51 @@ class ConciliacionController extends Controller
                     "data"      => $folio_id
                 );
             }else{
-                // son todos los movimientos en el repositorio
-                false;
+                $results = array(
+                    "response"  => 0,
+                    "data"      => "No existen errores"
+                );  
             }
-        }else{
-            $results = array(
-                "response"  => 0,
-                "data"      => "No existen errores"
-            );
-        }   
+        }elseif($fuente == 3){
+            // son todos los movimientos en el repositorio
+            try{
 
+                $data = $this->pr
+                            ->where('cuenta_banco',$cuenta)
+                            ->where('cuenta_alias',$alias)
+                            ->where('fecha_ejecucion',$f)
+                            ->where('status','<>','p')
+                            ->whereIn('origen', array(2,5) )
+                            ->groupBy('referencia')->get();
+
+            }catch( \Exception $e){
+               Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
+            }
+            if($data->count() > 0)
+            {
+                foreach($data as $d)
+                {
+                    $folio_id []= array(
+                        "internet"      => array(
+                            "idTrans" => "N / A",
+                            "TotalTramite" => "N / A",
+                            "CostoMensajeria" => "N / A",
+                        ), 
+                        "repositorio"  => $d
+                    );
+                }    
+                $results = array(
+                    "response"  => 1,
+                    "data"      => $folio_id
+                );    
+            }else{
+                $results = array(
+                    "response"  => 0,
+                    "data"      => "No existen errores"
+                );
+            }
+            
+        }
         return $results;
     }
 
