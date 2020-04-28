@@ -102,7 +102,7 @@
 													<div class="col-md-6">
 														<div class="form-group">
 															<label class="control-label">Descripcion</label>
-															<input type="text" name="descripcion"class="form-control"id="descripcion" placeholder="Escribe una Descripcion..." autocomplete="off" >
+															<input type="text" onkeyup="this.value=this.value.toUpperCase();" name="descripcion"class="form-control"id="descripcion" placeholder="Escribe una Descripcion..." autocomplete="off" >
 														</div>
 													</div>
 													<!--/span-->
@@ -745,14 +745,15 @@
     }
   function changeFamilia()
   {
+    $("#entidadfamilia").val("limpia").change();
     var familia_=$("#familia").val();
      $.ajax({
         method: "post",            
         url: "{{ url('/entidad-familia') }}",
         data: {id:familia_,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-            $("#entidadfamilia option").remove();
-            var Resp=$.parseJSON(response);
+        .done(function (response) {
+          var Resp=$.parseJSON(response);     
+            $("#entidadfamilia option").remove();            
             $('#entidadfamilia').append(
                 "<option value='limpia'>------</option>"
             );
@@ -760,7 +761,8 @@
                  $('#entidadfamilia').append(
                 "<option value='"+item.id+"'>"+item.nombre+"</option>"
                    );
-                });
+            });
+            
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select", "Notifications")   });
@@ -961,7 +963,8 @@
         .done(function (response) { 
             
         var Resp=$.parseJSON(response);
-        $.each(Resp, function(i, item) {  
+        $.each(Resp, function(i, item) { 
+        $("#familia").val(item.familia_id).change(); 
         document.getElementById('descripcion').value=item.descripcion;
         document.getElementById('origen').value=item.origen;
         document.getElementById('gpo').value=item.gpm;
@@ -969,15 +972,22 @@
         document.getElementById('gpmdescripcion').value=item.descripcion_gpm;          
         $("#limitereferencia").val(item.limitereferencia).change();
         $("#tiporeferencia").val(item.tiporeferencia).change();
-        $("#familia").val(item.familia_id).change();
-        $("#entidadfamilia").val(item.entidad_id).change();
-       console.log(item.tiporeferencia +" "+item.limitereferencia);
+        chgopt(item.entidad_id);        
+       console.log(item.entidad_id);
        
         });
         
      })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
+  }
+  async function chgopt(id)
+  {  
+    await sleep(2000);
+    $("#entidadfamilia").val(id).change();
+  } 
+  function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
   }
   function savetramite()
   {

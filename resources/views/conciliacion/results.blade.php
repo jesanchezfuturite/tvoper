@@ -235,7 +235,7 @@
                     as400 += '<td>'+cuenta_as400.cuenta_alias+'</td><td>'+cuenta_as400.cuenta+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.registros+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.registros_conciliados+'</td>';
-                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",1) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
+                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",3) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
                     as400 += '<td align="right">'+cuenta_as400.monto_conciliado+'</td>';
                     as400 += '<td align="right">'+cuenta_as400.monto_no_conciliado+'</td>';
                     as400 += '</tr>';
@@ -243,11 +243,34 @@
 
                 as400 += '</tbody></table>';
 
+
+                otros = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Otros</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+
+                accounts_otros = info.info_otros;
+
+                $.each(accounts_otros,function(j,cuenta_otros){
+                    otros += '<tr>';
+                    otros += '<td>'+cuenta_otros.cuenta_alias+'</td><td>'+cuenta_otros.cuenta+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.registros+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.registros_conciliados+'</td>';
+                    otros += '<td align="right"><a href="#" onclick=noconc("'+cuenta_otros.cuenta_alias+'","'+cuenta_otros.cuenta+'",3) id="noconc">'+cuenta_otros.registros_no_conciliados+'</a></td>';
+                    otros += '<td align="right">'+cuenta_otros.monto_conciliado+'</td>';
+                    otros += '<td align="right">'+cuenta_otros.monto_no_conciliado+'</td>';
+                    otros += '</tr>';
+                });
+
+                otros += '</tbody></table>';
+
+
+
+
                 content += internet;
 
                 content += repo;
 
                 content += as400;
+
+                content += otros;
 
                 content += '</div></div>';
 
@@ -255,7 +278,8 @@
 
                 internet = ""; 
                 repo = ""; 
-                as400 = "";                
+                as400 = "";  
+                otros = "";              
 
                 element ++;
             });
