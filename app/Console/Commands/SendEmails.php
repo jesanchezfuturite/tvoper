@@ -250,7 +250,7 @@ class SendEmails extends Command
         }
 
     }
-    public function SendEmial($nombre,$correo,$url,$referencia)
+    public function SendEmial($nombre,$correo,$url,$referencia,$id)
     {
        // $url='http://localhost:8080';
         //$referencia='222222444424';
