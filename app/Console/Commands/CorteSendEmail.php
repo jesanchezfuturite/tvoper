@@ -169,10 +169,10 @@ class CorteSendEmail extends Command
      */
     public function handle()
     {
-        //$this->BuscarFechas();
+        $this->BuscarFechas();
         //$this-> gArchivo_Generico_prueba();
         //$this->actualizaduplicados();
-       $this->enviacorreo('2019-10-18');
+       //$this->enviacorreo('2019-10-18');
     }
     
     public function BuscarFechas()
