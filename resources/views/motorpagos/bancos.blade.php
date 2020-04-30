@@ -161,7 +161,7 @@
                             <div class="col-md-1"></div>
                             <label class="col-md-3 control-label">Servicio / CIE / CLABE</label>
                             <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio" maxlength="18">
+                                <input type="text" class="form-control" placeholder="Ingrese el Servicio / CIE / CLABE " id="servicio" maxlength="35">
                             </div>
                         </div>
                         <div class="form-group">
