@@ -190,17 +190,23 @@ class SendEmails extends Command
              $correo='';
              $nombre='';
              $url='';
+             $id_servicio='';
              $referencia=$k->referencia;
              $id=$k->id_transaccion_motor;
              $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findtramite as $e) {
                 $correo=$e->email;
                 $nombre=$e->nombre.' '.$e->apellido_paterno;
+                $id_servicio=$e->id_tipo_servicio;
              //$correo='juancarlos96.15.02@gmail.com';             
             }
             $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findRespuesta as $r) {
                 $url=json_decode($r->json_respuesta);
+            }
+            $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=> $id_servicio]);
+            foreach ($findServicio as $s) {
+              $servicio=$s->Tipo_Descripcion;
             }
             if($url==""){
                 $url_recibo="#";
@@ -209,7 +215,7 @@ class SendEmails extends Command
                 $url_recibo=$url->url_recibo;
             }
 
-            $enviar=$this->SendEmial($nombre,$correo,$url_recibo,$referencia);
+            $enviar=$this->SendEmial($nombre,$correo,$url_recibo,$referencia,$id);
             if($enviar==202)
             {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
@@ -269,9 +275,9 @@ class SendEmails extends Command
         }
     }
     
-    private function plantillaEmail($url,$referencia)
+    private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia)
     {
-        $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
+        $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Egobierno</title><style> 
       img {
         border: none;
         -ms-interpolation-mode: bicubic;
@@ -306,15 +312,15 @@ class SendEmails extends Command
         display: block;
         margin: 0 auto !important;
         /* makes it centered */
-        max-width: 580px;
+        max-width: 780px;
         padding: 10px;
-        width: 580px; 
+        width: 780px; 
       }
       .content {
         box-sizing: border-box;
         display: block;
         margin: 0 auto;
-        max-width: 580px;
+        max-width: 680px;
         padding: 10px; 
       }
       .main {
@@ -474,7 +480,7 @@ class SendEmails extends Command
 
       hr {
         border: 0;
-        border-bottom: 1px solid #f6f6f6;
+        border-bottom: 1px solid #bebebe;
         margin: 20px 0; 
       }
       @media only screen and (max-width: 620px) {
@@ -562,15 +568,29 @@ class SendEmails extends Command
         <td>&nbsp;</td>
         <td class="container">
           <div class="content">
-            <table role="pre<sentation" class="main">
+            <table role="presentation" class="main">
               <tr>
                 <td class="wrapper">
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <p>Referencia:</p>
-                        <p>'.$referencia.'</p>
-                        <br><br>
+                       <center><h2><strong>'.$encabezado.'</strong></h2></center> 
+                       <center><h3>'.$subencabezado.'</h3></center> 
+                       <div style="text-align:right;"> <p>'.$fecha.'</p></div>
+                       <div style="text-align:left"> <p>'.$transaccion.'</p></div>
+                       <hr style="color:#000;">             
+                        <br>
+                        <p>Resumen de pago: </p>
+                        <p>'.$refencia.' </p>                        
+                        <p>'.$servicio.' </p>
+                        <br>
+                        <p>'.$url.'</p>
+                        <br>
+                        <br>
+                        <p>¿Necesitas asistencia? Contáctanos</p>
+                        <p>Llámanos :  20202020</p>
+                        <p>Escríbenos un mail: e@g.com</p>
+                         <br> <br>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>
@@ -578,7 +598,7 @@ class SendEmails extends Command
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tbody >
                                     <tr> </td>
-                                      <td whidth="100%" align="center"> <a href="'.$url.'" target="_blank">Ver Recibo</a> </td>
+                                     <!-- <td whidth="100%" align="center"> <a href="'.$url.'" target="_blank">Ver Recibo</a> </td>-->
                                     </tr>
                                   </tbody>
                                 </table>
@@ -592,9 +612,12 @@ class SendEmails extends Command
                 </td>
               </tr>
             </table>
-            <div class="footer">
+           <!-- <div class="footer">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr><td class="content-block"><span class="apple-link">Emial Prueba</span></td></tr><tr> </tr></table></div></div></td><td>&nbsp;</td></tr></table></body></html>
+                <tr><td class="content-block"><span class="apple-link">Emial Prueba</span></td></tr><tr> </tr>
+              </table>
+            </div>-->
+          </div></td><td>&nbsp;</td></tr></table></body></html>
     ';
     return $email;
     }

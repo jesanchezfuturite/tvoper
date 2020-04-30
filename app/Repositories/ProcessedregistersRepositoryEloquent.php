@@ -289,7 +289,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
     public function UpdatePorTransaccion($campos,$id_transaccion)
     {
         try{
-            $data= Processedregisters::where('transaccion_id','=',$id_transaccion)->update(['archivo_corte'=>$campos]);
+            $data= Processedregisters::where('id','=',$id_transaccion)->update(['archivo_corte'=>$campos]);
         
         }catch( \Exception $e){
             Log::info('[ProcessedregistersRepositoryEloquent@UpdatePorTransaccion] Error ' . $e->getMessage());
