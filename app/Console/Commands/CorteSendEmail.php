@@ -1260,7 +1260,7 @@ class CorteSendEmail extends Command
         foreach ($findCorte as $k) {
            
         }*/
-        $response=false;
+        $response='false';
         $banco=[2,3,4,5];
         foreach ($banco as $e) {
             $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
@@ -1292,12 +1292,13 @@ class CorteSendEmail extends Command
                 $mail->addAttachment($d->path);
             }
             $mail->MsgHTML($message);
-            $mail->addAddress('juancarlos96.15.02@gmail.com', 'Juan Carlos'); 
+            $mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
+            $mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
             $mail->send();
-            $response=true;
+            $response='true';
         }catch(phpmailerException $e){
             log::info($e);
-            $response=false;
+            $response='false';
         }
         return $response;
         /*$subject ='Fecha de Corte '.$nombreArchivo->format('Y-m-d');
