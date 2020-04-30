@@ -1284,7 +1284,7 @@ class CorteSendEmail extends Command
             $mail->Port = '587'; 
             $mail->Username = 'nl.modulo2020@gmail.com';
             $mail->Password = 'M0dul02020';
-            $mail->setFrom('nl.modulo2020@gmail.com', 'MODULO2020'); 
+            $mail->setFrom('nl.modulo2020@gmail.com', 'egobierno nl'); 
             $mail->Subject = 'CORTE ARCHIVOS';
             
             $Directorio=json_decode(json_encode($Directorio));
