@@ -389,6 +389,7 @@ class ConciliacionController extends Controller
                 $info_internet = array();
                 $info_repositorio = array();
                 $info_as400 = array();
+                $info_otros = array();
 
                 foreach($bank_accounts as $b)
                 {   
@@ -485,8 +486,6 @@ class ConciliacionController extends Controller
                                     $total_no_conciliados_otros ++;
                                     $monto_no_conciliado_otros += $t["amount"];
                                 }
-                                break;
-
                                 break;
                         }
                     
