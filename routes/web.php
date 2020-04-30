@@ -229,6 +229,12 @@ Route::post('/pagoarrendamiento-insert','ServiciosgeneralesController@wsArrendam
 /************************ PAGO SERVICIOS GENERALES *******************/
 Route::get('/pagoservicios','ServiciosgeneralesController@pagoserviciosgenerales');
 
+
+
+/**************************** ENVIO CORTE POR CORREO  ***************************/
+Route::get('/envio-corte/{fecha}','CorteController@enviacorreo');
+
+
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
