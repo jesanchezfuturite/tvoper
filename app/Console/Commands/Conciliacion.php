@@ -244,6 +244,7 @@ class Conciliacion extends Command
                 if($condition == 1)
                 {
                     $line   = fgets($fo);
+                    $haltV  = 1;
 
                     if(strlen($line) > 50)
                     {
@@ -263,38 +264,46 @@ class Conciliacion extends Command
                                 $monto = substr($line, $amountStart, $amountLength) / 100;    
                             }
 
-                            
-                        }
-
-
-
-                        $data =
-                            [
-                                "day"               => substr($line, $dayStart, $dayLength),
-                                "month"             => substr($line, $monthStart, $monthLength),
-                                "year"              => substr($line, $yearStart, $yearLength),
-                                "monto"             => $monto,
-                                "transaccion_id"    => substr($line, $idStart, $idLength),
-                                "status"            => "np",
-                                "filename"          => $filename,
-                                "origen"            => $origen,
-                                "referencia"        => $referencia,
-                                "cuenta_banco"      => $this->info_cuenta["cuenta"],
-                                "cuenta_alias"      => $this->info_cuenta["cuenta_alias"],
-                                "banco_id"          => $this->info_cuenta["banco_id"],
-                                "fecha_ejecucion"   => $this->executedDate,
-                            ];
-
-            
-                        try{
-
-                            if((int)$data["transaccion_id"] > 0)
-                            {
-                                $this->ps->create( $data );
+                            // quitar las comisiones de santander
+                            if(strcmp($this->bankName,"santanderV") == 0){
+                                $validacion_cargo = substr($line, 76,1);
+                                if(strcmp($validacion_cargo,'-') == 0){
+                                    $haltV = 9;
+                                }              
                             }
 
-                        }catch( \Exception $e ){
-                            Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters');    
+                            
+                        }
+                        if($haltV == 1) // esto se agrego para validar los cargos de comision en los archivos
+                        {
+                            $data =
+                                [
+                                    "day"               => substr($line, $dayStart, $dayLength),
+                                    "month"             => substr($line, $monthStart, $monthLength),
+                                    "year"              => substr($line, $yearStart, $yearLength),
+                                    "monto"             => $monto,
+                                    "transaccion_id"    => substr($line, $idStart, $idLength),
+                                    "status"            => "np",
+                                    "filename"          => $filename,
+                                    "origen"            => $origen,
+                                    "referencia"        => $referencia,
+                                    "cuenta_banco"      => $this->info_cuenta["cuenta"],
+                                    "cuenta_alias"      => $this->info_cuenta["cuenta_alias"],
+                                    "banco_id"          => $this->info_cuenta["banco_id"],
+                                    "fecha_ejecucion"   => $this->executedDate,
+                                ];
+
+                
+                            try{
+
+                                if((int)$data["transaccion_id"] > 0)
+                                {
+                                    $this->ps->create( $data );
+                                }
+
+                            }catch( \Exception $e ){
+                                Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters');    
+                            }
                         } 
                     }
                 }
