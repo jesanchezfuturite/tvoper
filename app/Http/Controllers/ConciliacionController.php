@@ -696,6 +696,44 @@ class ConciliacionController extends Controller
                 );
             }
             
+        }else{
+            // son todos los movimientos en el repositorio
+            try{
+
+                $data = $this->pr
+                            ->where('cuenta_banco',$cuenta)
+                            ->where('cuenta_alias',$alias)
+                            ->where('fecha_ejecucion',$f)
+                            ->where('status','<>','p')
+                            ->whereNotIn('origen', array(1,11,2,5) )
+                            ->groupBy('referencia')->get();
+
+            }catch( \Exception $e){
+               Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
+            }
+            if($data->count() > 0)
+            {
+                foreach($data as $d)
+                {
+                    $folio_id []= array(
+                        "internet"      => array(
+                            "idTrans" => "N / A",
+                            "TotalTramite" => "N / A",
+                            "CostoMensajeria" => "N / A",
+                        ), 
+                        "repositorio"  => $d
+                    );
+                }    
+                $results = array(
+                    "response"  => 1,
+                    "data"      => $folio_id
+                );    
+            }else{
+                $results = array(
+                    "response"  => 0,
+                    "data"      => "No existen errores"
+                );
+            }
         }
         return $results;
     }

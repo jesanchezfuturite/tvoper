@@ -514,13 +514,15 @@ function FindCuentasBancarias(banco_)
           var item="";
           var item2="";
           var Cuenta="";
+          var Leyenda="";
         $.each(Resp, function(i, item) {
             var beneficiario=$.parseJSON(item.beneficiario);
                 $.each(beneficiario, function(ii, item2) {
                     Cuenta=item2.cuenta;
+                    Leyenda=item2.leyenda;
                 });
                  $("#CuentasOption"+banco_+"").append(
-                "<option value='"+item.id+"'>"+Cuenta+"  "+ item.metodopago+"</option>"
+                "<option value='"+item.id+"'>"+Cuenta+"  "+ item.metodopago+", "+Leyenda+"</option>"
                    );
                 });
         })
