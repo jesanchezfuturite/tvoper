@@ -216,8 +216,13 @@ class SendEmails extends Command
                 $url_recibo=$url->url_recibo;
             }
             $fecha_txt ='Realizado el: '.$fecha->format('d-m-Y');
-            
-            $enviar=$this->SendEmial($nombre,$correo,$url_recibo,$referencia,$id);
+            $encabezado='Tu pago se ha realizado con éxito';
+            $subencabezado='';
+            $transaccion_txt='Transaccion número: '.$id;
+            $url_txt='Formato de pago: '.$url;
+            $referencia_txt='Transaccion número: '.$referencia;
+            $servicio_txt='Servicio: '.$servicio;
+            $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt);
             if($enviar==202)
             {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
@@ -242,11 +247,16 @@ class SendEmails extends Command
              //$correo=$e->email;
             $correo='juancarlos96.15.02@gmail.com';
              $nombre=$e->nombre.' '.$e->apellido_paterno;
+             $id_servicio=$e->id_tipo_servicio;
+            }
+            $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=> $id_servicio]);
+            foreach ($findServicio as $s) {
+              $servicio=$s->Tipo_Descripcion;
             }
             $encabezado='Tu pago se ha realizado con éxito';
             $subencabezado='';
             $transaccion_txt='Transaccion número: '.$id;
-            $url_txt='';
+            $url_txt='Recibo de pago: '.$url;
             $referencia_txt='Transaccion número: '.$referencia;
             $servicio_txt='Servicio: '.$servicio;
             $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt);

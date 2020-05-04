@@ -22,7 +22,7 @@ class CorteArchivos extends Model implements Transformable
      */
    protected $connection = "mysql";
 
-    protected $fillable = ['id','referencia','transacccion_id','banco_id','cuenta_banco','cuenta_alias','tipo_servicio','fecha_ejecucion','created_at','updated_at'];
+    protected $fillable = ['id','referencia','transaccion_id','banco_id','cuenta_banco','cuenta_alias','tipo_servicio','fecha_ejecucion','created_at','updated_at'];
 
     protected $table = "oper_corte_archivos";
    // public $timestamps = false;

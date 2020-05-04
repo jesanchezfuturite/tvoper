@@ -55,9 +55,9 @@
                         </select>            
                 </div>
             </div>
-            <div class="col-md-2 col-ms-12">
-                <div class="form-group" id="addButton">
-                    
+            <div id="editfamilia" class="col-md-1 col-ms-12" hidden="true">
+                <div class="form-group" >
+                  <button type="button" class="btn green tooltips" onclick="editFamilia()"  data-container="body" data-placement="top" data-original-title="Editar Nombre Familia" data-toggle='modal' href='#modfamilia'><i class='fa fa-pencil'></i></button>  
                 </div>
             </div>
             </div> 
@@ -77,19 +77,27 @@
                 <i class="fa fa-cogs"></i>Registros Familia
             </div>
         </div>
-        <div class="portlet-body" id="Removetable">           
-            <div class="form-group"> 
-                <div class="col-md-6">              
+        <div class="portlet-body" >
+        <div class="row">           
+            <div class="col-md-2">              
+                <div class="form-group">                 
                 <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
                 </div>
             </div>
-            <div class="form-group">
-             <div class="col-md-6 text-right">                
+            <div class="col-md-4">
+                <div class="form-group">                             
+                <button class="btn green" href='#modentidad' data-toggle='modal' >Nueva Entidad</button>
+                </div>
+            </div>
+            <div class="col-md-6 text-right">
+                <div class="form-group">
+                             
                 <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
               </div>
             </div>
+        </div>
             <span class="help-block">&nbsp; </span>
-            
+            <div class="portlet-body" id="Removetable">
                 <table class="table table-hover" id="sample_2">
                 <thead>
                 <tr>
@@ -110,6 +118,7 @@
                             <td></td>                                                               
                 </tbody>
                 </table>
+            </div>
           
         </div>
     </div>
@@ -178,15 +187,216 @@
         </div>
     </div>
 </div>
+<div id="modfamilia" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarfamilia()"></button>
+                <h4 class="modal-title">Nombre Familia</h4>
+            </div>
+            <div class="modal-body">
+                <br>
+                <br>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="upFamilia">Familia:</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="upFamilia"name="upFamilia" autocomplete="off"placeholder="Familia...">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="row">
+                    <div class="form-group">
+                    <div class="col-md-12">                    
+                            <button type="submit" class="btn blue" onclick="updateFamilia()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarfamilia()">Cerrar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="modentidad" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarNewEntidad()"></button>
+                <h4 class="modal-title">Nueva Entidad</h4>
+            </div>
+            <div class="modal-body">
+                <br>
+                <br>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="newEntidad">Entidad:</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="newEntidad"name="newEntidad" autocomplete="off"placeholder="Nueva Entidad...">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="row">
+                    <div class="form-group">
+                    <div class="col-md-12">                    
+                            <button type="submit" class="btn blue" onclick="insertNewEntidad()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarNewEntidad()">Cerrar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 @endsection
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
-        familiaEntidadFindAll();
-        EntidadFindAll();
+       EntidadFindAll(); 
+       familiaEntidadFindAll();
+        
        UIBlockUI.init();        
-    });    
+    });
+    function limpiarNewEntidad()
+    {
+        document.getElementById("newEntidad").value="";
+    }
+    function insertNewEntidad()
+    {
+        var validaentidad=$("#newEntidad").val();
+        $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+            var Resp=$.parseJSON(responseinfo); 
+            var coincidencia=0;    
+            var entidad_="";    
+            $.each(Resp, function(i, item) {                
+                entidad_=item.nombre;
+                if(validaentidad.toLowerCase()==entidad_.toLowerCase()){
+                    coincidencia=coincidencia+1;
+                }
+            });
+            if(coincidencia==0){
+                insertEntidad();
+            }else{
+                Command: toastr.warning("La Entidad Ya Se Encuentra Registrado!", "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+
+    function insertEntidad()
+    {   
+        var validaentidad=$("#newEntidad").val();
+        if(validaentidad.length==0)
+            {
+                Command: toastr.warning("Entidad Requerido!", "Notifications")
+            }else{
+                $.ajax({
+                method: "POST",            
+                url: "{{ url('/entidad-insert') }}",
+                data: {nombre:validaentidad,_token:'{{ csrf_token() }}'}  })
+                .done(function (response) {
+                    if(response=="true"){
+                    EntidadFindAll();
+                    Command: toastr.success("Success", "Notifications")
+                    }   else{
+                Command: toastr.warning("No Success", "Notifications") 
+            }
+
+            limpiarNewEntidad();
+            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
+            return false;
+    }
+    function limpiarfamilia()
+    {
+        document.getElementById("upFamilia").value="";
+    }
+    function editFamilia()
+    {
+        var id_=$("#itemsFamilia").val();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/familia-find-where') }}",
+        data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            var Resp=$.parseJSON(response);            
+            $.each(Resp, function(i, item) {                
+                 document.getElementById("upFamilia").value=item.nombre;
+            });            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Insertar la Familia", "Notifications")   });
+    }
+    function updateFamilia()
+    {
+        var id_=$("#itemsFamilia").val();
+        var familia_=$("#upFamilia").val();
+        if(familia_.length>1){
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/familia-update') }}",
+        data: {id:id_,familia:familia_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+           if(response=="true"){
+                Command: toastr.success("Actualizado Correctamente!", "Notifications")
+                 selectItemsFamilia2(id_);
+           }else{
+            Command: toastr.warning("Error al Actualizar la Familia", "Notifications")
+           }
+            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Actualizar la Familia", "Notifications")   });
+        }else{
+            Command: toastr.warning("La Campo Nombre, Requerido!", "Notifications")         
+        }
+    }
+     function selectItemsFamilia2(id_)
+    {
+        $.ajax({
+        method: "get",            
+        url: "{{ url('/familia-find-all') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            $("#itemsFamilia option").remove();
+            var Resp=$.parseJSON(response);
+            $('#itemsFamilia').append(
+                "<option value='limpia'>------</option>"
+            );
+            $.each(Resp, function(i, item) {                
+                 $('#itemsFamilia').append(
+                "<option value='"+item.id+"'>"+item.nombre+"</option>"
+                   );
+                });
+            $("#itemsFamilia").val(id_).change();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select", "Notifications")   });
+    }
     function limpiar()
     {
         document.getElementById('idupdate').value="";
@@ -248,8 +458,10 @@
             {
                 Command: toastr.warning("Familia No Seleccionada.", "Notifications")
                 $("#Removetable").remove();
+                 $("#editfamilia").css("display","none");
                 addTable();               
             }else{
+                $("#editfamilia").css("display","block");
             familiaEntidadFindAll();
         }
     }
@@ -262,7 +474,6 @@
            data: {familia_id:id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
-           $("#Removetable").remove();
          addTable();
         $.each(Resp, function(i, item) {                
             $('#sample_2 tbody').append("<tr>"
@@ -279,8 +490,9 @@
     }
     function addTable()
     {
+        $("#Removetable").remove();
         $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'> <div class='form-group'> <div class='col-md-6'> <button class='btn green' href='#portlet-config' data-toggle='modal' >Agregar</button> </div></div><div class='form-group'> <div class='col-md-6 text-right'><button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div> </div><span class='help-block'>&nbsp; </span><table class='table table-hover' id='sample_2'><thead><tr> <th> Familia</th><th>Entidad</th>   <th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
+            "<div class='portlet-body' id='Removetable'><table class='table table-hover' id='sample_2'><thead><tr> <th> Familia</th><th>Entidad</th>   <th> &nbsp; </th> </tr> </thead> <tbody></tbody> </table> </div>"
         );
     }
     function EntidadFindAll()

@@ -85,7 +85,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->join($this->db . '.partidas',$this->db . '.partidas.id_servicio','=','oper_processedregisters.tipo_servicio')    
         ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')    
         ->join($this->db . '.referenciabancaria',$this->db . '.referenciabancaria.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones',$this->db . '.partidas.id_partida',$this->db . '.partidas.descripcion',$this->db . '.folios.Folio',$this->db . '.folios.CartImporte',$this->db . '.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.referencia','oper_processedregisters.banco_id','oper_processedregisters.tipo_servicio','oper_processedregisters.info_transacciones',$this->db . '.partidas.id_partida',$this->db . '.partidas.descripcion',$this->db . '.folios.Folio',$this->db . '.folios.CartImporte',$this->db . '.referenciabancaria.Linea','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -107,9 +107,9 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('oper_transacciones','oper_transacciones.id_transaccion','=','oper_processedregisters.transaccion_id')    
-        ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_processedregisters.transaccion_id')    
+        ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_processedregisters.transaccion_id')
         ->join('oper_detalle_tramite','oper_detalle_tramite.id_tramite_motor','=','oper_tramites.id_tramite_motor')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_transacciones.referencia as Linea','oper_transacciones.metodo_pago_id as banco_id','oper_transacciones.cuenta_deposito as cuenta_banco','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_transaccion_motor as Folio','oper_detalle_tramite.importe_concepto as CartImporte','oper_tramites.id_tipo_servicio as tipo_servicio','oper_detalle_tramite.partida as id_partida','oper_detalle_tramite.concepto as descripcion')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.referencia','oper_processedregisters.banco_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_transacciones.metodo_pago_id','oper_transacciones.cuenta_deposito','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_transaccion_motor as Folio','oper_detalle_tramite.importe_concepto as CartImporte','oper_tramites.id_tipo_servicio as tipo_servicio','oper_detalle_tramite.partida as id_partida','oper_detalle_tramite.concepto as descripcion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
@@ -274,7 +274,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.archivo_corte','=','')
         ->join('cont.det_imp_isop','cont.det_imp_isop.idTrans','=','oper_processedregisters.transaccion_id')
         ->join($this->db . '.folios',$this->db . '.folios.idTrans','=','oper_processedregisters.transaccion_id')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.folios.Folio',$this->db . '.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.fecha_ejecucion','oper_processedregisters.info_transacciones',$this->db . '.folios.Folio',$this->db . '.folios.CartDescripcion', 'cont.det_imp_isop.rfcalf','cont.det_imp_isop.rfcnum','cont.det_imp_isop.rfchom','cont.det_imp_isop.cve_mpo','cont.det_imp_isop.cuenta','cont.det_imp_isop.curp','cont.det_imp_isop.cve_imp','cont.det_imp_isop.tipo_dec','cont.det_imp_isop.mes','cont.det_imp_isop.anio','cont.det_imp_isop.num_comp','cont.det_imp_isop.folio_anterior','cont.det_imp_isop.imp_anterior' )
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
