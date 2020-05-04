@@ -160,6 +160,8 @@ Route::post('/familiaentidad-find','MotorpagosController@familiaentidadFindwhere
 Route::post('/familiaentidad-insert','MotorpagosController@familientidadInsert');
 Route::post('/familiaentidad-update','MotorpagosController@familientidadUpdate');
 Route::post('/familiaentidad-deleted','MotorpagosController@familientidadDeleted');
+Route::post('/familia-find-where','MotorpagosController@familiaFindWhere');
+Route::post('/familia-update','MotorpagosController@familiaUpdate');
 
 /*************************  INPC  ******************************/
 Route::get('/inpc','MotorpagosController@inpc');
