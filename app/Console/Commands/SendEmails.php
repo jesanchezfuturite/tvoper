@@ -181,7 +181,7 @@ class SendEmails extends Command
     {
         $this->SendEmial_referencia();
         //$this->SendEmial();
-        //$this->SendEmial_pagado();
+        $this->SendEmial_pagado();
         //$this->email_template();
     }
     private function SendEmial_referencia(){
@@ -215,20 +215,25 @@ class SendEmails extends Command
             }else{
                 $url_recibo=$url->url_recibo;
             }
-            $fecha_txt ='Realizado el: '.$fecha->format('d-m-Y');
-            $encabezado='Tu pago se ha realizado con éxito';
-            $subencabezado='';
-            $transaccion_txt='Transaccion número: '.$id;
-            $url_txt='Formato de pago: '.$url;
-            $referencia_txt='Transaccion número: '.$referencia;
-            $servicio_txt='Servicio: '.$servicio;
-            $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt);
-            if($enviar==202)
+            if($correo=='')
             {
-                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
-            }else{
-                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]);
-            }
+              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]); 
+              }else{
+                $fecha_txt ='Realizado el: '.$fecha->format('d-m-Y');
+                $encabezado='Hemos recibido tu solicitud de pago';
+                $subencabezado='Por favor observa las instrucciones respecto a las formas de pago';
+                $transaccion_txt='Transaccion número: '.$id;
+                $url_txt='Formato de pago: '.$url;
+                $referencia_txt='Transaccion número: '.$referencia;
+                $servicio_txt='Servicio: '.$servicio;
+                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt);
+                if($enviar==202)
+                {
+                  $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
+                }else{
+                  $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]);
+                }
+              }
         }
 
     }
@@ -244,8 +249,8 @@ class SendEmails extends Command
              $id=$k->id_transaccion_motor;
              $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findtramite as $e) {
-             //$correo=$e->email;
-            $correo='juancarlos96.15.02@gmail.com';
+             $correo=$e->email;
+              //$correo='juancarlos96.15.02@gmail.com';
              $nombre=$e->nombre.' '.$e->apellido_paterno;
              $id_servicio=$e->id_tipo_servicio;
             }
@@ -259,38 +264,47 @@ class SendEmails extends Command
             $url_txt='Recibo de pago: '.$url;
             $referencia_txt='Transaccion número: '.$referencia;
             $servicio_txt='Servicio: '.$servicio;
-            $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt);
-            if($enviar==202)
+            if($correo=='')
             {
-                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
+             $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
             }else{
+              $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt);
+
+              if($enviar==202)
+              {
+                $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
+              }else{
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]);
+              }
             }
+            
         }
 
     }
     public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio)
     {
          $mail = new PHPMailer(true);
-
+         $response='202';
          $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio);
         try{
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
             $mail->SMTPAuth =true;
             $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.outlook.com';
+            $mail->Host = 'smtp.gmail.com';
             $mail->Port = '587'; 
-            $mail->Username = 'juan.carlos.cruz.bautista@hotmail.com';
+            $mail->Username = 'noreply.tesoreria@gmail.com';
             $mail->Password = 'yashiro96';
-            $mail->setFrom('juan.carlos.cruz.bautista@hotmail.com', 'NAME'); 
+            $mail->setFrom('noreply.tesoreria@gmail.com', 'NAME'); 
             $mail->Subject = 'MENSAJE PRUEBA';
             $mail->MsgHTML($message);
             $mail->addAddress($correo , $nombre); 
             $mail->send();
         }catch(phpmailerException $e){
             log::info($e);
+            $response='404';
         }
+        return $response;
     }
     
     private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio)
