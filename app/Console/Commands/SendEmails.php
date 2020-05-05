@@ -294,11 +294,11 @@ class SendEmails extends Command
             $mail->Host = 'smtp.gmail.com';
             $mail->Port = '587'; 
             $mail->Username = 'noreply.tesoreria@gmail.com';
-            $mail->Password = 'yashiro96';
-            $mail->setFrom('noreply.tesoreria@gmail.com', 'NAME'); 
-            $mail->Subject = 'MENSAJE PRUEBA';
+            $mail->Password = 'T3s0rer14';
+            $mail->setFrom('noreply.tesoreria@gmail.com', 'NOREPLEY'); 
+            $mail->Subject = 'MESSAGE';
             $mail->MsgHTML($message);
-            $mail->addAddress($correo , $nombre); 
+            $mail->addAddress($correo, $nombre); 
             $mail->send();
         }catch(phpmailerException $e){
             log::info($e);
