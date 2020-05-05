@@ -190,6 +190,7 @@ class SendEmails extends Command
              $correo='';
              $nombre='';
              $url='';
+             $url_recibo='';
              $fecha=Carbon::parse($k->fecha_transaccion);
              $id_servicio='';
              $referencia=$k->referencia;
@@ -219,13 +220,13 @@ class SendEmails extends Command
             {
               $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]); 
               }else{
-                $fecha_txt ='Realizado el: '.$fecha->format('d-m-Y');
+                $fecha_txt ='Realizado el: ' . $fecha->format('d-m-Y');
                 $encabezado='Hemos recibido tu solicitud de pago';
                 $subencabezado='Por favor observa las instrucciones respecto a las formas de pago';
-                $transaccion_txt='Transaccion número: '.$id;
-                $url_txt='Formato de pago: '.$url;
-                $referencia_txt='Transaccion número: '.$referencia;
-                $servicio_txt='Servicio: '.$servicio;
+                $transaccion_txt='Transaccion número: ' .(string)$id;
+                $url_txt='Formato de pago: ' .(string)$url_recibo;
+                $referencia_txt='Transaccion número: ' .(string)$referencia;
+                $servicio_txt='Servicio: ' .(string)$servicio;
                 $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt);
                 if($enviar==202)
                 {
@@ -243,6 +244,7 @@ class SendEmails extends Command
              $correo='';
              $nombre='';
              $url='';
+             $url_recibo='';
              $fecha='';
              $id_servicio='';
              $referencia=$k->referencia;
@@ -254,16 +256,26 @@ class SendEmails extends Command
              $nombre=$e->nombre.' '.$e->apellido_paterno;
              $id_servicio=$e->id_tipo_servicio;
             }
+            $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
+            foreach ($findRespuesta as $r) {
+                $url=json_decode($r->json_respuesta);
+            }
             $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=> $id_servicio]);
             foreach ($findServicio as $s) {
               $servicio=$s->Tipo_Descripcion;
             }
+            if($url==""){
+                $url_recibo="#";
+
+            }else{
+                $url_recibo=$url->url_recibo;
+            }
             $encabezado='Tu pago se ha realizado con éxito';
             $subencabezado='';
-            $transaccion_txt='Transaccion número: '.$id;
-            $url_txt='Recibo de pago: '.$url;
-            $referencia_txt='Transaccion número: '.$referencia;
-            $servicio_txt='Servicio: '.$servicio;
+            $transaccion_txt='Transaccion número: ' .(string)$id;
+            $url_txt='Recibo de pago: ' .(string)$url_recibo;
+            $referencia_txt='Transaccion número: ' .(string)$referencia;
+            $servicio_txt='Servicio: ' .(string)$servicio;
             if($correo=='')
             {
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
