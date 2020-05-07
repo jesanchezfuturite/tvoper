@@ -59,14 +59,19 @@
                     <label>Entidades Registradas (Selecciona para ver los Tramites)</label>         
                 </div>
             </div> 
-                <div class="col-md-3">   
+            <div class="col-md-3">   
                 <div class="form-group">    
                     <select class="select2me form-control" name="OptionEntidad" id="OptionEntidad" onchange="changeEntidad()">
                         <option value="limpia">------</option>
                     </select>       
                 </div> 
-                </div> 
-                </div>            
+            </div>
+            <div id="editentidad" class="col-md-1 col-ms-12" hidden="true">
+                <div class="form-group" >
+                  <button type="button" class="btn green tooltips" onclick="editEntidad()"  data-container="body" data-placement="top" data-original-title="Editar Nombre Entidad" data-toggle='modal' href='#modEntidad'><i class='fa fa-pencil'></i></button>  
+                </div>
+            </div> 
+          </div>            
             </div>
         </div>
     </div>
@@ -231,6 +236,44 @@
     <!-- added jesv-->
     <input type="hidden" id="selectedChecks" value="[]">
 </div>
+<div id="modEntidad" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarentidad()"></button>
+                <h4 class="modal-title">Editar Nombre Entidad</h4>
+            </div>
+            <div class="modal-body">
+                <br>
+                <br>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="upEntidad">Entidad:</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="upEntidad"name="upEntidad" autocomplete="off"placeholder="Entidad...">
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="row">
+                    <div class="form-group">
+                    <div class="col-md-12">                    
+                            <button type="submit" class="btn blue" onclick="updateEntidad()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarentidad()">Cerrar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 @endsection
 @section('scripts')
 <script type="text/javascript">
@@ -242,6 +285,69 @@
       UIBlockUI.init();
       
     });
+    function limpiarentidad()
+    {
+      document.getElementById("upEntidad").value="";
+    }
+    function editEntidad()
+    {
+        var id_=$("#OptionEntidad").val();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/entidad-find-where') }}",
+        data: {id:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            var Resp=$.parseJSON(response);            
+            $.each(Resp, function(i, item) {                
+                 document.getElementById("upEntidad").value=item.nombre;
+            });            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Insertar la Entidad", "Notifications")   });
+    }
+    function updateEntidad()
+    {
+        var id_=$("#OptionEntidad").val();
+        var entidad_=$("#upEntidad").val();
+        if(entidad_.length>1){
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/entidad-update') }}",
+        data: {id:id_,nombre:entidad_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+           if(response=="true"){
+                Command: toastr.success("Actualizado Correctamente!", "Notifications")
+                 selectItemsEntidad2(id_);
+           }else{
+            Command: toastr.warning("Error al Actualizar la Entidad", "Notifications")
+           }
+            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Actualizar la Entidad", "Notifications")   });
+        }else{
+            Command: toastr.warning("La Campo Nombre, Requerido!", "Notifications")         
+        }
+    }
+     function selectItemsEntidad2(id_)
+    {
+          $.ajax({
+           method: "get",            
+           url: "{{ url('/entidad-find') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#OptionEntidad option").remove();
+          $("#OptionEntidad").append("<option value='limpia'>-------</option>");
+            $.each(Resp, function(i, item) {                
+               $("#OptionEntidad").append("<option value='"+item.id+"'>"+item.nombre+"</option>");  
+            });
+            $("#OptionEntidad").val(id_).change();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
     function MostrarTodos()
     {
       var check=$("#checkbox30").prop("checked");
@@ -547,7 +653,15 @@
     function changeEntidad() {
        $("#sample_2 tbody tr").remove();
           $("#sample_2 tbody").append("<tr><th>Espere Cargando...</th></tr>");
-        TableTramiteEntidad()
+        TableTramiteEntidad();
+        id_=$("#OptionEntidad").val();
+        if(id_=="limpia")
+        {
+          $("#editentidad").css("display","none");
+        }else{
+          $("#editentidad").css("display","block");
+        }
+
     }
     function TableTramiteEntidad()
     {

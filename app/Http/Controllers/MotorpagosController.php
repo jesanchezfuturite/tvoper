@@ -980,7 +980,7 @@ return json_encode($response);
        $info = $this->entidaddb->update(['nombre'=>$nombre,'updated_at'=>$date],$id);
          $response = "true";
         } catch( \Exception $e ){
-            Log::info('Error Method limitereferencia: '.$e->getMessage());
+            Log::info('Error Method updateentidad: '.$e->getMessage());
         $response = "false";
         }
        return $response;
@@ -2501,6 +2501,42 @@ return json_encode($response);
         } catch( \Exception $e ){
             Log::info('Error Method familientidadDeleted: '.$e->getMessage());
             $response = "false";
+        }
+        return $response;
+
+    }
+    public function familiaFindWhere(Request $request)
+    {
+        $id=$request->id;
+        $response=array();
+        try{
+            $findFamilia=$this->familiadb->findWhere(['id'=>$id]);
+
+            foreach ($findFamilia as $e) {
+                $response []= array(
+                    'id' =>  $e->id,
+                    'nombre' =>  $e->nombre
+                );
+            }
+        } catch( \Exception $e ){
+            Log::info('Error Method familientidadDeleted: '.$e->getMessage());
+           
+        }
+        return json_encode($response);
+
+    }
+    public function familiaUpdate(Request $request)
+    {
+        $id=$request->id;
+        $familia=$request->familia;
+        $response="false";
+        try{
+            $findFamilia=$this->familiadb->update(['nombre'=>$familia],$id);
+
+            $response="true";
+        } catch( \Exception $e ){
+            Log::info('Error Method familientidadDeleted: '.$e->getMessage());
+           $response="false";
         }
         return $response;
 
