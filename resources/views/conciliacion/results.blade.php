@@ -261,8 +261,7 @@
 
                 otros += '</tbody></table>';
 
-
-
+                /* aqui agrego el resumen de las cuentas */
 
                 content += internet;
 
