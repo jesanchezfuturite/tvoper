@@ -391,6 +391,14 @@ class ConciliacionController extends Controller
                 $info_as400 = array();
                 $info_otros = array();
 
+                $nuevo_resumen = array();
+                $grand_tramites = 0;
+                $grand_conciliados = 0;
+                $grand_no_conciliados = 0;
+                $grand_monto_conciliado = 0;
+                $grand_monto_no_conciliado = 0;
+
+
                 foreach($bank_accounts as $b)
                 {   
                     $temporal = array();
@@ -490,6 +498,7 @@ class ConciliacionController extends Controller
                         }
                     
                     }
+                    /*
                     $info_internet[]= array(
                         "cuenta"                            => $cuenta,
                         "cuenta_alias"                      => $alias,
@@ -530,14 +539,85 @@ class ConciliacionController extends Controller
                         "monto_no_conciliado"               => number_format($monto_no_conciliado_otros,2),
                         "registros"                         => $total_conciliados_otros +$total_no_conciliados_otros,
                     );
+*/  
+
+                    $grand_tramites             += $total_conciliados + $total_no_conciliados + $total_conciliados_repo + $total_no_conciliados_repo +$total_conciliados_as400 + $total_no_conciliados_as400 + $total_conciliados_otros + $total_no_conciliados_otros;
+                    $grand_conciliados          += $total_conciliados + $total_conciliados_repo + $total_conciliados_as400 + $total_conciliados_otros;
+                    $grand_no_conciliados       += $total_no_conciliados + $total_no_conciliados_repo + $total_no_conciliados_as400 + $total_no_conciliados_otros;
+                    $grand_monto_conciliado     += $monto_conciliado + $monto_conciliado_repo + $monto_conciliado_as400 + $monto_conciliado_otros;
+                    $grand_monto_no_conciliado  += $monto_no_conciliado + $monto_no_conciliado_repo + $monto_no_conciliado_as400 + $monto_no_conciliado_otros;
+                    // nuevo resumen
+                    $nuevo_resumen []= array(
+                        "alias"     => $alias,
+                        "cuenta"    => $cuenta,
+                        "resumen"   => 
+                            array(
+                                "tramites"              => $total_conciliados + $total_no_conciliados + $total_conciliados_repo + $total_no_conciliados_repo +$total_conciliados_as400 + $total_no_conciliados_as400 + $total_conciliados_otros + $total_no_conciliados_otros,
+                                "conciliados"           => $total_conciliados + $total_conciliados_repo + $total_conciliados_as400 + $total_conciliados_otros,
+                                "no_conciliados"        => $total_no_conciliados + $total_no_conciliados_repo + $total_no_conciliados_as400 + $total_no_conciliados_otros,
+                                "monto_conciliado"      => number_format(($monto_conciliado + $monto_conciliado_repo + $monto_conciliado_as400 + $monto_conciliado_otros),2),
+                                "monto_no_conciliado"   => number_format(($monto_no_conciliado + $monto_no_conciliado_repo + $monto_no_conciliado_as400 + $monto_no_conciliado_otros),2),
+                            ),
+
+                        "internet"  => 
+                            array(
+                                "tramites"              => $total_conciliados + $total_no_conciliados,
+                                "conciliados"           => $total_conciliados,
+                                "no_conciliados"        => $total_no_conciliados,
+                                "monto_conciliado"      => number_format($monto_conciliado,2),
+                                "monto_no_conciliado"   => number_format($monto_no_conciliado,2),
+                            ),
+                        "repositorio"  => 
+                            array(
+                                "tramites"              => $total_conciliados_repo + $total_no_conciliados_repo,
+                                "conciliados"           => $total_conciliados_repo,
+                                "no_conciliados"        => $total_no_conciliados_repo,
+                                "monto_conciliado"      => number_format($monto_conciliado_repo,2),
+                                "monto_no_conciliado"   => number_format($monto_no_conciliado_repo,2),
+                            ),
+                        "as400"  => 
+                            array(
+                                "tramites"              => $total_conciliados_as400 + $total_no_conciliados_as400,
+                                "conciliados"           => $total_conciliados_as400,
+                                "no_conciliados"        => $total_no_conciliados_as400,
+                                "monto_conciliado"      => number_format($monto_conciliado_as400,2),
+                                "monto_no_conciliado"   => number_format($monto_no_conciliado_as400,2),
+                            ),
+                        "otros"  => 
+                            array(
+                                "tramites"              => $total_conciliados_otros + $total_no_conciliados_otros,
+                                "conciliados"           => $total_conciliados_otros,
+                                "no_conciliados"        => $total_no_conciliados_otros,
+                                "monto_conciliado"      => number_format($monto_conciliado_otros,2),
+                                "monto_no_conciliado"   => number_format($monto_no_conciliado_otros,2),
+                            ),
+                    );
+
+
+
                 }
+                /*
                 $final [$bd]= array(
                     "descripcion"       => $info["descripcion"],
                     "info"              => $info_internet,
                     "info_repositorio"  => $info_repositorio, 
                     "info_as400"        => $info_as400, 
                     "info_otros"        => $info_otros, 
+                );*/
+                $final [$bd]= array(
+                    "descripcion"               => $info["descripcion"],
+                    "resumen"                   => $nuevo_resumen,
+                    "grand"                     => 
+                        array(
+                            "tramites"              => $grand_tramites,
+                            "conciliados"           => $grand_conciliados,
+                            "no_conciliados"        => $grand_no_conciliados,
+                            "monto_conciliado"      => number_format($grand_monto_conciliado,2),
+                            "monto_no_conciliado"   => number_format($grand_monto_no_conciliado,2),
+                        ),
                 );
+                
+                
             }        
         }else{
             $final = 0;
