@@ -191,6 +191,8 @@ class Conciliacion extends Command
 
     private function processFilePositions($filename,$config)
     {
+
+
         Log::info('[Conciliacion:ProcessFiles '.$filename.'] - Inicia proceso de lectura y guardado en la tabla oper_processedregisters');
         // open the file
         
@@ -242,7 +244,8 @@ class Conciliacion extends Command
                 {
                     $line   = fgets($fo);   
                 }
-
+                
+                
                 if($condition == 1)
                 {
                     $line   = fgets($fo);
@@ -260,7 +263,7 @@ class Conciliacion extends Command
                             $origen     = substr($line, $origenStart, $origenLength);
                             $referencia = substr($line, $referenciaStart, $referenciaLength);
 
-                            if(strcmp($this->bankName,"bancomerV") == 0 || strcmp($this->bankName,"bazteca") == 0){
+                            if(strcmp($this->bankName,"bancomerV") == 0){
                                 $monto = substr($line, $amountStart, $amountLength);    
                             }else{
                                 $monto = substr($line, $amountStart, $amountLength) / 100;    
@@ -313,9 +316,12 @@ class Conciliacion extends Command
                         strcmp(substr($line, 0,1), "1") == 0 // condicion banamexVentanilla
                     )
                     {
-
-                        $monto = substr($line, $amountStart, $amountLength) / 100;
-                        
+                        if(strcmp($this->bankName,"bazteca") == 0){
+                            $monto = substr($line, $amountStart, $amountLength);    
+                        }else{
+                            $monto = substr($line, $amountStart, $amountLength) / 100;    
+                        }
+                
                         $data =
                             [
                                 "day"            => substr($line, $dayStart, $dayLength),
