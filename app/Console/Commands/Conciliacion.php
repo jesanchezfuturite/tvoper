@@ -258,7 +258,7 @@ class Conciliacion extends Command
                             $origen     = substr($line, $origenStart, $origenLength);
                             $referencia = substr($line, $referenciaStart, $referenciaLength);
 
-                            if(strcmp($this->bankName,"bancomerV") == 0){
+                            if(strcmp($this->bankName,"bancomerV") == 0 || strcmp($this->bankName,"bazteca") == 0){
                                 $monto = substr($line, $amountStart, $amountLength);    
                             }else{
                                 $monto = substr($line, $amountStart, $amountLength) / 100;    
@@ -318,9 +318,7 @@ class Conciliacion extends Command
                     {
 
                         $monto = substr($line, $amountStart, $amountLength) / 100;
-                        Log::info($line);
-                        Log::info($monto);
-                        Log::info("---------------");
+                        
                         $data =
                             [
                                 "day"            => substr($line, $dayStart, $dayLength),

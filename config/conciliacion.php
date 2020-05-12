@@ -21,7 +21,7 @@ return array (
 			), 
 		"afirmeV" 		=>
 			array(
-				"extension"	=> "txt",
+				"extension"	=> "txt", // cuenta V0000000101121305MXP cuenta configurada con un alias
 				"lineExample"	=> "D0000391137808110010000000000121393260624181257                                                                                          2019062800000000016280001V0000000101121305MXP201906281507080000000000000000000000000000000000000000",
 				"positions"		=> array
 					(
