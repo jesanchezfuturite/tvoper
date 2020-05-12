@@ -205,7 +205,7 @@
                     internet += '<td ><b>'+por_cuenta.alias+'</b></td><td><b>'+por_cuenta.cuenta+'</b></td><td><b>Total</b></td>';
                     internet += '<td align="right"><b>'+res.tramites+'</b></td>';
                     internet += '<td align="right"><b>'+res.conciliados+'</b></td>';
-                    internet += '<td align="right"><b><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+res.no_conciliados+'</a></b></td>';
+                    internet += '<td align="right"><b>'+res.no_conciliados+'</b></td>';
                     internet += '<td align="right"><b>'+res.monto_conciliado+'</b></td>';
                     internet += '<td align="right"><b>'+res.monto_no_conciliado+'</b></td>';
                     internet += '</tr>';
@@ -227,7 +227,7 @@
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Repositorio</td>';
                     internet += '<td align="right">'+rep.tramites+'</td>';
                     internet += '<td align="right">'+rep.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+rep.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2) id="noconc">'+rep.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+rep.monto_conciliado+'</td>';
                     internet += '<td align="right">'+rep.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -238,7 +238,7 @@
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>AS400</td>';
                     internet += '<td align="right">'+as4.tramites+'</td>';
                     internet += '<td align="right">'+as4.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+as4.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3) id="noconc">'+as4.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+as4.monto_conciliado+'</td>';
                     internet += '<td align="right">'+as4.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -249,7 +249,7 @@
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Otros</td>';
                     internet += '<td align="right">'+otr.tramites+'</td>';
                     internet += '<td align="right">'+otr.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+otr.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4) id="noconc">'+otr.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+otr.monto_conciliado+'</td>';
                     internet += '<td align="right">'+otr.monto_no_conciliado+'</td>';
                     internet += '</tr>';
