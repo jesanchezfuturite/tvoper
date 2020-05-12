@@ -122,8 +122,9 @@ class Conciliacion extends Command
 
             $config = $this->checkValidFilename($filename);
 
-            if($config)
+            if(is_array($config))
             {
+
                 $temporal = explode('_', $filename);
 
                 $this->bankName = $temporal[0];
@@ -133,6 +134,7 @@ class Conciliacion extends Command
                 $this->executedDate = substr($temporal[2],0,4) . "-" . substr($temporal[2],4,2) . "-" . substr($temporal[2],6,2);
             
                 $this->info_cuenta = $this->obtenerDetallesCuenta($this->bankAlias);
+
 
                 if($this->info_cuenta == false)
                 {
@@ -295,12 +297,7 @@ class Conciliacion extends Command
 
                 
                             try{
-
-                                if((int)$data["transaccion_id"] > 0)
-                                {
-                                    $this->ps->create( $data );
-                                }
-
+                                $this->ps->create( $data );
                             }catch( \Exception $e ){
                                 Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters');    
                             }
@@ -650,9 +647,11 @@ class Conciliacion extends Command
 
         foreach($validNames as $v => $d)
         {
-            if(strcmp($v,$name) == 0)
+            $valor = (int)strcmp($v,$name);
+            if($valor == 0)
             {
-                return array("file" => $v, "config" => $d);
+                $valid = array("file" => $v, "config" => $d);
+                return $valid;
             }
         }
 
