@@ -237,6 +237,11 @@ Route::get('/pagoservicios','ServiciosgeneralesController@pagoserviciosgenerales
 Route::get('/envio-corte/{fecha}','CorteController@enviacorreo');
 
 
+/****************************    CONTROL ACCESO SERVICIOS GENERALES *************************/
+Route::group(['middleware' => 'permissions'], function () {
+    Route::get('/acceso-servicios','ServiciosgeneralesController@accesoServicios');
+
+});
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
