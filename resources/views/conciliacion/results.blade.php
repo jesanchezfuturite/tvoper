@@ -187,11 +187,79 @@
                     content = '<div class="tab-pane active" id="tab_'+element+'">';    
                 }else{
                     $("#d_tabs").append('<li><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
-                    content = '<div class="tab-pane" id="tab_'+element+'">';     
+                    content = '<div class="tab-pane" id="tab_'+element+'"><div class="portlet-body">';     
                 }
-                // aqui genero el resumen de cada banco por cuenta para internet
-                content += '<div class="portlet-body">';
+                
 
+                // aqui genero el resumen de cada banco por cuenta para internet
+                r = info.resumen;
+                g = info.grand;
+                
+                internet = '<table class="table table-hover"><thead><tr><th>Alias</th><th>Cuenta</th><th>Origen</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
+
+                $.each(r,function(i,por_cuenta){
+                    
+                    res = por_cuenta.resumen;
+                    
+                    internet += '<tr style="background-color:#bce8f1">';
+                    internet += '<td ><b>'+por_cuenta.alias+'</b></td><td><b>'+por_cuenta.cuenta+'</b></td><td><b>Total</b></td>';
+                    internet += '<td align="right"><b>'+res.tramites+'</b></td>';
+                    internet += '<td align="right"><b>'+res.conciliados+'</b></td>';
+                    internet += '<td align="right"><b>'+res.no_conciliados+'</b></td>';
+                    internet += '<td align="right"><b>'+res.monto_conciliado+'</b></td>';
+                    internet += '<td align="right"><b>'+res.monto_no_conciliado+'</b></td>';
+                    internet += '</tr>';
+
+                    int = por_cuenta.internet;
+
+                    internet += '<tr>';
+                    internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Internet</td>';
+                    internet += '<td align="right">'+int.tramites+'</td>';
+                    internet += '<td align="right">'+int.conciliados+'</td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+int.no_conciliados+'</a></td>';
+                    internet += '<td align="right">'+int.monto_conciliado+'</td>';
+                    internet += '<td align="right">'+int.monto_no_conciliado+'</td>';
+                    internet += '</tr>';
+
+                    rep = por_cuenta.repositorio;
+
+                    internet += '<tr>';
+                    internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Repositorio</td>';
+                    internet += '<td align="right">'+rep.tramites+'</td>';
+                    internet += '<td align="right">'+rep.conciliados+'</td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2) id="noconc">'+rep.no_conciliados+'</a></td>';
+                    internet += '<td align="right">'+rep.monto_conciliado+'</td>';
+                    internet += '<td align="right">'+rep.monto_no_conciliado+'</td>';
+                    internet += '</tr>';
+
+                    as4 = por_cuenta.as400;
+
+                    internet += '<tr>';
+                    internet += '<td>&nbsp;</td><td>&nbsp;</td><td>AS400</td>';
+                    internet += '<td align="right">'+as4.tramites+'</td>';
+                    internet += '<td align="right">'+as4.conciliados+'</td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3) id="noconc">'+as4.no_conciliados+'</a></td>';
+                    internet += '<td align="right">'+as4.monto_conciliado+'</td>';
+                    internet += '<td align="right">'+as4.monto_no_conciliado+'</td>';
+                    internet += '</tr>';
+
+                    otr = por_cuenta.otros;
+
+                    internet += '<tr>';
+                    internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Otros</td>';
+                    internet += '<td align="right">'+otr.tramites+'</td>';
+                    internet += '<td align="right">'+otr.conciliados+'</td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4) id="noconc">'+otr.no_conciliados+'</a></td>';
+                    internet += '<td align="right">'+otr.monto_conciliado+'</td>';
+                    internet += '<td align="right">'+otr.monto_no_conciliado+'</td>';
+                    internet += '</tr>';
+
+                    
+
+                });
+
+
+                /*
                 internet = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
 
                 accounts = info.info;
@@ -262,17 +330,29 @@
                 otros += '</tbody></table>';
 
 
-
-
                 content += internet;
 
                 content += repo;
 
                 content += as400;
 
-                content += otros;
+                content += otros; */
 
-                content += '</div></div>';
+                
+
+                grd = g;
+
+                internet += '<tr style="background-color:#DFF0D8">';
+                internet += '<td>&nbsp;</td><td>&nbsp;</td><td><b><i>GRAND</i></b></td>';
+                internet += '<td align="right"><b><i>'+g.tramites+'</i></b></td>';
+                internet += '<td align="right"><b><i>'+g.conciliados+'</i></b></td>';
+                internet += '<td align="right"><b><i>'+g.no_conciliados+'</i></b></td>';
+                internet += '<td align="right"><b><i>'+g.monto_conciliado+'</i></b></td>';
+                internet += '<td align="right"><b><i>'+g.monto_no_conciliado+'</i></b></td>';
+                internet += '</tr>';
+
+                content += internet;
+                content += '</tbody></table></div></div>';
 
                 $("#c_tabs").append(content);
 
