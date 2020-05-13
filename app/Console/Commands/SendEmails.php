@@ -179,7 +179,7 @@ class SendEmails extends Command
     }
     private function SendEmailTransaccion()
     {
-        //$this->SendEmial_referencia();
+        $this->SendEmial_referencia();
         //$this->SendEmial();
         $this->SendEmial_pagado();
         //$this->email_template();
