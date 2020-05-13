@@ -239,7 +239,9 @@ class SendEmails extends Command
 
     }
     private function SendEmial_pagado(){
-        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null]);       
+      
+        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(10);
+        //log::info($findTransaccion);       
         foreach ($findTransaccion as $k) {
              $correo='';
              $nombre='';
@@ -298,6 +300,7 @@ class SendEmails extends Command
          $mail = new PHPMailer(true);
          $response='202';
          $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio);
+        //log::info($message);
         try{
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
@@ -307,7 +310,7 @@ class SendEmails extends Command
             $mail->Port = '587'; 
             $mail->Username = 'noreply.tesoreria@gmail.com';
             $mail->Password = 'T3s0rer14';
-            $mail->setFrom('noreply.tesoreria@gmail.com', 'NOREPLEY'); 
+            $mail->setFrom('noreply.tesoreria@gmail.com', 'noreply tesoreria'); 
             $mail->Subject = 'MESSAGE';
             $mail->MsgHTML($message);
             $mail->addAddress($correo, $nombre); 
@@ -318,6 +321,7 @@ class SendEmails extends Command
         }
         return $response;
     }
+
     
     private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio)
     {
