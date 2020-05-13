@@ -23,6 +23,7 @@ use App\Repositories\EntidadRepositoryEloquent;
 use App\Repositories\ServdetalleaportacionRepositoryEloquent;
 use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 use App\Repositories\ServdetalleserviciosRepositoryEloquent;
+use App\Repositories\UsersRepositoryEloquent;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -33,7 +34,8 @@ class ServiciosgeneralesController extends Controller
 	protected $entidaddb;
 	protected $servdetalleaportaciondb;
 	protected $servgeneratransacciondb;
-	protected $servdetalleserviciosdb;
+    protected $servdetalleserviciosdb;
+	protected $usersdb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -43,7 +45,8 @@ class ServiciosgeneralesController extends Controller
     	EntidadRepositoryEloquent $entidaddb,
     	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb,
     	ServgenerartransaccionRepositoryEloquent $servgeneratransacciondb,
-    	ServdetalleserviciosRepositoryEloquent $servdetalleserviciosdb
+        ServdetalleserviciosRepositoryEloquent $servdetalleserviciosdb,
+    	UsersRepositoryEloquent $usersdb
 
     ){
     	$this->middleware('auth');
@@ -54,7 +57,8 @@ class ServiciosgeneralesController extends Controller
 		$this->entidaddb=$entidaddb;
 		$this->servdetalleaportaciondb=$servdetalleaportaciondb;
 		$this->servgeneratransacciondb=$servgeneratransacciondb;
-		$this->servdetalleserviciosdb=$servdetalleserviciosdb;
+        $this->servdetalleserviciosdb=$servdetalleserviciosdb;
+		$this->usersdb=$usersdb;
     }
 
     public function retencionesAlMillar()
@@ -295,7 +299,7 @@ class ServiciosgeneralesController extends Controller
 		
 		$insertdetalle=$this->servdetalleaportaciondb->create(['id_transaccion'=>$folio_resp,'folio'=>$id_trans,'nombre_proyecto'=>$proyecto,'folio_sie'=>$folio,'id_programa'=>$id_programa,'nombre_programa'=>$programa,'ejercicio_fiscal'=>$ejercicio_fiscal,'modalidad'=>$modalidad_ejecucion,'contrato'=>$referencia_contrato,'numero_factura'=>$numero_factura,'estimacion_pagada'=>$estimacion_pagada,'partida'=>$partida,'fecha_retencion'=>$fecha_retencion,'monto_retencion'=>$monto_retencion,'razon_social_contratado'=>$razon_social,'dependencia_normativa'=>$dependencia_normativa,'dependencia_ejecutora'=>$dependencia_ejecutora,'proyecto'=>$proyecto,'desc_proyecto'=>$descripcion_proyecto,'programa'=>$programa,'desc_programa'=>$descripcion_programa,'subprograma','desc_subprograma'=>$descripcion_subprograma,'oficio'=>$oficio,'desc_oficio'=>$descripcion_oficio,'desc_clasificacion_geografica'=>$descripcion_clasificacion_geografica,'desc_dependencia_normativa'=>$descripcion_dependencia_normativa,'desc_dependencia_ejecutora'=>$descripcion_dependencia_ejecutora,'fecha_tramite'=>$date]);
 		if($email<>''){
-			$this->SendEmial($url_resp,$folio_resp,$email);
+			//$this->SendEmial($url_resp,$folio_resp,$email);
 		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
@@ -560,7 +564,19 @@ class ServiciosgeneralesController extends Controller
     {
     	return view('serviciosgenerales/pagoserviciosgenerales');
     }
-
+    public function accesoServicios()
+    {
+        return view('controlacceso/controlacceso');
+    }
+    public function insertUser(Request $request)
+    {
+        $nombre=$request->nombre;
+        $email=$request->email;
+        $password=$request->password;
+        $confirmpassword=$request->confirmpassword;
+        $finduser=$this->usersdb->findWhere();
+        
+    }
     private function plantillaEmail($url,$referencia)
     {
         $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
