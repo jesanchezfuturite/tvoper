@@ -240,12 +240,17 @@ class Conciliacion extends Command
                         $condition = 3;
                     }
                 }
+                
+                if($condition == 0 && $current_line == 1 && $startFrom == 2)
+                {
+                    $condition = 1;   
+                }
+                
                 if($condition == 0)
                 {
                     $line   = fgets($fo);   
                 }
-                
-                
+
                 if($condition == 1)
                 {
                     $line   = fgets($fo);
