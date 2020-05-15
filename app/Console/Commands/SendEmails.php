@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Dompdf\Dompdf;
+
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
@@ -236,7 +238,7 @@ class SendEmails extends Command
                 $servicio_txt='Servicio: ' .(string)$servicio;
                  $dompdf = new DOMPDF( array('enable_remote'=>true));
                 $dompdf->setPaper('A2', 'portrait');
-                $dompdf->load_html( file_get_contents($url) );
+                $dompdf->load_html( file_get_contents($url_recibo) );
                 $dompdf->render();
                 $output=$dompdf->output();
                 $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
@@ -314,7 +316,7 @@ class SendEmails extends Command
             }else{
                 $dompdf = new DOMPDF( array('enable_remote'=>true));
                 $dompdf->setPaper('A2', 'portrait');
-                $dompdf->load_html( file_get_contents($url) );
+                $dompdf->load_html( file_get_contents($url_recibo) );
                 $dompdf->render();
                 $output=$dompdf->output();
                 $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
