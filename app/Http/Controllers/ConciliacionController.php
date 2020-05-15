@@ -397,6 +397,7 @@ class ConciliacionController extends Controller
                 $grand_no_conciliados = 0;
                 $grand_monto_conciliado = 0;
                 $grand_monto_no_conciliado = 0;
+                $grand_total = 0;
 
 
                 foreach($bank_accounts as $b)
@@ -498,54 +499,14 @@ class ConciliacionController extends Controller
                         }
                     
                     }
-                    /*
-                    $info_internet[]= array(
-                        "cuenta"                            => $cuenta,
-                        "cuenta_alias"                      => $alias,
-                        //internet
-                        "registros"                         => $total_conciliados + $total_no_conciliados,
-                        "registros_conciliados"             => $total_conciliados,
-                        "registros_no_conciliados"          => $total_no_conciliados,
-                        "monto_conciliado"                  => number_format($monto_conciliado,2),
-                        "monto_no_conciliado"               => number_format($monto_no_conciliado,2),
-                    );    
-                        // repositorio
-                    $info_repositorio []= array(
-                        "cuenta"                            => $cuenta,
-                        "cuenta_alias"                      => $alias,    
-                        "registros_conciliados"             => $total_conciliados_repo,
-                        "registros_no_conciliados"          => $total_no_conciliados_repo,
-                        "monto_conciliado"                  => number_format($monto_conciliado_repo,2),
-                        "monto_no_conciliado"               => number_format($monto_no_conciliado_repo,2),
-                        "registros"                         => $total_conciliados_repo +$total_no_conciliados_repo,
-                    );
-                        // as400
-                    $info_as400 []= array(
-                        "cuenta"                            => $cuenta,
-                        "cuenta_alias"                      => $alias,
-                        "registros_conciliados"             => $total_conciliados_as400,
-                        "registros_no_conciliados"          => $total_no_conciliados_as400,
-                        "monto_conciliado"                  => number_format($monto_conciliado_as400,2),
-                        "monto_no_conciliado"               => number_format($monto_no_conciliado_as400,2),
-                        "registros"                         => $total_conciliados_as400 +$total_no_conciliados_as400,
-                    );
-                        // otros
-                    $info_otros []= array(
-                        "cuenta"                            => $cuenta,
-                        "cuenta_alias"                      => $alias,
-                        "registros_conciliados"             => $total_conciliados_otros,
-                        "registros_no_conciliados"          => $total_no_conciliados_otros,
-                        "monto_conciliado"                  => number_format($monto_conciliado_otros,2),
-                        "monto_no_conciliado"               => number_format($monto_no_conciliado_otros,2),
-                        "registros"                         => $total_conciliados_otros +$total_no_conciliados_otros,
-                    );
-*/  
+                      
 
                     $grand_tramites             += $total_conciliados + $total_no_conciliados + $total_conciliados_repo + $total_no_conciliados_repo +$total_conciliados_as400 + $total_no_conciliados_as400 + $total_conciliados_otros + $total_no_conciliados_otros;
                     $grand_conciliados          += $total_conciliados + $total_conciliados_repo + $total_conciliados_as400 + $total_conciliados_otros;
                     $grand_no_conciliados       += $total_no_conciliados + $total_no_conciliados_repo + $total_no_conciliados_as400 + $total_no_conciliados_otros;
                     $grand_monto_conciliado     += $monto_conciliado + $monto_conciliado_repo + $monto_conciliado_as400 + $monto_conciliado_otros;
                     $grand_monto_no_conciliado  += $monto_no_conciliado + $monto_no_conciliado_repo + $monto_no_conciliado_as400 + $monto_no_conciliado_otros;
+                    $grand_total                += $grand_monto_conciliado + $grand_monto_no_conciliado;
                     // nuevo resumen
                     $nuevo_resumen []= array(
                         "alias"     => $alias,
@@ -557,6 +518,7 @@ class ConciliacionController extends Controller
                                 "no_conciliados"        => $total_no_conciliados + $total_no_conciliados_repo + $total_no_conciliados_as400 + $total_no_conciliados_otros,
                                 "monto_conciliado"      => number_format(($monto_conciliado + $monto_conciliado_repo + $monto_conciliado_as400 + $monto_conciliado_otros),2),
                                 "monto_no_conciliado"   => number_format(($monto_no_conciliado + $monto_no_conciliado_repo + $monto_no_conciliado_as400 + $monto_no_conciliado_otros),2),
+                                "total"                 => number_format(($monto_conciliado + $monto_conciliado_repo + $monto_conciliado_as400 + $monto_conciliado_otros +$monto_no_conciliado + $monto_no_conciliado_repo + $monto_no_conciliado_as400 + $monto_no_conciliado_otros),2)
                             ),
 
                         "internet"  => 
@@ -614,6 +576,8 @@ class ConciliacionController extends Controller
                             "no_conciliados"        => $grand_no_conciliados,
                             "monto_conciliado"      => number_format($grand_monto_conciliado,2),
                             "monto_no_conciliado"   => number_format($grand_monto_no_conciliado,2),
+                            "monto_no_conciliado"   => number_format($grand_monto_no_conciliado,2),
+                            "total"                 => number_format($grand_total,2)
                         ),
                 );
                 
