@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use File;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -581,12 +582,26 @@ class ServiciosgeneralesController extends Controller
     }
       public function GeneraPDF()
     {
-        $path1=storage_path('app/Cortes/');
+       $fecha=Carbon::now();
+        $fechaIn=$fecha->format('Ymd');
+        $path1=storage_path('app/pdf/');
+        if (!File::exists($path1))
+        {
+            File::makeDirectory($path1);
+        } 
+        
         $dompdf = new DOMPDF( array('enable_remote'=>true));
         $dompdf->setPaper('A2', 'portrait');
-        $dompdf->load_html( file_get_contents('http://10.153.144.149:8080/WsGobNL/Recibo.aspx?Folio=258227') );
+        $dompdf->load_html( file_get_contents('http://localhost:9399/Recibo.aspx?Folio=258227') );
         $dompdf->render();
-        $dompdf->stream("mi_archivo.pdf");
+        $output=$dompdf->output();
+        if (File::exists($path1.'Formato_Pago_'.$fechaIn.'.pdf'))
+        {
+            File::delete($path1.'Formato_Pago_'.$fechaIn.'.pdf');
+        }
+        
+        File::put($path1.'Formato_Pago_'.$fechaIn.'.pdf',$output);
+
 
     }
     private function plantillaEmail($url,$referencia)
