@@ -242,6 +242,9 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::get('/acceso-servicios','ServiciosgeneralesController@accesoServicios');
 
 });
+/*********************************** PDF*****/
+ Route::get('/pdf','ServiciosgeneralesController@GeneraPDF');
+
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
