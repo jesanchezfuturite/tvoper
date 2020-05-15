@@ -240,12 +240,17 @@ class Conciliacion extends Command
                         $condition = 3;
                     }
                 }
+                
+                if($condition == 0 && $current_line == 1 && $startFrom == 2)
+                {
+                    $condition = 1;   
+                }
+                
                 if($condition == 0)
                 {
                     $line   = fgets($fo);   
                 }
-                
-                
+
                 if($condition == 1)
                 {
                     $line   = fgets($fo);
@@ -256,7 +261,7 @@ class Conciliacion extends Command
                         if($origenStart == 0 && $origenLength == 0 && $referenciaStart == 0 && $referenciaLength == 0)
                         {
                             $origen     = 1;
-                            $referencia = "";
+                            $referencia = (strcmp($this->bankName,"bancomer") == 0) ? (int)substr($line, $idStart, $idLength) : "";
                             $monto = substr($line, $amountStart, $amountLength);
                         }else{
                             
@@ -279,6 +284,7 @@ class Conciliacion extends Command
 
                             
                         }
+
                         if($haltV == 1) // esto se agrego para validar los cargos de comision en los archivos
                         {
                             $data =
@@ -509,6 +515,7 @@ class Conciliacion extends Command
                                 "status"         => "np",
                                 "filename"       => $filename,
                                 "origen"         => 1,
+                                "referencia"     => substr($info[$id],0,8),
                                 "cuenta_banco"   => $this->info_cuenta["cuenta"],
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],

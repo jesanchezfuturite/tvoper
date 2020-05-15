@@ -37,6 +37,16 @@ class CorreccioncfdiController extends Controller
     }
 
     /**
+     * Show view to cancel cfdi.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function cancel()
+    {
+        return view('cfditool/cfdicancel');
+    }
+
+    /**
      *
      * @param POST request RFC
      * Return result from RFC query.
@@ -82,6 +92,31 @@ class CorreccioncfdiController extends Controller
     		}
     	}
     }
+
+
+    /**
+     *
+     * @param POST request Folio Unico
+     * Return result from Folio Unico query.
+     *
+     * @return table with data.
+     */
+    public function searchfoliounicouuid(Request $request)
+    {
+        if($request->isMethod('post'))
+        {
+            try {
+                $reg = $this->encabezado->findWhere(['folio_unico'=>$request->fu],['folio_unico','folio_pago','fecha_transaccion','estatus_generacion','estatus_documento','total']);
+                return json_encode($reg);
+                
+            } 
+            catch (\Exception $e) 
+            {
+                return json_encode($e);
+            }
+        }
+    }
+
 
     /**
      *
