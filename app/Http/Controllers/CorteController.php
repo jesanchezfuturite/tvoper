@@ -187,7 +187,8 @@ class CorteController extends Controller
                 $mail->addAttachment($d->path);
             }
             $mail->MsgHTML($message);
-            $mail->addAddress('juancarlos96.15.02@gmail.com', 'Juan Carlos'); 
+            $mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
+            $mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
             $mail->send();
             $response=true;
         }catch(phpmailerException $e){

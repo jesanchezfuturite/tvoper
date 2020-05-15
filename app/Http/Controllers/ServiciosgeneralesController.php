@@ -24,6 +24,7 @@ use App\Repositories\ServdetalleaportacionRepositoryEloquent;
 use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
+use Dompdf\Dompdf;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -403,6 +404,7 @@ class ServiciosgeneralesController extends Controller
     {
     	return view('serviciosgenerales/pagoarrendamientos');
     }
+  
     public function wsArrendamientoR(Request $request)
     {
     	
@@ -574,8 +576,18 @@ class ServiciosgeneralesController extends Controller
         $email=$request->email;
         $password=$request->password;
         $confirmpassword=$request->confirmpassword;
-        $finduser=$this->usersdb->findWhere();
-        
+        $finduser=$this->usersdb->findWhere(['email'=>$email]);
+
+    }
+      public function GeneraPDF()
+    {
+        $path1=storage_path('app/Cortes/');
+        $dompdf = new DOMPDF( array('enable_remote'=>true));
+        $dompdf->setPaper('A2', 'portrait');
+        $dompdf->load_html( file_get_contents('http://10.153.144.149:8080/WsGobNL/Recibo.aspx?Folio=258227') );
+        $dompdf->render();
+        $dompdf->stream("mi_archivo.pdf");
+
     }
     private function plantillaEmail($url,$referencia)
     {
