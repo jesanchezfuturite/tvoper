@@ -185,6 +185,13 @@ class SendEmails extends Command
         //$this->email_template();
     }
     private function SendEmial_referencia(){
+        $fecha=Carbon::now();
+        $fechaIn=$fecha->format('Ymd');
+        $path1=storage_path('app/pdf/');
+        if (!File::exists($path1))
+        {
+          File::makeDirectory($path1);
+        }   
         $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(10);             
         foreach ($findTransaccion as $k) {
              $correo='';
@@ -227,7 +234,22 @@ class SendEmails extends Command
                 $url_txt='Formato de pago: ' .(string)$url_recibo;
                 $referencia_txt='Transaccion número: ' .(string)$referencia;
                 $servicio_txt='Servicio: ' .(string)$servicio;
-                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt);
+                 $dompdf = new DOMPDF( array('enable_remote'=>true));
+                $dompdf->setPaper('A2', 'portrait');
+                $dompdf->load_html( file_get_contents($url) );
+                $dompdf->render();
+                $output=$dompdf->output();
+                $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
+                if (File::exists($pdf))
+                {
+                  File::delete($pdf);
+                }        
+                File::put($pdf,$output);
+                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf);
+                if (File::exists($pdf))
+                {
+                  File::delete($pdf);
+                } 
                 if($enviar==202)
                 {
                   $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
@@ -240,6 +262,13 @@ class SendEmails extends Command
     }
     private function SendEmial_pagado(){
       
+        $fecha=Carbon::now();
+        $fechaIn=$fecha->format('Ymd');
+        $path1=storage_path('app/pdf/');
+        if (!File::exists($path1))
+          {
+            File::makeDirectory($path1);
+          }  
         $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(10);
         //log::info($findTransaccion);       
         foreach ($findTransaccion as $k) {
@@ -280,10 +309,25 @@ class SendEmails extends Command
             $servicio_txt='Servicio: ' .(string)$servicio;
             if($correo=='')
             {
+
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
             }else{
-              $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt);
-
+                $dompdf = new DOMPDF( array('enable_remote'=>true));
+                $dompdf->setPaper('A2', 'portrait');
+                $dompdf->load_html( file_get_contents($url) );
+                $dompdf->render();
+                $output=$dompdf->output();
+                $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
+                if (File::exists($pdf))
+                {
+                  File::delete($pdf);
+                }        
+                File::put($pdf,$output);
+                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt,$pdf);
+                if (File::exists($pdf))
+                {
+                  File::delete($pdf);
+                } 
               if($enviar==202)
               {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
@@ -295,13 +339,14 @@ class SendEmails extends Command
         }
 
     }
-    public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio)
+    public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf)
     {
          $mail = new PHPMailer(true);
          $response='202';
          $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio);
         //log::info($message);
         try{
+            
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
             $mail->SMTPAuth =true;
@@ -313,6 +358,9 @@ class SendEmails extends Command
             $mail->setFrom('noreply.tesoreria@gmail.com', 'noreply tesoreria'); 
             $mail->Subject = 'MESSAGE';
             $mail->MsgHTML($message);
+            if($subencabezado!==''){
+              $mail->addAttachment($pdf);
+            }            
             $mail->addAddress($correo, $nombre); 
             $mail->send();
         }catch(phpmailerException $e){
