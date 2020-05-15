@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
@@ -314,8 +315,12 @@ class SendEmails extends Command
 
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
             }else{
-                $dompdf = new DOMPDF( array('enable_remote'=>true));
-                $dompdf->setPaper('A4', 'portrait');
+                $options= new Options();
+                $options->set('isHtml5ParserEnabled',true);
+                $options->set('isRemoteEnabled',true);
+
+                $dompdf = new DOMPDF($options);
+                $dompdf->setPaper('A3', 'portrait');
                 $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id) );
                 $dompdf->render();
                 $output=$dompdf->output();
