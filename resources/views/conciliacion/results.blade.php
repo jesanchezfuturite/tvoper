@@ -36,6 +36,7 @@
                 <button class="btn blue" id="busqueda" type="submit">
                     Buscar
                 </button>
+                <div id="corte_div" style="display: inline"></div>
             </div>
         </div>
     </div>
@@ -159,6 +160,8 @@
 
         var fecha = $("#fecha").val();
 
+        $("#corte_div").empty();
+
         $.ajax({
             method: "post",
             beforeSend:  function(){
@@ -200,9 +203,10 @@
                 $.each(r,function(i,por_cuenta){
                     
                     res = por_cuenta.resumen;
+
                     
                     internet += '<tr style="background-color:#bce8f1">';
-                    internet += '<td ><b>'+por_cuenta.alias+'</b></td><td><b>'+por_cuenta.cuenta+'</b></td><td><b>Total</b></td>';
+                    internet += '<td ><b>'+por_cuenta.alias+'</b></td><td><b>'+por_cuenta.cuenta+'</b></td><td><b>Total ('+ res.total +')</b></td>';
                     internet += '<td align="right"><b>'+res.tramites+'</b></td>';
                     internet += '<td align="right"><b>'+res.conciliados+'</b></td>';
                     internet += '<td align="right"><b>'+res.no_conciliados+'</b></td>';
@@ -258,92 +262,11 @@
 
                 });
 
-
-                /*
-                internet = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Internet</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
-
-                accounts = info.info;
-
-                $.each(accounts,function(j,cuenta){
-                    internet += '<tr>';
-                    internet += '<td>'+cuenta.cuenta_alias+'</td><td>'+cuenta.cuenta+'</td>';
-                    internet += '<td align="right">'+cuenta.registros+'</td>';
-                    internet += '<td align="right">'+cuenta.registros_conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+cuenta.cuenta_alias+'","'+cuenta.cuenta+'",1) id="noconc">'+cuenta.registros_no_conciliados+'</a></td>';
-                    internet += '<td align="right">'+cuenta.monto_conciliado+'</td>';
-                    internet += '<td align="right">'+cuenta.monto_no_conciliado+'</td>';
-                    internet += '</tr>';
-                });
-
-                internet += '</tbody></table>';
-
-                repo = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Repositorio</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
-
-                accounts_repo = info.info_repositorio;
-
-                $.each(accounts_repo,function(j,cuenta_repo){
-                    repo += '<tr>';
-                    repo += '<td>'+cuenta_repo.cuenta_alias+'</td><td>'+cuenta_repo.cuenta+'</td>';
-                    repo += '<td align="right">'+cuenta_repo.registros+'</td>';
-                    repo += '<td align="right">'+cuenta_repo.registros_conciliados+'</td>';
-                    repo += '<td align="right"><a href="#" onclick=noconc("'+cuenta_repo.cuenta_alias+'","'+cuenta_repo.cuenta+'",1) id="noconc">'+cuenta_repo.registros_no_conciliados+'</a></td>';
-                    repo += '<td align="right">'+cuenta_repo.monto_conciliado+'</td>';
-                    repo += '<td align="right">'+cuenta_repo.monto_no_conciliado+'</td>';
-                    repo += '</tr>';
-                });
-
-                repo += '</tbody></table>';
-
-                as400 = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">AS400</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
-
-                accounts_as400 = info.info_as400;
-
-                $.each(accounts_as400,function(j,cuenta_as400){
-                    as400 += '<tr>';
-                    as400 += '<td>'+cuenta_as400.cuenta_alias+'</td><td>'+cuenta_as400.cuenta+'</td>';
-                    as400 += '<td align="right">'+cuenta_as400.registros+'</td>';
-                    as400 += '<td align="right">'+cuenta_as400.registros_conciliados+'</td>';
-                    as400 += '<td align="right"><a href="#" onclick=noconc("'+cuenta_as400.cuenta_alias+'","'+cuenta_as400.cuenta+'",3) id="noconc">'+cuenta_as400.registros_no_conciliados+'</a></td>';
-                    as400 += '<td align="right">'+cuenta_as400.monto_conciliado+'</td>';
-                    as400 += '<td align="right">'+cuenta_as400.monto_no_conciliado+'</td>';
-                    as400 += '</tr>';
-                });
-
-                as400 += '</tbody></table>';
-
-
-                otros = '<table class="table table-hover"><thead><tr><th></th><th colspan="5">Otros</th></tr><tr><th>Alias</th><th>Cuenta</th><th>Trámites</th><th>Conciliados</th><th>No conciliados</th><th>Monto conciliado</th><th>Monto no conciliado</th></tr></thead><tbody>';
-
-                accounts_otros = info.info_otros;
-
-                $.each(accounts_otros,function(j,cuenta_otros){
-                    otros += '<tr>';
-                    otros += '<td>'+cuenta_otros.cuenta_alias+'</td><td>'+cuenta_otros.cuenta+'</td>';
-                    otros += '<td align="right">'+cuenta_otros.registros+'</td>';
-                    otros += '<td align="right">'+cuenta_otros.registros_conciliados+'</td>';
-                    otros += '<td align="right"><a href="#" onclick=noconc("'+cuenta_otros.cuenta_alias+'","'+cuenta_otros.cuenta+'",4) id="noconc">'+cuenta_otros.registros_no_conciliados+'</a></td>';
-                    otros += '<td align="right">'+cuenta_otros.monto_conciliado+'</td>';
-                    otros += '<td align="right">'+cuenta_otros.monto_no_conciliado+'</td>';
-                    otros += '</tr>';
-                });
-
-                otros += '</tbody></table>';
-
-
-                content += internet;
-
-                content += repo;
-
-                content += as400;
-
-                content += otros; */
-
-                
-
+            
                 grd = g;
 
                 internet += '<tr style="background-color:#DFF0D8">';
-                internet += '<td>&nbsp;</td><td>&nbsp;</td><td><b><i>GRAND</i></b></td>';
+                internet += '<td>&nbsp;</td><td>&nbsp;</td><td><b><i>GRAND TOTAL ('+ g.total  +') </i></b></td>';
                 internet += '<td align="right"><b><i>'+g.tramites+'</i></b></td>';
                 internet += '<td align="right"><b><i>'+g.conciliados+'</i></b></td>';
                 internet += '<td align="right"><b><i>'+g.no_conciliados+'</i></b></td>';
@@ -367,11 +290,30 @@
             /* hide the loading */ 
             $('#imageloading').html('');
             /* append the results on result-query div */
-            $('#bancos_tabs').show();                   
+            $('#bancos_tabs').show();        
+            // poner el boton para enviar el corte
+            var boton;
+
+            var fecha_correcta = fecha.split("/");
+            var fc = fecha_correcta[2]+"-"+fecha_correcta[0]+"-"+fecha_correcta[1];
+            console.log(fc);
+            // boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
+            boton = $('<button>',{text:'Corte',id:'corte_button',class: 'btn blue',click: function(){ alert('Proximamente') }});
+            $("#corte_div").append(boton);
+
         });
 
 
     });
+
+    function enviarCorte(fecha)
+    {
+        // deshabilitar el boton
+        $("#corte_button").attr("disabled", true);
+        var url = "{{ url('/') }}" + "/envio-corte/"+fecha;
+        window.open( url, "_blank");
+
+    }
 
     /* buscar el detalle de las transacciones de internet */ 
     function noconc(alias,cuenta,fuente)
