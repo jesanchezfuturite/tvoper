@@ -36,6 +36,9 @@
                 <button class="btn blue" id="busqueda" type="submit">
                     Buscar
                 </button>
+                <div id="corte_div">
+
+                </div>
             </div>
         </div>
     </div>
@@ -158,6 +161,8 @@
     $("#busqueda").click(function(){
 
         var fecha = $("#fecha").val();
+
+        $("#corte_div").empty();
 
         $.ajax({
             method: "post",
@@ -287,11 +292,29 @@
             /* hide the loading */ 
             $('#imageloading').html('');
             /* append the results on result-query div */
-            $('#bancos_tabs').show();                   
+            $('#bancos_tabs').show();        
+            // poner el boton para enviar el corte
+            var boton;
+
+            var fecha_correcta = fecha.split("/");
+            var fc = fecha_correcta[2]+"-"+fecha_correcta[0]+"-"+fecha_correcta[1];
+            console.log(fc);
+            boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
+            $("#corte_div").append(boton);
+
         });
 
 
     });
+
+    function enviarCorte(fecha)
+    {
+        // deshabilitar el boton
+        $("#corte_button").attr("disabled", true);
+        var url = "{{ url('/') }}" + "/envio-corte/"+fecha;
+        window.open( url, "_blank");
+
+    }
 
     /* buscar el detalle de las transacciones de internet */ 
     function noconc(alias,cuenta,fuente)
