@@ -173,12 +173,13 @@ class CorteSendEmail extends Command
         //$this-> gArchivo_Generico_prueba();
         //$this->actualizaduplicados();
        //$this->enviacorreo('2019-10-18');
+        //$this->gArchivo_Generico_prueba();
     }
     
     public function BuscarFechas()
     {
         $fecha=Carbon::now();
-        //$fecha=Carbon::parse('2019-11-21');
+        //$fecha=Carbon::parse('2020-05-12');
         $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
         $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
         $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
@@ -219,8 +220,8 @@ class CorteSendEmail extends Command
     {   
         $existe=false;
         $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
-        //,3,13,14,15,23,24,25
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
+        //
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377,393,3,13,14,15,23,24,25);       
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
@@ -242,7 +243,7 @@ class CorteSendEmail extends Command
             $this->gArchivo_ISOP($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Prestadora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
-            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */ 
+            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path,$fecha,$banco_id,$cuenta,$alias);
 
@@ -274,7 +275,7 @@ class CorteSendEmail extends Command
         $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
         $Directorio=$path."/".$nombreArchivo;
         $cadena='';
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377,393);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
@@ -358,7 +359,7 @@ class CorteSendEmail extends Command
         $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
         $Directorio=$path."/".$nombreArchivo;
         $cadena='';
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377,393);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
@@ -1163,12 +1164,12 @@ class CorteSendEmail extends Command
         $path=storage_path('app/');
         
         $cadena='';
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160);       
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->pr->findWhere(['fecha_ejecucion'=>'2020-04-30','status'=>'p','banco_id'=>'10']);
+        $conciliacion=$this->pr->findWhere(['id'=>'2252']);
 
         if($conciliacion<>null)
         {     
