@@ -306,7 +306,7 @@ class SendEmails extends Command
             $encabezado='Tu pago se ha realizado con éxito';
             $subencabezado='';
             $transaccion_txt='Transaccion número: ' .(string)$id;
-            $url_txt='Recibo de pago: ' .(string)$url_recibo;
+            $url_txt='Recibo de pago: https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id;
             $referencia_txt='Transaccion número: ' .(string)$referencia;
             $servicio_txt='Servicio: ' .(string)$servicio;
             if($correo=='')
@@ -315,11 +315,11 @@ class SendEmails extends Command
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
             }else{
                 $dompdf = new DOMPDF( array('enable_remote'=>true));
-                $dompdf->setPaper('A2', 'portrait');
-                $dompdf->load_html( file_get_contents($url_recibo) );
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id) );
                 $dompdf->render();
                 $output=$dompdf->output();
-                $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
+                $pdf=$path1.'Recibo_Pago_'.$id.'_'.$fechaIn.'.pdf';
                 if (File::exists($pdf))
                 {
                   File::delete($pdf);
@@ -360,9 +360,7 @@ class SendEmails extends Command
             $mail->setFrom('noreply.tesoreria@gmail.com', 'noreply tesoreria'); 
             $mail->Subject = 'MESSAGE';
             $mail->MsgHTML($message);
-            if($subencabezado!==''){
-              $mail->addAttachment($pdf);
-            }            
+           $mail->addAttachment($pdf);                     
             $mail->addAddress($correo, $nombre); 
             $mail->send();
         }catch(phpmailerException $e){
