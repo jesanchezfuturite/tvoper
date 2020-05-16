@@ -26,6 +26,7 @@ use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -589,18 +590,19 @@ class ServiciosgeneralesController extends Controller
         {
             File::makeDirectory($path1);
         } 
-        
-        $dompdf = new DOMPDF( array('enable_remote'=>true));
-        $dompdf->setPaper('A2', 'portrait');
-        $dompdf->load_html( file_get_contents('http://localhost:9399/Recibo.aspx?Folio=258227') );
+        $options= new Options();
+        $options->setIsRemoteEnable(true);
+        $dompdf = new DOMPDF($options);
+        $dompdf->setPaper('A3', 'portrait');
+        $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio=258394') );
         $dompdf->render();
         $output=$dompdf->output();
-        if (File::exists($path1.'Formato_Pago_'.$fechaIn.'.pdf'))
+        if (File::exists($path1.'Recibo_Pago_'.$fechaIn.'.pdf'))
         {
-            File::delete($path1.'Formato_Pago_'.$fechaIn.'.pdf');
+            File::delete($path1.'Recibo_Pago_'.$fechaIn.'.pdf');
         }
         
-        File::put($path1.'Formato_Pago_'.$fechaIn.'.pdf',$output);
+        File::put($path1.'Recibo_Pago_'.$fechaIn.'.pdf',$output);
 
 
     }
