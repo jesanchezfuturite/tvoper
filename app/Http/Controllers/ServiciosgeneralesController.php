@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use File;
 use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -25,6 +26,7 @@ use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class ServiciosgeneralesController extends Controller
 {
@@ -581,12 +583,27 @@ class ServiciosgeneralesController extends Controller
     }
       public function GeneraPDF()
     {
-        $path1=storage_path('app/Cortes/');
-        $dompdf = new DOMPDF( array('enable_remote'=>true));
-        $dompdf->setPaper('A2', 'portrait');
-        $dompdf->load_html( file_get_contents('http://10.153.144.149:8080/WsGobNL/Recibo.aspx?Folio=258227') );
+       $fecha=Carbon::now();
+        $fechaIn=$fecha->format('Ymd');
+        $path1=storage_path('app/pdf/');
+        if (!File::exists($path1))
+        {
+            File::makeDirectory($path1);
+        } 
+        $options= new Options();
+        $options->setIsRemoteEnable(true);
+        $dompdf = new DOMPDF($options);
+        $dompdf->setPaper('A3', 'portrait');
+        $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio=258394') );
         $dompdf->render();
-        $dompdf->stream("mi_archivo.pdf");
+        $output=$dompdf->output();
+        if (File::exists($path1.'Recibo_Pago_'.$fechaIn.'.pdf'))
+        {
+            File::delete($path1.'Recibo_Pago_'.$fechaIn.'.pdf');
+        }
+        
+        File::put($path1.'Recibo_Pago_'.$fechaIn.'.pdf',$output);
+
 
     }
     private function plantillaEmail($url,$referencia)
