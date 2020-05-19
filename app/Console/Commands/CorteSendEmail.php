@@ -237,13 +237,13 @@ class CorteSendEmail extends Command
         
         if($existe)
         {       
-            /*$this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
+            $this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
             $this->gArchivo_ISAN($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_ISH($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_ISOP($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Prestadora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
-            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */
+            $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Generico($path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path,$fecha,$banco_id,$cuenta,$alias);
 
