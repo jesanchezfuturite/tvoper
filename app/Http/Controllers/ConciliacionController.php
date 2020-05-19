@@ -493,7 +493,7 @@ class ConciliacionController extends Controller
                                     $monto_conciliado_otros += $t["amount"];
                                 }else{
                                     $total_no_conciliados_otros ++;
-                                    $monto_no_conciliado_otros += $t["amount"];
+                                    $monto_no_conciliado_otros += (float)$t["amount"];
                                 }
                                 break;
                         }
