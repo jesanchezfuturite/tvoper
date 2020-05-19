@@ -389,7 +389,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				<li class="dropdown dropdown-user">
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<!--<img alt="" class="img-circle" src="assets/admin/layout/img/avatar3_small.jpg"/>-->
-					<span class="username username-hide-on-mobile">@if(session('is_admin') == true)<span class="badge badge-success">Admin</span> @endif {{ Auth::user()->name }} </span>
+					<span class="username username-hide-on-mobile">@if(session('is_admin') == true)<span class="badge badge-success">Admin</span>@else <span class="badge badge-success">User</span>  @endif {{ Auth::user()->name }} </span>
 					<i class="fa fa-angle-down"></i>
 					</a>
 					<ul class="dropdown-menu dropdown-menu-default">
@@ -562,6 +562,23 @@ License: You must have a valid license purchased only from themeforest(the above
 				<!-- BEGIN ANGULARJS LINK -->
 
 				@if(session('is_admin') == true)
+				<li class="start ">
+					<a href="javascript:;">
+							<!--<i class="icon-home"></i>-->
+						<span class="title">Control</span>
+						<span class="arrow "></span>
+					</a>
+					<ul class="sub-menu">
+						<li>
+							<a href="/acceso-servicios">Control Acceso
+							</a>
+						</li>
+						<li>
+							<a href="/home">Partidas
+							</a>
+						</li>
+					</ul>
+				</li>
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
 					<a href="{{ url('/adminmenu') }}" >
 						<i class="icon-paper-plane"></i>

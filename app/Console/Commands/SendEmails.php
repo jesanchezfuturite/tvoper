@@ -189,7 +189,7 @@ class SendEmails extends Command
     }
     private function SendEmial_referencia(){
         $fecha=Carbon::now();
-        $fechaIn=$fecha->format('Ymd');
+        $fechaIn=$fecha->format('dmY');
         $path1=storage_path('app/pdf/');
         if (!File::exists($path1))
         {
@@ -235,7 +235,7 @@ class SendEmails extends Command
                 $subencabezado='Por favor observa las instrucciones respecto a las formas de pago';
                 $transaccion_txt='Transaccion número: ' .(string)$id;
                 $url_txt='Formato de pago: ' .(string)$url_recibo;
-                $referencia_txt='Transaccion número: ' .(string)$referencia;
+                $referencia_txt='Referencia de Pago: ' .(string)$referencia;
                 $servicio_txt='Servicio: ' .(string)$servicio;
                  $dompdf = new DOMPDF( array('enable_remote'=>true));
                 $dompdf->setPaper('A2', 'portrait');
@@ -266,7 +266,7 @@ class SendEmails extends Command
     private function SendEmial_pagado(){
       
         $fecha=Carbon::now();
-        $fechaIn=$fecha->format('Ymd');
+        $fechaIn=$fecha->format('dmY');
         $path1=storage_path('app/pdf/');
         if (!File::exists($path1))
           {
@@ -308,7 +308,7 @@ class SendEmails extends Command
             $subencabezado='';
             $transaccion_txt='Transaccion número: ' .(string)$id;
             $url_txt='Recibo de pago: https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id;
-            $referencia_txt='Transaccion número: ' .(string)$referencia;
+            $referencia_txt='Referencia de Pago: ' .(string)$referencia;
             $servicio_txt='Servicio: ' .(string)$servicio;
             if($correo=='')
             {
