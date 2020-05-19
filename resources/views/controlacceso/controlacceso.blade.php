@@ -2,7 +2,7 @@
 
 
 @section('content')
-<h3 class="page-title">Control <small>Acceso</small></h3>
+<h3 class="page-title">Control <small>Control Acceso</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -15,7 +15,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Acceso</a>
+            <a href="#">Control Acceso</a>
         </li>
     </ul>
 </div>
@@ -49,6 +49,9 @@
                     </th>
                     <th>
                         Correo Electrónico
+                    </th>    
+                    <th>
+                        Dependencia
                     </th>                 
                     <th>
                         &nbsp;
@@ -58,6 +61,7 @@
                 <tbody>
                      <td><span class="help-block">No Found</span></td>
                             <td></td>                         
+                            <td></td>                                 
                             <td></td>                                 
                 </tbody>
                 </table>
@@ -74,11 +78,39 @@
             </div>
             <div class="modal-body">
                     <input hidden="true" type="text"  id="idupdate">
+
                     <div class="row">
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Nombre:</label>
+                            <label class="col-md-3 control-label">Nombre(s):</label>
                             <div class="col-md-8">
-                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Nombre Completo" id="name">
+                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Nombres..." id="name">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Apellido Paterno:</label>
+                            <div class="col-md-8">
+                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Apellido Paterno" id="ape_paterno">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Apellido Materno:</label>
+                            <div class="col-md-8">
+                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Apellido Materno..." id="ape_materno">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Dependecia:</label>
+                            <div class="col-md-8">
+                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Dependecia..." id="dependecia">
                             </div>
                         </div>
                     </div>
@@ -87,7 +119,8 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Correo Electrónico:</label>
                             <div class="col-md-8">
-                                <input type="email" autocomplete="off" class="form-control" placeholder="Ingresa la Descripcion de la Partida" id="email">
+                                <input type="email" autocomplete="off" class="form-control" placeholder="Ingresa Correo Electrónico" id="email">
+                                 <span id="emailOK" class="help-block"></span>
                             </div>
                         </div>
                     </div>
@@ -155,5 +188,34 @@
     document.getElementById('confirmpassword').type='password';   
     });
 
+    
+    
+    function limpiar()
+    {
+        document.getElementById('name').value='';
+        document.getElementById('ape_paterno').value='';
+        document.getElementById('ape_materno').value='';
+        document.getElementById('dependecia').value='';
+        document.getElementById('email').value='';
+        document.getElementById('password').value='';
+        document.getElementById('confirmpassword').value='';
+        valido = document.getElementById('emailOK');
+        valido.innerText = "";
+    }
+
+    document.getElementById('email').addEventListener('input', function() {
+        campo = event.target;
+        valido = document.getElementById('emailOK');
+        
+        emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+        //Se muestra un texto a modo de ejemplo, luego va a ser un icono
+        if (emailRegex.test(campo.value)) {
+            valido.innerText = "Válido";
+            document.getElementById("emailOK").style.color = "green";
+        } else {
+            valido.innerText = "Incorrecto";
+            document.getElementById("emailOK").style.color = "red";
+        }
+    });
 </script>
 @endsection

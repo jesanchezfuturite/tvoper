@@ -34,5 +34,21 @@ class ServclavesgRepositoryEloquent extends BaseRepository implements Servclaves
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+
+    public function consultaRegistros()
+    {
+        try{        
+        $data = Servclavesg::where(['estatus'=>'1'])
+        ->join('users','users.email','=','serv_clave_sg.usuario')           
+        ->select('serv_clave_sg.id','users.email','serv_clave_sg.usuario','serv_clave_sg.dependencia','serv_clave_sg.nombre','serv_clave_sg.apellido_paterno','serv_clave_sg.apellido_materno','serv_clave_sg.user_id')
+        ->groupBy('serv_clave_sg.usuario')
+        ->get();
+
+        return $data;
+       
+       }catch( \Exception $e){
+            Log::info('[TramitesRepositoryEloquent@ConsultaRFC] Error ' . $e->getMessage());
+        } 
+    }
     
 }
