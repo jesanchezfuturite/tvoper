@@ -562,7 +562,7 @@ class ServiciosgeneralesController extends Controller
     	}
 		
 		if($email<>''){
-			$this->SendEmial($url_resp,$folio_resp,$email);
+			//$this->SendEmial($url_resp,$folio_resp,$email);
 		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
@@ -581,12 +581,32 @@ class ServiciosgeneralesController extends Controller
         return view('controlacceso/controlacceso');
     }
     public function insertUser(Request $request)
-    {
+    {   
+        $response=array();
         $nombre=$request->nombre;
+        $apellido_pat=$request->apellido_pat;
+        $apellido_mat=$request->apellido_mat;
+        $dependencia=$request->dependencia;
         $email=$request->email;
         $password=$request->password;
         $confirmpassword=$request->confirmpassword;
         $finduser=$this->usersdb->findWhere(['email'=>$email]);
+        if($finduser->count()==0)
+        {
+            $insert='';
+            $response=array();
+            $response [] = array(
+                'code' => '0',
+                'message'=>'Success' 
+            );
+        }else{
+            $response=array();
+            $response [] = array(
+                'code' => '1',
+                'message'=>'Usuario Ya Existe!!' 
+            );
+        }
+        return json_encode($response);
 
     }
     public function findUserAcceso()

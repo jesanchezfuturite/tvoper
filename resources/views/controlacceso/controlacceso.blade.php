@@ -22,13 +22,14 @@
 
 
 <div class="row">
-    <div class="portlet box blue" id="Addtable">
+    <div class="portlet box blue"  id="Addtable">
         <div class="portlet-title">
             <div class="caption">
                 <i class="fa fa-cogs"></i>Registros Usuarios
             </div>
         </div>
-        <div class="portlet-body" id="Removetable">           
+        <div class="portlet-body"> 
+            <div class="row">          
             <div class="form-group"> 
              <div class="col-md-6">           
                 <button class="btn green" href='#portlet-config' data-toggle='modal' >Nuevo Usario</button>
@@ -39,9 +40,12 @@
                 <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
               </div>
             </div>
-            <span class="help-block">&nbsp; </span>
-            
-                <table class="table table-hover" id="sample_2">
+        </div>
+        </div>       
+                  
+        <div class="portlet-body" id="Removetable"> 
+            <span class="help-block">&nbsp; </span> 
+            <table class="table table-hover" id="sample_2">
                 <thead>
                 <tr>
                     <th>
@@ -59,15 +63,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                     <td><span class="help-block">No Found</span></td>
-                            <td></td>                         
-                            <td></td>                                 
-                            <td></td>                                 
+                    <td><span class="help-block">No Found</span></td>
+                    <td></td>                         
+                    <td></td>                                 
+                    <td></td>                                 
                 </tbody>
-                </table>
+            </table>
           
-            </div>
+            
         </div>
+    </div>
 </div>
 <div class="modal fade" id="portlet-config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
@@ -179,17 +184,48 @@
         </div>
     </div>
 </div>
-
+<input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {  
-    document.getElementById('password').type='password';   
-    document.getElementById('confirmpassword').type='password';   
+        document.getElementById('password').type='password';   
+        document.getElementById('confirmpassword').type='password';  
+        userCargartabla();
     });
+     function addTable()
+    {
+        $('#Addtable').append(
+            "<div class='portlet-body' id='Removetable'> <table class='table table-hover' id='sample_2'><thead><tr> <th>Nombre</th><th>Correo Electrónico</th><th>Dependecia</th><th> &nbsp; </th> </tr> </thead> <tbody><tr><td><p>Cargando...<p></td></tr></tbody> </table> </div>"
+        );
+    }
+    function userCargartabla()
+    {
+        $.ajax({
+           method: "get",           
+           url: "{{ url('/user-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        document.getElementById('jsonCode').value=response;            
+          var Resp=$.parseJSON(response);
+           $("#Removetable").remove();
+         addTable();
+         $('#sample_2 tbody tr').remove();
+        $.each(Resp, function(i, item) {                
+            $('#sample_2 tbody').append("<tr>"
+                +"<td>"+item.nombre+" "+item.ape_pat +" "+item.ape_mat +"</td>"
+                +"<td>"+item.emial+"</td>"
+                +"<td>"+item.dependencia+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='umaUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='umaDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
+                +"</tr>"
+                );
+            });
+        TableManaged.init();
+        })
+        .fail(function( msg ) {
+         console.log("Error al Cargar Tabla Partidas");  });
+    }
 
-    
-    
     function limpiar()
     {
         document.getElementById('name').value='';
@@ -217,5 +253,49 @@
             document.getElementById("emailOK").style.color = "red";
         }
     });
+    function GuardarExcel()
+    {
+        var JSONData=$("#jsonCode").val();
+        JSONToCSVConvertor(JSONData, "USERS", true)
+    }
+    
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+        var f = new Date();
+        fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+        var CSV = '';    
+        //CSV += ReportTitle + '\r\n\n';
+        if (ShowLabel) {
+            var row = ""; 
+            for (var index in arrData[0]) { 
+                row += index + ',';
+            }
+            row = row.slice(0, -1);
+            CSV += row + '\r\n';
+        } 
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+            row.slice(0, row.length - 1); 
+            CSV += row + '\r\n';
+        }
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
+        }
+        var fileName = fecha;
+        fileName += ReportTitle.replace(/ /g,"_");
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        var link = document.createElement("a");    
+        link.href = uri;
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        Command: toastr.success("Success", "Notifications")
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
 @endsection
