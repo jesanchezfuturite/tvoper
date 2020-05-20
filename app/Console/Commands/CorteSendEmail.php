@@ -220,8 +220,8 @@ class CorteSendEmail extends Command
     {   
         $existe=false;
         $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
-        //
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377,393,3,13,14,15,23,24,25);       
+        //,3,13,14,15,23,24,25
+        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,377,393);       
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
