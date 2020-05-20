@@ -363,7 +363,7 @@ class SendEmails extends Command
             $mail->Username = 'noreply.tesoreria@gmail.com';
             $mail->Password = 'T3s0rer14';
             $mail->setFrom('noreply.tesoreria@gmail.com', 'noreply tesoreria'); 
-            $mail->Subject = 'MESSAGE';
+            $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
             $mail->MsgHTML($message);
            $mail->addAttachment($pdf);                     
             $mail->addAddress($correo, $nombre); 
@@ -685,12 +685,12 @@ class SendEmails extends Command
                         <p>'.$referencia.' </p>                        
                         <p>'.$servicio.' </p>
                         <br>
-                        <p>'.$url.'</p>
+                        <!--<p>'.$url.'</p>-->
                         <br>
                         <br>
                         <p>¿Necesitas asistencia? Contáctanos</p>
-                        <p>Llámanos :  20202020</p>
-                        <p>Escríbenos un mail: e@g.com</p>
+                        <p>Llámanos : (81) 2033-2420</p>
+                        <p>Escríbenos un mail: egobierno@nuevoleon.gob.mx</p>
                          <br> <br>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
