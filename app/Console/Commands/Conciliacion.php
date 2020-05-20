@@ -302,6 +302,7 @@ class Conciliacion extends Command
                                     "cuenta_alias"      => $this->info_cuenta["cuenta_alias"],
                                     "banco_id"          => $this->info_cuenta["banco_id"],
                                     "fecha_ejecucion"   => $this->executedDate,
+                                    "facturado"         => 0,
                                 ];
 
                 
@@ -343,6 +344,7 @@ class Conciliacion extends Command
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
                                 "fecha_ejecucion"   => $this->executedDate,
+                                "facturado"         => 0,
                             ];
 
                         try{
@@ -427,8 +429,9 @@ class Conciliacion extends Command
                             "origen"         => 1,
                             "cuenta_banco"   => $this->info_cuenta["cuenta"],
                             "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
-                            "banco_id"   => $this->info_cuenta["banco_id"],
+                            "banco_id"          => $this->info_cuenta["banco_id"],
                             "fecha_ejecucion"   => $this->executedDate,
+                            "facturado"         => 0,
                         ];
 
                     try{
@@ -520,6 +523,7 @@ class Conciliacion extends Command
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
                                 "fecha_ejecucion"   => $this->executedDate,
+                                "facturado"         => 0,
                             ];
 
                         try{
@@ -612,6 +616,7 @@ class Conciliacion extends Command
                                 "cuenta_alias"   => $this->info_cuenta["cuenta_alias"],
                                 "banco_id"   => $this->info_cuenta["banco_id"],
                                 "fecha_ejecucion"   => $this->executedDate,
+                                "facturado"         => 0,
                             ];
 
                         try{
