@@ -12,7 +12,7 @@ use App\Repositories\CfdiEncabezadosRepositoryEloquent;
 use App\Repositories\CfdiDetalleRepositoryEloquent;
 // oper detalle tramite
 use App\Repositories\TransaccionesRepositoryEloquent;
-use App\Repositories\TramiteRepositoryEloquent;
+use App\Repositories\TramitesRepositoryEloquent;
 use App\Repositories\DetalletramiteRepositoryEloquent;
 
 
