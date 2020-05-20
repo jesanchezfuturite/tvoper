@@ -25,6 +25,8 @@ use App\Repositories\ServdetalleaportacionRepositoryEloquent;
 use App\Repositories\ServgenerartransaccionRepositoryEloquent;
 use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
+use App\Repositories\AdministratorsRepositoryEloquent;
+use App\Repositories\ServclavesgRepositoryEloquent;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -38,7 +40,9 @@ class ServiciosgeneralesController extends Controller
 	protected $servdetalleaportaciondb;
 	protected $servgeneratransacciondb;
     protected $servdetalleserviciosdb;
-	protected $usersdb;
+    protected $usersdb;
+    protected $administratordb;
+	protected $servclavesgdb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -49,7 +53,9 @@ class ServiciosgeneralesController extends Controller
     	ServdetalleaportacionRepositoryEloquent $servdetalleaportaciondb,
     	ServgenerartransaccionRepositoryEloquent $servgeneratransacciondb,
         ServdetalleserviciosRepositoryEloquent $servdetalleserviciosdb,
-    	UsersRepositoryEloquent $usersdb
+        UsersRepositoryEloquent $usersdb,
+        AdministratorsRepositoryEloquent $administratordb,
+    	ServclavesgRepositoryEloquent $servclavesgdb
 
     ){
     	$this->middleware('auth');
@@ -61,7 +67,9 @@ class ServiciosgeneralesController extends Controller
 		$this->servdetalleaportaciondb=$servdetalleaportaciondb;
 		$this->servgeneratransacciondb=$servgeneratransacciondb;
         $this->servdetalleserviciosdb=$servdetalleserviciosdb;
-		$this->usersdb=$usersdb;
+        $this->usersdb=$usersdb;
+        $this->administratordb=$administratordb;
+		$this->servclavesgdb=$servclavesgdb;
     }
 
     public function retencionesAlMillar()
@@ -581,6 +589,23 @@ class ServiciosgeneralesController extends Controller
         $finduser=$this->usersdb->findWhere(['email'=>$email]);
 
     }
+    public function findUserAcceso()
+    {   
+        $response=array();
+        $finduser=$this->servclavesgdb->consultaRegistros();
+        foreach ($finduser as $clv) {
+            $response []= array(
+                'id' =>$clv->id , 
+                'emial' =>$clv->email , 
+                'dependencia' =>$clv->dependencia , 
+                'nombre' =>$clv->nombre , 
+                'ape_pat' =>$clv->apellido_paterno , 
+                'ape_mat' =>$clv->apellido_materno , 
+                'user_id' =>$clv->user_id 
+            );
+        }
+        return json_encode($response);
+    }
       public function GeneraPDF()
     {
        $fecha=Carbon::now();
@@ -591,10 +616,10 @@ class ServiciosgeneralesController extends Controller
             File::makeDirectory($path1);
         } 
         $options= new Options();
-        $options->setIsRemoteEnable(true);
+        $options->setIsRemoteEnabled(true);
         $dompdf = new DOMPDF($options);
         $dompdf->setPaper('A3', 'portrait');
-        $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio=258394') );
+        $dompdf->load_html( file_get_contents('file:///C:/Users/claudia.romerocelis/Downloads/recibopago/recibopago.html') );
         $dompdf->render();
         $output=$dompdf->output();
         if (File::exists($path1.'Recibo_Pago_'.$fechaIn.'.pdf'))
@@ -604,7 +629,7 @@ class ServiciosgeneralesController extends Controller
         
         File::put($path1.'Recibo_Pago_'.$fechaIn.'.pdf',$output);
 
-
+        
     }
     private function plantillaEmail($url,$referencia)
     {
