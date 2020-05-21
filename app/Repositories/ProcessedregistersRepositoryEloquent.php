@@ -106,10 +106,10 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.cuenta_alias','=',$alias)
         ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
         ->where('oper_processedregisters.archivo_corte','=','') 
-        ->join('oper_transacciones','oper_transacciones.id_transaccion','=','oper_processedregisters.transaccion_id')    
+        ->join('oper_transacciones','oper_transacciones.id_transaccion_motor','=','oper_processedregisters.transaccion_id')    
         ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_processedregisters.transaccion_id')
         ->join('oper_detalle_tramite','oper_detalle_tramite.id_tramite_motor','=','oper_tramites.id_tramite_motor')
-        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.referencia','oper_processedregisters.banco_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_processedregisters.day','oper_processedregisters.month','oper_processedregisters.year','oper_transacciones.metodo_pago_id','oper_transacciones.cuenta_deposito','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_transaccion_motor as Folio','oper_detalle_tramite.importe_concepto as CartImporte','oper_tramites.id_tipo_servicio as tipo_servicio','oper_detalle_tramite.partida as id_partida','oper_detalle_tramite.concepto as descripcion')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.referencia','oper_processedregisters.banco_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_processedregisters.day','oper_processedregisters.month','oper_processedregisters.year','oper_transacciones.metodo_pago_id','oper_transacciones.cuenta_deposito','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_tramite_motor as Folio','oper_detalle_tramite.importe_concepto as CartImporte','oper_tramites.id_tipo_servicio as tipo_servicio','oper_detalle_tramite.partida as id_partida','oper_detalle_tramite.concepto as descripcion')
         ->groupBy('oper_processedregisters.transaccion_id')
         ->get();
 
