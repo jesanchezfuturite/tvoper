@@ -562,7 +562,7 @@ class ServiciosgeneralesController extends Controller
     	}
 		
 		if($email<>''){
-			//$this->SendEmial($url_resp,$folio_resp,$email);
+			$this->SendEmial($url_resp,$folio_resp,$email);
 		}
 		//log::info($repuesta);
 		} catch (\Exception $e) {
