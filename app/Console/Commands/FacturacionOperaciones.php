@@ -46,6 +46,7 @@ class FacturacionOperaciones extends Command
     protected $transacciones;
     protected $tramite;
     protected $detalle_tramite;
+    protected $referencias;
 
     // control variables
     protected $pending; // esta es para almacenar el total de pendientes a facturar;
@@ -100,6 +101,12 @@ class FacturacionOperaciones extends Command
 
         Log::info("Escribir en las tablas de gestor CFDI");
         $response = $this->escribirFacturas();
+
+        if($response == 0){
+            Log::info("No es posible insertar en las tablas de facturacion");
+            exit();
+        }
+
 
         Log::info("Fin del proceso");
 
@@ -249,8 +256,6 @@ class FacturacionOperaciones extends Command
                         }  
                     }
 
-
-
                     $full []= array(
                         "transaccion"   => array(
                                 'referencia'            => $it->referencia,
@@ -273,7 +278,7 @@ class FacturacionOperaciones extends Command
     }
 
     /**
-     * escribirFacturas(). Este metodo inserta todos los datos para facturar y cambia el estatus en la tabla de processedregisters
+     * escribirFacturas(). en este metodo inserto en las tablas de gestor y marco las referencias como facturadas en processedregisters
      *
      * @param null
      *
@@ -282,8 +287,78 @@ class FacturacionOperaciones extends Command
      */
     private function escribirFacturas()
     {
+        /* los registros  */
+        $refs = array();
+
+        foreach ($this->full_info as $full) 
+        {
+            // obtengo los registros para insertar la transaccion
+
+            $transaccion = $full["transaccion"];
+
+            $i_transaccion = array(
+                "metodo_de_pago"        => $transaccion['metodo_pago_id'],
+                "folio_unico"           => $transaccion['referencia'],
+                "fecha_transaccion"     => $transaccion['fecha_transaccion'],
+                "total_transaccion"     => $transaccion['importe_transaccion'],
+                "subtotal"              => $transaccion['importe_transaccion'],
+                "total"                 => $transaccion['importe_transaccion'],     
+            );
+
+            // obtener la info de tramite
+            $tramites = $full["tramites"];
+            $i_detalles = array();
+            foreach($tramites as $t)
+            {
+                // obtener los detalles
+                $detalles = $t["detalles"];
+                $info = $t["info"];
+
+                foreach($detalles as $d)
+                {
+                    $i_detalles []= array(
+                        "info"              => json_encode($info),
+                        "folio_unico"       => $transaccion['referencia'],
+                        "id_oper"           => $d["id_transaccion_motor"],
+                        "id_mov"            => $d["id_tramite_motor"],
+                        "concepto"          => $d["concepto"],
+                        "precio_unitario"   => $d["importe_concepto"],
+                        "importe"           => $d["importe_concepto"],
+                        "partida"           => $d["partida"],
+                    );
+                }
+                try
+                {
+                    // insertar los registros de detalles de la transaccion
+                    $o = $this->detalle->create( $info_detalles );
+                }catch( \Exception $e ){
+                    Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
+                }
+            }
+
+            try
+            {
+                $en = $this->encabezados->create( $i_transaccion );
+                $refs []= $transaccion['referencia'];
+            }catch( \Exception $e ){
+                Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar encabezados " . $e->getMessage());
+            }
+        }
         
-        Log::info($this->full_info);
+        /* actualizar las referencias como facturadas */
+        try
+        {
+            foreach($refs as $r)
+            {
+                $pr = $this->pr->where('referencia', $r)->update(['facturado' => 1]);
+            }
+            
+        }catch( \Exception $e ){
+            Log::info("FacturacionOperaciones@escribirFacturas - ERROR al actualizar facturados " . $e->getMessage());
+        }
+
+
+        return 1;
 
     }
 
