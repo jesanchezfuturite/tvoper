@@ -108,7 +108,7 @@ class FacturacionOperaciones extends Command
 
 
     /**
-     * obtenerPendietes(). Este metodo obteniene todos los registros marcados como processed, tipo repositorio y facturado = 0
+     * obtenerPendientes(). Este metodo obteniene todos los registros marcados como processed, tipo repositorio y facturado = 0
      *
      * @param null
      *
@@ -206,15 +206,59 @@ class FacturacionOperaciones extends Command
                     {
                         foreach($info_tramite as $t)
                         {
+                            $tramite_info = array(
+                                'id_tramite_motor'          => $t->id_tramite_motor,
+                                'id_transaccion_motor'      => $t->id_transaccion_motor,
+                                'nombre_factura'            => $t->nombre_factura,
+                                'apellido_paterno_factura'  => $t->apellido_paterno_factura,
+                                'apellido_materno_factura'  => $t->apellido_materno_factura,
+                                'razon_social_factura'      => $t->razon_social_factura,
+                                'rfc_factura'               => $t->rfc_factura,
+                                'curp_factura'              => $t->curp_factura,
+                                'email_factura'             => $t->email_factura,
+                                'calle_factura'             => $t->calle_factura,
+                                'colonia_factura'           => $t->colonia_factura,
+                                'numexteior_factura'        => $t->numexteior_factura,
+                                'numinterior_factura'       => $t->numinterior_factura,
+                                'municipio_factura'         => $t->municipio_factura,
+                                'codigopostal_factura'      => $t->codigopostal_factura,
+                                'numexterior_factura'       => $t->numexterior_factura
+                            );
+
+                            $info_detalles = $this->detalle_tramite->findWhere([ 'id_tramite_motor' => $t->id_tramite_motor ]);
+                            $dt = array();
+                            if($info_detalles->count())
+                            {
+
+                                foreach($info_detalles as $id)
+                                {
+                                    $dt []= array(
+                                        'concepto'              => $id->concepto,
+                                        'importe_concepto'      => $id->importe_concepto,
+                                        'partida'               => $id->partida,
+                                        'id_transaccion_motor'  => $id->id_transaccion_motor,
+                                        'id_tramite_motor'      => $id->id_tramite_motor
+                                    );
+                                }
+                            }
+
                             $tramites []= array(
-                                'info' => $t, 
-                                'detalles' => $this->detalle_tramite->findWhere([ 'id_tramite_motor' => $t->id_tramite_motor ])
+                                'info' => $tramite_info, 
+                                'detalles' => $dt
                             );
                         }  
                     }
 
+
+
                     $full []= array(
-                        "transaccion"   => $it,
+                        "transaccion"   => array(
+                                'referencia'            => $it->referencia,
+                                'id_transaccion_motor'  => $it->id_transaccion_motor,
+                                'fecha_transaccion'     => $it->fecha_transaccion,
+                                'importe_transaccion'   => $it->importe_transaccion,
+                                'metodo_pago_id'        => $it->metodo_pago_id, 
+                            ),
                         "tramites"      => $tramites
                     );
                 }   
