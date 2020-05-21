@@ -57,7 +57,7 @@ class FacturacionOperaciones extends Command
         CfdiEncabezadosRepositoryEloquent $encabezados,
         CfdiDetalleRepositoryEloquent $detalle,
         TransaccionesRepositoryEloquent $transacciones,
-        TramiteRepositoryEloquent $tramite,
+        TramitesRepositoryEloquent $tramite,
         DetalletramiteRepositoryEloquent $detalle_tramite
     )
     {
@@ -83,7 +83,7 @@ class FacturacionOperaciones extends Command
         Log::info("Modulo de facturacion");
 
         Log::info("Leer pendientes de facturar");
-        $response = $this->obtenerPendietes();  
+        $response = $this->obtenerPendientes();  
 
         if($response == 0){
             Log::info("No existen registros pendientes de facturar");
@@ -121,7 +121,7 @@ class FacturacionOperaciones extends Command
             [
                 "facturado" => 0,
                 "origen"    => 11,
-                "estatus"   => 'p'
+                "status"   => 'p'
             ],
             [
                 'referencia'
