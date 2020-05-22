@@ -193,11 +193,16 @@
         document.getElementById('confirmpassword').type='password';  
         userCargartabla();
     });
+
      function addTable()
     {
         $('#Addtable').append(
             "<div class='portlet-body' id='Removetable'> <table class='table table-hover' id='sample_2'><thead><tr> <th>Nombre</th><th>Correo Electrónico</th><th>Dependecia</th><th> &nbsp; </th> </tr> </thead> <tbody><tr><td><p>Cargando...<p></td></tr></tbody> </table> </div>"
         );
+    }
+    function saveUpdatePartida()
+    {
+        
     }
     function userCargartabla()
     {
