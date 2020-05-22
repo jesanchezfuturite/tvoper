@@ -237,6 +237,8 @@ class SendEmails extends Command
                 $url_txt='Formato de pago: ' .(string)$url_recibo;
                 $referencia_txt='Referencia de Pago: ' .(string)$referencia;
                 $servicio_txt='Servicio: ' .(string)$servicio;
+                $banco_txt='';
+                $footer_txt='<p>¿Necesitas asistencia? Contáctanos</p><p>Llámanos : (81) 2033-2420</p><p>Escríbenos un mail: egobierno@nuevoleon.gob.mx</p>';
                  $dompdf = new DOMPDF( array('enable_remote'=>true));
                 $dompdf->setPaper('A2', 'portrait');
                 $dompdf->load_html( file_get_contents($url_recibo) );
@@ -248,7 +250,7 @@ class SendEmails extends Command
                   File::delete($pdf);
                 }        
                 File::put($pdf,$output);
-                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf);
+                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf,$banco_txt,$footer_txt);
                 if (File::exists($pdf))
                 {
                   File::delete($pdf);
@@ -281,6 +283,7 @@ class SendEmails extends Command
              $url_recibo='';
              $fecha='';
              $id_servicio='';
+             $banco=$k->banco;
              $referencia=$k->referencia;
              $id=$k->id_transaccion_motor;
              $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
@@ -308,8 +311,10 @@ class SendEmails extends Command
             $subencabezado='';
             $transaccion_txt='Transaccion número: ' .(string)$id;
             $url_txt='Recibo de pago: https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id;
-            $referencia_txt='Referencia de Pago: ' .(string)$referencia;
+            $referencia_txt='Referencia Bancaria: ' .(string)$referencia;
             $servicio_txt='Servicio: ' .(string)$servicio;
+            $banco_txt='Banco receptor del pago: '.$banco;
+            $footer_txt='<p>**Teléfono de atención 20 33 24 20 en horario de 8:30 a 16:30 de Lunes a Viernes. Por favor conserve este correo y/o recibo de pago descargable de la liga adjunta para cualquier aclaración. Agradecemos su preferencia y lo invitamos a que siga disfrutando de los beneficios que este servicio brinda.</p>';
             if($correo=='')
             {
 
@@ -330,7 +335,7 @@ class SendEmails extends Command
                   File::delete($pdf);
                 }        
                 File::put($pdf,$output);
-                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt,$pdf);
+                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt,$pdf,$banco_txt,$footer_txt);
                 if (File::exists($pdf))
                 {
                   File::delete($pdf);
@@ -376,7 +381,7 @@ class SendEmails extends Command
     }
 
     
-    private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio)
+    private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$banco,$footer)
     {
         $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Egobierno</title><style> 
       img {
@@ -684,13 +689,12 @@ class SendEmails extends Command
                         <p>Resumen de pago: </p>
                         <p>'.$referencia.' </p>                        
                         <p>'.$servicio.' </p>
+                        <p>'.$banco.'</p>
                         <br>
                         <!--<p>'.$url.'</p>-->
                         <br>
                         <br>
-                        <p>¿Necesitas asistencia? Contáctanos</p>
-                        <p>Llámanos : (81) 2033-2420</p>
-                        <p>Escríbenos un mail: egobierno@nuevoleon.gob.mx</p>
+                        '.$footer.'
                          <br> <br>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
