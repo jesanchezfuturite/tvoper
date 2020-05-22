@@ -351,11 +351,11 @@ class SendEmails extends Command
         }
 
     }
-    public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf)
+    public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf,$banco,$footer)
     {
          $mail = new PHPMailer(true);
          $response='202';
-         $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio);
+         $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$banco,$footer);
         //log::info($message);
         try{
             
