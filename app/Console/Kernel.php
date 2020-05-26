@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\updateStatus::class,
         Commands\CorteSendEmail::class,
         Commands\SendEmails::class,
+        Commands\FacturacionOperaciones::class
     ];
 
     /**
@@ -41,6 +42,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('conciliacion:operaciont')
                  ->everyFiveMinutes();
 
+        /* este proceso manda a facturacion lo conciliado */
+        $schedule->command('facturacion:operaciones')
+               ->hourly();
+
         /*cambia el estatus de la transaccion todos los dias a las 03:00:00 hrs*/
         $schedule->command('updateStatus:status')
                 //->everyMinute();
@@ -53,6 +58,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('SendEmails:EmailGrid')
                ->everyMinute();
                /*->dailyAt('15:26');*/
+
     }   
 
     /**
