@@ -143,6 +143,7 @@ class IcvrestserviceController extends Controller
             $i = $this->transacciones->create(
                 $insert
             );
+
             $first_level = $this->insertTramite($info,$i->id);
             if($first_level == false){
                 dd("Error no existen detalles del tramite en ICV");
@@ -233,7 +234,6 @@ class IcvrestserviceController extends Controller
             {
                 foreach($detalle as $d)
                 {
-
                     $insert = array(
                         "id_tramite_motor"  => $id,
                         "concepto"          => $d->detalle,

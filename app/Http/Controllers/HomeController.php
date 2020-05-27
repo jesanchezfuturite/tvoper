@@ -63,7 +63,7 @@ class HomeController extends Controller
     {
         // check if the user is admin
         $results = $this->admin->findByField('name',$user);
-
+	
         $results = $results [0];
 
         if($results->is_admin == 1)
@@ -72,7 +72,7 @@ class HomeController extends Controller
         }else{
             $var = false;
         }
-
+	
         session( ["is_admin" => $var, "menu" => $this->configureMenu($results->menu) ] );
 
     }
