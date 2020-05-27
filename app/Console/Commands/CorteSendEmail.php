@@ -272,9 +272,11 @@ class CorteSendEmail extends Command
     private function gArchivo_Generico($path2,$path,$fecha,$banco_id,$cuenta,$alias)
     {        
 
+        $fechaB=Carbon::parse($fecha);
         $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
+        $nombreArchivo2=$fechaB->format('dmY').'_Corte_Generico'.'.txt';
         $Directorio=$path."/".$nombreArchivo;
-        $Directorio2=$path2."/".$nombreArchivo;
+        $Directorio2=$path2."/".$nombreArchivo2;
         $cadena='';
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
             for ($i=100; $i < 151; $i++) { 
@@ -328,10 +330,11 @@ class CorteSendEmail extends Command
     }
     private function gArchivo_Generico_Oper($path2,$path,$fecha,$banco_id,$cuenta,$alias)
     {        
-
+        $fechaB=Carbon::parse($fecha);
         $nombreArchivo=$alias.'_'.$cuenta.'_Corte_Generico'.'.txt';
+        $nombreArchivo2=$fechaB->format('Ymd').'_Corte_Generico'.'.txt';
         $Directorio=$path."/".$nombreArchivo;
-        $Directorio2=$path2."/".$nombreArchivo;
+        $Directorio2=$path2."/".$nombreArchivo2;
         $cadena='';
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
             for ($i=100; $i < 151; $i++) { 
@@ -1151,8 +1154,9 @@ class CorteSendEmail extends Command
                array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->pr->findWhere(['fecha_ejecucion'=>'2020-05-20','archivo_corte'=>'','origen'=>'11']);
-        //log::info($conciliacion);
+        $conciliacion=$this->pr->findWhere(['fecha_ejecucion'=>'2020-05-01','archivo_corte'=>'','origen'=>'11']);
+        $conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-20');
+        log::info($conciliacion2);
         if($conciliacion<>null)
         {     
             foreach ($conciliacion as $concilia) 

@@ -318,7 +318,25 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
 
     }
 
+    public function Generico_Corte_Oper_prueba($fecha)
+    {
+       try{        
+        $data = Processedregisters::where('oper_processedregisters.status','=','p')
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
+        ->where('oper_processedregisters.archivo_corte','=','') 
+        ->join('oper_transacciones','oper_transacciones.id_transaccion_motor','=','oper_processedregisters.transaccion_id')    
+        ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_processedregisters.transaccion_id')
+        ->select('oper_processedregisters.transaccion_id','oper_processedregisters.id','oper_processedregisters.referencia','oper_processedregisters.banco_id','oper_processedregisters.info_transacciones','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_processedregisters.fecha_ejecucion','oper_processedregisters.day','oper_processedregisters.month','oper_processedregisters.year','oper_transacciones.metodo_pago_id','oper_transacciones.cuenta_deposito','fecha_transaccion as fecha_tramite','fecha_transaccion as hora_tramite','oper_tramites.id_tramite_motor as Folio','oper_tramites.id_tipo_servicio as tipo_servicio')
+        ->groupBy('oper_processedregisters.transaccion_id')
+        ->get();
 
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
 
 
     /**

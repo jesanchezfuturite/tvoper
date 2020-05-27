@@ -30,6 +30,9 @@ use App\Repositories\ServclavesgRepositoryEloquent;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
 class ServiciosgeneralesController extends Controller
 {
 	protected $servaccesopartidasdb;
@@ -231,7 +234,7 @@ class ServiciosgeneralesController extends Controller
     		'razon_social' => '', 
     		'rfc' => '', 
     		'curp' => '', 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'' , 
     		'colonia' => '', 
     		'numexterior' => '', 
@@ -489,7 +492,7 @@ class ServiciosgeneralesController extends Controller
     		'razon_social' => '',//$nombre, 
     		'rfc' =>'' ,//$rfc, 
     		'curp' => '',//$curp, 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'',//$calle , 
     		'colonia' =>'',//$colonia, 
     		'numexterior' =>'',//$noexterior, 
@@ -591,21 +594,36 @@ class ServiciosgeneralesController extends Controller
         $password=$request->password;
         $confirmpassword=$request->confirmpassword;
         $finduser=$this->usersdb->findWhere(['email'=>$email]);
-        if($finduser->count()==0)
+        if($password==$confirmpassword)
         {
-            $insert='';
-            $response=array();
-            $response [] = array(
+            if($finduser->count()==0)
+            {
+                $id_user='';
+                $insertuser=$this->usersdb->create(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat,'email'=>$email,'status'=>'1','password'=> Hash::make($password)]);
+                $id_user=$insertuser->id;
+                $insertadministrator=$this->administratordb->create(['name'=>$email,'is_admin'=>'0','menu'=>'[]']);
+                $insertclavesg=$this->servclavesgdb->create(['usuario'=>$email,'Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat,'user_id'=>$$id_user,'estatus'=>'1']);
+                $response=array();
+                $response [] = array(
                 'code' => '0',
                 'message'=>'Success' 
-            );
-        }else{
-            $response=array();
-            $response [] = array(
+                );
+            }else{
+                $response=array();
+                $response [] = array(
                 'code' => '1',
                 'message'=>'Usuario Ya Existe!!' 
-            );
+                );
+            }
+        }else
+        {
+            $response=array();
+                $response [] = array(
+                'code' => '2',
+                'message'=>'La Constraseña no coincide!!' 
+                );
         }
+        
         return json_encode($response);
 
     }
