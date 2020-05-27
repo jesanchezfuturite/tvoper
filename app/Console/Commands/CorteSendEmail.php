@@ -362,7 +362,7 @@ class CorteSendEmail extends Command
                         $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);
                         //fecha ejecucion ----fecha dispersion
                         //day/month/year  ---- fecha pago            
-                        $RowFechapago=str_pad((string)$concilia->year . (string)$concilia->month . (string)$concilia->day,8);
+                        $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
                         $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
                         $RowPartida=str_pad($concilia->partida,5,"0",STR_PAD_LEFT);
                         $RowConsepto=str_pad(mb_convert_encoding($concilia->concepto, "Windows-1252", "UTF-8"),120);
