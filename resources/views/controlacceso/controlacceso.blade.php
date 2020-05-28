@@ -115,7 +115,7 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label">Dependecia:</label>
                             <div class="col-md-8">
-                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Dependecia..." id="dependecia">
+                                <input type="text" autocomplete="off" class="form-control" placeholder="Ingresa Dependencia..." id="dependencia">
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                     <div class="row">
                         <div class="col-md-12">            
                             <div class="form-group">
-                                <button type="submit" class="btn blue" onclick="saveUpdatePartida()"><i class="fa fa-check"></i> Guardar</button>
+                                <button type="submit" class="btn blue" onclick="saveUpdateUser()"><i class="fa fa-check"></i> Guardar</button>
                             </div>
                         </div>
                     </div>
@@ -200,9 +200,34 @@
             "<div class='portlet-body' id='Removetable'> <table class='table table-hover' id='sample_2'><thead><tr> <th>Nombre</th><th>Correo Electrónico</th><th>Dependecia</th><th> &nbsp; </th> </tr> </thead> <tbody><tr><td><p>Cargando...<p></td></tr></tbody> </table> </div>"
         );
     }
-    function saveUpdatePartida()
-    {
+    function saveUpdateUser()
+    {   var nombre_=$("#name").val();
+        var apellido_pat_=$("#ape_paterno").val();
+        var apellido_mat_=$("#ape_materno").val();
+        var dependencia_=$("#dependencia").val();
+        var email_=$("#email").val();
+        var password_=$("#password").val();
+        var confirmpassword_=$("#confirmpassword").val();
+        $.ajax({
+           method: "post",           
+           url: "{{ url('/insert-user') }}",
+           data: {nombre:nombre_,apellido_pat:apellido_pat_,apellido_mat:apellido_mat_,dependencia:dependencia_,email:email_,password:password_,confirmpassword:confirmpassword_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {           
+            var Resp=$.parseJSON(response);
         
+            $.each(Resp, function(i, item) {                
+                if(item.code=='0')
+                {
+                    Command: toastr.success("Success", "Notifications")
+                     limpiar();
+                     userCargartabla();
+                }else{
+                     Command: toastr.warning(item.message, "Notifications")
+                }
+            });        
+        })
+        .fail(function( msg ) {
+         console.log("Error al Cargar Tabla Partidas");  });
     }
     function userCargartabla()
     {
@@ -236,7 +261,7 @@
         document.getElementById('name').value='';
         document.getElementById('ape_paterno').value='';
         document.getElementById('ape_materno').value='';
-        document.getElementById('dependecia').value='';
+        document.getElementById('dependencia').value='';
         document.getElementById('email').value='';
         document.getElementById('password').value='';
         document.getElementById('confirmpassword').value='';

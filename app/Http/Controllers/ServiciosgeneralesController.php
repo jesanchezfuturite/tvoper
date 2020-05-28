@@ -602,7 +602,7 @@ class ServiciosgeneralesController extends Controller
                 $insertuser=$this->usersdb->create(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat,'email'=>$email,'status'=>'1','password'=> Hash::make($password)]);
                 $id_user=$insertuser->id;
                 $insertadministrator=$this->administratordb->create(['name'=>$email,'is_admin'=>'0','menu'=>'[]']);
-                $insertclavesg=$this->servclavesgdb->create(['usuario'=>$email,'Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat,'user_id'=>$$id_user,'estatus'=>'1']);
+                $insertclavesg=$this->servclavesgdb->create(['usuario'=>$email,'Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat,'user_id'=>$id_user,'estatus'=>'1']);
                 $response=array();
                 $response [] = array(
                 'code' => '0',
@@ -621,6 +621,71 @@ class ServiciosgeneralesController extends Controller
                 $response [] = array(
                 'code' => '2',
                 'message'=>'La Constraseña no coincide!!' 
+                );
+        }
+        
+        return json_encode($response);
+
+    }
+   
+    public function updateUser(Request $request)
+    {   
+        $response=array();
+        $id=$request->id;
+        $user_id=$request->user_id;
+        $nombre=$request->nombre;
+        $apellido_pat=$request->apellido_pat;
+        $apellido_mat=$request->apellido_mat;
+        $dependencia=$request->dependencia;
+        $password=$request->password;
+        $confirmpassword=$request->confirmpassword;
+        if($password==$confirmpassword)
+        {   
+            if($password=='')
+            {
+                $updatetUs=$this->usersdb->udpate(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat],$user_id);
+                $updateClavesg=$this->servclavesgdb->update(['dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat],$id);
+            }else{
+                $updatetUs=$this->usersdb->udpate(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat,'password'=> Hash::make($password)],$user_id);
+                $updateClavesg=$this->servclavesgdb->update(['Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat],$id);
+            }
+                
+            $response=array();
+            $response [] = array(
+                'code' => '0',
+                'message'=>'Success' 
+            );
+            
+        }else
+        {
+            $response=array();
+                $response [] = array(
+                'code' => '2',
+                'message'=>'La Constraseña no coincide!!' 
+                );
+        }
+        
+        return json_encode($response);
+
+    }
+    public function deletedUser(Request $request)
+    {   
+        $response=array();
+        $id=$request->id;
+        $user_id=$request->user_id;
+                
+            $response=array();
+            $response [] = array(
+                'code' => '0',
+                'message'=>'Success' 
+            );
+            
+        }else
+        {
+            $response=array();
+                $response [] = array(
+                'code' => '2',
+                'message'=>'Error al Eliminar!!' 
                 );
         }
         

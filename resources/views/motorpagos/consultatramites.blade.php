@@ -102,6 +102,7 @@
                                         <table class="table table-hover table-responsive" id="sample_3">
                                             <thead>
                                                 <tr>
+                                                    <th>Folio</th> 
                                                     <th>Transacción</th> 
                                                     <th>Conciliacion</th> 
                                                     <th>Estatus</th>
@@ -119,6 +120,7 @@
                                             <tbody> 
                                                 <tr>
                                                     <td><span class="help-block">No Found</span></td>                     
+                                                    <td></td>
                                                     <td></td>
                                                     <td></td>
                                                     <td></td>
@@ -153,6 +155,7 @@
                                         <table class="table table-hover table-responsive" id="sample_2">
                                             <thead>
                                                 <tr> 
+
                                                     <th>Transacción</th>
                                                     <th>Conciliacion</th>
                                                     <th>Estatus</th>
@@ -404,7 +407,7 @@
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function cargatabla1()
     {    var inin=0;
@@ -501,6 +504,7 @@
                 +"<td></td>"
                 +"<td></td>"
                 +"<td></td>"
+                +"<td></td>"
                 +"</tr>");
         }else{
         $.each(Resp, function(i, item) { 
@@ -521,6 +525,7 @@
                 label='ane';
             }
              $("#sample_3 tbody").append("<tr>"
+                +"<td>"+item.Folio+"</td>"
                 +"<td>"+item.Transaccion+"</td>"
                 +"<td>"+label+"</td>"
                 +"<td>"+item.Estatus+"</td>"
