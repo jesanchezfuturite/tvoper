@@ -620,9 +620,30 @@ class ServiciosgeneralesController extends Controller
             $response=array();
                 $response [] = array(
                 'code' => '2',
-                'message'=>'La Constraseña no coincide!!' 
+                'message'=>'La constraseña no coincide!!' 
                 );
         }
+        
+        return json_encode($response);
+
+    }
+     public function findUser(Request $request)
+    {   
+        $response=array();
+        $id=$request->id;
+         
+        $findServclave=$this->servclavesgdb->findWhere(['id'=>$id]);
+        foreach ($findServclave as $e) {
+            $response [] = array(
+                'email' => $e->usuario,
+                'dependencia'=>$e->dependencia, 
+                'nombre'=>$e->nombre, 
+                'ape_pat'=>$e->apellido_paterno, 
+                'ape_mat'=>$e->apellido_materno, 
+                'password'=>$e->Password
+            );
+        }
+            
         
         return json_encode($response);
 
@@ -640,16 +661,10 @@ class ServiciosgeneralesController extends Controller
         $password=$request->password;
         $confirmpassword=$request->confirmpassword;
         if($password==$confirmpassword)
-        {   
-            if($password=='')
-            {
-                $updatetUs=$this->usersdb->udpate(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat],$user_id);
-                $updateClavesg=$this->servclavesgdb->update(['dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat],$id);
-            }else{
-                $updatetUs=$this->usersdb->udpate(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat,'password'=> Hash::make($password)],$user_id);
-                $updateClavesg=$this->servclavesgdb->update(['Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat],$id);
-            }
-                
+        {               
+            $updatetUs=$this->usersdb->update(['name'=>$nombre.' '.$apellido_pat.' '.$apellido_mat,'password'=> Hash::make($password)],$user_id);
+            $updateClavesg=$this->servclavesgdb->update(['Password'=>$password,'dependencia'=>$dependencia,'nombre'=>$nombre,'apellido_paterno'=>$apellido_pat,'apellido_materno'=>$apellido_mat],$id);
+                            
             $response=array();
             $response [] = array(
                 'code' => '0',
@@ -661,7 +676,7 @@ class ServiciosgeneralesController extends Controller
             $response=array();
                 $response [] = array(
                 'code' => '2',
-                'message'=>'La Constraseña no coincide!!' 
+                'message'=>'La contraseña no coincide!!' 
                 );
         }
         
@@ -673,22 +688,28 @@ class ServiciosgeneralesController extends Controller
         $response=array();
         $id=$request->id;
         $user_id=$request->user_id;
-                
+        try {
+            $email='';
+            $findclave=$this->servclavesgdb->findWhere(['id'=>$id]);
+            foreach ($findclave as $i) {
+                $email=$i->usuario;
+            }
+            $deleteAdministrator=$this->administratordb->deleteWhere(['name'=>$email]);
+            $deleteUser=$this->usersdb->deleteWhere(['id'=>$user_id]);
+            $deleteServclave=$this->servclavesgdb->deleteWhere(['id'=>$id]);
             $response=array();
             $response [] = array(
                 'code' => '0',
                 'message'=>'Success' 
             );
-            
-        }else
-        {
-            $response=array();
+                    
+        } catch (Exception $e) {
+                    $response=array();
                 $response [] = array(
                 'code' => '2',
                 'message'=>'Error al Eliminar!!' 
                 );
         }
-        
         return json_encode($response);
 
     }

@@ -225,6 +225,9 @@ class CorteSendEmail extends Command
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
+                for ($i=401; $i < 440; $i++) { 
+                    array_push($Servicios ,$i );
+                }
         $conciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
         if($conciliacion<>null){
             foreach ($findConciliacion as $y) {
@@ -244,8 +247,8 @@ class CorteSendEmail extends Command
             $this->gArchivo_Prestadora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */
-            $this->gArchivo_Generico($path2,$path,$fecha,$banco_id,$cuenta,$alias);
             $this->gArchivo_Generico_Oper($path2,$path,$fecha,$banco_id,$cuenta,$alias);
+            $this->gArchivo_Generico($path2,$path,$fecha,$banco_id,$cuenta,$alias);
 
             $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias]);
             if($findCorte->count()==0)
@@ -281,6 +284,9 @@ class CorteSendEmail extends Command
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
+            }
+            for ($i=401; $i < 440; $i++) { 
+                array_push($Servicios ,$i );
             }
         $existe=false;
         $conciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
@@ -339,6 +345,9 @@ class CorteSendEmail extends Command
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
+            }
+            for ($i=401; $i < 440; $i++) { 
+                array_push($Servicios ,$i );
             }
         $existe=false;
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
@@ -1151,10 +1160,15 @@ class CorteSendEmail extends Command
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
+            for ($i=401; $i < 440; $i++) { 
+                array_push($Servicios ,$i );
+            }
        $referencia='';
-        $conciliacion=$this->pr->findWhere(['fecha_ejecucion'=>'2020-05-01','archivo_corte'=>'','origen'=>'11']);
-        $conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-20');
-        log::info($conciliacion2);
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-05-28');
+         //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
+        #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
+        
+        //log::info($Servicios);
         if($conciliacion<>null)
         {     
             foreach ($conciliacion as $concilia) 
