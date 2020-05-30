@@ -325,21 +325,27 @@ class FacturacionOperaciones extends Command
 
                 foreach($detalles as $d)
                 {
-                    $i_detalles []= array(
-                        "info"              => json_encode($info),
+                    $i_detalles[]= array(
                         "folio_unico"       => $transaccion['referencia'],
-                        "id_oper"           => $d["id_transaccion_motor"],
-                        "id_mov"            => $d["id_tramite_motor"],
+                        "cantidad"          => "1",
+                        "unidad"            => "SERVICIO",      
                         "concepto"          => $d["concepto"],
                         "precio_unitario"   => $d["importe_concepto"],
                         "importe"           => $d["importe_concepto"],
                         "partida"           => $d["partida"],
+                        "fecha_registro"    => date("Y-m-d H:i:s"),
+                        "id_oper"           => $d["id_transaccion_motor"],
+                        "id_mov"            => $d["id_tramite_motor"],
+                        "st_gen"            => "0",
+                        "st_doc"            => "0",
+                        "info"              => json_encode($info)
                     );
                 }
                 try
                 {
                     // insertar los registros de detalles de la transaccion
                     $o = $this->detalle->create( $i_detalles );
+                    
                 }catch( \Exception $e ){
                     Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
                 }
