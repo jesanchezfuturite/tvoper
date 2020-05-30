@@ -2326,7 +2326,7 @@ return json_encode($response);
         //log::info($transaccion);      
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
-            $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->id_transaccion]);
+            $findConcilia=$this->processdb->findWhere(['referencia'=>$trans->referencia]);
             $estatus_C="np";
             if($findConcilia->count()==0)
                 {
@@ -2340,6 +2340,7 @@ return json_encode($response);
                 $response []= array(
                     'Estatus'=>$trans->status,
                     'RFC'=>$trans->rfc,
+                    'Folio'=>$trans->id_transaccion_motor,
                     'Transaccion'=>$trans->idTrans,
                     'Familia'=>$trans->familia,
                     'Entidad'=>$trans->entidad,

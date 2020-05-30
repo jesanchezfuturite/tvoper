@@ -183,6 +183,7 @@
             $("#d_tabs").empty();
             $("#c_tabs").empty();
 
+
             $.each(data,function(i,info){
                  
                 if(element == 0){

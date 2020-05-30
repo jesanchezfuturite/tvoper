@@ -241,6 +241,11 @@ Route::get('/envio-corte/{fecha}','CorteController@enviacorreo');
 Route::group(['middleware' => 'permissions'], function () {
     Route::get('/acceso-servicios','ServiciosgeneralesController@accesoServicios');
     Route::get('/user-find-all','ServiciosgeneralesController@findUserAcceso');
+    Route::post('/insert-user','ServiciosgeneralesController@insertUser');
+    Route::post('/find-user','ServiciosgeneralesController@findUser');
+    Route::post('/update-user','ServiciosgeneralesController@updateUser');
+    Route::post('/deleted-user','ServiciosgeneralesController@deletedUser');
+
 });
 /*********************************** PDF*****/
  Route::get('/pdf','ServiciosgeneralesController@GeneraPDF');
