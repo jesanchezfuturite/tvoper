@@ -297,12 +297,19 @@ class FacturacionOperaciones extends Command
             $transaccion = $full["transaccion"];
 
             $i_transaccion = array(
-                "metodo_de_pago"        => $transaccion['metodo_pago_id'],
                 "folio_unico"           => $transaccion['referencia'],
                 "fecha_transaccion"     => $transaccion['fecha_transaccion'],
+                "template_id"           => "1",
+                "tipo_documento"        => "I",
                 "total_transaccion"     => $transaccion['importe_transaccion'],
+                "forma_de_pago"         => "PAGO EN UNA SOLA EXHIBICION",
+                "descuento"             => "0.00",
                 "subtotal"              => $transaccion['importe_transaccion'],
                 "total"                 => $transaccion['importe_transaccion'],     
+                "metodo_de_pago"        => "99",
+                "numero_de_cuenta"      => "",
+                "motivo_descuento"      => "ND",
+                "lugar_expedicion"      => "1"                
             );
 
             // obtener la info de tramite
@@ -330,7 +337,7 @@ class FacturacionOperaciones extends Command
                 try
                 {
                     // insertar los registros de detalles de la transaccion
-                    $o = $this->detalle->create( $info_detalles );
+                    $o = $this->detalle->create( $i_detalles );
                 }catch( \Exception $e ){
                     Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
                 }

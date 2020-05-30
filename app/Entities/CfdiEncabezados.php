@@ -23,7 +23,22 @@ class CfdiEncabezados extends Model implements Transformable
 
     protected $connection = "mysql2";
 
-    protected $fillable = ["metodo_de_pago","rfc_receptor","folio_unico","fecha_transaccion","total_transaccion","subtotal","total"];
+    protected $fillable = [
+        "folio_unico",
+        "fecha_transaccion",
+        "template_id",
+        "tipo_documento",
+        "total_transaccion",
+        "forma_de_pago",
+        "descuento",
+        "subtotal",
+        "total",
+        "metodo_de_pago",
+        "numero_de_cuenta",
+        "motivo_descuento"
+        "lugar_expedicion",
+        "rfc_receptor"
+    ];
     
     protected $table = "cfdi_encabezados_t";
 
