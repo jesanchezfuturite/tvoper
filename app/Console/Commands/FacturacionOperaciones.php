@@ -309,7 +309,9 @@ class FacturacionOperaciones extends Command
                 "metodo_de_pago"        => "99",
                 "numero_de_cuenta"      => "",
                 "motivo_descuento"      => "ND",
-                "lugar_expedicion"      => "1"                
+                "lugar_expedicion"      => "1" ,
+                "rfc_receptor"          => "",
+                "fecha_registro"        => date("Y-m-d H:i:s")               
             );
 
             // obtener la info de tramite

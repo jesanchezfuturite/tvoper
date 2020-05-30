@@ -35,7 +35,7 @@ class CfdiEncabezados extends Model implements Transformable
         "total",
         "metodo_de_pago",
         "numero_de_cuenta",
-        "motivo_descuento"
+        "motivo_descuento",
         "lugar_expedicion",
         "rfc_receptor"
     ];
