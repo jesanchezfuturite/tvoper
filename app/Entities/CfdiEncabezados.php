@@ -37,7 +37,8 @@ class CfdiEncabezados extends Model implements Transformable
         "numero_de_cuenta",
         "motivo_descuento",
         "lugar_expedicion",
-        "rfc_receptor"
+        "rfc_receptor",
+        "fecha_registro"
     ];
     
     protected $table = "cfdi_encabezados_t";
