@@ -341,14 +341,18 @@ class FacturacionOperaciones extends Command
                         "info"              => json_encode($info)
                     );
                 }
+                Log::info($i_detalles);
+                Log::info("======================");
                 try
                 {
                     // insertar los registros de detalles de la transaccion
-                    $o = $this->detalle->create( $i_detalles );
+                    $o = $this->detalle->create( $i_detalles );               
                     
                 }catch( \Exception $e ){
                     Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
                 }
+
+                Log::info(json_encode($o));
             }
 
             try
