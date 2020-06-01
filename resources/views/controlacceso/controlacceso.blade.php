@@ -204,7 +204,7 @@
                     <div class="row">
                         <label class="col-md-2 control-label">Nivel Principal:</label>
                         <div class="col-md-6">
-                            <select id="principal_level" class="form-control">
+                            <select id="principal_level" class="select2me form-control">
                             </select>
                         </div>
                     </div>
@@ -232,8 +232,32 @@
                             </select>
                         </div>
                     </div>
-                    <div class="row">
-
+                    <hr>
+                    <h4>Menu Auxiliar</h4>
+                    <div class="row">                        
+                        <div class="col-md-4">
+                            Disponibles:
+                            <select size="6"  id="thirdy_level" class="form-control">
+                        
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                    
+                            <div class="btn-toolbar">
+                                <div class="btn-group btn-group-lg btn-group-solid margin-bottom-10 center-block">
+                                    <button type="button" class="btn red" id="deleteThird"> << </button>
+                                    <button type="button" class="btn green" id="addThird"> >> </button>
+                                </div>
+                            </div>
+                
+                        </div>
+            
+                        <div class="col-md-4">
+                            Agregadas:
+                            <select size="6"  id="thirdy_level_added" class="form-control">
+                        
+                            </select>
+                        </div>
                     </div>
                      <span class="help-block">&nbsp; </span>
                     <div class="row">
@@ -251,6 +275,10 @@
     </div>
 </div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
+<input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
+<input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
+<input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
+<input type="hidden" id="saved_tools" name="saved_tools" value="0" >
 @endsection
 @section('scripts')
 <script type="text/javascript">
@@ -258,7 +286,26 @@
         document.getElementById('password').type='password';   
         document.getElementById('confirmpassword').type='password';  
         userCargartabla();
+        level_principal();
     });
+
+    function level_principal()
+    {
+        var elements = $.parseJSON($("#first_level").val());
+        //clean the principal level
+        $('#principal_level').empty();
+
+        $('#principal_level').append($('<option>', { 
+                value: 0,
+                text : '-----' 
+            }));
+        $.each(elements,function(i, item){
+           $('#principal_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+        }); 
+    }
     function userDeleted(id_,user_id_)
     {
         document.getElementById('iddeleted').value=id_;

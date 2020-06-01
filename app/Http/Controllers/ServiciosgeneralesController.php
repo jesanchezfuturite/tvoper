@@ -27,6 +27,8 @@ use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\AdministratorsRepositoryEloquent;
 use App\Repositories\ServclavesgRepositoryEloquent;
+
+use App\Repositories\MenuRepositoryEloquent;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -46,6 +48,7 @@ class ServiciosgeneralesController extends Controller
     protected $usersdb;
     protected $administratordb;
 	protected $servclavesgdb;
+    protected $menudb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -58,7 +61,8 @@ class ServiciosgeneralesController extends Controller
         ServdetalleserviciosRepositoryEloquent $servdetalleserviciosdb,
         UsersRepositoryEloquent $usersdb,
         AdministratorsRepositoryEloquent $administratordb,
-    	ServclavesgRepositoryEloquent $servclavesgdb
+    	ServclavesgRepositoryEloquent $servclavesgdb,
+        MenuRepositoryEloquent $menudb
 
     ){
     	$this->middleware('auth');
@@ -73,6 +77,7 @@ class ServiciosgeneralesController extends Controller
         $this->usersdb=$usersdb;
         $this->administratordb=$administratordb;
 		$this->servclavesgdb=$servclavesgdb;
+        $this->menudb = $menudb;
     }
 
     public function retencionesAlMillar()
@@ -581,7 +586,30 @@ class ServiciosgeneralesController extends Controller
     }
     public function accesoServicios()
     {
-        return view('controlacceso/controlacceso');
+        $menu_info = $this->menudb->find(1);
+        if($menu_info->count() > 0)
+        {
+            /* get the info and make the arrays */
+            $menu = json_decode($menu_info->content,true);
+            if(count($menu) > 0)
+            {
+                $data = $this->getLevelsFromArrays($menu); 
+            }else{
+                $data = array(
+                    "first_level"   => '[]',
+                    "second_level"  => '[]',
+                    "third_level"   => '[]',
+                );  
+            }
+        }else{
+            /* load the view with the info saved */
+            $data = array(
+                "first_level"   => '[]',
+                "second_level"  => '[]',
+                "third_level"   => '[]',
+            );  
+        } 
+        return view('controlacceso/controlacceso',$data);
     }
     public function insertUser(Request $request)
     {   
@@ -755,6 +783,53 @@ class ServiciosgeneralesController extends Controller
 
         
     }
+     protected function getLevelsFromArrays($menu)
+    {
+        // get first level
+        $first_level = $second_level = $second_level_complete = $third_level = $third_level_complete = array();
+        foreach($menu as $j => $elements)
+        {   
+            foreach($elements as $i => $element)
+            {
+                switch($i){
+                    case "info":
+                        $first_level []= $element;
+                        break ;
+                    case "childs":
+                        $second_level_complete[]= $element;
+                        break ; 
+                }   
+            }       
+        }
+        foreach ($second_level_complete as $j => $elements) 
+        {
+            foreach($elements as $i => $element)
+            {
+                $second_level []= $element["info"];
+                
+                if(count($element["childs"]))
+                {
+                    $third_level_complete[]= $element["childs"];    
+                }
+            }
+        }
+        foreach ($third_level_complete as $elements) 
+        {   
+            foreach($elements as $e)
+            {
+                $third_level []= $e;
+            }
+        }
+        $data = array(
+            "first_level" => json_encode($first_level),
+            "second_level" => json_encode($second_level),
+            "third_level" => json_encode($third_level),
+
+        );
+        return $data;
+    }
+
+
     private function plantillaEmail($url,$referencia)
     {
         $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
