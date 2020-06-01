@@ -219,7 +219,7 @@ class CorteSendEmail extends Command
     private function gArchivos($path2,$path,$fecha,$banco_id,$cuenta,$alias)
     {   
         $existe=false;
-        $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        
         //,3,13,14,15,23,24,25
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
                 for ($i=100; $i < 151; $i++) { 
@@ -228,8 +228,17 @@ class CorteSendEmail extends Command
                 for ($i=401; $i < 440; $i++) { 
                     array_push($Servicios ,$i );
                 }
-        $conciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
         if($conciliacion<>null){
+            foreach ($conciliacion as $y) {
+            foreach ($Servicios as $serv){
+                if((string)$serv==(string)$y->tipo_servicio)
+                    {$existe=true;}
+                }
+            }
+        }
+        $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        if($findConciliacion<>null){
             foreach ($findConciliacion as $y) {
             foreach ($Servicios as $serv){
                 if((string)$serv==(string)$y->tipo_servicio)
@@ -237,7 +246,6 @@ class CorteSendEmail extends Command
                 }
             }
         }
-        
         if($existe)
         {       
             /*$this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
@@ -311,7 +319,7 @@ class CorteSendEmail extends Command
                         $RowFechapago=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
                         $RowHorapago=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
                         $RowPartida=str_pad($concilia->id_partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->descripcion,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
@@ -374,7 +382,7 @@ class CorteSendEmail extends Command
                         $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
                         $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
                         $RowPartida=str_pad($concilia->partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concilia->concepto, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->concepto,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$concilia->importe_concepto) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
@@ -1222,7 +1230,7 @@ class CorteSendEmail extends Command
                             $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
                             $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
                         $RowPartida=str_pad($partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concepto, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concepto,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$CartImporte) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                           
