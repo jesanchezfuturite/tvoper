@@ -174,6 +174,7 @@ class CorteSendEmail extends Command
         //$this->actualizaduplicados();
        //$this->enviacorreo('2019-10-18');
        //$this->gArchivo_Generico_prueba();
+        //$this->insertapr();
     }
     
     public function BuscarFechas()
@@ -1172,7 +1173,7 @@ class CorteSendEmail extends Command
                 array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-05-28');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-01');
          //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
         #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
         
@@ -1217,7 +1218,7 @@ class CorteSendEmail extends Command
                             $concepto=$det->concepto;
                             $CartImporte=$det->importe_concepto;
 
-                            $nombreArchivo=$concilia->cuenta_alias.'_'.$concilia->cuenta_banco.'_Corte_Generico'.'.txt';
+                            //$nombreArchivo=$concilia->cuenta_alias.'_'.$concilia->cuenta_banco.'_Corte_Generico'.'.txt';
                             $nombreArchivo=Carbon::parse($concilia->fecha_ejecucion)->format('Ymd').'_Corte_Generico'.'.txt';
                             $Directorio=$path.$nombreArchivo;
 
@@ -1250,73 +1251,15 @@ class CorteSendEmail extends Command
             }
         }
     }
-    private function enviacorreo($fecha)
+    private function insertapr()
     {   
-        $Directorio=array();
-        $fecha= Carbon::parse($fecha);
-        /*$findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha]);
-        foreach ($findCorte as $k) {
-           
-        }*/
-        $response='false';
-        $banco=[2,3,4,5];
-        foreach ($banco as $e) {
-            $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
-            $path2=$path1.'/'.$fecha->format('m');
-            $path3=$path2.'/'.$fecha->format('d');        
-            $path4=$path3.'/'.$e;
-            $Archivos=File::allFiles($path4); 
-            foreach ($Archivos as $key) {
-              $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
-            }     
+       $fecha=Carbon::now();
+       $fechaIn=$fecha->format('Y-m-d');
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['entidad'=>'5']);
+        foreach ($findTransaccion as $i ) {
+            $insert=$this->pr->create(['origen'=>'11','referencia'=>$i->referencia,'transaccion_id'=>$i->id_transaccion_motor,'day'=>$fecha->format('d'),'month'=>$fecha->format('m'),'year'=>$fecha->format('Y'),'monto'=>$i->importe_transaccion,'status'=>'p','filename'=>'','banco_id'=>'4','mensaje'=>'','cuenta_banco'=>'4057565186','cuenta_alias'=>'4','fecha_ejecucion'=>$fechaIn,'tipo_servicio'=>'0']);
         }
-
-        $mail = new PHPMailer(true);
-         $message="Corte Fecha: ".$fecha->format('Y-m-d');
-        try{
-            $mail->isSMTP();
-            $mail->CharSet = 'utf-8';
-            $mail->SMTPAuth =true;
-            $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.gmail.com';
-            $mail->Port = '587'; 
-            $mail->Username = 'nl.modulo2020@gmail.com';
-            $mail->Password = 'M0dul02020';
-            $mail->setFrom('nl.modulo2020@gmail.com', 'egobierno nl'); 
-            $mail->Subject = 'CORTE ARCHIVOS';
-            
-            $Directorio=json_decode(json_encode($Directorio));
-            foreach ($Directorio as $d) {
-                $mail->addAttachment($d->path);
-            }
-            $mail->MsgHTML($message);
-            $mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
-            $mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
-            $mail->send();
-            $response='true';
-        }catch(phpmailerException $e){
-            log::info($e);
-            $response='false';
-        }
-        return $response;
-        /*$subject ='Fecha de Corte '.$nombreArchivo->format('Y-m-d');
-        $data = [ 'link' => 'https' ];
-        $for = "juancarlos96.15.02@gmail.com";
-        Mail::send('email',$data, function($msj) use($subject,$for,$Archivos,$path){
-            $msj->from("juan.carlos.cruz.bautista@hotmail.com","Juan Carlos CB");
-            $msj->subject($subject);
-            $msj->to($for);
-            
-            
-        });*/
 
     }
 
-   /* private function actualizaduplicados()
-    {
-        $conciliacion=$this->pr->findWhere(['archivo_corte'=>'2020-04-02']);
-        foreach ($conciliacion as $concilia) {
-            $insertDuplicado=$this->cortearchivosdb->create(['referencia'=>$concilia->referencia,'transacccion_id'=>$concilia->transaccion_id,'banco_id'=>$concilia->banco_id,'cuenta_banco'=>$concilia->cuenta_banco,'cuenta_alias'=>$concilia->cuenta_alias,'tipo_servicio'=>$concilia->tipo_servicio,'fecha_ejecucion'=>$concilia->fecha_ejecucion]);
-        }
-    }*/
 }

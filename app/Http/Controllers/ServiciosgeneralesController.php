@@ -828,7 +828,106 @@ class ServiciosgeneralesController extends Controller
         );
         return $data;
     }
+    public function loadUserMenu(Request $request)
+    {
+        $id=$request->id;
+        $email='';
+        $findclave=$this->servclavesgdb->findWhere(['id'=>$id]);
+            foreach ($findclave as $i) {
+                $email=$i->usuario;
+            }
+        $users = $this->administratordb->findWhere( [ "name" => trim($email) ] );
 
+        if($users->count())
+        {
+            foreach($users as $u)
+            {
+                $menu = $u->menu;
+            }
+            return $menu;
+        }else{
+            return "[]";
+        }
+
+    }
+     public function saveMenuUSer(Request $request)
+    {
+        /* here i have to modify to just save the identifier */
+        try{
+            $id=$request->id;
+            $email='';
+            $findclave=$this->servclavesgdb->findWhere(['id'=>$id]);
+            foreach ($findclave as $i) {
+                $email=$i->usuario;
+            }
+            $this->administratordb->updateMenuByName( ['name' => $email], [ 'menu' => $request->tools ]);
+        }catch( \Exception $e){
+            Log::info('[AsignaHerramientasController@saveUserProfile] Error ' . $e->getMessage());    
+        }
+        
+    }
+    public function deleteElementMenuUser(Request $request)
+    {
+        
+        $id_user=$request->id_user;
+        $email='';
+        $findclave=$this->servclavesgdb->findWhere(['id'=>$id_user]);
+            foreach ($findclave as $i) {
+                $email=$i->usuario;
+            }
+        $users = $this->administratordb->findWhere( [ "name" => trim($email) ] );
+
+        try{
+            $toDelete = $request->id;    
+        }catch( \Exception $e){
+            log::info("Error while update tools" . $e->getMessage() );
+        }
+        
+        if($users->count())
+        {
+            foreach($users as $u)
+            {
+                $menu = $u->menu;
+            }
+            
+            $menu  = json_decode($menu);
+
+            foreach($menu as $m => $v)
+            { log::info($toDelete);
+
+                if($v->id == $toDelete)
+                {
+                    unset($menu[$m]);
+
+                }
+            }
+            foreach($menu as $sub => $n)
+            { 
+
+                if($n->id_father == $toDelete)
+                {
+                    unset($menu[$sub]);
+
+                }
+            }
+
+            //log::info($menu);
+            /* here change to json and updates the db*/
+
+            try{
+                //log::info($menu);
+                $this->admins->updateMenuByName( ['name' => $u->name ], [ 'menu' => json_encode($menu) ]);
+
+                return 1 ;
+
+            }catch( \Exception $e){
+                log::info('[AsignaHerramientasController@deleteElementUserProfile] Error ' . $e->getMessage());   
+
+                return 0;
+
+            }
+        }
+    }
 
     private function plantillaEmail($url,$referencia)
     {

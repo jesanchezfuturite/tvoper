@@ -245,6 +245,9 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::post('/find-user','ServiciosgeneralesController@findUser');
     Route::post('/update-user','ServiciosgeneralesController@updateUser');
     Route::post('/deleted-user','ServiciosgeneralesController@deletedUser');
+    Route::post('/load-menu-user','ServiciosgeneralesController@loadUserMenu');
+    Route::post('/update-menu-user','ServiciosgeneralesController@saveMenuUSer');
+    Route::post('/deleted-menu-user','ServiciosgeneralesController@deleteElementMenuUser');
 
 });
 /*********************************** PDF*****/

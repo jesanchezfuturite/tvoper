@@ -200,11 +200,11 @@
                 <h4 class="modal-title">Menu</h4>
             </div>
             <div class="modal-body">
-                    <input hidden="true" type="text"  id="iduser_menu">
+                    <input hidden="true" type="text"  id="users_select">
                     <div class="row">
                         <label class="col-md-2 control-label">Nivel Principal:</label>
                         <div class="col-md-6">
-                            <select id="principal_level" class="select2me form-control">
+                            <select id="principal_level" class="select2me form-control" onchange="changePrincipal_level()">
                             </select>
                         </div>
                     </div>
@@ -260,13 +260,7 @@
                         </div>
                     </div>
                      <span class="help-block">&nbsp; </span>
-                    <div class="row">
-                        <div class="col-md-12">            
-                            <div class="form-group">
-                                <button type="submit" class="btn blue" onclick="saveUpdateUser()"><i class="fa fa-check"></i> Guardar</button>
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div class="modal-footer">
                         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
                     </div>                
@@ -278,7 +272,7 @@
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
 <input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
-<input type="hidden" id="saved_tools" name="saved_tools" value="0" >
+<input type="text" id="saved_tools" name="saved_tools" value="0" >
 @endsection
 @section('scripts')
 <script type="text/javascript">
@@ -289,6 +283,424 @@
         level_principal();
     });
 
+    $("#addSecond").click( function(){
+        var selected = $("#secondary_level").val();
+        var first = $("#principal_level").val();
+        var user = $("#users_select").val();
+        if(selected == 0 || selected == null)
+        {
+            Command: toastr.warning("Por favor selecciona una herramienta!!", "Notifications")
+            return false;
+        }
+        var second = $.parseJSON($("#second_level").val());
+        var newsaved=[];
+        var aux = {};
+        $.each(second, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                aux = item;
+            }
+        });
+        var existe='false';
+        var saved = $.parseJSON($("#saved_tools").val());
+        $.each(saved, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                existe='true';
+            }
+            newsaved.push(item);
+        });
+        if(existe=='true')
+        {
+            Command: toastr.warning("Ya Existe!!", "Notifications")
+            return false;
+        }else{
+            newsaved.push(aux);
+            document.getElementById('saved_tools').value=JSON.stringify(newsaved); 
+        }
+       var listAdded=[];
+        $.each(newsaved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+       // console.log(JSON.stringify(newsaved));
+        $('#secondary_level_added').empty();
+        $.each(listAdded,function(i, item){
+
+           $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+
+        });
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/update-menu-user') }}",
+            data: { tools: JSON.stringify(newsaved), id: user, _token: '{{ csrf_token() }}' }
+        })
+        .done(function (response) {
+              Command: toastr.success("Success", "Notifications")
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+
+    }); 
+    $("#deleteSecond").click( function (){
+
+        var user = $("#users_select").val();
+        var first = $("#principal_level").val();
+        var added = $("#secondary_level_added").val();
+        if(added == 0 || added == null)
+        {
+             Command: toastr.warning("Debes seleccionar una herramienta para eliminarla del perfil !", "Notifications")
+            return false;   
+        }
+        var saved = $.parseJSON($("#saved_tools").val());
+        /* deletes in select */
+        $.each(saved, function (i, item){
+            
+            if(item.id == added)
+            {   
+                delete saved[i];
+            }
+
+        });
+        var filtered = saved.filter(function (el) {
+            return el != null;
+        });
+        var listAdded=[];
+        $.each(filtered, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        document.getElementById('saved_tools').value=JSON.stringify(filtered);
+        $('#secondary_level_added').empty();
+        //console.log(JSON.stringify(filtered));
+        /*refresh select box data*/
+        $.each(listAdded, function (i, item) { 
+            $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        /* update DB */
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/update-menu-user') }}",
+            data: { tools: JSON.stringify(filtered), id: user, _token: '{{ csrf_token() }}' }
+        })
+        .done(function (response) {
+              Command: toastr.success("Success", "Notifications")
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+    });
+      function changesSecond()
+    {
+        var principal = $( "#secondary_level" ).val();
+
+        /* read the values in the second level and filter just with the id primary */
+        var jsonObj = $.parseJSON($("#third_level").val());
+        
+        var objSecond = [];
+        $.each(jsonObj, function (i,item){
+
+            if(item.id_father === principal)
+            {
+                /* add the new node in menu */
+                i = {}
+                i ["title"] = item.title;
+                i ["route"] = item.route;
+                i ["id"] = item.id;
+                i ["id_father"] = item.id_father;
+
+                objSecond.push(i);
+            }
+
+        });
+
+
+        /* delete all elements in the list*/
+        $('#thirdy_level').empty();
+        /*refresh select box data*/
+        $.each(objSecond, function (i, item) {
+            $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        changesSecond_added();
+
+    }
+    function changesSecond_added(){
+
+        var user = $("#users_select").val();
+
+        if(user == 0)
+        {
+            Command: toastr.warning("Debes seleccionar un usuario para agregar una herramienta", "Notifications")
+            return false;   
+        }
+        var first = $("#secondary_level").val();
+        /* reads the second level and loads the childs in multiple selector */
+        //var second = $.parseJSON($("#second_level").val());
+        var third=$.parseJSON($("#third_level").val());
+        /* reads the saved_tools hidden field */
+        var saved = $.parseJSON($("#saved_tools").val());        
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        objList.push(i);
+        $.each(third, function (i, item){            
+            if(item.id_father == first)
+            {   
+                  i = {};
+                    i ["title"] = item.title;
+                    i ["id"] = item.id;
+                    objList.push(i);                
+            }
+        });
+        /* fill the list */
+        $('#thirdy_level').empty();
+        $.each(objList,function(i, item){
+           $('#thirdy_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+        });
+
+        var listAdded = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        listAdded.push(i);
+        /* we update the values in secondary_level_added with the values saved in */
+        $.each(saved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+
+        /* fill the list added */
+        $('#thirdy_level_added').empty();
+        $.each(listAdded,function(i, item){
+           $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+        });
+    };
+
+    $("#addThird").click( function(){
+        var first = $("#secondary_level").val();
+        var selected = $("#thirdy_level").val();
+        var user = $("#users_select").val();
+        if(user == 0)
+        {
+            Command: toastr.warning("Debes seleccionar un usuario para agregar una herramienta", "Notifications")
+            return false;   
+        }
+        if(selected == 0 || selected == null)
+        {
+            Command: toastr.warning("Por favor selecciona una herramienta.", "Notifications")
+            return false;
+        }
+        /* remove element from secondary and update the multi select */
+        var third = $.parseJSON($("#third_level").val());
+        var newsaved = [];
+        var aux = {};
+        $.each(third, function (i, item){            
+            if(item.id == selected)
+            { aux = item;}
+
+        });
+        var existe='false';
+        var saved = $.parseJSON($("#saved_tools").val());
+        $.each(saved, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                existe='true';
+            }
+            newsaved.push(item);
+        });
+        if(existe=='true')
+        {
+            Command: toastr.warning("Ya Existe!!", "Notifications")
+            return false;
+        }else{
+            newsaved.push(aux);
+            document.getElementById('saved_tools').value=JSON.stringify(newsaved); 
+        }
+       var listAdded=[];
+        $.each(newsaved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        $("#thirdy_level_added").empty();
+        $.each(listAdded, function (i, item) { 
+            $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        /* save with ajax in DB */
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/update-menu-user') }}",
+            data: { tools: JSON.stringify(newsaved), id: user, _token: '{{ csrf_token() }}' }
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+
+    });
+
+     $("#deleteThird").click( function (){
+
+        var user = $("#users_select").val();
+        var first = $("#secondary_level").val();
+        var added = $("#thirdy_level_added").val();
+
+        if(added == 0 || added == null)
+        {
+            Command: toastr.warning("Debes seleccionar una herramienta para eliminarla del perfil !", "Notifications")
+            return false;   
+        }
+
+        var saved = $.parseJSON($("#saved_tools").val());
+        /* deletes in select */
+
+        $.each(saved, function (i, item){
+            
+            if(item.id == added)
+            {   
+                delete saved[i];
+            }
+
+        });
+
+        var filtered = saved.filter(function (el) {
+            return el != null;
+        });
+        var listAdded=[];
+        $.each(filtered, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        document.getElementById('saved_tools').value=JSON.stringify(filtered);
+        $('#thirdy_level_added').empty();
+        //console.log(JSON.stringify(filtered));
+        /*refresh select box data*/
+        $.each(listAdded, function (i, item) { 
+            $('#thirdy_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            }));
+        });
+        /* update DB */
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/update-menu-user') }}",
+            data: { tools: JSON.stringify(filtered), id: user, _token: '{{ csrf_token() }}' }
+        })
+        .done(function (response) {
+              Command: toastr.success("Success", "Notifications")
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });
+
+    });
+
+    function changePrincipal_level()
+    {
+        var user = $("#users_select").val();
+        var first = $("#principal_level").val();
+        var second = $.parseJSON($("#second_level").val());
+        var saved = $.parseJSON($("#saved_tools").val());
+        //console.log(saved);
+        var objList = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        $.each(second, function (i, item){
+            if(item.id_father == first)
+            {   
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                objList.push(i);                
+            }
+        });
+        /* fill the list */
+        $('#secondary_level').empty();
+        $.each(objList,function(i, item){
+           $('#secondary_level').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+        });
+        var listAdded = [];
+        i = {};
+        i ["title"] = '-----';
+        i ["id"] = 0;
+        listAdded.push(i);
+        /* we update the values in secondary_level_added with the values saved in */
+        $.each(saved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        /* fill the list added */
+        $('#secondary_level_added').empty();
+        $.each(listAdded,function(i, item){
+           $('#secondary_level_added').append($('<option>', { 
+                value: item.id,
+                text : item.title 
+            })); 
+        });
+        $('#thirdy_level_added').empty();
+        $('#thirdy_level').empty();
+    }
     function level_principal()
     {
         var elements = $.parseJSON($("#first_level").val());
@@ -305,6 +717,35 @@
                 text : item.title 
             })); 
         }); 
+    }
+    function userMenu(id_)
+    {
+        document.getElementById('users_select').value=id_;
+        var user = $("#users_select").val();
+
+        if(user.length == 0)
+        {
+           
+            return false;   
+        }
+
+        // loads the menu that users has saved in DB
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/load-menu-user') }}",
+            data: { id: user, _token: '{{ csrf_token() }}' }
+        })
+        .done( function ( values ) {
+            /* here we loads the tools in the profile */
+            if(values == ""){
+                
+            }
+            
+            $("#saved_tools").val(values);
+        })
+        .fail(function( msg ) {
+            console.log( "AJAX Failed to add in : " + msg );
+        });     
     }
     function userDeleted(id_,user_id_)
     {
@@ -474,7 +915,7 @@
                 +"<td>"+item.nombre+" "+item.ape_pat +" "+item.ape_mat +"</td>"
                 +"<td>"+item.emial+"</td>"
                 +"<td>"+item.dependencia+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only green' data-toggle='modal' href='#config' onclick='userDeleted("+item.id+")'><i class='fa fa-cogs'></i></a><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='userUpdate("+item.id+","+item.user_id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='userDeleted("+item.id+","+item.user_id+")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only green' data-toggle='modal' href='#config' onclick='userMenu("+item.id+")'><i class='fa fa-cogs'></i></a><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='userUpdate("+item.id+","+item.user_id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='userDeleted("+item.id+","+item.user_id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -510,6 +951,7 @@
             $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
             $('#confirmpassword').attr('type', 'password');
         }
+        $("#principal_level").val("0").change();
         
     }
 
