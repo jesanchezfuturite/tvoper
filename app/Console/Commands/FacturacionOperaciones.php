@@ -297,12 +297,21 @@ class FacturacionOperaciones extends Command
             $transaccion = $full["transaccion"];
 
             $i_transaccion = array(
-                "metodo_de_pago"        => $transaccion['metodo_pago_id'],
                 "folio_unico"           => $transaccion['referencia'],
                 "fecha_transaccion"     => $transaccion['fecha_transaccion'],
+                "template_id"           => "1",
+                "tipo_documento"        => "I",
                 "total_transaccion"     => $transaccion['importe_transaccion'],
+                "forma_de_pago"         => "PAGO EN UNA SOLA EXHIBICION",
+                "descuento"             => "0.00",
                 "subtotal"              => $transaccion['importe_transaccion'],
                 "total"                 => $transaccion['importe_transaccion'],     
+                "metodo_de_pago"        => "99",
+                "numero_de_cuenta"      => "",
+                "motivo_descuento"      => "ND",
+                "lugar_expedicion"      => "1" ,
+                "rfc_receptor"          => "",
+                "fecha_registro"        => date("Y-m-d H:i:s")               
             );
 
             // obtener la info de tramite
@@ -316,24 +325,34 @@ class FacturacionOperaciones extends Command
 
                 foreach($detalles as $d)
                 {
-                    $i_detalles []= array(
-                        "info"              => json_encode($info),
+                    $i_detalles[]= array(
                         "folio_unico"       => $transaccion['referencia'],
-                        "id_oper"           => $d["id_transaccion_motor"],
-                        "id_mov"            => $d["id_tramite_motor"],
+                        "cantidad"          => "1",
+                        "unidad"            => "SERVICIO",      
                         "concepto"          => $d["concepto"],
                         "precio_unitario"   => $d["importe_concepto"],
                         "importe"           => $d["importe_concepto"],
                         "partida"           => $d["partida"],
+                        "fecha_registro"    => date("Y-m-d H:i:s"),
+                        "id_oper"           => $d["id_transaccion_motor"],
+                        "id_mov"            => $d["id_tramite_motor"],
+                        "st_gen"            => "0",
+                        "st_doc"            => "0",
+                        "info"              => json_encode($info)
                     );
                 }
+                Log::info($i_detalles);
+                Log::info("======================");
                 try
                 {
                     // insertar los registros de detalles de la transaccion
-                    $o = $this->detalle->create( $info_detalles );
+                    $o = $this->detalle->create( $i_detalles );               
+                    
                 }catch( \Exception $e ){
                     Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
                 }
+
+                Log::info(json_encode($o));
             }
 
             try
