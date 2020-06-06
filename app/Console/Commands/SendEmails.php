@@ -239,8 +239,14 @@ class SendEmails extends Command
                 $servicio_txt='Servicio: ' .(string)$servicio;
                 $banco_txt='';
                 $footer_txt='<p>¿Necesitas asistencia? Contáctanos</p><p>Llámanos : (81) 2033-2420</p><p>Escríbenos un mail: egobierno@nuevoleon.gob.mx</p>';
-                 $dompdf = new DOMPDF( array('enable_remote'=>true));
-                $dompdf->setPaper('A2', 'portrait');
+                $options= new Options();
+                $options->set('isHtml5ParserEnabled',true);
+                $options->set('isRemoteEnabled',true);
+
+                $dompdf = new DOMPDF($options);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->set_option('dpi', '160');
+                //$dompdf->setPaper('A2', 'portrait');
                 $dompdf->load_html( file_get_contents($url_recibo) );
                 $dompdf->render();
                 $output=$dompdf->output();

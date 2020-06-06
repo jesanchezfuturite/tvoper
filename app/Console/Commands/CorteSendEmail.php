@@ -174,6 +174,7 @@ class CorteSendEmail extends Command
         //$this->actualizaduplicados();
        //$this->enviacorreo('2019-10-18');
        //$this->gArchivo_Generico_prueba();
+        //$this->insertapr();
     }
     
     public function BuscarFechas()
@@ -219,7 +220,7 @@ class CorteSendEmail extends Command
     private function gArchivos($path2,$path,$fecha,$banco_id,$cuenta,$alias)
     {   
         $existe=false;
-        $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        
         //,3,13,14,15,23,24,25
         $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
                 for ($i=100; $i < 151; $i++) { 
@@ -228,8 +229,17 @@ class CorteSendEmail extends Command
                 for ($i=401; $i < 440; $i++) { 
                     array_push($Servicios ,$i );
                 }
-        $conciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
         if($conciliacion<>null){
+            foreach ($conciliacion as $y) {
+            foreach ($Servicios as $serv){
+                if((string)$serv==(string)$y->tipo_servicio)
+                    {$existe=true;}
+                }
+            }
+        }
+        $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        if($findConciliacion<>null){
             foreach ($findConciliacion as $y) {
             foreach ($Servicios as $serv){
                 if((string)$serv==(string)$y->tipo_servicio)
@@ -237,7 +247,6 @@ class CorteSendEmail extends Command
                 }
             }
         }
-        
         if($existe)
         {       
             /*$this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
@@ -311,7 +320,7 @@ class CorteSendEmail extends Command
                         $RowFechapago=str_pad(Carbon::parse($k->fecha_tramite)->format('Ymd'),8);
                         $RowHorapago=str_pad(Carbon::parse($k->hora_tramite)->format('hms'),6);
                         $RowPartida=str_pad($concilia->id_partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concilia->descripcion, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->descripcion,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$concilia->CartImporte) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
@@ -374,7 +383,7 @@ class CorteSendEmail extends Command
                         $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
                         $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
                         $RowPartida=str_pad($concilia->partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concilia->concepto, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->concepto,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$concilia->importe_concepto) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
@@ -1164,7 +1173,7 @@ class CorteSendEmail extends Command
                 array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-05-28');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-01');
          //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
         #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
         
@@ -1209,7 +1218,7 @@ class CorteSendEmail extends Command
                             $concepto=$det->concepto;
                             $CartImporte=$det->importe_concepto;
 
-                            $nombreArchivo=$concilia->cuenta_alias.'_'.$concilia->cuenta_banco.'_Corte_Generico'.'.txt';
+                            //$nombreArchivo=$concilia->cuenta_alias.'_'.$concilia->cuenta_banco.'_Corte_Generico'.'.txt';
                             $nombreArchivo=Carbon::parse($concilia->fecha_ejecucion)->format('Ymd').'_Corte_Generico'.'.txt';
                             $Directorio=$path.$nombreArchivo;
 
@@ -1222,7 +1231,7 @@ class CorteSendEmail extends Command
                             $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
                             $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
                         $RowPartida=str_pad($partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding($concepto, "Windows-1252", "UTF-8"),120);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concepto,0,120), "Windows-1252", "UTF-8"),120);
                         $RowFolio=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
                         $RowTotalpago=str_pad(str_replace(".","",$CartImporte) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                           
@@ -1242,73 +1251,15 @@ class CorteSendEmail extends Command
             }
         }
     }
-    private function enviacorreo($fecha)
+    private function insertapr()
     {   
-        $Directorio=array();
-        $fecha= Carbon::parse($fecha);
-        /*$findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha]);
-        foreach ($findCorte as $k) {
-           
-        }*/
-        $response='false';
-        $banco=[2,3,4,5];
-        foreach ($banco as $e) {
-            $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
-            $path2=$path1.'/'.$fecha->format('m');
-            $path3=$path2.'/'.$fecha->format('d');        
-            $path4=$path3.'/'.$e;
-            $Archivos=File::allFiles($path4); 
-            foreach ($Archivos as $key) {
-              $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
-            }     
+       $fecha=Carbon::now();
+       $fechaIn=$fecha->format('Y-m-d');
+        $findTransaccion=$this->oper_transaccionesdb->findWhere(['entidad'=>'5']);
+        foreach ($findTransaccion as $i ) {
+            $insert=$this->pr->create(['origen'=>'11','referencia'=>$i->referencia,'transaccion_id'=>$i->id_transaccion_motor,'day'=>$fecha->format('d'),'month'=>$fecha->format('m'),'year'=>$fecha->format('Y'),'monto'=>$i->importe_transaccion,'status'=>'p','filename'=>'','banco_id'=>'4','mensaje'=>'','cuenta_banco'=>'4057565186','cuenta_alias'=>'4','fecha_ejecucion'=>$fechaIn,'tipo_servicio'=>'0']);
         }
-
-        $mail = new PHPMailer(true);
-         $message="Corte Fecha: ".$fecha->format('Y-m-d');
-        try{
-            $mail->isSMTP();
-            $mail->CharSet = 'utf-8';
-            $mail->SMTPAuth =true;
-            $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.gmail.com';
-            $mail->Port = '587'; 
-            $mail->Username = 'nl.modulo2020@gmail.com';
-            $mail->Password = 'M0dul02020';
-            $mail->setFrom('nl.modulo2020@gmail.com', 'egobierno nl'); 
-            $mail->Subject = 'CORTE ARCHIVOS';
-            
-            $Directorio=json_decode(json_encode($Directorio));
-            foreach ($Directorio as $d) {
-                $mail->addAttachment($d->path);
-            }
-            $mail->MsgHTML($message);
-            $mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
-            $mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
-            $mail->send();
-            $response='true';
-        }catch(phpmailerException $e){
-            log::info($e);
-            $response='false';
-        }
-        return $response;
-        /*$subject ='Fecha de Corte '.$nombreArchivo->format('Y-m-d');
-        $data = [ 'link' => 'https' ];
-        $for = "juancarlos96.15.02@gmail.com";
-        Mail::send('email',$data, function($msj) use($subject,$for,$Archivos,$path){
-            $msj->from("juan.carlos.cruz.bautista@hotmail.com","Juan Carlos CB");
-            $msj->subject($subject);
-            $msj->to($for);
-            
-            
-        });*/
 
     }
 
-   /* private function actualizaduplicados()
-    {
-        $conciliacion=$this->pr->findWhere(['archivo_corte'=>'2020-04-02']);
-        foreach ($conciliacion as $concilia) {
-            $insertDuplicado=$this->cortearchivosdb->create(['referencia'=>$concilia->referencia,'transacccion_id'=>$concilia->transaccion_id,'banco_id'=>$concilia->banco_id,'cuenta_banco'=>$concilia->cuenta_banco,'cuenta_alias'=>$concilia->cuenta_alias,'tipo_servicio'=>$concilia->tipo_servicio,'fecha_ejecucion'=>$concilia->fecha_ejecucion]);
-        }
-    }*/
 }
