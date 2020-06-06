@@ -272,7 +272,7 @@
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
 <input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
-<input type="text" id="saved_tools" name="saved_tools" value="0" >
+<input type="hidden" id="saved_tools" name="saved_tools" value="0" >
 @endsection
 @section('scripts')
 <script type="text/javascript">
