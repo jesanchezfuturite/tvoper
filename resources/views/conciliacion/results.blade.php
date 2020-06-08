@@ -298,8 +298,8 @@
             var fecha_correcta = fecha.split("/");
             var fc = fecha_correcta[2]+"-"+fecha_correcta[0]+"-"+fecha_correcta[1];
             console.log(fc);
-            // boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
-            boton = $('<button>',{text:'Corte',id:'corte_button',class: 'btn blue',click: function(){ alert('Proximamente') }});
+            boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
+            // boton = $('<button>',{text:'Corte',id:'corte_button',class: 'btn blue',click: function(){ alert('Proximamente') }});
             $("#corte_div").append(boton);
 
         });
