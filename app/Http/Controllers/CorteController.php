@@ -156,8 +156,8 @@ class CorteController extends Controller
         $fecha= Carbon::parse($fecha);
         $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
         
-        $response=false;
-        foreach ($findCorte as $e) {
+        $response='false';
+        /*foreach ($findCorte as $e) {
             $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
             $path2=$path1.'/'.$fecha->format('m');
             $path3=$path2.'/'.$fecha->format('d');        
@@ -166,7 +166,7 @@ class CorteController extends Controller
             foreach ($Archivos as $key) {
               $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
             }     
-        }
+        }*/
 
         $mail = new PHPMailer(true);
          $message="Corte Fecha: ".$fecha->format('Y-m-d');
@@ -190,10 +190,10 @@ class CorteController extends Controller
             $mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
             $mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
             $mail->send();
-            $response=true;
+            $response='true';
         }catch(phpmailerException $e){
             log::info($e);
-            $response=false;
+            $response='false';
         }
         return $response;
         /*$subject ='Fecha de Corte '.$nombreArchivo->format('Y-m-d');
