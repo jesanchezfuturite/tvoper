@@ -316,20 +316,21 @@ class FacturacionOperaciones extends Command
 
             // obtener la info de tramite
             $tramites = $full["tramites"];
-            $i_detalles = array();
+            
             foreach($tramites as $t)
             {
                 // obtener los detalles
                 $detalles = $t["detalles"];
                 $info = $t["info"];
-
+                $i_detalles = array();
+                
                 foreach($detalles as $d)
                 {
-                    $i_detalles[]= array(
+                    $i_detalles = array(
                         "folio_unico"       => $transaccion['referencia'],
                         "cantidad"          => "1",
                         "unidad"            => "SERVICIO",      
-                        "concepto"          => $d["concepto"],
+                        "concepto"          => utf8_decode($d["concepto"]),
                         "precio_unitario"   => $d["importe_concepto"],
                         "importe"           => $d["importe_concepto"],
                         "partida"           => $d["partida"],
@@ -340,19 +341,26 @@ class FacturacionOperaciones extends Command
                         "st_doc"            => "0",
                         "info"              => json_encode($info)
                     );
-                }
-                Log::info($i_detalles);
-                Log::info("======================");
-                try
-                {
-                    // insertar los registros de detalles de la transaccion
-                    $o = $this->detalle->create( $i_detalles );               
-                    
-                }catch( \Exception $e ){
-                    Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
+
+                    try
+                    {
+                        // insertar los registros de detalles de la transaccion
+                        // $o = $this->detalle->insert( $i_detalles );               
+                        $has = $this->detalle->findWhere( [ 'id_oper' => $d["id_transaccion_motor"] ,  'id_mov' => $d["id_tramite_motor"] ] );
+
+                        if ($has->count() == 0) {
+                            /* no existe */
+                            $this->detalle->create(
+                                $i_detalles
+                            );
+                        } 
+
+                    }catch( \Exception $e ){
+                        Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
+                    }      
                 }
 
-                Log::info(json_encode($o));
+                          
             }
 
             try
