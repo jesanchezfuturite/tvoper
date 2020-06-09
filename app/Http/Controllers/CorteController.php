@@ -157,7 +157,7 @@ class CorteController extends Controller
         $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
         
         $response='false';
-        /*foreach ($findCorte as $e) {
+        foreach ($findCorte as $e) {
             $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
             $path2=$path1.'/'.$fecha->format('m');
             $path3=$path2.'/'.$fecha->format('d');        
@@ -166,7 +166,7 @@ class CorteController extends Controller
             foreach ($Archivos as $key) {
               $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
             }     
-        }*/
+        }
 
         $mail = new PHPMailer(true);
          $message="Corte Fecha: ".$fecha->format('Y-m-d');
