@@ -157,11 +157,20 @@ class CorteController extends Controller
         $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
         
         $response='false';
+        $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
+        $path2=$path1.'/'.$fecha->format('m');
+        $path3=$path2.'/'.$fecha->format('d');
+        if (File::exists($path3))
+        {
+            $Archivos=File::allFiles($path3); 
+            foreach ($Archivos as $key) {
+                $Directorio []=array('path' => $path3.'/'.$key->getRelativePathname());
+            }  
+        } 
         foreach ($findCorte as $e) {
-            $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
-            $path2=$path1.'/'.$fecha->format('m');
-            $path3=$path2.'/'.$fecha->format('d');        
+                    
             $path4=$path3.'/'.$e->banco_id;
+            
             if (File::exists($path4))
             {
                 $Archivos=File::allFiles($path4); 
