@@ -162,15 +162,20 @@ class CorteController extends Controller
             $path2=$path1.'/'.$fecha->format('m');
             $path3=$path2.'/'.$fecha->format('d');        
             $path4=$path3.'/'.$e->banco_id;
-            $Archivos=File::allFiles($path4); 
-            foreach ($Archivos as $key) {
-              $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
-            }     
+            if (File::exists($path4))
+            {
+                $Archivos=File::allFiles($path4); 
+                foreach ($Archivos as $key) {
+                    $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
+                }  
+            }   
         }
 
         $mail = new PHPMailer(true);
          $message="Corte Fecha: ".$fecha->format('Y-m-d');
         try{
+           
+
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
             $mail->SMTPAuth =true;
