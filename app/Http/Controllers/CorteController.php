@@ -183,7 +183,7 @@ class CorteController extends Controller
             $mail->Host = 'smtp.gmail.com';
             $mail->Port = '587'; 
             $mail->Username = 'nl.modulo2020@gmail.com';
-            $mail->Password = 'M0dul02020';
+            $mail->Password = 'M0du10n12020';
             $mail->setFrom('nl.modulo2020@gmail.com', 'MODULO2020'); 
             $mail->Subject = 'CORTE ARCHIVOS';
             
