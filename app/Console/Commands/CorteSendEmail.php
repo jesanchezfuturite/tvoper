@@ -226,7 +226,7 @@ class CorteSendEmail extends Command
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
-                for ($i=401; $i < 440; $i++) { 
+                for ($i=401; $i < 500; $i++) { 
                     array_push($Servicios ,$i );
                 }
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
@@ -294,7 +294,7 @@ class CorteSendEmail extends Command
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
-            for ($i=401; $i < 440; $i++) { 
+            for ($i=401; $i < 500; $i++) { 
                 array_push($Servicios ,$i );
             }
         $existe=false;
@@ -355,7 +355,7 @@ class CorteSendEmail extends Command
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
-            for ($i=401; $i < 440; $i++) { 
+            for ($i=401; $i < 500; $i++) { 
                 array_push($Servicios ,$i );
             }
         $existe=false;

@@ -247,7 +247,10 @@
 <script  type="text/javascript">
     jQuery(document).ready(function() {
         UIBlockUI.init();  
-        consultaInicial();
+        fechaIn = "1";
+        fechaF = "1";
+        consultaEgob(fechaIn,fechaF);
+        consultaOper(fechaIn,fechaF); 
         
     });
     
