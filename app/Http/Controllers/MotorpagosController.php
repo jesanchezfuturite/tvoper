@@ -2129,6 +2129,8 @@ return json_encode($response);
         $rfc=$request->rfc;
         $response=array(); 
         $fechaActual=Carbon::now();
+
+
         if((int)$fecha_inicio==(int)"1")
         {
             
@@ -2162,11 +2164,20 @@ return json_encode($response);
         }
         if($transaccion<>null){
           foreach ($transaccion as $trans) {
+            $familia='';
+            $entidad='';
             $findDeclarado=null;
             $declarado_anio="Aplica";
             $declarado_mes= "";
             $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->idTrans]);
             $estatus_C="";
+            $findEntidad=$this->entidadtramitedb->consultaEntidadTramite($trans->tiposervicio_id);
+           if($findEntidad<>null){
+                foreach ($findEntidad as $f) {
+                    $familia=$f->familia;
+                    $entidad=$f->entidad;
+                }
+           } 
             
             if($findConcilia->count()==0)
                 {
@@ -2268,9 +2279,9 @@ return json_encode($response);
                     $response []= array(
                         'Estatus'=>$trans->status,
                         'RFC'=>$trans->rfc,
-                        'Transaccion'=>$trans->idTrans,
-                        'Familia'=>$trans->familia,
-                        'Entidad'=>$trans->entidad,
+                        'Transaccion'=>$trans->idTrans,                        
+                        'Familia'=>$familia,
+                        'Entidad'=>$entidad,
                         'Tramite'=>$trans->tiposervicio,
                         'Contribuyente'=>$trans->TitularTC,
                         'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
