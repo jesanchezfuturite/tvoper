@@ -22,7 +22,7 @@ class Servaccesopartidas extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['id','usuario','partida'];
+    protected $fillable = ['id','usuario','partida','created_at','updated_at'];
 
     protected $table = "serv_acceso_partidas";
 

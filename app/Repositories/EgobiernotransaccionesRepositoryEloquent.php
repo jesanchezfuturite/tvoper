@@ -102,6 +102,22 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             return false;
         }
     }
+    public function consultaContr($fechaIn,$fechaF)
+    {
+        try{
+        $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
+        ->join('transacciones_gpm','transacciones_gpm.id_transaccion','=','transacciones.idTrans')
+        ->join('tramites','tramites.id_transaccion','=','transacciones.idTrans')
+        ->join('tipo_servicios','tipo_servicios.Tipo_Code','=','tramites.id_tipo_tramite')
+        ->select('transacciones_gpm.id_transaccion', 'transacciones_gpm.id_transaccion_entidad', 'transacciones.TotalTramite','transacciones.fechaTramite', 'transacciones.horaTramite', 'tramites.id_tramite','tramites.id_tramite_entidad', 'tramites.importe_tramite','tipo_servicios.Tipo_Descripcion')
+        //->groupBy('contribuyente.transacciones_gpm.id_transaccion')
+        ->get();
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@Egobiernotransacciones] Error ' . $e->getMessage());
+        }      
+    }
 
     
     

@@ -574,7 +574,7 @@ License: You must have a valid license purchased only from themeforest(the above
 							</a>
 						</li>
 						<li>
-							<a href="/home">Partidas
+							<a href="/alta-partidas-servicios">Partidas
 							</a>
 						</li>
 					</ul>

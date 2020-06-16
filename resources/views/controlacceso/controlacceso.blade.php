@@ -1,7 +1,6 @@
 @extends('layout.app')
-
-
 @section('content')
+<link href="assets/global/css/table-scroll.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Control <small>Control Acceso</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -74,7 +73,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="portlet-config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
+<div class="modal fade" id="portlet-config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="true" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -171,7 +170,7 @@
 </div>
 
 <!-- modal-dialog -->
-<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -192,7 +191,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
+<div class="modal fade" id="config" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="true" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -268,6 +267,92 @@
         </div>
     </div>
 </div>
+<!-- modal-dialog -->
+<div id="ModaldeletePartida" class="modal fade " tabindex="-1"role="dialog" data-backdrop="static" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminaUsuario()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="Modalparttidas" class="modal fade " tabindex="-1"  data-backdrop="static" data-keyboard="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarPartidas()"></button>
+                <h4 class="modal-title">Agregar Partidas</h4> 
+                <input hidden="true" type="text" name="idUserPartidas" id="idUserPartidas">
+            </div>
+            <div class="modal-body">  
+               <div class="col-md-12">
+                    <div class='form-group'>
+                        <label for="search"class="col-md-2">Buscar:</label>
+                        <div class="col-md-8">                        
+                            <input type="text" name="search" id="search" class="form-control " placeholder="Escribe...">
+                        </div>
+
+                    </div>
+                </div>                               
+               <div class="row">
+                    <div class="col-md-12">
+                        <div  id="demo">              
+                            <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
+                                <thead>
+                                  <tr>            
+                                   <th>Selecciona</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                  <td>No Found</td>
+                                  <td></td>
+                                </tr>         
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+                    <input type="hidden" id="selectedChecks" value="[]">
+                    <div class="col-md-12 text-right" >
+                        <button type="button"class="btn green" onclick="savePartidas()">Agregar</button>
+                    </div>
+                </div><hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div  id="demo2">              
+                            <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table3">
+                                <thead>
+                                    <tr>            
+                                        <th>Agregados</th>
+                                    </tr>
+                                </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <input type="hidden" id="selectedChecksAdded" value="[]">
+                </div> 
+                <div class="col-md-12 text-right" >
+                    <button type="button"class="btn red" onclick="deletedPartidas()">Quitar</button>
+                    <button type="button" data-dismiss="modal" class="btn default " onclick="limpiarPartidas()">Cancelar</button>
+            
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >
@@ -282,6 +367,157 @@
         userCargartabla();
         level_principal();
     });
+    function savePartidas()
+    {
+      var checkeds=$("#selectedChecks").val();
+       var user_id=$("#idUserPartidas").val();      
+        if (checkeds.length < 3) {
+          Command: toastr.warning("Partidas Sin Seleccionar, Requerido!", "Notifications")
+        }else{            
+                $.ajax({
+                method: "POST",            
+                url: "{{ url('/insert-partidas-user') }}",
+                data: {id_user:user_id,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
+                .done(function (response) {
+            if(response==0){
+              Command: toastr.warning("Ninguno Fue Agregado!", "Notifications")
+            }else{ 
+             
+              Command: toastr.success(" "+response+" Registrados!", "Notifications")}
+                FindPartidasTable();        
+                FindPartidasTableUser();
+                document.getElementById('selectedChecks').value="[]";
+            })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
+    }
+    function deletedPartidas()
+    {
+      var checkeds=$("#selectedChecksAdded").val();
+       var user_id=$("#idUserPartidas").val();      
+        if (checkeds.length < 3) {
+          Command: toastr.warning("Partidas Sin Seleccionar, Requerido!", "Notifications")
+        }else{            
+                $.ajax({
+                method: "POST",            
+                url: "{{ url('/delete-partidas-user') }}",
+                data: {id_user:user_id,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
+                .done(function (response) {
+            if(response==0){
+              Command: toastr.warning("Ninguno Fue Agregado!", "Notifications")
+            }else{ 
+             
+              Command: toastr.success(" "+response+" Eliminados!", "Notifications")}
+                FindPartidasTable();        
+                FindPartidasTableUser();
+                document.getElementById('selectedChecksAdded').value="[]";
+            })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        }
+    }
+    function FindPartidas(user_id)
+    {
+        document.getElementById('idUserPartidas').value=user_id;
+        FindPartidasTable();        
+        FindPartidasTableUser();
+    }
+    function FindPartidasTable()
+    {
+         var user_id=$("#idUserPartidas").val();
+      $.ajax({
+        method: "POST",            
+        url: "{{ url('/find-partidas-where') }}",
+        data: {id_user:user_id,_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#table2 tbody tr").remove();
+        $.each(Resp, function(i, item) {                
+               $("#table2").append("<tr>"
+                +"<td class='text-center'><input id='ch_"+item.id+"' type='checkbox'onclick='addRemoveElement("+item.id+");'></td>"
+                +"<td  width='10%'>"+item.id+"</td>"
+                +"<td  width='90%'>"+item.nombre+"</td>"
+                +"</tr>"
+            );  
+        });
+        sortTable();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+     function FindPartidasTableUser()
+    {
+        var user_id=$("#idUserPartidas").val();
+      $.ajax({
+        method: "POST",            
+        url: "{{ url('/find-partidas-user') }}",
+        data: {id_user:user_id,_token:'{{ csrf_token() }}'}  })
+        .done(function (responseinfo) {     
+        var Resp=$.parseJSON(responseinfo);
+          var item="";
+          $("#table3 tbody tr").remove();
+        $.each(Resp, function(i, item) {                
+               $("#table3").append("<tr>"
+                +"<td class='text-center'><input id='ch_add_"+item.id+"' type='checkbox'onclick='addRemoveChecks("+item.id+");'></td>"
+                +"<td  width='10%'>"+item.id+"</td>"
+                +"<td  width='90%'>"+item.nombre+"</td>"
+                +"</tr>"
+            );  
+        });
+        sortTable2();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function addRemoveElement(element)
+    {
+      var eleStatus = $("#ch_"+element).prop("checked");
+      var checkedElements = $.parseJSON($("#selectedChecks").val());
+      if(eleStatus == true)
+      {
+        checkedElements.push(element);
+        $("#selectedChecks").val(JSON.stringify(checkedElements));
+      }else{
+        $.each(checkedElements,function(i,value){
+            if(element == value){
+              delete checkedElements[i];
+            }
+        });
+        var filtered = checkedElements.filter(function (el) {
+          return el != null;
+        });
+        $("#selectedChecks").val(JSON.stringify(filtered));      
+      }
+    }
+     function addRemoveChecks(element)
+    {
+      var eleStatus = $("#ch_add_"+element).prop("checked");
+      var checkedElements = $.parseJSON($("#selectedChecksAdded").val());
+      if(eleStatus == true)
+      {
+        checkedElements.push(element);
+        $("#selectedChecksAdded").val(JSON.stringify(checkedElements));
+      }else{
+        $.each(checkedElements,function(i,value){
+            if(element == value){
+              delete checkedElements[i];
+            }
+        });
+        var filtered = checkedElements.filter(function (el) {
+          return el != null;
+        });
+        $("#selectedChecksAdded").val(JSON.stringify(filtered));      
+      }
+    }
+    function limpiarPartidas()
+    {
+        document.getElementById('selectedChecks').value="[]";
+        document.getElementById('selectedChecksAdded').value="[]";
+        document.getElementById('search').value="";
+    }
+    /******************************/
 
     $("#addSecond").click( function(){
         var selected = $("#secondary_level").val();
@@ -915,7 +1151,7 @@
                 +"<td>"+item.nombre+" "+item.ape_pat +" "+item.ape_mat +"</td>"
                 +"<td>"+item.emial+"</td>"
                 +"<td>"+item.dependencia+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only green' data-toggle='modal' href='#config' onclick='userMenu("+item.id+")'><i class='fa fa-cogs'></i></a><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='userUpdate("+item.id+","+item.user_id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='userDeleted("+item.id+","+item.user_id+")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only green' data-toggle='modal' href='#config' data-original-title='Menu' title='Menu' onclick='userMenu("+item.id+")'><i class='fa fa-cogs'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='#Modalparttidas' data-original-title='Partidas' title='Partidas' onclick='FindPartidas("+item.user_id+")'><i class='fa fa-plus'></i></a><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='Editar' title='Editar' onclick='userUpdate("+item.id+","+item.user_id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' data-original-title='Eliminar' title='Eliminar' onclick='userDeleted("+item.id+","+item.user_id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -968,6 +1204,59 @@
             valido.innerText = "Incorrecto";
             document.getElementById("emailOK").style.color = "red";
         }
+    });
+    function sortTable() {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("table2");
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[1];
+                y = rows[i + 1].getElementsByTagName("TD")[1];
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+    function sortTable2() {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("table2");
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[1];
+                y = rows[i + 1].getElementsByTagName("TD")[1];
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+    $("#search").keyup(function(){
+        _this = this;
+        $.each($("#table2 tbody tr"), function() {
+        if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+        $(this).hide();
+        else
+        $(this).show();
+        });
     });
     function GuardarExcel()
     {
