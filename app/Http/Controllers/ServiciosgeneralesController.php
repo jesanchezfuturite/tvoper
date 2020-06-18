@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use phpmailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-use GuzzleHttp\Client;
+use SoapClient;
 use SimpleXMLElement;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 use App\Soap\Request\GetConversionAmount;
@@ -169,6 +169,7 @@ class ServiciosgeneralesController extends Controller
     	
     	$ejercicio_fiscal=$request->ejercicio_fiscal;
         $partida=$request->partida;
+        $concepto=$request->concepto;
         $folio=$request->folio;        
         $modalidad_ejecucion=$request->modalidad_ejecucion;
         $referencia_contrato=$request->referencia_contrato;
@@ -233,14 +234,15 @@ class ServiciosgeneralesController extends Controller
     	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$folio]);
     	$id_trans=$insert->id;
     	//log::info($fecha_retencion);
-    	$entidad='1';
-    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+    	//$entidad='1';
+    	//$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+        log::info($entidad." ".$clave);
     	$token=$this->wsToken($entidad,$clave);
     	$datos_solicitante= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
-    		'razon_social' => '', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
+    		'razon_social' => $razon_social, 
     		'rfc' => '', 
     		'curp' => '', 
     		'email' => '', 
@@ -253,13 +255,13 @@ class ServiciosgeneralesController extends Controller
     		'codigopostal' =>'0'  
     	);
     	$datos_factura= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
-    		'razon_social' => '', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
+    		'razon_social' => $razon_social, 
     		'rfc' => '', 
     		'curp' => '', 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'' , 
     		'colonia' => '', 
     		'numexterior' =>'', 
@@ -268,21 +270,21 @@ class ServiciosgeneralesController extends Controller
     		'municipio' =>'',  
     		'codigopostal' =>'0' 
     	);
-    	$subsidios [] = array(
+    	/*$subsidios [] = array(
     		 'concepto' => 'prueba laravel',
     		 'importe_subsidio' => '1.0',
     		 'partida' => $partida
-    		);
+    		);*/
     	$detalle []= array(
-    		'concepto' => 'prueba laravel',
-    		'importe_concepto' => '1.0', 
+    		'concepto' => $concepto,
+    		'importe_concepto' => $monto_retencion, 
 			'partida' => $partida, 
-			'subsidios' => $subsidios
+			//'subsidios' => $subsidios
     	);
 
     	$tramite []=$arrayName = array(
-    		'id_tipo_servicio' => '1', //$servicio_id
-    		'id_tramite' => '12', 
+    		'id_tipo_servicio' => $servicio_id, //$servicio_id
+    		'id_tramite' => $servicio_id, 
     		'importe_tramite' => $monto_retencion, 
     		'auxiliar_1' => '', 
     		'auxiliar_2' => '', 
@@ -296,14 +298,15 @@ class ServiciosgeneralesController extends Controller
     		'importe_transaccion' =>$monto_retencion,
     		'id_transaccion' =>$id_trans,
     		'url_retorno' =>'www.prueba.com',
-    		'entidad' =>'1',//$entidad
+    		'entidad' =>$entidad,
     		'tramite' =>$tramite
     	);
 	
     	$json=json_encode($request_json);
+        //log::info($json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -338,7 +341,7 @@ class ServiciosgeneralesController extends Controller
 		$token='';
 		try {
         $parameters=['entidad'=>$entidad,'clave'=>$clave];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -362,30 +365,6 @@ class ServiciosgeneralesController extends Controller
     		$array=(array)json_decode(json_encode($array),true);
     	}
     	return $array;
-    }
-    public function SendEmial($url,$referencia,$email)
-    {
-        //$url='http://localhost:8080';
-        //$referencia='222222444424';
-         $mail = new PHPMailer(true);
-         $message=$this->plantillaEmail($url,$referencia);
-        try{
-            $mail->isSMTP();
-            $mail->CharSet = 'utf-8';
-            $mail->SMTPAuth =true;
-            $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.outlook.com';
-            $mail->Port = '587'; 
-            $mail->Username = 'juan.carlos.cruz.bautista@hotmail.com';
-            $mail->Password = 'yashiro96';
-            $mail->setFrom('juan.carlos.cruz.bautista@hotmail.com', 'NAME'); 
-            $mail->Subject = 'MENSAJE PRUEBA';
-            $mail->MsgHTML($message);
-            $mail->addAddress($email , 'NAME'); 
-            $mail->send();
-        }catch(phpmailerException $e){
-            log::info($e);
-        }
     }
     public function reporteretencionesalmillar()
     {
@@ -455,10 +434,12 @@ class ServiciosgeneralesController extends Controller
     	$servicio_id='';
     	$pagosJson=json_decode($pagos);
     	$partida;
-    	$sumMonto=0;
+        $sumMonto=0;
+    	$concepto='';
     	foreach ($pagosJson as $p) {
     		$partida=$p->partida;
-    		$sumMonto=$sumMonto+floatval($p->monto);    		
+            $sumMonto=$sumMonto+floatval($p->monto);        
+    		$concepto=$concepto;   		
     	}
     	$tipo_servicio=$this->servpartidasdb->findWhere(['id_partida'=>$partida]);
     	foreach ($tipo_servicio as $s) {
@@ -475,17 +456,19 @@ class ServiciosgeneralesController extends Controller
     	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$partida]);
     	$id_trans=$insert->id;
     	//log::info($fecha_retencion);
-    	$entidad='1';
-    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+    	//$entidad='1';
+    	//$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+        //log::info($entida. ' '.$clave);
     	$token=$this->wsToken($entidad,$clave);
+        
     	$datos_solicitante= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
     		'razon_social' => '', 
     		'rfc' => '', 
     		'curp' => '', 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'' , 
     		'colonia' => '', 
     		'numexterior' => '', 
@@ -495,9 +478,9 @@ class ServiciosgeneralesController extends Controller
     		'codigopostal' =>'0'  
     	);
     	$datos_factura= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
     		'razon_social' => '',//$nombre, 
     		'rfc' =>'' ,//$rfc, 
     		'curp' => '',//$curp, 
@@ -510,17 +493,19 @@ class ServiciosgeneralesController extends Controller
     		'municipio' =>'',//$municipio,  
     		'codigopostal' =>''//$cp 
     	);
-    	$subsidios [] = array(
-    		 'concepto' => 'prueba laravel',
-    		 'importe_subsidio' => '1.0',
-    		 'partida' => $partida
-    		);
-    	$detalle []= array(
-    		'concepto' => 'prueba laravel',
-    		'importe_concepto' => '1.0', 
-			'partida' => $partida, 
-			'subsidios' => $subsidios
-    	);
+    	/*$subsidios [] = array(
+    		 'concepto_descuento' => 'prueba laravel',
+    		 'importe_descuento' => '1.0',
+    		 'partida_descuento' => $partida
+    		);*/
+    	foreach ($pagosJson as $p) {  
+            $detalle []= array(
+            'concepto' => $p->concepto,
+            'importe_concepto' => $p->monto, 
+            'partida' => $p->partida 
+            //'descuentos' => $subsidios
+            );      
+        }
 
     	$tramite []=$arrayName = array(
     		'id_tipo_servicio' => '1', //$servicio_id
@@ -547,7 +532,7 @@ class ServiciosgeneralesController extends Controller
        	$json=json_encode($request_json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
