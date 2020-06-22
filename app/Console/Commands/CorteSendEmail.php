@@ -226,7 +226,7 @@ class CorteSendEmail extends Command
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
-                for ($i=401; $i < 500; $i++) { 
+                for ($i=401; $i < 600; $i++) { 
                     array_push($Servicios ,$i );
                 }
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
@@ -294,7 +294,7 @@ class CorteSendEmail extends Command
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
-            for ($i=401; $i < 500; $i++) { 
+            for ($i=401; $i < 600; $i++) { 
                 array_push($Servicios ,$i );
             }
         $existe=false;
@@ -355,7 +355,7 @@ class CorteSendEmail extends Command
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
-            for ($i=401; $i < 500; $i++) { 
+            for ($i=401; $i < 600; $i++) { 
                 array_push($Servicios ,$i );
             }
         $existe=false;
@@ -1173,7 +1173,7 @@ class CorteSendEmail extends Command
                 array_push($Servicios ,$i );
             }
        $referencia='';
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-01');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-10');
          //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
         #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
         

@@ -1,0 +1,8 @@
+.my-custom-scrollbar tbody {
+position: relative;
+height: 200px;
+overflow: auto;
+}
+.table-wrapper-scroll-y tbody{
+display: block;
+}

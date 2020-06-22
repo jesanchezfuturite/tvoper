@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use PHPMailer\PHPMailer\PHPMailer;
 use phpmailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-use GuzzleHttp\Client;
+use SoapClient;
 use SimpleXMLElement;
 use Artisaninweb\SoapWrapper\SoapWrapper;
 use App\Soap\Request\GetConversionAmount;
@@ -27,6 +27,7 @@ use App\Repositories\ServdetalleserviciosRepositoryEloquent;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\AdministratorsRepositoryEloquent;
 use App\Repositories\ServclavesgRepositoryEloquent;
+use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 
 use App\Repositories\MenuRepositoryEloquent;
 use Dompdf\Dompdf;
@@ -49,6 +50,7 @@ class ServiciosgeneralesController extends Controller
     protected $administratordb;
 	protected $servclavesgdb;
     protected $menudb;
+    protected $tiposerviciodb;
 
 	public function __construct( 
     	ServaccesopartidasRepositoryEloquent $servaccesopartidasdb,
@@ -62,7 +64,8 @@ class ServiciosgeneralesController extends Controller
         UsersRepositoryEloquent $usersdb,
         AdministratorsRepositoryEloquent $administratordb,
     	ServclavesgRepositoryEloquent $servclavesgdb,
-        MenuRepositoryEloquent $menudb
+        MenuRepositoryEloquent $menudb,
+        EgobiernotiposerviciosRepositoryEloquent $tiposerviciodb
 
     ){
     	$this->middleware('auth');
@@ -78,6 +81,7 @@ class ServiciosgeneralesController extends Controller
         $this->administratordb=$administratordb;
 		$this->servclavesgdb=$servclavesgdb;
         $this->menudb = $menudb;
+        $this->tiposerviciodb = $tiposerviciodb;
     }
 
     public function retencionesAlMillar()
@@ -165,6 +169,7 @@ class ServiciosgeneralesController extends Controller
     	
     	$ejercicio_fiscal=$request->ejercicio_fiscal;
         $partida=$request->partida;
+        $concepto=$request->concepto;
         $folio=$request->folio;        
         $modalidad_ejecucion=$request->modalidad_ejecucion;
         $referencia_contrato=$request->referencia_contrato;
@@ -229,14 +234,15 @@ class ServiciosgeneralesController extends Controller
     	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$folio]);
     	$id_trans=$insert->id;
     	//log::info($fecha_retencion);
-    	$entidad='1';
-    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+    	//$entidad='1';
+    	//$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+        log::info($entidad." ".$clave);
     	$token=$this->wsToken($entidad,$clave);
     	$datos_solicitante= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
-    		'razon_social' => '', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
+    		'razon_social' => $razon_social, 
     		'rfc' => '', 
     		'curp' => '', 
     		'email' => '', 
@@ -249,13 +255,13 @@ class ServiciosgeneralesController extends Controller
     		'codigopostal' =>'0'  
     	);
     	$datos_factura= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
-    		'razon_social' => '', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
+    		'razon_social' => $razon_social, 
     		'rfc' => '', 
     		'curp' => '', 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'' , 
     		'colonia' => '', 
     		'numexterior' =>'', 
@@ -264,21 +270,21 @@ class ServiciosgeneralesController extends Controller
     		'municipio' =>'',  
     		'codigopostal' =>'0' 
     	);
-    	$subsidios [] = array(
+    	/*$subsidios [] = array(
     		 'concepto' => 'prueba laravel',
     		 'importe_subsidio' => '1.0',
     		 'partida' => $partida
-    		);
+    		);*/
     	$detalle []= array(
-    		'concepto' => 'prueba laravel',
-    		'importe_concepto' => '1.0', 
+    		'concepto' => $concepto,
+    		'importe_concepto' => $monto_retencion, 
 			'partida' => $partida, 
-			'subsidios' => $subsidios
+			//'subsidios' => $subsidios
     	);
 
     	$tramite []=$arrayName = array(
-    		'id_tipo_servicio' => '1', //$servicio_id
-    		'id_tramite' => '12', 
+    		'id_tipo_servicio' => $servicio_id, //$servicio_id
+    		'id_tramite' => $servicio_id, 
     		'importe_tramite' => $monto_retencion, 
     		'auxiliar_1' => '', 
     		'auxiliar_2' => '', 
@@ -292,14 +298,15 @@ class ServiciosgeneralesController extends Controller
     		'importe_transaccion' =>$monto_retencion,
     		'id_transaccion' =>$id_trans,
     		'url_retorno' =>'www.prueba.com',
-    		'entidad' =>'1',//$entidad
+    		'entidad' =>$entidad,
     		'tramite' =>$tramite
     	);
 	
     	$json=json_encode($request_json);
+        //log::info($json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -334,7 +341,7 @@ class ServiciosgeneralesController extends Controller
 		$token='';
 		try {
         $parameters=['entidad'=>$entidad,'clave'=>$clave];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -358,30 +365,6 @@ class ServiciosgeneralesController extends Controller
     		$array=(array)json_decode(json_encode($array),true);
     	}
     	return $array;
-    }
-    public function SendEmial($url,$referencia,$email)
-    {
-        //$url='http://localhost:8080';
-        //$referencia='222222444424';
-         $mail = new PHPMailer(true);
-         $message=$this->plantillaEmail($url,$referencia);
-        try{
-            $mail->isSMTP();
-            $mail->CharSet = 'utf-8';
-            $mail->SMTPAuth =true;
-            $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.outlook.com';
-            $mail->Port = '587'; 
-            $mail->Username = 'juan.carlos.cruz.bautista@hotmail.com';
-            $mail->Password = 'yashiro96';
-            $mail->setFrom('juan.carlos.cruz.bautista@hotmail.com', 'NAME'); 
-            $mail->Subject = 'MENSAJE PRUEBA';
-            $mail->MsgHTML($message);
-            $mail->addAddress($email , 'NAME'); 
-            $mail->send();
-        }catch(phpmailerException $e){
-            log::info($e);
-        }
     }
     public function reporteretencionesalmillar()
     {
@@ -451,10 +434,12 @@ class ServiciosgeneralesController extends Controller
     	$servicio_id='';
     	$pagosJson=json_decode($pagos);
     	$partida;
-    	$sumMonto=0;
+        $sumMonto=0;
+    	$concepto='';
     	foreach ($pagosJson as $p) {
     		$partida=$p->partida;
-    		$sumMonto=$sumMonto+floatval($p->monto);    		
+            $sumMonto=$sumMonto+floatval($p->monto);        
+    		$concepto=$concepto;   		
     	}
     	$tipo_servicio=$this->servpartidasdb->findWhere(['id_partida'=>$partida]);
     	foreach ($tipo_servicio as $s) {
@@ -471,17 +456,19 @@ class ServiciosgeneralesController extends Controller
     	$insert=$this->servgeneratransacciondb->create(['partida'=>$partida,'folio'=>$partida]);
     	$id_trans=$insert->id;
     	//log::info($fecha_retencion);
-    	$entidad='1';
-    	$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+    	//$entidad='1';
+    	//$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
+        //log::info($entida. ' '.$clave);
     	$token=$this->wsToken($entidad,$clave);
+        
     	$datos_solicitante= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
     		'razon_social' => '', 
     		'rfc' => '', 
     		'curp' => '', 
-    		'email' => 'edmundo.mtz86@gmail.com', 
+    		'email' => '', 
     		'calle' =>'' , 
     		'colonia' => '', 
     		'numexterior' => '', 
@@ -491,9 +478,9 @@ class ServiciosgeneralesController extends Controller
     		'codigopostal' =>'0'  
     	);
     	$datos_factura= array(
-    		'nombre' =>'IVAN' , 
-    		'apellido_paterno' => 'LEDEZMA', 
-    		'apellido_materno' => 'SOSA', 
+    		'nombre' =>'' , 
+    		'apellido_paterno' => '', 
+    		'apellido_materno' => '', 
     		'razon_social' => '',//$nombre, 
     		'rfc' =>'' ,//$rfc, 
     		'curp' => '',//$curp, 
@@ -506,17 +493,19 @@ class ServiciosgeneralesController extends Controller
     		'municipio' =>'',//$municipio,  
     		'codigopostal' =>''//$cp 
     	);
-    	$subsidios [] = array(
-    		 'concepto' => 'prueba laravel',
-    		 'importe_subsidio' => '1.0',
-    		 'partida' => $partida
-    		);
-    	$detalle []= array(
-    		'concepto' => 'prueba laravel',
-    		'importe_concepto' => '1.0', 
-			'partida' => $partida, 
-			'subsidios' => $subsidios
-    	);
+    	/*$subsidios [] = array(
+    		 'concepto_descuento' => 'prueba laravel',
+    		 'importe_descuento' => '1.0',
+    		 'partida_descuento' => $partida
+    		);*/
+    	foreach ($pagosJson as $p) {  
+            $detalle []= array(
+            'concepto' => $p->concepto,
+            'importe_concepto' => $p->monto, 
+            'partida' => $p->partida 
+            //'descuentos' => $subsidios
+            );      
+        }
 
     	$tramite []=$arrayName = array(
     		'id_tipo_servicio' => '1', //$servicio_id
@@ -543,7 +532,7 @@ class ServiciosgeneralesController extends Controller
        	$json=json_encode($request_json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://10.153.165.22:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -758,31 +747,6 @@ class ServiciosgeneralesController extends Controller
         }
         return json_encode($response);
     }
-      public function GeneraPDF()
-    {
-       $fecha=Carbon::now();
-        $fechaIn=$fecha->format('Ymd');
-        $path1=storage_path('app/pdf/');
-        if (!File::exists($path1))
-        {
-            File::makeDirectory($path1);
-        } 
-        $options= new Options();
-        $options->setIsRemoteEnabled(true);
-        $dompdf = new DOMPDF($options);
-        $dompdf->setPaper('A3', 'portrait');
-        $dompdf->load_html( file_get_contents('file:///C:/Users/claudia.romerocelis/Downloads/recibopago/recibopago.html') );
-        $dompdf->render();
-        $output=$dompdf->output();
-        if (File::exists($path1.'Recibo_Pago_'.$fechaIn.'.pdf'))
-        {
-            File::delete($path1.'Recibo_Pago_'.$fechaIn.'.pdf');
-        }
-        
-        File::put($path1.'Recibo_Pago_'.$fechaIn.'.pdf',$output);
-
-        
-    }
      protected function getLevelsFromArrays($menu)
     {
         // get first level
@@ -907,357 +871,198 @@ class ServiciosgeneralesController extends Controller
                 if($n->id_father == $toDelete)
                 {
                     unset($menu[$sub]);
-
                 }
             }
 
             //log::info($menu);
             /* here change to json and updates the db*/
-
             try{
                 //log::info($menu);
                 $this->admins->updateMenuByName( ['name' => $u->name ], [ 'menu' => json_encode($menu) ]);
-
                 return 1 ;
 
             }catch( \Exception $e){
-                log::info('[AsignaHerramientasController@deleteElementUserProfile] Error ' . $e->getMessage());   
-
+                log::info('[AsignaHerramientasController@deleteElementUserProfile] Error ' . $e->getMessage()); 
                 return 0;
-
             }
         }
     }
-
-    private function plantillaEmail($url,$referencia)
-    {
-        $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>test Email</title><style> 
-      img {
-        border: none;
-        -ms-interpolation-mode: bicubic;
-        max-width: 100%; 
-      }
-      body {
-        background-color: #f6f6f6;
-        font-family: sans-serif;
-        -webkit-font-smoothing: antialiased;
-        font-size: 14px;
-        line-height: 1.4;
-        margin: 0;
-        padding: 0;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%; 
-      }
-      table {
-        border-collapse: separate;
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
-        width: 100%; }
-        table td {
-          font-family: sans-serif;
-          font-size: 14px;
-          vertical-align: top; 
-      }
-      .body {
-        background-color: #f6f6f6;
-        width: 100%; 
-      }
-      .container {
-        display: block;
-        margin: 0 auto !important;
-        /* makes it centered */
-        max-width: 580px;
-        padding: 10px;
-        width: 580px; 
-      }
-      .content {
-        box-sizing: border-box;
-        display: block;
-        margin: 0 auto;
-        max-width: 580px;
-        padding: 10px; 
-      }
-      .main {
-        background: #ffffff;
-        border-radius: 3px;
-        width: 100%; 
-      }
-
-      .wrapper {
-        box-sizing: border-box;
-        padding: 20px; 
-      }
-
-      .content-block {
-        padding-bottom: 10px;
-        padding-top: 10px;
-      }
-
-      .footer {
-        clear: both;
-        margin-top: 10px;
-        text-align: center;
-        width: 100%; 
-      }
-        .footer td,
-        .footer p,
-        .footer span,
-        .footer a {
-          color: #999999;
-          font-size: 12px;
-          text-align: center; 
-      }
-      h1,
-      h2,
-      h3,
-      h4 {
-        color: #000000;
-        font-family: sans-serif;
-        font-weight: 400;
-        line-height: 1.4;
-        margin: 0;
-        margin-bottom: 30px; 
-      }
-
-      h1 {
-        font-size: 35px;
-        font-weight: 300;
-        text-align: center;
-        text-transform: capitalize; 
-      }
-
-      p,
-      ul,
-      ol {
-        font-family: sans-serif;
-        font-size: 14px;
-        font-weight: normal;
-        margin: 0;
-        margin-bottom: 15px; 
-      }
-        p li,
-        ul li,
-        ol li {
-          list-style-position: inside;
-          margin-left: 5px; 
-      }
-
-      a {
-        color: #3498db;
-        text-decoration: underline; 
-      }
-      .btn {
-        box-sizing: border-box;
-        width: 100%; }
-        .btn > tbody > tr > td {
-          padding-bottom: 15px; }
-        .btn table {
-          width: auto; 
-      }
-        .btn table td {
-          background-color: #ffffff;
-          border-radius: 5px;
-          text-align: center; 
-      }
-        .btn a {
-          background-color: #ffffff;
-          border: solid 1px #3498db;
-          border-radius: 5px;
-          box-sizing: border-box;
-          color: #3498db;
-          cursor: pointer;
-          display: inline-block;
-          font-size: 14px;
-          font-weight: bold;
-          margin: 0;
-          padding: 12px 25px;
-          text-decoration: none;
-          text-transform: capitalize; 
-      }
-      .btn-primary table td {
-        background-color: #3498db; 
-      }
-
-      .btn-primary a {
-        background-color: #3498db;
-        border-color: #3498db;
-        color: #ffffff; 
-      }
-      .last {
-        margin-bottom: 0; 
-      }
-
-      .first {
-        margin-top: 0; 
-      }
-
-      .align-center {
-        text-align: center; 
-      }
-
-      .align-right {
-        text-align: right; 
-      }
-
-      .align-left {
-        text-align: left; 
-      }
-
-      .clear {
-        clear: both; 
-      }
-
-      .mt0 {
-        margin-top: 0; 
-      }
-
-      .mb0 {
-        margin-bottom: 0; 
-      }
-
-      .preheader {
-        color: transparent;
-        display: none;
-        height: 0;
-        max-height: 0;
-        max-width: 0;
-        opacity: 0;
-        overflow: hidden;
-        mso-hide: all;
-        visibility: hidden;
-        width: 0; 
-      }
-
-      .powered-by a {
-        text-decoration: none; 
-      }
-
-      hr {
-        border: 0;
-        border-bottom: 1px solid #f6f6f6;
-        margin: 20px 0; 
-      }
-      @media only screen and (max-width: 620px) {
-        table[class=body] h1 {
-          font-size: 28px !important;
-          margin-bottom: 10px !important; 
+    public function findPartidasWhere(Request $request)
+    {    
+        $response=array();   
+        $responsePartidas = array();
+        $id_user=$request->id_user;
+        $accesoPartidas=$this->servaccesopartidasdb->findWhere(['usuario'=>$id_user]);
+         foreach($accesoPartidas as $ii)
+        {
+            $responsePartidas []= array(
+                $ii->partida
+            );
         }
-        table[class=body] p,
-        table[class=body] ul,
-        table[class=body] ol,
-        table[class=body] td,
-        table[class=body] span,
-        table[class=body] a {
-          font-size: 16px !important; 
+        //log::info($responsePartidas);
+        $info = $this->servpartidasdb->findWhereNotIn('id_partida',$responsePartidas);
+        foreach($info as $i)
+        {
+            $response []= array(
+               "id" => $i->id_partida,
+                "nombre" => $i->descripcion,
+            );
         }
-        table[class=body] .wrapper,
-        table[class=body] .article {
-          padding: 10px !important; 
-        }
-        table[class=body] .content {
-          padding: 0 !important; 
-        }
-        table[class=body] .container {
-          padding: 0 !important;
-          width: 100% !important; 
-        }
-        table[class=body] .main {
-          border-left-width: 0 !important;
-          border-radius: 0 !important;
-          border-right-width: 0 !important; 
-        }
-        table[class=body] .btn table {
-          width: 100% !important; 
-        }
-        table[class=body] .btn a {
-          width: 100% !important; 
-        }
-        table[class=body] .img-responsive {
-          height: auto !important;
-          max-width: 100% !important;
-          width: auto !important; 
-        }
-      }
-      @media all {
-        .ExternalClass {
-          width: 100%; 
-        }
-        .ExternalClass,
-        .ExternalClass p,
-        .ExternalClass span,
-        .ExternalClass font,
-        .ExternalClass td,
-        .ExternalClass div {
-          line-height: 100%; 
-        }
-        .apple-link a {
-          color: inherit !important;
-          font-family: inherit !important;
-          font-size: inherit !important;
-          font-weight: inherit !important;
-          line-height: inherit !important;
-          text-decoration: none !important; 
-        }
-        #MessageViewBody a {
-          color: inherit;
-          text-decoration: none;
-          font-size: inherit;
-          font-family: inherit;
-          font-weight: inherit;
-          line-height: inherit;
-        }
-        .btn-primary table td:hover {
-          background-color: #34495e !important; 
-        }
-        .btn-primary a:hover {
-          background-color: #34495e !important;
-          border-color: #34495e !important; 
-        } 
-      }
-    </style>
-  </head>
-  <body class="">  
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
-      <tr>
-        <td>&nbsp;</td>
-        <td class="container">
-          <div class="content">
-            <table role="pre<sentation" class="main">
-              <tr>
-                <td class="wrapper">
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td>
-                        <p>Referencia:</p>
-                        <p>'.$referencia.'</p>
-                        <br><br>
-                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
-                          <tbody>
-                            <tr>
-                              <td align="left">
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                  <tbody >
-                                    <tr> </td>
-                                      <td whidth="100%" align="center"> <a href="'.$url.'" target="_blank">Ver Recibo</a> </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-            <div class="footer">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr><td class="content-block"><span class="apple-link">Emial Prueba</span></td></tr><tr> </tr></table></div></div></td><td>&nbsp;</td></tr></table></body></html>
-    ';
-    return $email;
+
+        return json_encode($response);
+        
     }
+    public function findPartidasWhereUser(Request $request)
+    {    
+        $response=array();
+        $id_user=$request->id_user;
+        $accesoPartidas=$this->servaccesopartidasdb->findWhere(['usuario'=>$id_user]);
+         foreach($accesoPartidas as $ii)
+        {
+            $info = $this->servpartidasdb->findWhere(['id_partida'=>$ii->partida]);
+            foreach($info as $i)
+            {
+                $response []= array(
+                "id" => $i->id_partida,
+                "nombre" => $i->descripcion,
+                );
+            }
+        }
+        return json_encode($response);        
+    }
+    public function insertPartidasUser(Request $request)
+    {    
+        $checkedsAll =json_decode($request->checkedsAll);        
+        $id_user=$request->id_user;     
+        $contador=0;
+        
+        try{
+            foreach($checkedsAll as $i) 
+            {             
+                //log::info($i);
+                $info2 = $this->servaccesopartidasdb->create(['usuario'=>$id_user,'partida'=>$i]);
+                $contador=$contador+1;
+            }       
 
+        }
+        catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+           $contador=0;            
+        }
+        return $contador;
+
+    }
+    public function deletePartidasUser(Request $request)
+    {    
+        $checkedsAll =json_decode($request->checkedsAll);        
+        $id_user=$request->id_user;     
+        $contador=0;
+        
+        try{
+            foreach($checkedsAll as $i) 
+            {             
+                //log::info($i);
+                $info2 = $this->servaccesopartidasdb->deleteWhere(['usuario'=>$id_user,'partida'=>$i]);
+                $contador=$contador+1;
+            }       
+
+        }
+        catch( \Exception $e ){
+            Log::info('Error Method limitereferencia: '.$e->getMessage());
+           $contador=0;            
+        }
+        return $contador;
+
+    }
+    public function altapartidas(Request $request)
+    {
+        return view('controlacceso/altapartidas');
+    }
+    public function insertPartidasServicios(Request $request)
+    {
+        $idpartida=$request->idpartida;
+        $idservicio=$request->idservicio;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{  
+        $findpartida=$this->servpartidasdb->findWhere(['id_partida'=>$idpartida]);
+            if($findpartida->count()==0)
+            {
+            $insertpartidas=$this->servpartidasdb->create(['id_servicio'=>$idservicio,'id_partida'=>$idpartida,'descripcion'=>$descripcion]);
+            $response = "true";
+            }else{
+                $response = "false";
+            }
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasInsert: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+
+    }
+    public function partidasFindAllServicios()
+    {   
+        $response= array();
+        $servicio;
+        $partidasfind=$this->servpartidasdb->all();
+        foreach ($partidasfind as $part) {
+            $serviciofind=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$part->id_servicio]);
+            foreach ($serviciofind as $serv) {
+                $servicio=$serv->Tipo_Descripcion;
+            }
+            $response []= array(
+                'id_partida' => $part->id_partida, 
+                'id_servicio' => $part->id_servicio, 
+                'servicio' => $servicio, 
+                'descripcion' => $part->descripcion 
+
+            );
+        }
+        return json_encode($response);
+    }
+    public function serviciosPartidasFindWhere(Request $request)
+    {
+        $response= array();
+        $idpartida=$request->idpartida;
+         $findpartida=$this->servpartidasdb->findWhere(['id_partida'=>$idpartida]);
+         foreach ($findpartida as $part) {
+            $response []= array(
+                'id_partida' => $part->id_partida, 
+                'id_servicio' => $part->id_servicio,
+                'descripcion' => $part->descripcion 
+
+            );
+         }
+         return json_encode($response);
+    }
+    public  function serviciosPartidasUpdate(Request $request)
+    {
+        $idpartida=$request->idpartida;
+        $idservicio=$request->idservicio;
+        $descripcion=$request->descripcion;
+        $response = "false";
+        try{ 
+
+        $updatepartidas=$this->servpartidasdb->updatePartida(['id_servicio'=>$idservicio,'descripcion'=>$descripcion],['id_partida'=>$idpartida]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasUpdate: '.$e->getMessage());
+            $response = "false";
+        }
+       return $response;
+    }
+    public function serviciosPartidasDeleted(Request $request)
+    {
+         $idpartida=$request->idpartida;
+         $response = "false";
+        try{   
+        $deletedpartidas=$this->servpartidasdb->deleteWhere(['id_partida'=>$idpartida]);
+         $response = "true";
+        } catch( \Exception $e ){
+            Log::info('Error Method partidasDeleted: '.$e->getMessage());
+        $response = "false";
+        }
+       return $response;
+    }
 
 }
