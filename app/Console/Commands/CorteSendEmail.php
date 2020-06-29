@@ -174,7 +174,7 @@ class CorteSendEmail extends Command
         //$this->actualizaduplicados();
        //$this->enviacorreo('2019-10-18');
        //$this->gArchivo_Generico_prueba();
-        //$this->insertapr();
+       //$this->actualizaStatus();
     }
     
     public function BuscarFechas()
@@ -257,7 +257,7 @@ class CorteSendEmail extends Command
             $this->gArchivo_Retenedora_Servicios($path,$fecha,$banco_id,$cuenta,$alias); 
             $this->gArchivo_Juegos_Apuestas($path,$fecha,$banco_id,$cuenta,$alias); */
             $this->gArchivo_Generico_Oper($path2,$path,$fecha,$banco_id,$cuenta,$alias);
-            $this->gArchivo_Generico($path2,$path,$fecha,$banco_id,$cuenta,$alias);
+            //$this->gArchivo_Generico($path2,$path,$fecha,$banco_id,$cuenta,$alias);
 
             $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'banco_id'=>$banco_id,'cuenta_banco'=>$cuenta,'cuenta_alias'=>$alias]);
             if($findCorte->count()==0)
@@ -1165,15 +1165,8 @@ class CorteSendEmail extends Command
         $path=storage_path('app/');
         
         $cadena='';
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
-            for ($i=100; $i < 151; $i++) { 
-               array_push($Servicios ,$i );
-            }
-            for ($i=401; $i < 440; $i++) { 
-                array_push($Servicios ,$i );
-            }
        $referencia='';
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-10');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-19');
          //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
         #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
         
@@ -1194,11 +1187,8 @@ class CorteSendEmail extends Command
                 {   
 
                     $id_tipo_servicio=$t->id_tipo_servicio;
-                    $existe=true;                            
-                    foreach ($Servicios as $serv){
-                        if((string)$serv==(string)$concilia->tipo_servicio)
-                        {$existe=true;}
-                    }
+                    $existe=true;                   
+                    
                     if($existe)
                     {   
                         
@@ -1258,6 +1248,19 @@ class CorteSendEmail extends Command
         $findTransaccion=$this->oper_transaccionesdb->findWhere(['entidad'=>'5']);
         foreach ($findTransaccion as $i ) {
             $insert=$this->pr->create(['origen'=>'11','referencia'=>$i->referencia,'transaccion_id'=>$i->id_transaccion_motor,'day'=>$fecha->format('d'),'month'=>$fecha->format('m'),'year'=>$fecha->format('Y'),'monto'=>$i->importe_transaccion,'status'=>'p','filename'=>'','banco_id'=>'4','mensaje'=>'','cuenta_banco'=>'4057565186','cuenta_alias'=>'4','fecha_ejecucion'=>$fechaIn,'tipo_servicio'=>'0']);
+        }
+
+    }
+    private function actualizaStatus()
+    {   
+
+        $findTransaccion=$this->pr->findWhere(['fecha_ejecucion'=>'2020-06-19','origen'=>'11']);
+        log::info($findTransaccion->count());
+        foreach ($findTransaccion as $i ) {
+            $fecha=Carbon::parse($i->year . '-' . $i->month . '-' . $i->day)->format('Y-m-d');           
+           
+            $updateT=$this->oper_transaccionesdb->updateTransStatus(['estatus'=>'0','fecha_pago'=>$fecha],['referencia'=>$i->referencia]);
+        
         }
 
     }

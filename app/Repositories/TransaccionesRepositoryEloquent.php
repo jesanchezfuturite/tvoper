@@ -111,6 +111,17 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
         }       
 
     }
+    public function updateTransStatus($estatus,$referencia)
+    {
+        try{
+
+            return Transacciones::where( $referencia )->update($estatus);    
+        
+         }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@updateTransacciones] Error ' . $e->getMessage());
+        }       
+
+    }
     
     
 }

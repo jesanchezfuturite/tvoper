@@ -235,6 +235,10 @@ class Conciliacion extends Command
                     {
                         $condition = 2;
                     }
+                    if(strcmp($startFrom,"S")==0)
+                    {
+                        $condition = 2;
+                    }
                     if(strcmp($startFrom,"1") == 0)
                     {
                         $condition = 3;
@@ -320,6 +324,7 @@ class Conciliacion extends Command
                     $line   = fgets($fo);
                     if(
                         strcmp(substr($line, 0,1), "D") == 0 || // condicion afirmeVentanilla
+                        strcmp(substr($line, 0,1), "S") == 0 || // condicion scotiabank 
                         strcmp(substr($line, 0,1), "1") == 0 // condicion banamexVentanilla
                     )
                     {
