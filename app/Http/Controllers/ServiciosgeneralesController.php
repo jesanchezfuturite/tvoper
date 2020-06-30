@@ -236,7 +236,7 @@ class ServiciosgeneralesController extends Controller
     	//log::info($fecha_retencion);
     	//$entidad='1';
     	//$clave='JBSUoiuYrLNoxcx6hkUB6OUtaTVnxdyQkmosQcSQ';
-        log::info($entidad." ".$clave);
+        //log::info($entidad." ".$clave);
     	$token=$this->wsToken($entidad,$clave);
     	$datos_solicitante= array(
     		'nombre' =>'' , 
@@ -306,7 +306,7 @@ class ServiciosgeneralesController extends Controller
         //log::info($json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://motorgenlqa.nl.gob.mx:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -341,7 +341,7 @@ class ServiciosgeneralesController extends Controller
 		$token='';
 		try {
         $parameters=['entidad'=>$entidad,'clave'=>$clave];
-		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://motorgenlqa.nl.gob.mx:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
@@ -532,7 +532,7 @@ class ServiciosgeneralesController extends Controller
        	$json=json_encode($request_json);
     	try {
         $parameters=['json'=>$json];
-		$server = new \SoapClient('http://localhost:9399/AltaReferencia.asmx?WSDL',[
+		$server = new \SoapClient('http://motorgenlqa.nl.gob.mx:8080/WsGobNL/AltaReferencia.asmx?WSDL',[
             'encoding' => 'UTF-8',
             'verifypeer'=>false,
             'trace' => true
