@@ -286,11 +286,13 @@ class Operaciontransacciones extends Command
 
         #$egob = $this->tr->updateStatusInArray($this->valid);
         // actualizar con los registros que se procesaron correctamente
-        Log::info('[Conciliacion:OperTransacciones] @udpdateTransactionsAsProcessed - Actualizar operacion');
-
+        //log::info($this->valid);
         try{
 
             $oper = $this->pr->updateStatusPerReferenceTo($this->valid,"p");
+            $updateoper = $this->tr->updateStatusReferenceStatus60($this->valid);
+            $updateoper2 = $this->tr->updateStatusReferenceStatus65($this->valid);
+
         }catch( \Exception $e ){
             dd($e->getMessage());
         }

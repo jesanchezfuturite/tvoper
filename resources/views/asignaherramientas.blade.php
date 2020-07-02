@@ -31,7 +31,7 @@ Configuración <small> Asignación de Herramientas</small>
             
             <div class="form-group">
                 
-                <select id="users_select" class="form-control">
+                <select id="users_select" class="select2me form-control">
                     <option value="0"> ----- </option>
                     @foreach($users as $user)
                         <option value='{{$user->email}}'>{{$user->name}} - ({{$user->email}})</option>
@@ -42,8 +42,8 @@ Configuración <small> Asignación de Herramientas</small>
             <hr>
             <h4>Nivel principal</h4>
             <div class="row">
-                <div class="col-md-3">
-                    <select id="principal_level" class="form-control">
+                <div class=" col-md-3">
+                    <select id="principal_level" class="select2me form-control" onchange="changePrincipal_level()">
                         
                     </select>
                 </div>
@@ -108,13 +108,13 @@ Configuración <small> Asignación de Herramientas</small>
 <input type="hidden" id="third_level" name="third_level" value="{{ $third_level }}" >
 <input type="hidden" id="saved_tools" name="saved_tools" value="0" >
 
-<div class="row">
+<!--<div class="row">
     <div class="col-md-12">
         <button class="btn blue" type="submit">
             Guardar
         </button>
     </div>
-</div>
+</div>-->
 @endsection
 
 @section('scripts')
@@ -151,76 +151,46 @@ Configuración <small> Asignación de Herramientas</small>
         Validates if which tools has assigned the profile to show in the correct selectbox
     */
 
-    $("#principal_level").change( function (){
+    function changePrincipal_level()
+    {
 
         var user = $("#users_select").val();
-
+        var first = $("#principal_level").val();
+        var second = $.parseJSON($("#second_level").val());
+        var saved = $.parseJSON($("#saved_tools").val());
         if(user == 0)
-        {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
+        {    Command: toastr.warning("Por favor selecciona un Usuario!!", "Notifications")         
+    //$("#principal_level").val("0").change();
+            
             return false;   
         }
-
-
-        var first = $("#principal_level").val();
-
-        /* reads the second level and loads the childs in multiple selector */
-        var second = $.parseJSON($("#second_level").val());
-
-        /* reads the saved_tools hidden field */
-        var saved = $.parseJSON($("#saved_tools").val());
-        
+        //console.log(saved);
         var objList = [];
         i = {};
         i ["title"] = '-----';
         i ["id"] = 0;
-        objList.push(i);
-
         $.each(second, function (i, item){
-            
             if(item.id_father == first)
             {   
-                if(saved.length == 0)
-                {
-                    i = {};
-                    i ["title"] = item.title;
-                    i ["id"] = item.id;
-                    objList.push(i);
-                }else{
-
-                    $.each(saved, function (j,sv){
-
-                        if(item.id != sv.id)
-                        {
-                            i = {};
-                            i ["title"] = item.title;
-                            i ["id"] = item.id;
-                            objList.push(i);        
-                        }
-                    });
-                }
-                
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                objList.push(i);                
             }
         });
-
         /* fill the list */
         $('#secondary_level').empty();
         $.each(objList,function(i, item){
-
            $('#secondary_level').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             })); 
-
         });
-
         var listAdded = [];
-
         i = {};
         i ["title"] = '-----';
         i ["id"] = 0;
         listAdded.push(i);
-
         /* we update the values in secondary_level_added with the values saved in */
         $.each(saved, function (i,item){
             if(item.id_father == first)
@@ -231,19 +201,17 @@ Configuración <small> Asignación de Herramientas</small>
                 listAdded.push(i);
             }
         });
-
         /* fill the list added */
         $('#secondary_level_added').empty();
         $.each(listAdded,function(i, item){
-
            $('#secondary_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             })); 
-
         });
-        //changesSecond_added();
-    });
+        $('#thirdy_level_added').empty();
+        $('#thirdy_level').empty();
+    }
 
     /* 
         This function has been actived when: clicks in green button
@@ -256,66 +224,60 @@ Configuración <small> Asignación de Herramientas</small>
     */ 
     $("#addSecond").click( function(){
         var selected = $("#secondary_level").val();
-
+        var first = $("#principal_level").val();
         var user = $("#users_select").val();
-
-        if(user == 0)
-        {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
-            return false;   
-        }
-
-
         if(selected == 0 || selected == null)
         {
-            alert("Por favor selecciona una herramienta.");
+            Command: toastr.warning("Por favor selecciona una herramienta!!", "Notifications")
             return false;
         }
-
-        /* remove element from secondary and update the multi select */
         var second = $.parseJSON($("#second_level").val());
+        var newsaved=[];
         var aux = {};
         $.each(second, function (i, item){
             
             if(item.id == selected)
             {   
                 aux = item;
-                delete second[i];
             }
-
         });
-
-        var filtered = second.filter(function (el) {
-            return el != null;
-        });
-
-        i = {};
-        i ["title"] = '-----';
-        i ["id"] = 0;
-        filtered.push(i);
-
-        $('#secondary_level').empty();
-        /*refresh select box data*/
-        $.each(filtered, function (i, item) { 
-            $('#secondary_level').append($('<option>', { 
-                value: item.id,
-                text : item.title 
-            }));
-        });
-
-        /* add the new element first reads the hidden field */
+        var existe='false';
         var saved = $.parseJSON($("#saved_tools").val());
+        $.each(saved, function (i, item){
+            
+            if(item.id == selected)
+            {   
+                existe='true';
+            }
+            newsaved.push(item);
+        });
+        if(existe=='true')
+        {
+            Command: toastr.warning("Ya Existe!!", "Notifications")
+            return false;
+        }else{
+            newsaved.push(aux);
+            document.getElementById('saved_tools').value=JSON.stringify(newsaved); 
+        }
+       var listAdded=[];
+        $.each(newsaved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+       // console.log(JSON.stringify(newsaved));
+        $('#secondary_level_added').empty();
+        $.each(listAdded,function(i, item){
 
-        /*push aux to saved*/
-        saved.push(aux);
-
-        $("#secondary_level_added").empty();
-
-        $.each(saved, function (i, item) { 
-            $('#secondary_level_added').append($('<option>', { 
+           $('#secondary_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
-            }));
+            })); 
+
         });
         /* save with ajax in DB */
         $.ajax({
@@ -339,10 +301,9 @@ Configuración <small> Asignación de Herramientas</small>
     $("#users_select").change(function (){
 
         var user = $("#users_select").val();
-
+        $("#principal_level").val("0").change();
         if(user == 0)
-        {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
+        {             
             return false;   
         }
 
@@ -380,24 +341,14 @@ Configuración <small> Asignación de Herramientas</small>
 
         var user = $("#users_select").val();
         var first = $("#principal_level").val();
-
-        if(user == 0)
-        {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
-            return false;   
-        }
-
         var added = $("#secondary_level_added").val();
-
-        if(added == 0)
+        if(added == 0 || added == null)
         {
-            alert("Debes seleccionar una herramienta para eliminarla del perfil !");
+             Command: toastr.warning("Debes seleccionar una herramienta para eliminarla del perfil !", "Notifications")
             return false;   
         }
-
         var saved = $.parseJSON($("#saved_tools").val());
         /* deletes in select */
-
         $.each(saved, function (i, item){
             
             if(item.id == added)
@@ -406,19 +357,29 @@ Configuración <small> Asignación de Herramientas</small>
             }
 
         });
-
         var filtered = saved.filter(function (el) {
             return el != null;
         });
+        var listAdded=[];
+        $.each(filtered, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        document.getElementById('saved_tools').value=JSON.stringify(filtered);
         $('#secondary_level_added').empty();
+        //console.log(JSON.stringify(filtered));
         /*refresh select box data*/
-        $.each(filtered, function (i, item) { 
+        $.each(listAdded, function (i, item) { 
             $('#secondary_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             }));
         });
-
         /* update DB */
         // loads the menu that users has saved in DB
         $.ajax({
@@ -434,49 +395,6 @@ Configuración <small> Asignación de Herramientas</small>
             }
 
         });
-        /* adding the second level array */
-        var second = $.parseJSON($("#second_level").val());
-        var objList = [];
-        i = {};
-        i ["title"] = '-----';
-        i ["id"] = 0;
-        objList.push(i);
-        $.each(second, function (i, item){
-            
-            if(item.id_father == first)
-            {
-                if(filtered.length == 0)
-                {
-                    i = {};
-                    i ["title"] = item.title;
-                    i ["id"] = item.id;
-                    objList.push(i);   
-                }else{
-                    $.each(filtered, function (j,sv){
-
-                        if(item.id != sv.id)
-                        {
-                            i = {};
-                            i ["title"] = item.title;
-                            i ["id"] = item.id;
-                            objList.push(i);        
-                        }
-                    });
-                }
-            }
-        });
-
-        /* fill the list */
-        $('#secondary_level').empty();
-        $.each(objList,function(i, item){
-
-           $('#secondary_level').append($('<option>', { 
-                value: item.id,
-                text : item.title 
-            })); 
-
-        });
-
 
     });
     function changesSecond()
@@ -514,7 +432,6 @@ Configuración <small> Asignación de Herramientas</small>
             }));
         });
         changesSecond_added();
-
     }
     function changesSecond_added(){
 
@@ -522,71 +439,43 @@ Configuración <small> Asignación de Herramientas</small>
 
         if(user == 0)
         {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
+            Command: toastr.warning("Debes seleccionar un usuario para agregar una herramienta", "Notifications")
             return false;   
         }
-
-
         var first = $("#secondary_level").val();
-
         /* reads the second level and loads the childs in multiple selector */
         //var second = $.parseJSON($("#second_level").val());
         var third=$.parseJSON($("#third_level").val());
-
         /* reads the saved_tools hidden field */
-        var saved = $.parseJSON($("#saved_tools").val());
-        
+        var saved = $.parseJSON($("#saved_tools").val());        
         var objList = [];
         i = {};
         i ["title"] = '-----';
         i ["id"] = 0;
         objList.push(i);
-
-        $.each(third, function (i, item){
-            
+        $.each(third, function (i, item){            
             if(item.id_father == first)
             {   
-                if(saved.length == 0)
-                {
-                    i = {};
+                  i = {};
                     i ["title"] = item.title;
                     i ["id"] = item.id;
-                    objList.push(i);
-                }else{
-
-                    $.each(saved, function (j,sv){
-
-                        if(item.id != sv.id)
-                        {
-                            i = {};
-                            i ["title"] = item.title;
-                            i ["id"] = item.id;
-                            objList.push(i);        
-                        }
-                    });
-                }
-                
+                    objList.push(i);                
             }
         });
-
         /* fill the list */
         $('#thirdy_level').empty();
         $.each(objList,function(i, item){
-
            $('#thirdy_level').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             })); 
-
         });
 
         var listAdded = [];
-
         i = {};
         i ["title"] = '-----';
         i ["id"] = 0;
         listAdded.push(i);
-
         /* we update the values in secondary_level_added with the values saved in */
         $.each(saved, function (i,item){
             if(item.id_father == first)
@@ -601,73 +490,66 @@ Configuración <small> Asignación de Herramientas</small>
         /* fill the list added */
         $('#thirdy_level_added').empty();
         $.each(listAdded,function(i, item){
-
            $('#thirdy_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             })); 
-
         });
 
     };
     $("#addThird").click( function(){
+       var first = $("#secondary_level").val();
         var selected = $("#thirdy_level").val();
-
         var user = $("#users_select").val();
-
         if(user == 0)
         {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
+            Command: toastr.warning("Debes seleccionar un usuario para agregar una herramienta", "Notifications")
             return false;   
         }
-
-
         if(selected == 0 || selected == null)
         {
-            alert("Por favor selecciona una herramienta.");
+            Command: toastr.warning("Por favor selecciona una herramienta.", "Notifications")
             return false;
         }
-
         /* remove element from secondary and update the multi select */
         var third = $.parseJSON($("#third_level").val());
+        var newsaved = [];
         var aux = {};
-        $.each(third, function (i, item){
+        $.each(third, function (i, item){            
+            if(item.id == selected)
+            { aux = item;}
+
+        });
+        var existe='false';
+        var saved = $.parseJSON($("#saved_tools").val());
+        $.each(saved, function (i, item){
             
             if(item.id == selected)
             {   
-                aux = item;
-                delete third[i];
+                existe='true';
             }
-
+            newsaved.push(item);
         });
-
-        var filtered = third.filter(function (el) {
-            return el != null;
+        if(existe=='true')
+        {
+            Command: toastr.warning("Ya Existe!!", "Notifications")
+            return false;
+        }else{
+            newsaved.push(aux);
+            document.getElementById('saved_tools').value=JSON.stringify(newsaved); 
+        }
+       var listAdded=[];
+        $.each(newsaved, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
         });
-
-        i = {};
-        i ["title"] = '-----';
-        i ["id"] = 0;
-        filtered.push(i);
-
-        $('#thirdy_level').empty();
-        /*refresh select box data*/
-        $.each(filtered, function (i, item) { 
-            $('#thirdy_level').append($('<option>', { 
-                value: item.id,
-                text : item.title 
-            }));
-        });
-
-        /* add the new element first reads the hidden field */
-        var saved = $.parseJSON($("#saved_tools").val());
-
-        /*push aux to saved*/
-        saved.push(aux);
-
         $("#thirdy_level_added").empty();
-
-        $.each(saved, function (i, item) { 
+        $.each(listAdded, function (i, item) { 
             $('#thirdy_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
@@ -690,18 +572,11 @@ Configuración <small> Asignación de Herramientas</small>
 
         var user = $("#users_select").val();
         var first = $("#secondary_level").val();
-
-        if(user == 0)
-        {
-            alert("Debes seleccionar un usuario para agregar una herramienta");
-            return false;   
-        }
-
         var added = $("#thirdy_level_added").val();
 
-        if(added == 0)
+        if(added == 0 || added == null)
         {
-            alert("Debes seleccionar una herramienta para eliminarla del perfil !");
+            Command: toastr.warning("Debes seleccionar una herramienta para eliminarla del perfil !", "Notifications")
             return false;   
         }
 
@@ -720,15 +595,26 @@ Configuración <small> Asignación de Herramientas</small>
         var filtered = saved.filter(function (el) {
             return el != null;
         });
+        var listAdded=[];
+        $.each(filtered, function (i,item){
+            if(item.id_father == first)
+            {
+                i = {};
+                i ["title"] = item.title;
+                i ["id"] = item.id;
+                listAdded.push(i);
+            }
+        });
+        document.getElementById('saved_tools').value=JSON.stringify(filtered);
         $('#thirdy_level_added').empty();
+        //console.log(JSON.stringify(filtered));
         /*refresh select box data*/
-        $.each(filtered, function (i, item) { 
+        $.each(listAdded, function (i, item) { 
             $('#thirdy_level_added').append($('<option>', { 
                 value: item.id,
                 text : item.title 
             }));
         });
-        console.log(added);
         /* update DB */
         // loads the menu that users has saved in DB
         $.ajax({
@@ -744,50 +630,6 @@ Configuración <small> Asignación de Herramientas</small>
             }
 
         });
-        /* adding the second level array */
-        var second = $.parseJSON($("#third_level").val());
-        var objList = [];
-        i = {};
-        i ["title"] = '-----';
-        i ["id"] = 0;
-        objList.push(i);
-        $.each(second, function (i, item){
-            
-            if(item.id_father == first)
-            {
-                if(filtered.length == 0)
-                {
-                    i = {};
-                    i ["title"] = item.title;
-                    i ["id"] = item.id;
-                    objList.push(i);   
-                }else{
-                    $.each(filtered, function (j,sv){
-
-                        if(item.id != sv.id)
-                        {
-                            i = {};
-                            i ["title"] = item.title;
-                            i ["id"] = item.id;
-                            objList.push(i);        
-                        }
-                    });
-                }
-            }
-        });
-
-        /* fill the list */
-        $('#thirdy_level').empty();
-        $.each(objList,function(i, item){
-
-           $('#thirdy_level').append($('<option>', { 
-                value: item.id,
-                text : item.title 
-            })); 
-
-        });
-
-
     });
 </script>
 @endsection
