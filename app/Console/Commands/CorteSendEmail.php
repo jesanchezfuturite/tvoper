@@ -222,23 +222,18 @@ class CorteSendEmail extends Command
         $existe=false;
         
         //,3,13,14,15,23,24,25
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
+        /*$Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
                 for ($i=100; $i < 151; $i++) { 
                     array_push($Servicios ,$i );
                 }
                 for ($i=401; $i < 600; $i++) { 
                     array_push($Servicios ,$i );
-                }
+                }*/
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
         if($conciliacion<>null){
-            foreach ($conciliacion as $y) {
-            foreach ($Servicios as $serv){
-                if((string)$serv==(string)$y->tipo_servicio)
-                    {$existe=true;}
-                }
-            }
+            $existe=true;
         }
-        $findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
+        /*$findConciliacion=$this->pr->Generico_Corte($fecha,$banco_id,$cuenta,$alias);
         if($findConciliacion<>null){
             foreach ($findConciliacion as $y) {
             foreach ($Servicios as $serv){
@@ -246,7 +241,7 @@ class CorteSendEmail extends Command
                     {$existe=true;}
                 }
             }
-        }
+        }*/
         if($existe)
         {       
             /*$this->gArchivo_Nomina($path,$fecha,$banco_id,$cuenta,$alias);            
@@ -351,22 +346,22 @@ class CorteSendEmail extends Command
         $Directorio=$path."/".$nombreArchivo;
         $Directorio2=$path2."/".$nombreArchivo2;
         $cadena='';
-        $Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
+        /*$Servicios= array(1,30,20,21,27,28,29,156,157,158,160,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400);       
             for ($i=100; $i < 151; $i++) { 
                array_push($Servicios ,$i );
             }
             for ($i=401; $i < 600; $i++) { 
                 array_push($Servicios ,$i );
-            }
-        $existe=false;
+            }*/
+        $existe=true;
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
         if($conciliacion<>null){     
         foreach ($conciliacion as $concilia) {          
-            $existe=false;                            
+            /*$existe=false;                            
             foreach ($Servicios as $serv){
                 if((string)$serv==(string)$concilia->tipo_servicio)
                     {$existe=true;}
-                }                  
+                } */                 
                 if($existe)
                 {
                     $findDuplicado=$this->cortearchivosdb->findWhere(['referencia'=>$concilia->referencia,'transaccion_id'=>$concilia->id_detalle_tramite,'banco_id'=>$concilia->banco_id,'cuenta_banco'=>$concilia->cuenta_banco,'cuenta_alias'=>$concilia->cuenta_alias,'tipo_servicio'=>$concilia->tipo_servicio,'fecha_ejecucion'=>$concilia->fecha_ejecucion]);
