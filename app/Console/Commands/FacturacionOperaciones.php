@@ -238,15 +238,19 @@ class FacturacionOperaciones extends Command
                             {
 
                                 foreach($info_detalles as $id)
-                                {
+                                {   
                                     $dt []= array(
+                                        'id_detalle_tramite'    => $id->id_detalle_tramite,
                                         'concepto'              => $id->concepto,
                                         'importe_concepto'      => $id->importe_concepto,
                                         'partida'               => $id->partida,
                                         'id_transaccion_motor'  => $id->id_transaccion_motor,
-                                        'id_tramite_motor'      => $id->id_tramite_motor
+                                        'id_tramite_motor'      => $id->id_tramite_motor,
+                                        'importe_descuento'     => $id->importe_descuento,
+                                        'id_descuento'          => $id->id_descuento
                                     );
                                 }
+                                Log::info($info_detalles);
                             }
 
                             $tramites []= array(
@@ -323,18 +327,19 @@ class FacturacionOperaciones extends Command
                 $detalles = $t["detalles"];
                 $info = $t["info"];
                 $i_detalles = array();
-                
+
                 foreach($detalles as $d)
-                {
+                {   
                     $i_detalles = array(
                         "folio_unico"       => $transaccion['referencia'],
                         "cantidad"          => "1",
                         "unidad"            => "SERVICIO",      
                         "concepto"          => utf8_decode($d["concepto"]),
-                        "precio_unitario"   => $d["importe_concepto"],
-                        "importe"           => $d["importe_concepto"],
+                        "precio_unitario"   => !empty((int)$d["id_descuento"]) ? ($d["importe_concepto"]*-1) : $d["importe_concepto"],
+                        "importe"           => !empty((int)$d["id_descuento"]) ? ($d["importe_concepto"]*-1) : $d["importe_concepto"],
                         "partida"           => $d["partida"],
                         "fecha_registro"    => date("Y-m-d H:i:s"),
+                        "num_identificacion"=> !empty((int)$d["id_descuento"]) ? $d["id_descuento"]."|"."0" : $d["id_detalle_tramite"]."|"."0",
                         "id_oper"           => $d["id_transaccion_motor"],
                         "id_mov"            => $d["id_tramite_motor"],
                         "st_gen"            => "0",
@@ -346,7 +351,7 @@ class FacturacionOperaciones extends Command
                     {
                         // insertar los registros de detalles de la transaccion
                         // $o = $this->detalle->insert( $i_detalles );               
-                        $has = $this->detalle->findWhere( [ 'id_oper' => $d["id_transaccion_motor"] ,  'id_mov' => $d["id_tramite_motor"] ] );
+                        $has = $this->detalle->findWhere( [ 'id_oper' => $d["id_tramite_motor"] ,  'id_mov' => $d["id_detalle_tramite"] ] );
 
                         if ($has->count() == 0) {
                             /* no existe */
