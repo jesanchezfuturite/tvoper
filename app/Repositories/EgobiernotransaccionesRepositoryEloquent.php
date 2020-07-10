@@ -68,16 +68,11 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
        { 
                
             $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
-            
-            ->join('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
-            ->join('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
-            ->join('operacion.oper_familiaentidad','operacion.oper_familiaentidad.entidad_id','=','operacion.oper_entidad.id')
-            ->join('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
             ->join('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
             ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
             ->join('folios','folios.idTrans', '=','transacciones.idTrans')
             ->join('status','status.Status','=','transacciones.Status')
-            ->select('transacciones.idTrans','status.Descripcion as status','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_familia.nombre as familia')
+            ->select('transacciones.idTrans','status.Descripcion as status','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado')
             ->groupBy('transacciones.idTrans')
             ->get();
             return $data;
@@ -93,15 +88,11 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
        {                
             $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
              ->join('status','transacciones.Status','=','status.Status')
-            ->join('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
-            ->join('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
-            ->join('operacion.oper_familiaentidad','operacion.oper_familiaentidad.entidad_id','=','operacion.oper_entidad.id')
-            ->join('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
             ->join('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
             ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
             ->join('folios','folios.idTrans', '=','transacciones.idTrans')
             ->where('folios.CartKey1',$rfc)
-            ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_familia.nombre as familia')
+            ->select('status.Descripcion as status','transacciones.idTrans','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado')
             ->groupBy('transacciones.idTrans')
             ->get();
             
@@ -110,6 +101,22 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
             Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransaccionesWhere]  ERROR al actualizar las transacciones como procesadas en egobierno");
             return false;
         }
+    }
+    public function consultaContr($fechaIn,$fechaF)
+    {
+        try{
+        $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
+        ->join('transacciones_gpm','transacciones_gpm.id_transaccion','=','transacciones.idTrans')
+        ->join('tramites','tramites.id_transaccion','=','transacciones.idTrans')
+        ->join('tipo_servicios','tipo_servicios.Tipo_Code','=','tramites.id_tipo_tramite')
+        ->select('transacciones_gpm.id_transaccion', 'transacciones_gpm.id_transaccion_entidad', 'transacciones.TotalTramite','transacciones.fechaTramite', 'transacciones.horaTramite', 'tramites.id_tramite','tramites.id_tramite_entidad', 'tramites.importe_tramite','tipo_servicios.Tipo_Descripcion')
+        //->groupBy('contribuyente.transacciones_gpm.id_transaccion')
+        ->get();
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@Egobiernotransacciones] Error ' . $e->getMessage());
+        }      
     }
 
     

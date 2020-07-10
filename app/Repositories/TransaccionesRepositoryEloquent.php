@@ -111,6 +111,39 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
         }       
 
     }
+    public function updateTransStatus($estatus)
+    {
+        try{
+
+            return Transacciones::where( $referencia )->update($estatus);    
+        
+         }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@updateTransacciones] Error ' . $e->getMessage());
+        }       
+
+    }
+    public function updateStatusReferenceStatus60($info)
+    {
+        try
+        {
+            $data = Transacciones::whereIn('referencia', $info)->where('estatus','=','60')->update( ['estatus' => '0']);
+
+        }catch( \Exception $e ){
+            Log::info("[updateStatusReferenceStatus60 @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas");
+            return false;
+        }
+    }
+    public function updateStatusReferenceStatus65($info)
+    {
+        try
+        {
+            $data = Transacciones::whereIn('referencia', $info)->where('estatus','=','65')->update( ['estatus' => '0']);
+
+        }catch( \Exception $e ){
+            Log::info("[updateStatusReferenceStatus65 @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas");
+            return false;
+        }
+    }
     
     
 }

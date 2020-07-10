@@ -408,7 +408,7 @@
         </div>
     </div>
 </div>
-<input type="text" name="consulta" id="consulta" hidden="true">
+<input type="text" name="consulta" id="consulta" hidden="true" value="0">
 <input type="text" name="link" id="link" hidden="true">
 @endsection
 @section('scripts')
@@ -432,6 +432,7 @@
     {
         var ejercicio_=$("#ejercicio option:selected").text();
         var partida_=$("#identretenciones").val();
+        var concepto_=$("#identretenciones option:selected").text();
         var folio_=$("#folio").val();        
         var modejecucion_=$("#modejecucion").val();
         var refcontrato_=$("#refcontrato").val();
@@ -447,7 +448,7 @@
         $.ajax({
            method: "post",           
            url: "{{ url('/generate') }}",
-           data: {ejercicio_fiscal:ejercicio_,partida:partida_,folio:folio_,modalidad_ejecucion:modejecucion_,referencia_contrato:refcontrato_,numero_factura:nofactura_,estimacion_pagada:estpagada_,fecha_retencion:fecharet_,monto_retencion:montoret_,razon_social:razonsoc_,dependencia_normativa:depnomativa_,dependencia_ejecutora:depejecutora_,email:correo,_token:'{{ csrf_token() }}'}  })
+           data: {ejercicio_fiscal:ejercicio_,partida:partida_,concepto:concepto_,folio:folio_,modalidad_ejecucion:modejecucion_,referencia_contrato:refcontrato_,numero_factura:nofactura_,estimacion_pagada:estpagada_,fecha_retencion:fecharet_,monto_retencion:montoret_,razon_social:razonsoc_,dependencia_normativa:depnomativa_,dependencia_ejecutora:depejecutora_,email:correo,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);
             if(response=='[]'){
@@ -647,11 +648,10 @@
     }
     function partidas()
     {
-        var user_="andrea.gonzalez";
         $.ajax({
            method: "post",           
            url: "{{ url('/acceso-partidas') }}",
-           data: {user:user_,_token:'{{ csrf_token() }}'}  })
+           data: {user:'{{ Auth::user()->id }}',_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);
           var Resp=$.parseJSON(response);

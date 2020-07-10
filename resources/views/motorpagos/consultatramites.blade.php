@@ -27,77 +27,69 @@
     <strong>Info:</strong> Consulta de las Transacciones, filtro por ESTATUS y TIPO SERVICIO, Busqueda por rango de fechas y RFC.
 </div>
 <div class="row">
-    <div hidden="true">
-        <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
-        <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a>
-    </div>
-    <div id="blockui_sample_3_1_element">
-        <!-- BEGIN SAMPLE TABLE PORTLET-->
-        <div class="portlet box blue">
-            <div class="portlet-title" >
-                <div class="caption" id="headerTabla">
-                  <div id="borraheader"> <a class=" popovers" data-container="body" data-trigger="hover" data-placement="top" data-content="Esta consulta te permite buscar y cambiar el estatus de una transacciónDismissable " data-original-title="Tip"> <i class="fa fa-cogs" style="color:white;">&nbsp; </i></a>Transacciones</div>
-                  </div>
-                  <div class="tools" hidden="true">
-              </div>             
-            </div>
-            <div class="portlet-body" >
-                <div class="row">
-                    <div class="col-md-12 text-right"> 
-                        <span class="help-block">Selecciona una Opcion. </span>
-                        <div class="md-radio-inline">
-                            <div class="md-radio">
-                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()" checked>
-                                    <label for="radio6">
-                                    <span></span>
-                                    <span class="check"></span>
-                                    <span class="box"></span>
-                                         Hace 1 Dia (Últimas 24hrs). </label>
-                                </div>|
-                                <div class="md-radio">
-                                    <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="tresdias" onclick="radiobuttons()">
-                                    <label for="radio7">
-                                    <span></span>
-                                    <span class="check"></span>
-                                    <span class="box"></span>
-                                        Hace 3 Días.</label>
-                                </div>|
-                                <div class="md-radio">
-                                    <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="avanzado" onclick="radiobuttons()">
-                                    <label for="radio8">
-                                    <span></span>
-                                    <span class="check"></span>
-                                    <span class="box"></span>
-                                    Avanzado (Rango Fechas). </label>
-                                </div>
-                        </div>                                                                 
-                    </div>                   
-                </div>                           
-                
-                 <div class="row">           
-                    <div class="col-md-12">
-                        <div class="tabbable-line boxless tabbable-reversed">
-                            <ul class="nav nav-tabs">
-                                <li class="active">
-                                    <a href="#tab_0" data-toggle="tab">Operaciones</a>
-                                </li>
-                                <li>
-                                    <a href="#tab_1" data-toggle="tab">Egobierno</a>
-                                </li>                            
-                            </ul>
-                            <div class="tab-content">
-                               
-                                <div class="tab-pane active" id="tab_0"> 
-                                <div class="row">
-                                    <div id="addTimerpicker"></div>
-                                </div> 
-                                    <div class="portlet box blue" id="addTable_1">
+        <div class="portlet-body" >
+                           
+            <div class="row">           
+                <div class="col-md-12">
+                    <div class="tabbable-line boxless tabbable-reversed">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab_0" data-toggle="tab">Operaciones</a>
+                            </li>
+                            <li>
+                                <a href="#tab_1" data-toggle="tab">Egobierno</a>
+                            </li>                            
+                            <li>
+                                <a href="#tab_2" data-toggle="tab">Contribuyente</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">                               
+                            <div class="tab-pane active" id="tab_0"> 
+                                 <span class="help-block"></span> 
+                                
+                                    <div class="portlet box blue">
                                         <div class="portlet-title">
                                             <div class="caption">
                                                 <i class="fa fa-gift"></i>Operaciones
                                             </div>
                                         </div> 
-                                    <div class="portlet-body" id="table_1">
+                                <div class="portlet-body">
+                                <div class="row">
+                                    <div class="col-md-12 text-right"> 
+                                    <span class="help-block">Selecciona una Opcion. </span>
+                                        <div class="md-radio-inline">
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()">
+                                                <label for="radio6">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 1 Dia (Últimas 24hrs). </label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="tresdias" onclick="radiobuttons()">
+                                                <label for="radio7">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 3 Días.</label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="avanzado" onclick="radiobuttons()">
+                                                <label for="radio8">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Avanzado (Rango Fechas). </label>
+                                            </div>
+                                        </div>                                                                 
+                                    </div>                   
+                                </div>
+                                <div class="row">
+                                    <div id="addTimerpicker"></div>
+                                </div> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span> 
+                                    <div id="addTable_1">
+                                    <div  id="table_1">
                                     <div class="table-scrollable"> 
                                         <table class="table table-hover table-responsive" id="sample_3">
                                             <thead>
@@ -139,18 +131,55 @@
                                     </div>
                                     </div>
                                 </div>
+                                </div>
+                            </div>            
                             </div>            
                             <div class="tab-pane" id="tab_1">
-                                <div class="row">
-                                    <div id="addTimerpicker2"></div>
-                                </div>
-                                <div class="portlet box blue" id="addTable_2">
+                                
+                                <div class="portlet box blue">
                                     <div class="portlet-title">
                                         <div class="caption">
                                             <i class="fa fa-gift"></i>Egobierno
                                         </div>
                                     </div>
-                                    <div class="portlet-body" id="table_2">
+                                    <div class="portlet-body" >
+                                    <div class="row">
+                                    <div class="col-md-12 text-right"> 
+                                    <span class="help-block">Selecciona una Opcion. </span>
+                                        <div class="md-radio-inline">
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio3" name="radio3" class="md-radiobtn" value="undia" onclick="radiobuttons2()">
+                                                <label for="radio3">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 1 Dia (Últimas 24hrs). </label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio4" name="radio3" class="md-radiobtn" value="tresdias" onclick="radiobuttons2()">
+                                                <label for="radio4">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 3 Días.</label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="avanzado" onclick="radiobuttons2()">
+                                                <label for="radio5">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Avanzado (Rango Fechas). </label>
+                                            </div>
+                                        </div>                                                                 
+                                    </div>                   
+                                </div>
+                                        <div class="row">
+                                            <div id="addTimerpicker2"></div>
+                                        </div>
+                                         <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                        <div id="addTable_2">
+                                        <div id="table_2">
                                         <div class="table-scrollable">
                                         <table class="table table-hover table-responsive" id="sample_2">
                                             <thead>
@@ -192,6 +221,75 @@
                                         </table>                            
                                     </div>
                                     </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tab_2">
+                                
+                                <div class="portlet box blue">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-gift"></i>Contribuyente
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body" >
+                                        <div class="row"><span class='help-block'>&nbsp;</span> 
+                                        <div id="addTimerpicker3">
+                                        <div class='col-md-4'>
+                                            
+                                            <div class='form-group'>   
+                                                <label for='fecha'>Seleccionar Rango de Fechas. </label>
+                                                <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                                                    <span class='input-group-addon'>De</span>
+                                                    <input type='text' class='form-control' name='from' id='fechainicio3' autocomplete='off'>
+                                                    <span class='input-group-addon'>A</span>
+                                                    <input type='text' class='form-control' name='to'id='fechafin3' autocomplete='off'>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='col-md-1'>
+                                            <span class='help-block'>&nbsp; </span>
+                                            <div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasGpm()'>Buscar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                         <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveContr()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                        <div id="addTable_3">
+                                        <div id="table_3">
+                                        <div class="table-scrollable">
+                                        <table class="table table-hover table-responsive" id="sample_4">
+                                            <thead>
+                                                <tr> 
+
+                                                    <th>Id Transacción</th>
+                                                    <th>Id Transaccion Entidad</th>
+                                                    <th>Fecha Transacición</th>
+                                                    <th>Importe Transacción</th>
+                                                    <th>Nombre Tramite</th>
+                                                    <th>Id Tramite Egob</th>
+                                                    <th>Id Tramite Entidad</th>
+                                                    <th>Importe Tramite</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody> 
+                                                <tr>
+                                                    <td><span class="help-block">No Found</span></td>           
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>                                   
+                                            </tbody>
+                                            
+                                        </table>                            
+                                    </div>
+                                    </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +299,7 @@
         </div>
     </div>       
 </div>
-</div>
+
 
 <div class="modal fade bs-modal-lg" id="large" tabindex="-1" data-backdrop="static" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog modal-lg">
@@ -230,6 +328,7 @@
 </div>
 <input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
 <input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
+<input type="text" name="jsonCode3" id="jsonCode3" hidden="true">
                             
 @endsection
 
@@ -246,8 +345,15 @@
 
 <script  type="text/javascript">
     jQuery(document).ready(function() {
-        UIBlockUI.init();  
-        consultaInicial();
+        UIBlockUI.init(); 
+        cargatabla1();
+        cargatabla2(); 
+        cargatabla3(); 
+        ComponentsPickers.init(); 
+       /* fechaIn = "1";
+        fechaF = "1";
+        consultaEgob(fechaIn,fechaF);
+        consultaOper(fechaIn,fechaF);*/ 
         
     });
     
@@ -274,53 +380,85 @@
                                 
         }
     }
+    function consultaRangoFechasGpm()
+    {
+       fechaIn=$("#fechainicio3").val();
+        fechaF=$("#fechafin3").val();
+        if(fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin, Requerido!", "Notifications")            
+        }else{
+            consultaGpm(fechaIn,fechaF);                    
+        }
+    }
     function radiobuttons()
     {
         var option = document.querySelector('input[name = radio2]:checked').value;        
         if(option=="avanzado")
         {
             timpicker();
-            timpicker2();
         }else{
             $("#addTimerpicker div").remove();
+            if(option=="undia")
+            {
+                fechaIn = "1";
+                fechaF = "1";
+                consultaOper(fechaIn,fechaF);
+            }
+            else{
+                fechaIn = "3";
+                fechaF = "3";
+                consultaOper(fechaIn,fechaF);
+            }
+        }
+    }
+    function radiobuttons2()
+    {
+        var option = document.querySelector('input[name = radio3]:checked').value;        
+        if(option=="avanzado")
+        {
+            timpicker2();
+        }else{
             $("#addTimerpicker2 div").remove();
             if(option=="undia")
             {
-                consultaInicial();
+                fechaIn = "1";
+                fechaF = "1";
+                consultaEgob(fechaIn,fechaF);
+            }else{
+                fechaIn = "3";
+                fechaF = "3";
+                consultaEgob(fechaIn,fechaF);
             }
-            else{consulta3dias();}
         }
     }
     function timpicker()
     {
         $("#addTimerpicker div").remove();
-         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasOper()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
+         $("#addTimerpicker").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasOper()'>Buscar</button></div></div>");         
          ComponentsPickers.init();   
     }
      function timpicker2()
     {
         $("#addTimerpicker2 div").remove();
-         $("#addTimerpicker2").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio2' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin2' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc2' id='rfc2' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgob()'>Buscar</button></div><span class='help-block'>&nbsp;</span></div>");         
+         $("#addTimerpicker2").append("<div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio2' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin2' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas</label> <input type='text' placeholder='Ingrese RFC o Placas' autocomplete='off' name='rfc2' id='rfc2' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscar' onclick='consultaRangoFechasEgob()'>Buscar</button></div></div>");         
          ComponentsPickers.init();   
     }
     function consultaInicial()
     {        
         fechaIn = "1";
         fechaF = "1";
-        consultaEgob(fechaIn,fechaF);
         consultaOper(fechaIn,fechaF);       
     }
     function consulta3dias()
     {
         fechaIn = "3";
         fechaF = "3";
-        consultaEgob(fechaIn,fechaF);
         consultaOper(fechaIn,fechaF);  
     }
     
     function consultaEgob(fechaIn,fechaF) {
         Addtable2();
-        document.getElementById("blockui_sample_3_1").click();
+        //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc2").val();
         $.ajax({
         method: "post",            
@@ -332,25 +470,6 @@
         var Resp=$.parseJSON(response);
         var color='';
         var label='';
-        if(response=="[]")
-        {
-            $("#sample_2 tbody").append("<tr>"
-                +"<td>No Found</td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"</tr>");
-            
-        }else{
         $.each(Resp, function(i, item) { 
             if(item.estatus=='p')
             {
@@ -384,13 +503,11 @@
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
             });
-           
-        }
         cargatabla2();
-        document.getElementById("blockui_sample_3_1_1").click();
+        //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
-            document.getElementById("blockui_sample_3_1_1").click();
+            //document.getElementById("blockui_sample_3_1_1").click();
             $("#sample_2 tbody tr").remove(); 
             $("#sample_2 tbody").append("<tr>"
                 +"<td>No Found</td>"
@@ -399,15 +516,20 @@
         
       
     }
+    function Addtable3()
+    {
+        $("#table_3").remove();
+        $("#addTable_3").append("<div id='table_3'><div class='table-scrollable'>     <table class='table table-hover table-responsive' id='sample_4'><thead><tr> <th>Id Transacción</th>  <th>Id Transaccion Entidad</th> <th>Fecha Transacición</th> <th>Importe Transacción</th> <th>Nombre Tramite</th>  <th>Id Tramite Egob</th><th>Id Tramite Entidad</th><th>Importe Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
+    }
     function Addtable2()
     {
         $("#table_2").remove();
-        $("#addTable_2").append("<div class='portlet-body' id='table_2'><div class='table-scrollable'>                    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_2").append("<div id='table_2'><div class='table-scrollable'>          <table class='table table-hover table-responsive' id='sample_2'><thead>  <tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th><th>Declarado</th> "+"<th>Familia</th>"+"<th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td> <strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td></tr> </tbody></table></div> </div>");
     }
      function Addtable1()
     {
         $("#table_1").remove();
-        $("#addTable_1").append("<div class='portlet-body' id='table_1'><div class='table-scrollable'>    <span class='help-block'>&nbsp; </span> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>        <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td>Espere Cargando...</td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_1").append("<div id='table_1'><div class='table-scrollable'>   <table class='table table-hover table-responsive' id='sample_3'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function cargatabla1()
     {    var inin=0;
@@ -474,10 +596,40 @@
         } );
          
     }
+    function cargatabla3()
+    {
+         var inin=0;
+        $('#sample_4 thead tr').clone(true).appendTo( '#sample_4 thead' );       
+        $('#sample_4').DataTable( {
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select class="select2me form-control"><option value=""></option></select>')
+                    .appendTo( $("#sample_4 thead tr:eq(0) th:eq('"+inin+"')").empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+                 inin=inin+1;                
+            } );
+            }
+        } );
+         
+    }
     
     function consultaOper(fechaIn,fechaF) {
         Addtable1();
-        document.getElementById("blockui_sample_3_1").click();
+        //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc").val();
         $.ajax({
         method: "post",            
@@ -489,24 +641,7 @@
         var Resp=$.parseJSON(response);
          var color='';
         var label='';
-        if(response=="[]")
-        {
-            $("#sample_3 tbody").append("<tr>"
-                +"<td>No Found</td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"<td></td>"
-                +"</tr>");
-        }else{
+        
         $.each(Resp, function(i, item) { 
                if(item.estatus=='p')
             {
@@ -540,19 +675,54 @@
                 +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
             });        
-        }
        cargatabla1();
-        document.getElementById("blockui_sample_3_1_1").click();
+        //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
-            document.getElementById("blockui_sample_3_1_1").click();
+            //document.getElementById("blockui_sample_3_1_1").click();
             $("#sample_3 tbody tr").remove(); 
             $("#sample_3 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
     }
-
+    function consultaGpm(fechaIn,fechaF) {
+        Addtable3();
+        //document.getElementById("blockui_sample_3_1").click();
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-gpm') }}",
+        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        document.getElementById('jsonCode3').value=response;        
+        $("#sample_4 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+         var color='';
+        var label='';
+        
+        $.each(Resp, function(i, item) { 
+             $("#sample_4 tbody").append("<tr>"
+                +"<td>"+item.id_transaccion+"</td>"
+                +"<td>"+item.id_transaccion_entidad+"</td>"
+                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
+                +"<td>"+item.TotalTramite+"</td>"
+                +"<td>"+item.Tipo_Descripcion+"</td>"
+                +"<td>"+item.id_tramite+"</td>"
+                +"<td>"+item.id_tramite_entidad+"</td>"
+                +"<td>"+item.importe_tramite+"</td>"
+                +"</tr>");
+            });        
+       cargatabla3();
+        //document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            //document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_4 tbody tr").remove(); 
+            $("#sample_4 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
+    }
     function saveEgob()
     {
         var JSONData=$("#jsonCode2").val();
@@ -563,6 +733,12 @@
     {
         var JSONData=$("#jsonCode1").val();
         var ReportTitle='Transacciones_Operaciones';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+     function saveContr()
+    {
+        var JSONData=$("#jsonCode3").val();
+        var ReportTitle='Transacciones_Contribuyente';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
 
@@ -592,7 +768,7 @@
         alert("Invalid data");
         return;
     }
-    document.getElementById("blockui_sample_3_1_1").click();
+    //document.getElementById("blockui_sample_3_1_1").click();
 
     var fileName = fecha;
     fileName += ReportTitle.replace(/ /g,"_");

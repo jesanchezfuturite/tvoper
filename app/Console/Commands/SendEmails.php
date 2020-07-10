@@ -198,6 +198,7 @@ class SendEmails extends Command
         $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(10);             
         foreach ($findTransaccion as $k) {
              $correo='';
+             $enviar='404';
              $nombre='';
              $url='';
              $url_recibo='';
@@ -207,8 +208,13 @@ class SendEmails extends Command
              $id=$k->id_transaccion_motor;
              $findtramite=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findtramite as $e) {
-                $correo=$e->email;
-                $nombre=$e->nombre.' '.$e->apellido_paterno;
+              $correo=$e->email;
+              if($e->nombre=='')
+              {
+                $nombre=$e->razon_social; 
+              }else{
+                  $nombre=$e->nombre.' '.$e->apellido_paterno;
+              }
                 $id_servicio=$e->id_tipo_servicio;
              //$correo='juancarlos96.15.02@gmail.com';             
             }
@@ -256,12 +262,20 @@ class SendEmails extends Command
                   File::delete($pdf);
                 }        
                 File::put($pdf,$output);
-                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf,$banco_txt,$footer_txt);
+                
+                $valida_=filter_var($correo, FILTER_VALIDATE_EMAIL);
+                //log::info($valida_);
+                if($valida_!==false)
+                  {
+                    $enviar=$this->SendEmial($id,$nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf,$banco_txt,$footer_txt);
+                  }else{
+                    //$updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]);
+                  }
                 if (File::exists($pdf))
                 {
                   File::delete($pdf);
                 } 
-                if($enviar==202)
+                if($enviar=='202')
                 {
                   $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'1'],['id_transaccion_motor'=>$id]);
                 }else{
@@ -284,6 +298,7 @@ class SendEmails extends Command
         //log::info($findTransaccion);       
         foreach ($findTransaccion as $k) {
              $correo='';
+             $enviar='404';
              $nombre='';
              $url='';
              $url_recibo='';
@@ -296,7 +311,13 @@ class SendEmails extends Command
             foreach ($findtramite as $e) {
              $correo=$e->email;
               //$correo='juancarlos96.15.02@gmail.com';
-             $nombre=$e->nombre.' '.$e->apellido_paterno;
+             if($e->nombre=='')
+              {
+                $nombre=$e->razon_social; 
+              }else{
+                  $nombre=$e->nombre.' '.$e->apellido_paterno;
+              }
+             
              $id_servicio=$e->id_tipo_servicio;
             }
             $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
@@ -341,12 +362,19 @@ class SendEmails extends Command
                   File::delete($pdf);
                 }        
                 File::put($pdf,$output);
-                $enviar=$this->SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt,$pdf,$banco_txt,$footer_txt);
+                $valida_= filter_var($correo, FILTER_VALIDATE_EMAIL);
+                //log::info($valida_);
+                if($valida_!==false)
+                  {
+                    $enviar=$this->SendEmial($id,$nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha,$servicio_txt,$pdf,$banco_txt,$footer_txt);
+                  }else{
+                    $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]);
+                  }
                 if (File::exists($pdf))
                 {
                   File::delete($pdf);
                 } 
-              if($enviar==202)
+              if($enviar=='202')
               {
                 $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'1'],['id_transaccion_motor'=>$id]);
               }else{
@@ -357,12 +385,12 @@ class SendEmails extends Command
         }
 
     }
-    public function SendEmial($nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf,$banco,$footer)
+    public function SendEmial($folio,$nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf,$banco,$footer)
     {
          $mail = new PHPMailer(true);
          $response='202';
          $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$banco,$footer);
-        //log::info($message);
+        //log::info($correo.'  '.$nombre.' '.$folio);
         try{
             
             $mail->isSMTP();
@@ -372,7 +400,7 @@ class SendEmails extends Command
             $mail->Host = 'smtp.gmail.com';
             $mail->Port = '587'; 
             $mail->Username = 'noreply.tesoreria@gmail.com';
-            $mail->Password = 'T3s0rer14';
+            $mail->Password = 'T3s0rer142020';
             $mail->setFrom('noreply.tesoreria@gmail.com', 'noreply tesoreria'); 
             $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
             $mail->MsgHTML($message);

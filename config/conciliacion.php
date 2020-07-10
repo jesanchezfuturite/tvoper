@@ -255,39 +255,73 @@ return array (
 				"startFrom"		=> 0, /* el archivo no tiene condiciones especiales o delimitadores */
 				"method"		=> 1
 			),
-		"scotiabankV"	=>
-			array(
-				"extension"		=> "txt",
-				"lineExample"	=> "DMONTERREY, N.L001037000000000295700|010000000000121204020624141235|20190628||                                                                                                                                                                                                 20190628201906282019062820190628+00000000029570000100000000000   000000000295700112551063120351112035110000000000000001",
-				"positions"		=> array
-					(
-					"month"			=> [283,2],
-					"day" 			=> [285,2],
-					"year"			=> [279,4],
-					"amount"		=> [304,15], /* se divide entre 100*/
-					"id"			=> [49,8],  /* 8 posiciones a partir de 91 */ 
-					"referencia"	=> [37,30],
-					"origen"		=> [37,2],
-					),
-				"startFrom"		=> 'D', /* considerar los movimientos que inicien con la letra D (depositos) */
-				"method"		=> 1,
-			),
-		"telecomm"				=>
-			array(
-				"extension"	=> "txt",
-				"lineExample"	=> "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
-				"positions"		=> array
-					(
-					"month"			=> [2,2],
-					"day" 			=> [0,2],
-					"year"			=> [4,4],
-					"amount"		=> [46,10], /* se divide entre 100*/
-					"id"			=> [20,8], /* 8 posiciones a partir de 91 */ 
-					"referencia"	=> [8,30],
-					"origen"		=> [8,2],
-					),
-				"startFrom"		=> 0, /* el archivo no tiene condiciones especiales o delimitadores */
-				"method"		=> 1,
-			),
+		"scotiabank"  =>
+      		array(
+        		"extension"   => "txt",
+        		"lineExample" => "S2020052712160600000000000013580497          00000000017680000000000000001171268000000000000002114988228800000",
+        		"positions"   => array
+          			(
+          			"month"     => [5,2],
+          			"day"       => [7,2],
+          			"year"      => [1,4],
+          			"amount"    => [45,15], /* se divide entre 100*/
+          			"id"      => [20,15],  
+          			"referencia"  => [72,30],
+          			"origen"    => [72,2],
+          			),
+        			"startFrom"   => "S", /* considerar los movimientos que inicien con la letra S (depositos) */
+        			"method"    => 1,
+      			),
+    	"scotiabankV" =>
+      		array(
+        		"extension"   => "txt",
+       	 		"lineExample" => "DMONTERREY, N.L001037000000000295700|010000000000121204020624141235|20190628||                                                                                                                                                                                                 20190628201906282019062820190628+00000000029570000100000000000   000000000295700112551063120351112035110000000000000001",
+        		"positions"   => array
+          			(
+          			"month"     => [283,2],
+          			"day"       => [285,2],
+          			"year"      => [279,4],
+          			"amount"    => [304,15], /* se divide entre 100*/
+          			"id"      => [49,8],  /* 8 posiciones a partir de 91 */ 
+          			"referencia"  => [37,30],
+          			"origen"    => [37,2],
+          			),
+        		"startFrom"   => 'D', /* considerar los movimientos que inicien con la letra D (depositos) */
+        		"method"    => 1,
+      		),
+      	"telecomm"        =>
+      		array(
+        		"extension" => "txt",
+        		"lineExample" => "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
+        		"positions"   => array
+          		(
+          			"month"     => [2,2],
+          			"day"       => [0,2],
+          			"year"      => [4,4],
+          			"amount"    => [46,10], /* se divide entre 100*/
+          			"id"      => [20,8], /* 8 posiciones a partir de 91 */ 
+          			"referencia"  => [8,30],
+          			"origen"    => [8,2],
+          		),
+        		"startFrom"   => 0, /* el archivo no tiene condiciones especiales o delimitadores */
+        		"method"    => 1,
+      		),
+    	"netPay"        =>
+      		array(
+        		"extension" => "txt",
+        		"lineExample" => "000764776552937700000000000000GOBIERNO DEL ESTADO DE NL00110620201604480000008700168128VISAMASTERCARD0000000DebitoNORMAL01340000116000001800000085664152316158000000000000000000000000000000000000000000BBVA BANCOMER SAEGLOBAL120620200134000000000000000000013654477",
+        		"positions"   => array
+          			(
+          			"month"     => [59,2],
+          			"day"       => [57,2],
+          			"year"      => [61,4],
+          			"amount"    => [71,10], /* se divide entre 100*/
+          			"id"      => [254,8],
+          			"referencia"  => [127,30],
+          			"origen"    => [127,2],
+          		),
+        	"startFrom"   => 2, /* el archivo no tiene condiciones especiales o delimitadores */
+        	"method"    => 1,
+      	),
 	)
 );	

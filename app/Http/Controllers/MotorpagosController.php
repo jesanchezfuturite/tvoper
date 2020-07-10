@@ -2129,6 +2129,8 @@ return json_encode($response);
         $rfc=$request->rfc;
         $response=array(); 
         $fechaActual=Carbon::now();
+
+
         if((int)$fecha_inicio==(int)"1")
         {
             
@@ -2162,11 +2164,20 @@ return json_encode($response);
         }
         if($transaccion<>null){
           foreach ($transaccion as $trans) {
+            $familia='';
+            $entidad='';
             $findDeclarado=null;
             $declarado_anio="Aplica";
             $declarado_mes= "";
             $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->idTrans]);
             $estatus_C="";
+            $findEntidad=$this->entidadtramitedb->consultaEntidadTramite($trans->tiposervicio_id);
+           if($findEntidad<>null){
+                foreach ($findEntidad as $f) {
+                    $familia=$f->familia;
+                    $entidad=$f->entidad;
+                }
+           } 
             
             if($findConcilia->count()==0)
                 {
@@ -2268,9 +2279,9 @@ return json_encode($response);
                     $response []= array(
                         'Estatus'=>$trans->status,
                         'RFC'=>$trans->rfc,
-                        'Transaccion'=>$trans->idTrans,
-                        'Familia'=>$trans->familia,
-                        'Entidad'=>$trans->entidad,
+                        'Transaccion'=>$trans->idTrans,                        
+                        'Familia'=>$familia,
+                        'Entidad'=>$entidad,
                         'Tramite'=>$trans->tiposervicio,
                         'Contribuyente'=>$trans->TitularTC,
                         'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
@@ -2355,6 +2366,32 @@ return json_encode($response);
                
             }
         }    
+        return json_encode($response);
+    }
+    public function consultaTransaccionesGpm(Request $request)
+    {      
+        $fecha_inicio=$request->fecha_inicio;
+        $fecha_fin=$request->fecha_fin;
+        $response=array();
+        //log::info($rfc);
+       
+         $transaccion=$this->transaccionesdb->consultaContr($fecha_inicio,$fecha_fin);
+        //log::info($transaccion);      
+        if($transaccion<>null){
+            foreach ($transaccion as $trans) {            
+                $response []= array(
+                    'id_transaccion'=>$trans->id_transaccion,
+                    'id_transaccion_entidad'=>$trans->id_transaccion_entidad,
+                    'TotalTramite'=>$trans->TotalTramite,
+                    'fechaTramite'=>$trans->fechaTramite,
+                    'horaTramite'=>$trans->horaTramite,
+                    'id_tramite'=>$trans->id_tramite,
+                    'id_tramite_entidad'=>$trans->id_tramite_entidad,
+                    'importe_tramite'=>$trans->importe_tramite,
+                    'Tipo_Descripcion'=>$trans->Tipo_Descripcion
+                ); 
+            }                   
+        }
         return json_encode($response);
     }
     public function updateConciliaBanco(Request $request)

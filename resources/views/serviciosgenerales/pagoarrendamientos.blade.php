@@ -425,11 +425,11 @@
     }
     function partidas()
     {
-        var user_="andrea.gonzalez";
+        
         $.ajax({
            method: "post",           
            url: "{{ url('/acceso-partidas') }}",
-           data: {user:user_,_token:'{{ csrf_token() }}'}  })
+           data: {user:'{{ Auth::user()->id }}',_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);
           var Resp=$.parseJSON(response);

@@ -610,7 +610,7 @@ class ConciliacionController extends Controller
         try{
 
             //$info = $this->pr->findWhereBetween('created_at',$between);
-            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('referencia')->get();
+            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('referencia','transaccion_id')->get();
 
             return $info;
                

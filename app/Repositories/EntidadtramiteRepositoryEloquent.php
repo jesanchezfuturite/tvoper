@@ -69,4 +69,24 @@ class EntidadtramiteRepositoryEloquent extends BaseRepository implements Entidad
             Log::info('[TramitesRepositoryEloquent@ConsultaRFC] Error ' . $e->getMessage());
         } 
     }
+     public function consultaEntidadTramite($id)
+    {
+        try
+       { 
+               
+            $data = Entidadtramite::where(['tipo_servicios_id'=>$id])            
+            
+            ->join('oper_entidad','oper_entidad.id', '=','oper_entidadtramite.entidad_id')
+            ->join('oper_familiaentidad','oper_familiaentidad.entidad_id', '=','oper_entidad.entidad_id')
+            ->join('oper_familia','oper_familia.id','=','oper_familiaentidad.familia_id')
+            ->select('oper_entidad.nombre as entidad','oper_familia.nombre as familia','')
+            ->groupBy('oper_entidadtramite.tipo_servicios_id')
+            ->get();
+            return $data;
+            //Log::info($data);
+        }catch( \Exception $e ){
+            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransacciones]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            return false;
+        }
+    }
 }

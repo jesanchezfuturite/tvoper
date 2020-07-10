@@ -151,6 +151,7 @@ Route::post('/pagotramite-find-all','MotorpagosController@findCuentasBancoAll');
 Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones');
 Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
+Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
 
 /************************ FAMILIA ***********************/
 Route::get('/familia','MotorpagosController@familia');
@@ -248,11 +249,20 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::post('/load-menu-user','ServiciosgeneralesController@loadUserMenu');
     Route::post('/update-menu-user','ServiciosgeneralesController@saveMenuUSer');
     Route::post('/deleted-menu-user','ServiciosgeneralesController@deleteElementMenuUser');
+    Route::post('/find-partidas-where','ServiciosgeneralesController@findPartidasWhere');
+    Route::post('/find-partidas-user','ServiciosgeneralesController@findPartidasWhereUser');
+    Route::post('/insert-partidas-user','ServiciosgeneralesController@insertPartidasUser');
+    Route::post('/delete-partidas-user','ServiciosgeneralesController@deletePartidasUser');
+    Route::get('/alta-partidas-servicios','ServiciosgeneralesController@altapartidas');
+    Route::get('/servicios-partidas-findall','ServiciosgeneralesController@partidasFindAllServicios');
+    Route::post('/servicios-partidas-insert','ServiciosgeneralesController@insertPartidasServicios');
+    Route::post('/servicios-partidas-find','ServiciosgeneralesController@serviciosPartidasFindWhere');
+    Route::post('/servicios-partidas-update','ServiciosgeneralesController@serviciosPartidasUpdate');
+    Route::post('/servicios-partidas-delete','ServiciosgeneralesController@serviciosPartidasDeleted');
+
+
 
 });
-/*********************************** PDF*****/
- Route::get('/pdf','ServiciosgeneralesController@GeneraPDF');
-
 /*/*******************************************************************************/
 
 Route::group(['middleware' => 'permissions'], function () {
