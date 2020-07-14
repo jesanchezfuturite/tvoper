@@ -355,6 +355,7 @@ class CorteSendEmail extends Command
             }*/
         $existe=true;
         $conciliacion=$this->pr->Generico_Corte_Oper($fecha,$banco_id,$cuenta,$alias);
+        //log::info($conciliacion);
         if($conciliacion<>null){     
         foreach ($conciliacion as $concilia) {          
             /*$existe=false;                            
@@ -365,6 +366,7 @@ class CorteSendEmail extends Command
                 if($existe)
                 {
                     $findDuplicado=$this->cortearchivosdb->findWhere(['referencia'=>$concilia->referencia,'transaccion_id'=>$concilia->id_detalle_tramite,'banco_id'=>$concilia->banco_id,'cuenta_banco'=>$concilia->cuenta_banco,'cuenta_alias'=>$concilia->cuenta_alias,'tipo_servicio'=>$concilia->tipo_servicio,'fecha_ejecucion'=>$concilia->fecha_ejecucion]);
+                    log::info($findDuplicado);
                     if($findDuplicado->count()==0)
                     {
                         
@@ -1158,68 +1160,30 @@ class CorteSendEmail extends Command
     {        
         $fecha=Carbon::now();      
         $path=storage_path('app/');
-        
+        $nombreArchivo=Carbon::parse('2020-07-07')->format('Ymd').'_Corte_Generico'.'.txt';
+        $Directorio=$path.$nombreArchivo;
         $cadena='';
        $referencia='';
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba2('2020-06-19');
-         //$findFechaEjec=$this->pr->ConsultaFechaEjecucion('2020-05-27 00:00:00','2020-05-27 23:59:59');
-        #$conciliacion2=$this->pr->Generico_Corte_Oper_prueba('2020-05-27');
-        
-        //log::info($Servicios);
-        if($conciliacion<>null)
-        {     
-            foreach ($conciliacion as $concilia) 
-            {   
-                $id_tipo_servicio='';
-                $id_transaccion_motor='';//$concilia->transaccion_id;
-                $referencia=$concilia->referencia;
-                $findTransaccion=$this->oper_transaccionesdb->findWhere(['referencia'=>$referencia]);
-                foreach ($findTransaccion as $tra) {
-                    $id_transaccion_motor=$tra->id_transaccion_motor;
-                }
-                $tramitesFind=$this->tramitedb->findWhere(['id_transaccion_motor'=>$id_transaccion_motor]);
-                foreach ($tramitesFind as $t) 
-                {   
+        //$conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha);
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba('2020-07-07');
+        //log::info($conciliacion);
 
-                    $id_tipo_servicio=$t->id_tipo_servicio;
-                    $existe=true;                   
+        if($conciliacion<>null){     
+        foreach ($conciliacion as $concilia) {  
+                        
+                        $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
                     
-                    if($existe)
-                    {   
-                        
-                        $cuentabanco='';
-                        $beneficiario;
-                        $alias='';
-                        $cuenta='';
-                        $concepto='';
-                        $partida='';
-                        $CartImporte='';
-                        
-                        //log::info($id_tipo_servicio);
-                        
-                        $findDetalleTramite=$this->tramite_detalledb->findWhere(['id_tramite_motor'=>$t->id_tramite_motor]);
-                        foreach ($findDetalleTramite as $det) {
-                            $partida=$det->partida;
-                            $concepto=$det->concepto;
-                            $CartImporte=$det->importe_concepto;
-
-                            //$nombreArchivo=$concilia->cuenta_alias.'_'.$concilia->cuenta_banco.'_Corte_Generico'.'.txt';
-                            $nombreArchivo=Carbon::parse($concilia->fecha_ejecucion)->format('Ymd').'_Corte_Generico'.'.txt';
-                            $Directorio=$path.$nombreArchivo;
-
-                            $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);                    
-                            $RowFechaDis=str_replace("Por Operacion", "", $concilia->fecha_ejecucion);
-                            //$fechaVerif=explode("-", $RowFechaDis);                                                     
-                            $RowFechaDis=str_pad(Carbon::parse($RowFechaDis)->format('Ymd'),8);
-                            $RowHoraDis=str_pad(Carbon::parse($RowFechaDis)->format('Hms'),6);                        
-                    
-                            $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
-                            $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
-                        $RowPartida=str_pad($partida,5,"0",STR_PAD_LEFT);
-                        $RowConsepto=str_pad(mb_convert_encoding(substr($concepto,0,120), "Windows-1252", "UTF-8"),120);
-                        $RowFolio=str_pad($concilia->transaccion_id,20,"0",STR_PAD_LEFT);
-                        $RowTotalpago=str_pad(str_replace(".","",$CartImporte) ,13,"0",STR_PAD_LEFT);
-                        $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                           
+                        $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
+                        $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);
+                        //fecha ejecucion ----fecha dispersion
+                        //day/month/year  ---- fecha pago            
+                        $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
+                        $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
+                        $RowPartida=str_pad($concilia->partida,5,"0",STR_PAD_LEFT);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->concepto,0,120), "Windows-1252", "UTF-8"),120);
+                        $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
+                        $RowTotalpago=str_pad(str_replace(".","",$concilia->importe_concepto) ,13,"0",STR_PAD_LEFT);
+                        $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                         $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
@@ -1229,10 +1193,6 @@ class CorteSendEmail extends Command
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
                        // $dataAnsi=iconv(mb_detect_encoding($cadena), 'Windows-1252', $cadena);
                         File::append($Directorio,$cadena."\r\n");
-                        }                    
-                    
-                    }
-                }
             }
         }
     }

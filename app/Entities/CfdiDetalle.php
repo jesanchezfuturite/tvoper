@@ -31,6 +31,7 @@ class CfdiDetalle extends Model implements Transformable
     	'importe',
     	'partida',
     	'fecha_registro',
+        'num_identificacion',
     	'id_oper',
     	'id_mov',
     	'st_gen',
