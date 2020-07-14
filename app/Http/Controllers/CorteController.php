@@ -154,6 +154,7 @@ class CorteController extends Controller
     {   
         $Directorio=array();
         $fecha= Carbon::parse($fecha);
+         $this->gArchivo_Generico_prueba($fecha);
         $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
         
         $response='false';
@@ -183,8 +184,6 @@ class CorteController extends Controller
         $mail = new PHPMailer(true);
          $message="Corte Fecha: ".$fecha->format('Y-m-d');
         try{
-           
-
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
             $mail->SMTPAuth =true;
@@ -213,17 +212,51 @@ class CorteController extends Controller
             $response='false';
         }
         return $response;
-        /*$subject ='Fecha de Corte '.$nombreArchivo->format('Y-m-d');
-        $data = [ 'link' => 'https' ];
-        $for = "juancarlos96.15.02@gmail.com";
-        Mail::send('email',$data, function($msj) use($subject,$for,$Archivos,$path){
-            $msj->from("juan.carlos.cruz.bautista@hotmail.com","Juan Carlos CB");
-            $msj->subject($subject);
-            $msj->to($for);
-            
-            
-        });*/
 
+    }
+    private function gArchivo_Generico_prueba($fecha_ejecucion)
+    {        
+           
+        $path1=storage_path('app/Cortes/'.$fecha_ejecucion->format('Y'));
+        $path2=$path1.'/'.$fecha_ejecucion->format('m');
+        $path3=$path2.'/'.$fecha_ejecucion->format('d');
+         if (!File::exists($path1))
+                {File::makeDirectory($path1);}
+        if (!File::exists($path2))
+                {File::makeDirectory($path2);}
+        if (!File::exists($path3))
+                {File::makeDirectory($path3);}
+        $nombreArchivo='/'.Carbon::parse($fecha_ejecucion)->format('Ymd').'_Corte_Generico'.'.txt';
+        $Directorio=$path3.$nombreArchivo;
+        if (File::exists($Directorio))
+        {
+            File::delete($Directorio);
+        }  
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha_ejecucion);
+        if($conciliacion<>null){     
+        foreach ($conciliacion as $concilia) {  
+                        
+                        $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
+                    
+                        $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
+                        $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);        
+                        $RowFechapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('Ymd'),8);
+                        $RowHorapago=str_pad(Carbon::parse($concilia->year . '-' . $concilia->month . '-' . $concilia->day)->format('hms'),6);
+                        $RowPartida=str_pad($concilia->partida,5,"0",STR_PAD_LEFT);
+                        $RowConsepto=str_pad(mb_convert_encoding(substr($concilia->concepto,0,120), "Windows-1252", "UTF-8"),120);
+                        $RowFolio=str_pad($concilia->Folio,20,"0",STR_PAD_LEFT);
+                        $RowTotalpago=str_pad(str_replace(".","",$concilia->importe_concepto) ,13,"0",STR_PAD_LEFT);
+                        $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
+                        $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
+                        $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT);//pendiente                                 
+                        $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
+                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
+                        $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
+                        $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
+                        File::append($Directorio,$cadena."\r\n");
+            }
+        }
     }
 
 }
