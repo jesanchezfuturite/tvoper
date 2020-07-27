@@ -223,11 +223,11 @@ class CorteController extends Controller
         $path3=$path2.'/'.$fecha_ejecucion->format('d');
 
          if (!File::exists($path1))
-                {File::makeDirectory($path1);}
+                {File::makeDirectory($path1, 0755, true);}
         if (!File::exists($path2))
-                {File::makeDirectory($path2);}
+                {File::makeDirectory($path2, 0755, true);}
         if (!File::exists($path3))
-                {File::makeDirectory($path3);}
+                {File::makeDirectory($path3, 0755, true);}
         $nombreArchivo='/'.Carbon::parse($fecha_ejecucion)->format('Ymd').'_Corte_Generico'.'.txt';
         $Directorio=$path3.$nombreArchivo;
         if (File::exists($Directorio))
@@ -235,7 +235,7 @@ class CorteController extends Controller
             File::delete($Directorio);
         }  
         $conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha_ejecucion); 
-        log::info($conciliacion);
+        //log::info($conciliacion);
         if($conciliacion<>null){     
         foreach ($conciliacion as $concilia) {  
                         
