@@ -203,6 +203,7 @@ class CorteController extends Controller
             $mail->addCC('concentracioningresos@gmail.com'); 
             $mail->addCC('cesar.maresg@hotmail.com');
             $mail->addCC('iylamg@gmail.com');
+            //$mail->addCC('juancarlos96.15.02@gmail.com');
             //$mail->addAddress('veronica.ramos@nuevoleon.gob.mx', 'Veronica Ramos'); 
             //$mail->addReplyTo('arturo.lopez@nuevoleon.gob.mx', 'Arturo Lopez'); 
             $mail->send();
@@ -220,6 +221,7 @@ class CorteController extends Controller
         $path1=storage_path('app/Cortes/'.$fecha_ejecucion->format('Y'));
         $path2=$path1.'/'.$fecha_ejecucion->format('m');
         $path3=$path2.'/'.$fecha_ejecucion->format('d');
+
          if (!File::exists($path1))
                 {File::makeDirectory($path1);}
         if (!File::exists($path2))
@@ -232,7 +234,8 @@ class CorteController extends Controller
         {
             File::delete($Directorio);
         }  
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha_ejecucion);
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha_ejecucion); 
+        log::info($conciliacion);
         if($conciliacion<>null){     
         foreach ($conciliacion as $concilia) {  
                         
@@ -250,7 +253,7 @@ class CorteController extends Controller
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                         $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT);//pendiente                                 
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
-                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowDatoAdicional2=str_pad($concilia->auxiliar_2,15,"0",STR_PAD_LEFT);//pendiente
                         $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                         $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
