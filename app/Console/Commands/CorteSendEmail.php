@@ -180,7 +180,7 @@ class CorteSendEmail extends Command
     public function BuscarFechas()
     {
         $fecha=Carbon::now();
-        //$fecha=Carbon::parse('2020-05-12');
+         //$fecha=Carbon::parse('2020-07-24');
         $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
         $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
         $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
@@ -322,7 +322,7 @@ class CorteSendEmail extends Command
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                         $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
-                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowDatoAdicional2=str_pad($concilia->auxiliar_2,15,"0",STR_PAD_LEFT);//pendiente
                         $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                         $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
@@ -1160,12 +1160,12 @@ class CorteSendEmail extends Command
     {        
         $fecha=Carbon::now();      
         $path=storage_path('app/');
-        $nombreArchivo=Carbon::parse('2020-07-07')->format('Ymd').'_Corte_Generico'.'.txt';
+        $nombreArchivo=Carbon::parse('2020-07-22')->format('Ymd').'_Corte_Generico'.'.txt';
         $Directorio=$path.$nombreArchivo;
         $cadena='';
        $referencia='';
         //$conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha);
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba('2020-07-07');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba('2020-07-22');
         //log::info($conciliacion);
 
         if($conciliacion<>null){     
@@ -1185,9 +1185,9 @@ class CorteSendEmail extends Command
                         $RowTotalpago=str_pad(str_replace(".","",$concilia->importe_concepto) ,13,"0",STR_PAD_LEFT);
                         $RowReferencia=str_pad($concilia->referencia,30,"0",STR_PAD_LEFT);                         
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
-                        $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
-                        $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
-                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT);                           
+                        $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);
+                        $RowDatoAdicional2=str_pad($concilia->auxiliar_2,15,"0",STR_PAD_LEFT);//pendiente
                         $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                         $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
