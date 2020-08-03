@@ -207,13 +207,13 @@ class CorteSendEmail extends Command
         $path4=$path3.'/'.$banco_id;        
              
         if (!File::exists($path1))
-                {File::makeDirectory($path1);}
+                {File::makeDirectory($path1, 0755, true);}
         if (!File::exists($path2))
-                {File::makeDirectory($path2);}
+                {File::makeDirectory($path2, 0755, true);}
         if (!File::exists($path3))
-                {File::makeDirectory($path3);}
+                {File::makeDirectory($path3, 0755, true);}
         if (!File::exists($path4))
-                {File::makeDirectory($path4);}
+                {File::makeDirectory($path4, 0755, true);}
         $this->gArchivos($path3,$path4,$fechaB,$banco_id,$cuenta,$alias);
                
     }
@@ -1160,12 +1160,12 @@ class CorteSendEmail extends Command
     {        
         $fecha=Carbon::now();      
         $path=storage_path('app/');
-        $nombreArchivo=Carbon::parse('2020-07-22')->format('Ymd').'_Corte_Generico'.'.txt';
+        $nombreArchivo=Carbon::parse('2020-07-30')->format('Ymd').'_Corte_Generico'.'.txt';
         $Directorio=$path.$nombreArchivo;
         $cadena='';
        $referencia='';
         //$conciliacion=$this->pr->Generico_Corte_Oper_prueba($fecha);
-        $conciliacion=$this->pr->Generico_Corte_Oper_prueba('2020-07-22');
+        $conciliacion=$this->pr->Generico_Corte_Oper_prueba('2020-07-30');
         //log::info($conciliacion);
 
         if($conciliacion<>null){     

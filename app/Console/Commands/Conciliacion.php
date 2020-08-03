@@ -133,7 +133,7 @@ class Conciliacion extends Command
 
                 $this->executedDate = substr($temporal[2],0,4) . "-" . substr($temporal[2],4,2) . "-" . substr($temporal[2],6,2);
             
-                $this->info_cuenta = $this->obtenerDetallesCuenta($this->bankAlias);
+                $this->info_cuenta = $this->obtenerDetallesCuenta($this->bankAlias,$this->bankName);
 
 
                 if($this->info_cuenta == false)
@@ -324,7 +324,8 @@ class Conciliacion extends Command
                     $line   = fgets($fo);
                     if(
                         strcmp(substr($line, 0,1), "D") == 0 || // condicion afirmeVentanilla
-                        strcmp(substr($line, 0,1), "S") == 0 || // condicion scotiabank 
+                        strcmp(substr($line, 1,1), "2") == 0 || // condicion scotiabank 
+                        strcmp(substr($line, 0,1), "2") == 0 || // condicion banorteV 
                         strcmp(substr($line, 0,1), "1") == 0 // condicion banamexVentanilla
                     )
                     {
@@ -691,13 +692,15 @@ class Conciliacion extends Command
      * @return false if error, array with info [account => , alias =>] 
      */ 
 
-    private function obtenerDetallesCuenta($alias)
+    private function obtenerDetallesCuenta($alias,$bankname)
     {
         $cuenta = false;
         // obtener los datos de las cuentas
+
+        //log::info($this->bank_details);
         foreach( $this->bank_details as $bd )
         {
-            if($alias == $bd["cuenta_alias"])
+            if($alias == $bd["cuenta_alias"] and strtolower(substr($bankname,0,4)) ==strtolower(substr($bd["banco"],0,4)))
             {
                 $cuenta = $bd;
             }

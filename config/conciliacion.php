@@ -292,7 +292,7 @@ return array (
       	"telecomm"        =>
       		array(
         		"extension" => "txt",
-        		"lineExample" => "65506402461     06282019101201710000DEP EN EFECTIV                          +000000001297000000004773497701713619180000000000000222210324167274          ",
+        		"lineExample" => "06072020050000316023555555555527952292060720200001195200190230005660404",
         		"positions"   => array
           		(
           			"month"     => [2,2],
@@ -319,6 +319,23 @@ return array (
           			"id"      => [254,8],
           			"referencia"  => [127,30],
           			"origen"    => [127,2],
+          		),
+        	"startFrom"   => 2, /* el archivo no tiene condiciones especiales o delimitadores */
+        	"method"    => 1,
+      	),
+      	"oxxo"        =>
+      		array(
+        		"extension" => "txt",
+        		"lineExample" => "A913C9663BB53456E053CD64500AE957   18000000000000005945232820428801707286757000000826002020072720200723014094",
+        		"positions"   => array
+          			(
+          			"month"     => [99,2],
+          			"day"       => [101,2],
+          			"year"      => [95,4],
+          			"amount"    => [77,10], /* se divide entre 100*/
+          			"id"      => [66,8],
+          			"referencia"  => [35,30],
+          			"origen"    => [35,2],
           		),
         	"startFrom"   => 2, /* el archivo no tiene condiciones especiales o delimitadores */
         	"method"    => 1,
