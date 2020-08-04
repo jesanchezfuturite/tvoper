@@ -696,7 +696,11 @@ class Conciliacion extends Command
     {
         $cuenta = false;
         // obtener los datos de las cuentas
-
+        //log::info($bankname);
+        if($bankname=='bazteca')
+        {
+            $bankname='Banco Azteca';
+        }
         //log::info($this->bank_details);
         foreach( $this->bank_details as $bd )
         {

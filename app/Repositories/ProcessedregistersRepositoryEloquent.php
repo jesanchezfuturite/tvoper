@@ -101,10 +101,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
     {
        try{        
         $data = Processedregisters::where('oper_processedregisters.status','=','p')
-        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)  
-        ->where('oper_processedregisters.banco_id','=',$banco)   
-        ->where('oper_processedregisters.cuenta_alias','=',$alias)
-        ->where('oper_processedregisters.cuenta_banco','=',$cuenta)
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
         ->where('oper_processedregisters.archivo_corte','=','') 
         ->join('oper_transacciones','oper_transacciones.referencia','=','oper_processedregisters.referencia') 
         ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
@@ -305,11 +302,14 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('oper_processedregisters.created_at','>',$fechaIn)      
         ->where('oper_processedregisters.created_at','<',$fechaFin)            
         ->where('oper_processedregisters.archivo_corte','=','')
-        ->select('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
-        ->groupBy('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
+        ->select('oper_processedregisters.fecha_ejecucion')
+        ->groupBy('oper_processedregisters.fecha_ejecucion')
         ->distinct()
         ->get();
-
+          /*
+           ->select('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
+        ->groupBy('oper_processedregisters.banco_id','oper_processedregisters.cuenta_alias','oper_processedregisters.cuenta_banco','oper_processedregisters.fecha_ejecucion')
+          */  
         return $data;      
         
         }catch( \Exception $e){
@@ -319,12 +319,11 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
 
     }
 
-    public function Generico_Corte_Oper_prueba($fecha)
+    public function Generico_Corte_Operacion($fecha)
     {
        try{        
          $data = Processedregisters::where('oper_processedregisters.status','=','p')
-        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)  
-        ->where('oper_processedregisters.origen','=','11') 
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
         ->join('oper_transacciones','oper_transacciones.referencia','=','oper_processedregisters.referencia') 
         ->join('oper_tramites','oper_tramites.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
         ->join('oper_detalle_tramite','oper_detalle_tramite.id_tramite_motor','=','oper_tramites.id_tramite_motor')
