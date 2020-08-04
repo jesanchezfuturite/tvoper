@@ -154,8 +154,8 @@ class CorteController extends Controller
     {   
         $Directorio=array();
         $fecha= Carbon::parse($fecha);
-         $this->gArchivo_Generico_prueba($fecha);
-        $findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
+         //$this->gArchivo_Generico_prueba($fecha);
+        //$findCorte=$this->cortesolicituddb->findWhere(['fecha_ejecucion'=>$fecha,'status'=>'1']);
         
         $response='false';
         $path1=storage_path('app/Cortes/'.$fecha->format('Y'));
@@ -168,7 +168,7 @@ class CorteController extends Controller
                 $Directorio []=array('path' => $path3.'/'.$key->getRelativePathname());
             }  
         } 
-        foreach ($findCorte as $e) {
+        /*foreach ($findCorte as $e) {
                     
             $path4=$path3.'/'.$e->banco_id;
             
@@ -179,7 +179,7 @@ class CorteController extends Controller
                     $Directorio []=array('path' => $path4.'/'.$key->getRelativePathname());
                 }  
             }   
-        }
+        }*/
 
         $mail = new PHPMailer(true);
          $message="Corte Fecha: ".$fecha->format('Y-m-d');
