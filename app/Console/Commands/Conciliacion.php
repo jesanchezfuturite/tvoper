@@ -324,7 +324,8 @@ class Conciliacion extends Command
                     $line   = fgets($fo);
                     if(
                         strcmp(substr($line, 0,1), "D") == 0 || // condicion afirmeVentanilla
-                        strcmp(substr($line, 1,1), "2") == 0 || // condicion scotiabank 
+                        strcmp(substr($line, 0,2), "I2") == 0 || // condicion scotiabank 
+                        strcmp(substr($line, 0,2), "D2") == 0 || // condicion scotiabank 
                         strcmp(substr($line, 0,1), "2") == 0 || // condicion banorteV 
                         strcmp(substr($line, 0,1), "1") == 0 // condicion banamexVentanilla
                     )
