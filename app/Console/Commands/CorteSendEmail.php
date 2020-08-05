@@ -180,7 +180,7 @@ class CorteSendEmail extends Command
     public function BuscarFechas()
     {
         $fecha=Carbon::now();
-        $fecha=Carbon::parse('2020-08-03');
+        //$fecha=Carbon::parse('2020-08-03');
         $fechaIn=$fecha->format('Y-m-d').' 00:00:00';
         $fechaFin=$fecha->format('Y-m-d').' 23:59:59';
         $findFechaEjec=$this->pr->ConsultaFechaEjecucion($fechaIn,$fechaFin);
