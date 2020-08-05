@@ -212,7 +212,11 @@ class CorteSendEmail extends Command
         if (!File::exists($path2))
                 {File::makeDirectory($path2, 0755, true);}
         if (!File::exists($path3))
-                {File::makeDirectory($path3, 0755, true);}
+                {File::makeDirectory($path3, 0755, true);}else{
+                    File::deleteDirectory($path3);
+                    File::makeDirectory($path3, 0755, true);   
+                }
+
         /*if (!File::exists($path4))
                 {File::makeDirectory($path4, 0755, true);}*/
         return $path3;
