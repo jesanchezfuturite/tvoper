@@ -356,8 +356,47 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return null;
         }        
     }
+    public function findStatusDif($fecha)
+    {
+       try{        
+        $data = Processedregisters::where('oper_processedregisters.status','=','p')
+        ->join('oper_banco','oper_banco.id','=','oper_processedregisters.banco_id')
+        ->join('oper_transacciones','oper_transacciones.referencia','=','oper_processedregisters.referencia')
+        ->join('egobierno.status','egobierno.status.Status','=','oper_transacciones.estatus')
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
+        ->where('oper_processedregisters.origen','=','11')
+        ->where('oper_transacciones.estatus','<>','0')
+        ->select('oper_processedregisters.referencia','oper_transacciones.id_transaccion_motor as folio','oper_processedregisters.transaccion_id','egobierno.status.Descripcion as status','oper_banco.nombre as banco','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_transacciones.fecha_pago','oper_processedregisters.monto') 
+        ->groupBy('oper_processedregisters.referencia')
+        ->get();
 
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
+    public function findDuplicados($fecha)
+    {
+       try{        
+        $data = Processedregisters::where('oper_processedregisters.status','=','p')
+        ->join('oper_banco','oper_banco.id','=','oper_processedregisters.banco_id')
+        ->join('oper_transacciones','oper_transacciones.referencia','=','oper_processedregisters.referencia')
+        ->join('egobierno.status','egobierno.status.Status','=','oper_transacciones.estatus')
+        ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
+        ->where('oper_processedregisters.origen','=','11')
+        ->select('oper_processedregisters.referencia','oper_transacciones.id_transaccion_motor as folio','oper_processedregisters.transaccion_id','oper_banco.nombre as banco','oper_processedregisters.banco_id','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_transacciones.banco as banco2','oper_processedregisters.monto','egobierno.status.Descripcion as status') 
+        ->groupBy('oper_processedregisters.referencia','oper_processedregisters.banco_id')
+        ->get();
 
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@GenericoCorte] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
     /**
      * This method is used in command Egobtransacciones
      *  AS FOLLOWS:

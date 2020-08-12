@@ -159,7 +159,7 @@
     $("#busqueda").click(function(){
 
         var fecha = $("#fecha").val();
-
+        
         $("#corte_div").empty();
 
         $.ajax({
@@ -173,18 +173,28 @@
             data: { f: fecha, _token: '{{ csrf_token() }}' }
         })
         .done(function(data){
-
+            var nc;
+            var dup;
+            var difs;
+            var dupl;
             var element = 0;
-
+           
             var content;
             var accounts;
-            
+            if(data==0)
+            {
+                $("#corte_div").empty();
+                $('#imageloading').html('');
+            }
             // vaciar el contenido del ul para insertar los nuevos tab
             $("#d_tabs").empty();
             $("#c_tabs").empty();
 
-
-            $.each(data,function(i,info){
+            $.each(data,function(i,reg){
+                nc =reg.noconciliado;
+                difs =reg.difStatus;
+                dupl =reg.duplicados;
+            $.each(reg.final,function(i,info){
                  
                 if(element == 0){
                     $("#d_tabs").append('<li class="active"><a href="#tab_'+element+'" data-toggle="tab">'+info.descripcion+'</a></li>');
@@ -194,7 +204,6 @@
                     content = '<div class="tab-pane" id="tab_'+element+'"><div class="portlet-body">';     
                 }
                 
-
                 // aqui genero el resumen de cada banco por cuenta para internet
                 r = info.resumen;
                 g = info.grand;
@@ -258,7 +267,6 @@
                     internet += '<td align="right">'+otr.monto_conciliado+'</td>';
                     internet += '<td align="right">'+otr.monto_no_conciliado+'</td>';
                     internet += '</tr>';
-
                     
 
                 });
@@ -301,12 +309,86 @@
             boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
             // boton = $('<button>',{text:'Corte',id:'corte_button',class: 'btn blue',click: function(){ alert('Proximamente') }});
             $("#corte_div").append(boton);
-
+        
         });
-
+        $("#d_tabs").append('<li><a href="#tab_resumen" data-toggle="tab">Resumen</a></li>');
+        $("#c_tabs").append(' <div class="tab-pane" id="tab_resumen"><div class="portlet-body"></div> </div> ');
+        if(dupl!=null){
+        tabResumen(dupl);    
+        }
+        if(nc!=null){
+        tabResumen2(nc);    
+        }
+        if(difs!=null){
+        tabResumen3(difs);    
+        }
+        TableAdvanced.init();
+        });
+      
 
     });
+    function tabResumen(nc)
+    {
+         tbls = '<h3><strong>Pagos duplicados</strong></h3> <br><table id="sample_1" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Banco Pago</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
+            $.each(nc,function(i,reg){
+                  
+                tbls += '<tr><td>'+reg.folio+'</td>';
+                tbls += '<td>'+reg.referencia+'</td>';
+                tbls += '<td>'+reg.banco+'</td>';
+                tbls += '<td>'+reg.banco2+'</td>';
+                tbls += '<td>'+reg.status+'</td>';
+                tbls += '<td>'+ formatter.format(reg.monto)+'</td>';
+                tbls += '</tr>';
+            });
+        
+         tbls += '</tbody></table></div>';
+        $("#tab_resumen").append(tbls);
+        
+    }
+    function tabResumen2(nc)
+    {
 
+        
+       tbls='<br><h3><strong>Tramites pagados sin conciliar</strong></h3>  <br>'
+         tbls += '<table id="sample_2" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
+            $.each(nc,function(i,reg){
+                  
+                tbls += '<tr><td>'+reg.folio+'</td>';
+                tbls += '<td>'+reg.referencia+'</td>';
+                tbls += '<td>'+reg.banco+'</td>';
+                tbls += '<td>'+reg.status+'</td>';
+                tbls += '<td>'+reg.monto+'</td>';
+                tbls += '</tr>';
+            });
+         tbls += '</tbody></table>';
+        $("#tab_resumen").append(tbls);
+    }
+    function tabResumen3(nc)
+    {
+
+        
+       tbls='<br><h3><strong>Tramites conciliados con estatus diferente a pagados</strong></h3>  <br>'
+         tbls += '<table id="sample_3" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
+            $.each(nc,function(i,reg){
+                  
+                tbls += '<tr><td>'+reg.folio+'</td>';
+                tbls += '<td>'+reg.referencia+'</td>';
+                tbls += '<td>'+reg.banco+'</td>';
+                tbls += '<td>'+reg.status+'</td>';
+                tbls += '<td>'+reg.monto+'</td>';
+                tbls += '</tr>';
+            });
+         tbls += '</tbody></table>';
+        $("#tab_resumen").append(tbls);
+        //TableManaged.init();
+        
+    }
+
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    })
     function enviarCorte(fecha)
     {
         // deshabilitar el boton
