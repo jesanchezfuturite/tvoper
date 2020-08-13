@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\Storage;
 
+use Carbon\Carbon;
+
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
 
 /* estos se agregan para obtener el detalle de las anomalias*/
 use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
@@ -27,17 +30,26 @@ class ConciliacionController extends Controller
     protected $cuentasbanco;
 
     protected $egobTrans;
+    ///add
+    protected $operTrans;
 
     protected $bank_details;
 
     protected $results;
+    
+    protected $noInfo;
+
+    protected $duplicados;
+    
+    protected $difStatus;
 
     
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
         BancoRepositoryEloquent $banco,
         CuentasbancoRepositoryEloquent $cuentasbanco,
-        EgobiernotransaccionesRepositoryEloquent $egobTrans
+        EgobiernotransaccionesRepositoryEloquent $egobTrans,
+        TransaccionesRepositoryEloquent $operTrans
     )
     {
     	$this->middleware('auth');
@@ -51,6 +63,8 @@ class ConciliacionController extends Controller
         $this->cuentasbanco = $cuentasbanco;
 
         $this->egobTrans = $egobTrans; 
+
+        $this->operTrans = $operTrans; 
 
         $this->loadBankDetails();
 
@@ -375,8 +389,12 @@ class ConciliacionController extends Controller
 
         // get the bank
         $this->results = $this->getResultsperDate($date);
-
+        $this->noInfo=$this->getResultNoConciliado($date);
+        $this->difStatus=$this->getResultDifStatus($date);
+        $this->duplicados=$this->getResultDusplicados($date);
+        //log::info($this->difStatus);
         $final = array();
+        $result = array();
 
         if($this->results->count() != 0)
         {
@@ -385,7 +403,6 @@ class ConciliacionController extends Controller
             {
                 $bank_id        = $bd;
                 $bank_accounts  = $info["info"];
-                
                 $info_internet = array();
                 $info_repositorio = array();
                 $info_as400 = array();
@@ -398,6 +415,7 @@ class ConciliacionController extends Controller
                 $grand_monto_conciliado = 0;
                 $grand_monto_no_conciliado = 0;
                 $grand_total = 0;
+
 
 
                 foreach($bank_accounts as $b)
@@ -426,7 +444,17 @@ class ConciliacionController extends Controller
                     $monto_conciliado_otros     = 0;
                     $monto_no_conciliado_otros  = 0;
 
+                    $total_cruce                = 0;
+                    $total_no_conciliados_cruce = 0;
+                    $monto_cruce                = 0;
 
+                    $total_duplicados           = 0;
+                    $total_no_conciliados_dupliacados = 0;
+
+                    
+                    $total_dif_estatus          = 0;
+                    $total_no_conciliados_dif_estatus = 0;
+                    
                     $cuenta = $b["cuenta"];
                     $alias  = $b["cuenta_alias"];
 
@@ -499,7 +527,6 @@ class ConciliacionController extends Controller
                         }
                     
                     }
-                      
 
                     $grand_tramites             += $total_conciliados + $total_no_conciliados + $total_conciliados_repo + $total_no_conciliados_repo +$total_conciliados_as400 + $total_no_conciliados_as400 + $total_conciliados_otros + $total_no_conciliados_otros;
                     $grand_conciliados          += $total_conciliados + $total_conciliados_repo + $total_conciliados_as400 + $total_conciliados_otros;
@@ -552,11 +579,11 @@ class ConciliacionController extends Controller
                                 "no_conciliados"        => $total_no_conciliados_otros,
                                 "monto_conciliado"      => number_format($monto_conciliado_otros,2),
                                 "monto_no_conciliado"   => number_format($monto_no_conciliado_otros,2),
-                            ),
+                            )
                     );
 
-
-
+                $bol_cruce=false;
+                    
                 }
                 /*
                 $final [$bd]= array(
@@ -566,6 +593,8 @@ class ConciliacionController extends Controller
                     "info_as400"        => $info_as400, 
                     "info_otros"        => $info_otros, 
                 );*/
+                //log::info($nuevo_resumen);
+                
                 $final [$bd]= array(
                     "descripcion"               => $info["descripcion"],
                     "resumen"                   => $nuevo_resumen,
@@ -582,12 +611,18 @@ class ConciliacionController extends Controller
                 );
                 
                 
-            }        
+            }
+            $result []= array(
+            "final"  => $final,
+            "duplicados"  => $this->duplicados,
+            "noconciliado"  => $this->noInfo,
+            "difStatus"  => $this->difStatus);      
         }else{
-            $final = 0;
+            $result = 0;
+           
         }
-        
-        return $final;
+        //log::info($this->noInfo);
+        return $result;
 
     }
 
@@ -610,7 +645,7 @@ class ConciliacionController extends Controller
         try{
 
             //$info = $this->pr->findWhereBetween('created_at',$between);
-            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('referencia','transaccion_id')->get();
+            $info = $this->pr->where('fecha_ejecucion',$date)->groupBy('referencia','transaccion_id','banco_id')->get();
 
             return $info;
                
@@ -619,7 +654,76 @@ class ConciliacionController extends Controller
         }
 
     }
+    private function getResultNoConciliado($date)
+    {
+        try{
+            $fecha=Carbon::parse($date)->format('Y-m-d');
+             $fechaIn= $fecha . ' 00:00:00';
+            $fechaFi=$fecha . ' 23:59:59';
+            $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
 
+            return $result;
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:getResultNoConciliado]' . $e->getMessage());
+        }
+
+    }
+     private function getResultDifStatus($date)
+    {
+        try{
+            $fecha=Carbon::parse($date)->format('Y-m-d');
+            $result=$this->pr->findStatusDif($fecha);
+
+            return $result;
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:getResultDifStatus]' . $e->getMessage());
+        }
+
+    }
+     private function getResultDusplicados($date)
+    {
+        try{
+            $fecha=Carbon::parse($date)->format('Y-m-d');
+            $result=$this->pr->findDuplicados($fecha);
+             $duplicados = array();
+             $verif=array();
+             $res = array();
+             
+             if($result<>null)
+             {
+                foreach ($result as $e) {
+                   array_push($verif,$e->referencia);
+                }
+             }
+            $cnt_array = array_count_values($verif);
+            
+            foreach($cnt_array as $key=>$val){
+                if($val > 1){
+                    array_push($res, $key);
+                }
+            }
+            if($res<>null)
+            {
+                foreach ($res as $d) {
+                //log::info($d);
+                    foreach ($result as $r) {
+                        if($r->referencia==$d)
+                        {
+                        array_push($duplicados,$r);
+                        }
+                    }
+                }
+            }
+            //log::info($duplicados);
+            return $duplicados;
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:getResultDifStatus]' . $e->getMessage());
+        }
+
+    }
     /**
      * returns a json object generate the view ... finds info of the registers in status <> to p
      *

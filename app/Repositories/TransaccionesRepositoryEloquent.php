@@ -129,7 +129,7 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
             $data = Transacciones::whereIn('referencia', $info)->where('estatus','=','60')->update( ['estatus' => '0']);
 
         }catch( \Exception $e ){
-            Log::info("[updateStatusReferenceStatus60 @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas");
+            Log::info("[TransaccionesRepositoryEloquent@updateStatusReferenceStatus60]  ERROR al actualizar las transacciones como procesadas");
             return false;
         }
     }
@@ -140,10 +140,25 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
             $data = Transacciones::whereIn('referencia', $info)->where('estatus','=','65')->update( ['estatus' => '0']);
 
         }catch( \Exception $e ){
-            Log::info("[updateStatusReferenceStatus65 @ updateStatusInArray]  ERROR al actualizar las transacciones como procesadas");
+            Log::info("[TransaccionesRepositoryEloquent@updateStatusReferenceStatus65]  ERROR al actualizar las transacciones como procesadas");
             return false;
         }
     }
+     public function findTransaccionesNoConciliadas($fechaIn,$fechaF)
+    {
+        
+           $data = Transacciones::whereBetween('fecha_pago',[$fechaIn,$fechaF])
+        ->select('oper_transacciones.id_transaccion_motor as folio','oper_transacciones.referencia','oper_transacciones.banco','oper_transacciones.importe_transaccion as monto','egobierno.status.Descripcion as status')
+        ->leftjoin('egobierno.status','egobierno.status.Status','=','oper_transacciones.estatus')
+        ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','=','oper_transacciones.referencia')
+        ->where('oper_transacciones.estatus','=','0')  
+        ->Where('oper_processedregisters.referencia','=',null)
+        ->groupBy('oper_transacciones.id_transaccion_motor')
+        ->get();
+          return $data;
+       
+    }
+
     
     
 }

@@ -27,10 +27,10 @@ var TableAdvanced = function () {
                     "sortDescending": ": activate to sort column descending"
                 },
                 "emptyTable": "No data available in table",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "info": "Mostrando _START_ to _END_ of _TOTAL_ Registros",
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
-                "lengthMenu": "Ver _MENU_ entradas",
+                "lengthMenu": "Ver _MENU_ Registros",
                 "search": "Buscar:",
                 "zeroRecords": "No matching records found"
             },
@@ -107,11 +107,11 @@ var TableAdvanced = function () {
                     "sortDescending": ": activate to sort column descending"
                 },
                 "emptyTable": "No data available in table",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "info": "Mostrando _START_ to _END_ of _TOTAL_ Registros",
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
-                "lengthMenu": "Show _MENU_ entries",
-                "search": "Search:",
+                "lengthMenu": "Ver _MENU_ Registros",
+                "search": "Buscar:",
                 "zeroRecords": "No matching records found"
             },
 
@@ -163,7 +163,7 @@ var TableAdvanced = function () {
         var table = $('#sample_3');
 
         /* Formatting function for row details */
-        function fnFormatDetails(oTable, nTr) {
+       /* function fnFormatDetails(oTable, nTr) {
             var aData = oTable.fnGetData(nTr);
             var sOut = '<table>';
             sOut += '<tr><td>Platform(s):</td><td>' + aData[2] + '</td></tr>';
@@ -178,7 +178,7 @@ var TableAdvanced = function () {
         /*
          * Insert a 'details' column to the table
          */
-        var nCloneTh = document.createElement('th');
+       /* var nCloneTh = document.createElement('th');
         nCloneTh.className = "table-checkbox";
 
         var nCloneTd = document.createElement('td');
@@ -190,7 +190,7 @@ var TableAdvanced = function () {
 
         table.find('tbody tr').each(function () {
             this.insertBefore(nCloneTd.cloneNode(true), this.childNodes[0]);
-        });
+        });*/
 
         /*
          * Initialize DataTables, with no sorting on the 'details' column
@@ -204,11 +204,11 @@ var TableAdvanced = function () {
                     "sortDescending": ": activate to sort column descending"
                 },
                 "emptyTable": "No data available in table",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "info": "Ver _START_ to _END_ of _TOTAL_ Registros",
                 "infoEmpty": "No entries found",
                 "infoFiltered": "(filtered1 from _MAX_ total entries)",
-                "lengthMenu": "Show _MENU_ entries",
-                "search": "Search:",
+                "lengthMenu": "Ver _MENU_ Registros",
+                "search": "Buscar:",
                 "zeroRecords": "No matching records found"
             },
 
