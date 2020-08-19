@@ -471,7 +471,7 @@
         var color='';
         var label='';
         $.each(Resp, function(i, item) { 
-            if(item.estatus=='p')
+            /*if(item.estatus=='p')
             {
                 color='success';
                 label='Procesado';
@@ -486,10 +486,10 @@
             }else{
                 color='Info';
                 label='ane';
-            }
+            }*/
              $("#sample_2 tbody").append("<tr>"
                 +"<td>"+item.Transaccion+"</td>"
-                +"<td>"+label+"</td>"
+                +"<td>"+item.estatus+"</td>"
                 +"<td>"+item.Estatus+"</td>"           
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Declarado+"</td>"
@@ -643,7 +643,7 @@
         var label='';
         
         $.each(Resp, function(i, item) { 
-               if(item.estatus=='p')
+             /*  if(item.estatus=='p')
             {
                 color='success';
                 label='procesado';
@@ -658,11 +658,11 @@
             }else{
                 color='Info';
                 label='ane';
-            }
+            }*/
              $("#sample_3 tbody").append("<tr>"
                 +"<td>"+item.Folio+"</td>"
                 +"<td>"+item.Transaccion+"</td>"
-                +"<td>"+label+"</td>"
+                +"<td>"+item.estatus+"</td>"
                 +"<td>"+item.Estatus+"</td>"
                 +"<td>"+item.RFC+"</td>"
                 +"<td>"+item.Familia+"</td>"

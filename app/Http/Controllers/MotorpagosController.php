@@ -2181,7 +2181,7 @@ return json_encode($response);
             
             if($findConcilia->count()==0)
                 {
-                   $estatus_C="np"; 
+                   $estatus_C="No Procesado"; 
                 }else{
                     foreach ($findConcilia as $c) {
                        $estatus_C=$c->status;
@@ -2305,7 +2305,7 @@ return json_encode($response);
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
         $response=array();
-        //log::info($rfc);
+        //log::info('inicio');
         $fechaActual=Carbon::now();
         if((int)$fecha_inicio==(int)"1")
         {           
@@ -2337,15 +2337,15 @@ return json_encode($response);
         //log::info($transaccion);      
         if($transaccion<>null){
         foreach ($transaccion as $trans) {
-            $findConcilia=$this->processdb->findWhere(['referencia'=>$trans->referencia]);
+            //$findConcilia=$this->processdb->findWhere(['referencia'=>$trans->referencia]);
             $estatus_C="np";
-            if($findConcilia->count()==0)
+            if($trans->id==null)
                 {
-                   $estatus_C="np"; 
+                   $estatus_C="No Procesado"; 
                 }else{
-                    foreach ($findConcilia as $c) {
-                       $estatus_C=$c->status;
-                    }
+                   
+                       $estatus_C='Procesado';
+                  
                 }
             
                 $response []= array(
