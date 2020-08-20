@@ -150,7 +150,7 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
     {
         
            $data = Transacciones::whereBetween('fecha_pago',[$fechaIn,$fechaF])
-        ->select('oper_transacciones.id_transaccion_motor as folio','oper_transacciones.referencia','oper_transacciones.banco','oper_transacciones.importe_transaccion as monto','egobierno.status.Descripcion as status')
+        ->select('oper_transacciones.id_transaccion_motor as folio','oper_transacciones.referencia','oper_transacciones.banco','oper_transacciones.importe_transaccion as monto','egobierno.status.Descripcion as status','oper_transacciones.fecha_pago')
         ->leftjoin('egobierno.status','egobierno.status.Status','=','oper_transacciones.estatus')
         ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','=','oper_transacciones.referencia')
         ->where('oper_transacciones.estatus','=','0')  

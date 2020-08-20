@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-3">Consultar resultados conciliación</label>
             <div class="col-md-3">
-                <input id="fecha" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
+                <input id="fecha" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha" required="true">
                 <span class="help-block">
                  </span>
                 <button class="btn blue" id="busqueda" type="submit">
@@ -40,9 +40,9 @@
             </div>
         </div>
     </div>
-</div>
+</div><div class="alert alert-secondary" id="imageloading" style="display: none" role="alert"></div>
 <div id="bancos_tabs" class="row" >
-    <div class="alert alert-secondary" id="imageloading" style="display: none" role="alert"></div>
+    
     <hr> 
     <div class="col-md-12" >
         <div class="tabbable-line boxless tabbable-reversed">
@@ -159,7 +159,10 @@
     $("#busqueda").click(function(){
 
         var fecha = $("#fecha").val();
-        
+        if(fecha=='')
+        {
+            Command: toastr.warning("Seleccione una fecha", "Notifications")
+        }else{
         $("#corte_div").empty();
 
         $.ajax({
@@ -324,7 +327,7 @@
         }
         TableAdvanced.init();
         });
-      
+    }
 
     });
     function tabResumen(nc)
@@ -350,12 +353,13 @@
 
         
        tbls='<br><h3><strong>Tramites pagados sin conciliar</strong></h3>  <br>'
-         tbls += '<table id="sample_2" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
+         tbls += '<table id="sample_2" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Fecha Pago</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
             $.each(nc,function(i,reg){
                   
                 tbls += '<tr><td>'+reg.folio+'</td>';
                 tbls += '<td>'+reg.referencia+'</td>';
                 tbls += '<td>'+reg.banco+'</td>';
+                tbls += '<td>'+reg.fecha_pago+'</td>';
                 tbls += '<td>'+reg.status+'</td>';
                 tbls += '<td>'+reg.monto+'</td>';
                 tbls += '</tr>';

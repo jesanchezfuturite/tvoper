@@ -16,6 +16,7 @@ use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 
 /* estos se agregan para obtener el detalle de las anomalias*/
 use App\Repositories\EgobiernotransaccionesRepositoryEloquent;
@@ -43,13 +44,16 @@ class ConciliacionController extends Controller
     
     protected $difStatus;
 
+    protected $diaFeriadodb;
+
     
     public function __construct(
         ProcessedregistersRepositoryEloquent $pr,
         BancoRepositoryEloquent $banco,
         CuentasbancoRepositoryEloquent $cuentasbanco,
         EgobiernotransaccionesRepositoryEloquent $egobTrans,
-        TransaccionesRepositoryEloquent $operTrans
+        TransaccionesRepositoryEloquent $operTrans,
+        EgobiernodiasferiadosRepositoryEloquent $diaFeriadodb
     )
     {
     	$this->middleware('auth');
@@ -65,6 +69,8 @@ class ConciliacionController extends Controller
         $this->egobTrans = $egobTrans; 
 
         $this->operTrans = $operTrans; 
+
+        $this->diaFeriadodb = $diaFeriadodb;
 
         $this->loadBankDetails();
 
@@ -657,9 +663,35 @@ class ConciliacionController extends Controller
     private function getResultNoConciliado($date)
     {
         try{
-            $fecha=Carbon::parse($date)->format('Y-m-d');
-             $fechaIn= $fecha . ' 00:00:00';
+            $fecha=Carbon::parse($date)->subDay(1)->format('Y-m-d');
             $fechaFi=$fecha . ' 23:59:59';
+           
+            $feriado=1;
+           do {//log::info('1'); 
+           $nombre_dia=date('w', strtotime($fecha));
+           $d = explode("-",$fecha);
+               $diaF=$this->diaFeriadodb->findWhere(['Ano'=> $d[0],'Mes'=> $d[1],'Dia'=> $d[2]]);
+            if($diaF->count()>0)
+                {
+                    if($nombre_dia==1)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(3)->format('Y-m-d'); 
+                    }else{
+                        $fecha=Carbon::parse($fecha)->subDay(1)->format('Y-m-d'); 
+                    }
+
+                }else{
+                    if($nombre_dia==7)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(2)->format('Y-m-d'); 
+                    }
+                    break;
+                }                
+            } while ($feriado <= 2);
+            //log::info('2');
+            
+            $fechaIn= $fecha . ' 00:00:00';   
+            //log::info($fechaIn . '---' . $fechaFi);        
             $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
 
             return $result;
