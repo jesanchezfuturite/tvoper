@@ -390,7 +390,7 @@ class CorteSendEmail extends Command
                         $RowOrigen=str_pad("027",3,"0",STR_PAD_LEFT);  
                         $RowMedio_pago=str_pad($concilia->banco_id,3,"0",STR_PAD_LEFT); // pendiente                                               
                         $RowDatoAdicional1=str_pad('',30,"0",STR_PAD_LEFT);//pendiente
-                        $RowDatoAdicional2=str_pad('',15,"0",STR_PAD_LEFT);//pendiente
+                        $RowDatoAdicional2=str_pad($concilia->auxiliar_2,15,"0",STR_PAD_LEFT);//pendiente
                         $RowCuentaPago=str_pad($concilia->cuenta_banco,30,"0",STR_PAD_LEFT);
                         $RowAlias=str_pad($concilia->cuenta_alias,6,"0",STR_PAD_LEFT); 
                         $cadena=$RowReferencia.$RowFolio.$RowOrigen.$RowMedio_pago.$RowTotalpago.$RowClaveltramite.$RowPartida.$RowConsepto.$RowFechaDis.$RowHoraDis.$RowFechapago.$RowHorapago.$RowCuentaPago.$RowAlias.$RowDatoAdicional1.$RowDatoAdicional2;
