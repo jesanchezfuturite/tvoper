@@ -237,6 +237,9 @@ Route::get('/pagoservicios','ServiciosgeneralesController@pagoserviciosgenerales
 /**************************** ENVIO CORTE POR CORREO  ***************************/
 Route::get('/envio-corte/{fecha}','CorteController@enviacorreo');
 
+/**************************** TRAMITES NO CONCILIADOS  ***************************/
+Route::get('/tramites-no-conciliados','ConciliacionController@tramitesNoConciliados');
+Route::post('/find-tramites-no-conciliados','ConciliacionController@findTramitesnoconcilados');
 
 /****************************    CONTROL ACCESO SERVICIOS GENERALES *************************/
 Route::group(['middleware' => 'permissions'], function () {
