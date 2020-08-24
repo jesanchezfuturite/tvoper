@@ -959,4 +959,28 @@ class ConciliacionController extends Controller
 
     }
 
+    /********/
+
+    public function tramitesNoConciliados()
+    {
+        return view('conciliacion/tramitesnoconciliados');
+    }
+    public function findTramitesnoconcilados(Request $request)
+    {
+       try{
+
+            $fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
+            $fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
+            $fechaIn= $fechaIn . ' 00:00:00';
+            $fechaFi=$fechaFi . ' 23:59:59';   
+           // log::info($fechaIn . '---' . $fechaFi);        
+            $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
+
+            return json_encode($result);
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:findTramitesnoconcilados]' . $e->getMessage());
+        }   
+    }
+
 }
