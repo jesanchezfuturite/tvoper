@@ -663,7 +663,7 @@ class ConciliacionController extends Controller
     private function getResultNoConciliado($date)
     {
         try{
-            $fecha=Carbon::parse($date)->subDay(1)->format('Y-m-d');
+            $fecha=Carbon::parse($date)->subDay(2)->format('Y-m-d');
             $fechaFi=$fecha . ' 23:59:59';
            
             $feriado=1;
@@ -684,6 +684,10 @@ class ConciliacionController extends Controller
                     if($nombre_dia==7)
                     {
                        $fecha=Carbon::parse($fecha)->subDay(2)->format('Y-m-d'); 
+                    }
+                    if($nombre_dia==6)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(1)->format('Y-m-d'); 
                     }
                     break;
                 }                
@@ -969,11 +973,39 @@ class ConciliacionController extends Controller
     {
        try{
 
-            $fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
-            $fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
+            $fechaIn=Carbon::parse($request->fechaInicio)->subDay(2)->format('Y-m-d');
+            $fechaFi=Carbon::parse($request->fechaFin)->subDay(2)->format('Y-m-d');
+            $fechaFi=$fechaFi . ' 23:59:59';           
+            $feriado=1;
+           do {//log::info('1'); 
+           $nombre_dia=date('w', strtotime($fechaIn));
+           $d = explode("-",$fechaIn);
+               $diaF=$this->diaFeriadodb->findWhere(['Ano'=> $d[0],'Mes'=> $d[1],'Dia'=> $d[2]]);
+            if($diaF->count()>0)
+                {
+                    if($nombre_dia==1)
+                    {
+                       $fechaIn=Carbon::parse($fechaIn)->subDay(3)->format('Y-m-d'); 
+                    }else{
+                        $fechaIn=Carbon::parse($fechaIn)->subDay(1)->format('Y-m-d'); 
+                    }
+
+                }else{
+                    if($nombre_dia==7)
+                    {
+                       $fechaIn=Carbon::parse($fechaIn)->subDay(2)->format('Y-m-d'); 
+                    }
+                    if($nombre_dia==6)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(1)->format('Y-m-d'); 
+                    }
+                    break;
+                }                
+            } while ($feriado <= 2);
+            //log::info('2');
+            
             $fechaIn= $fechaIn . ' 00:00:00';
-            $fechaFi=$fechaFi . ' 23:59:59';   
-           // log::info($fechaIn . '---' . $fechaFi);        
+            log::info($fechaIn . '---' . $fechaFi);        
             $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
 
             return json_encode($result);
