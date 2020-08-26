@@ -973,10 +973,10 @@ class ConciliacionController extends Controller
     {
        try{
 
-            $fechaIn=Carbon::parse($request->fechaInicio)->subDay(2)->format('Y-m-d');
-            $fechaFi=Carbon::parse($request->fechaFin)->subDay(2)->format('Y-m-d');
+            $fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
+            $fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
             $fechaFi=$fechaFi . ' 23:59:59';           
-            $feriado=1;
+            /*$feriado=1;
            do {//log::info('1'); 
            $nombre_dia=date('w', strtotime($fechaIn));
            $d = explode("-",$fechaIn);
@@ -1003,9 +1003,9 @@ class ConciliacionController extends Controller
                 }                
             } while ($feriado <= 2);
             //log::info('2');
-            
+            */
             $fechaIn= $fechaIn . ' 00:00:00';
-            log::info($fechaIn . '---' . $fechaFi);        
+            //log::info($fechaIn . '---' . $fechaFi);        
             $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
 
             return json_encode($result);

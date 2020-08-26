@@ -385,7 +385,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->join('oper_transacciones','oper_transacciones.referencia','=','oper_processedregisters.referencia')
         ->join('egobierno.status','egobierno.status.Status','=','oper_transacciones.estatus')
         ->where('oper_processedregisters.fecha_ejecucion','=',$fecha)
-        ->where('oper_processedregisters.origen','=','11')
+        //->where('oper_processedregisters.origen','=','11')
         ->select('oper_processedregisters.referencia','oper_transacciones.id_transaccion_motor as folio','oper_processedregisters.transaccion_id','oper_banco.nombre as banco','oper_processedregisters.banco_id','oper_processedregisters.cuenta_banco','oper_processedregisters.cuenta_alias','oper_transacciones.banco as banco2','oper_processedregisters.monto','egobierno.status.Descripcion as status') 
         ->groupBy('oper_processedregisters.referencia','oper_processedregisters.banco_id')
         ->get();
