@@ -721,20 +721,20 @@ class ConciliacionController extends Controller
      private function getResultDusplicados($date)
     {
         try{
+            //log::info("inicia duplicados 1");
             $fecha=Carbon::parse($date)->format('Y-m-d');
             $result=$this->pr->findDuplicados($fecha);
              $duplicados = array();
              $verif=array();
              $res = array();
-             
+        
              if($result<>null)
              {
                 foreach ($result as $e) {
                    array_push($verif,$e->referencia);
                 }
              }
-            $cnt_array = array_count_values($verif);
-            
+            $cnt_array = array_count_values($verif);            
             foreach($cnt_array as $key=>$val){
                 if($val > 1){
                     array_push($res, $key);
@@ -743,7 +743,6 @@ class ConciliacionController extends Controller
             if($res<>null)
             {
                 foreach ($res as $d) {
-                //log::info($d);
                     foreach ($result as $r) {
                         if($r->referencia==$d)
                         {
@@ -752,11 +751,10 @@ class ConciliacionController extends Controller
                     }
                 }
             }
-            //log::info($duplicados);
             return $duplicados;
                
         }catch( \Exception $e ){
-            Log::info('[Conciliacion:getResultDifStatus]' . $e->getMessage());
+            Log::info('[Conciliacion:getResultDusplicados]' . $e->getMessage());
         }
 
     }
