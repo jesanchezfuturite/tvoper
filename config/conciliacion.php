@@ -159,9 +159,9 @@ return array (
 				"lineExample"	=> "2088469179574555003508I10400000000012559000000000000N00000000012559000000000000010000000000120648880624148284                                                                                                                        000101018846130316A00020190628**31620720000000                                                       003508",
 				"positions"		=> array
 					(
-					"month"			=> [11,2],
-					"day" 			=> [13,2],
-					"year"			=> [7,4],
+					"month"			=> [255,2],
+					"day" 			=> [257,2],
+					"year"			=> [251,4],
 					"amount"		=> [53,16], /* se divide entre 100 para considerar los centavos*/
 					"id"			=> [91,8], /* 8 posiciones a partir de 91 */ 
 					"referencia"	=> [79,30],
