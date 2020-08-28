@@ -663,7 +663,7 @@ class ConciliacionController extends Controller
     private function getResultNoConciliado($date)
     {
         try{
-            $fecha=Carbon::parse($date)->subDay(1)->format('Y-m-d');
+            $fecha=Carbon::parse($date)->subDay(2)->format('Y-m-d');
             $fechaFi=$fecha . ' 23:59:59';
            
             $feriado=1;
@@ -684,6 +684,10 @@ class ConciliacionController extends Controller
                     if($nombre_dia==7)
                     {
                        $fecha=Carbon::parse($fecha)->subDay(2)->format('Y-m-d'); 
+                    }
+                    if($nombre_dia==6)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(1)->format('Y-m-d'); 
                     }
                     break;
                 }                
@@ -717,20 +721,20 @@ class ConciliacionController extends Controller
      private function getResultDusplicados($date)
     {
         try{
+            //log::info("inicia duplicados 1");
             $fecha=Carbon::parse($date)->format('Y-m-d');
             $result=$this->pr->findDuplicados($fecha);
              $duplicados = array();
              $verif=array();
              $res = array();
-             
+        
              if($result<>null)
              {
                 foreach ($result as $e) {
                    array_push($verif,$e->referencia);
                 }
              }
-            $cnt_array = array_count_values($verif);
-            
+            $cnt_array = array_count_values($verif);            
             foreach($cnt_array as $key=>$val){
                 if($val > 1){
                     array_push($res, $key);
@@ -739,7 +743,6 @@ class ConciliacionController extends Controller
             if($res<>null)
             {
                 foreach ($res as $d) {
-                //log::info($d);
                     foreach ($result as $r) {
                         if($r->referencia==$d)
                         {
@@ -748,11 +751,10 @@ class ConciliacionController extends Controller
                     }
                 }
             }
-            //log::info($duplicados);
             return $duplicados;
                
         }catch( \Exception $e ){
-            Log::info('[Conciliacion:getResultDifStatus]' . $e->getMessage());
+            Log::info('[Conciliacion:getResultDusplicados]' . $e->getMessage());
         }
 
     }
@@ -957,6 +959,58 @@ class ConciliacionController extends Controller
 
         return $final;
 
+    }
+
+    /********/
+
+    public function tramitesNoConciliados()
+    {
+        return view('conciliacion/tramitesnoconciliados');
+    }
+    public function findTramitesnoconcilados(Request $request)
+    {
+       try{
+
+            $fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
+            $fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
+            $fechaFi=$fechaFi . ' 23:59:59';           
+            /*$feriado=1;
+           do {//log::info('1'); 
+           $nombre_dia=date('w', strtotime($fechaIn));
+           $d = explode("-",$fechaIn);
+               $diaF=$this->diaFeriadodb->findWhere(['Ano'=> $d[0],'Mes'=> $d[1],'Dia'=> $d[2]]);
+            if($diaF->count()>0)
+                {
+                    if($nombre_dia==1)
+                    {
+                       $fechaIn=Carbon::parse($fechaIn)->subDay(3)->format('Y-m-d'); 
+                    }else{
+                        $fechaIn=Carbon::parse($fechaIn)->subDay(1)->format('Y-m-d'); 
+                    }
+
+                }else{
+                    if($nombre_dia==7)
+                    {
+                       $fechaIn=Carbon::parse($fechaIn)->subDay(2)->format('Y-m-d'); 
+                    }
+                    if($nombre_dia==6)
+                    {
+                       $fecha=Carbon::parse($fecha)->subDay(1)->format('Y-m-d'); 
+                    }
+                    break;
+                }                
+            } while ($feriado <= 2);
+            //log::info('2');
+            */
+            $fechaIn= $fechaIn . ' 00:00:00';
+            //log::info($fechaIn . '---' . $fechaFi);        
+            $result=$this->operTrans->findTransaccionesNoConciliadas($fechaIn,$fechaFi);
+
+            return json_encode($result);
+               
+        }catch( \Exception $e ){
+            Log::info('[Conciliacion:findTramitesnoconcilados]' . $e->getMessage());
+        }   
     }
 
 }

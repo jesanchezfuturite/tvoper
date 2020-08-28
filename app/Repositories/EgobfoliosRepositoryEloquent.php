@@ -47,8 +47,8 @@ class EgobfoliosRepositoryEloquent extends BaseRepository implements EgobfoliosR
             ->leftjoin('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
             ->leftjoin('tipo_servicios','tipo_servicios.Tipo_Code', '=','transacciones.TipoServicio')
             ->leftjoin('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
-            ->where('transacciones.fechatramite','>=',$fechaIn)
-            ->where('transacciones.fechatramite','<=',$fechaFin)
+            //->where('transacciones.fechatramite','>=',$fechaIn)
+            //->where('transacciones.fechatramite','<=',$fechaFin)
             ->select('status.Descripcion as status','transacciones.idTrans','operacion.oper_entidad.nombre as entidad','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_familia.nombre as familia')
             ->groupBy('folios.idTrans')
             ->get();

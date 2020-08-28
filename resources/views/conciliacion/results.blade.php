@@ -332,14 +332,14 @@
     });
     function tabResumen(nc)
     {
-         tbls = '<h3><strong>Pagos duplicados</strong></h3> <br><table id="sample_1" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Banco Pago</th><th>Estatus</th><th>Monto</th></tr></thead><tbody>';
+         tbls = '<h3><strong>Pagos duplicados</strong></h3> <br><table id="sample_1" class="table table-hover"><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Alias</th><th>Fecha Pago</th><th>Monto</th></tr></thead><tbody>';
             $.each(nc,function(i,reg){
                   
                 tbls += '<tr><td>'+reg.folio+'</td>';
                 tbls += '<td>'+reg.referencia+'</td>';
                 tbls += '<td>'+reg.banco+'</td>';
-                tbls += '<td>'+reg.banco2+'</td>';
-                tbls += '<td>'+reg.status+'</td>';
+                tbls += '<td>'+reg.cuenta_alias+'</td>';
+                tbls += '<td>'+reg.year+'-'+reg.month+'-'+reg.day+'</td>';
                 tbls += '<td>'+ formatter.format(reg.monto)+'</td>';
                 tbls += '</tr>';
             });
@@ -361,7 +361,7 @@
                 tbls += '<td>'+reg.banco+'</td>';
                 tbls += '<td>'+reg.fecha_pago+'</td>';
                 tbls += '<td>'+reg.status+'</td>';
-                tbls += '<td>'+reg.monto+'</td>';
+                tbls += '<td>'+formatter.format(reg.monto)+'</td>';
                 tbls += '</tr>';
             });
          tbls += '</tbody></table>';
@@ -379,7 +379,7 @@
                 tbls += '<td>'+reg.referencia+'</td>';
                 tbls += '<td>'+reg.banco+'</td>';
                 tbls += '<td>'+reg.status+'</td>';
-                tbls += '<td>'+reg.monto+'</td>';
+                tbls += '<td>'+formatter.format(reg.monto)+'</td>';
                 tbls += '</tr>';
             });
          tbls += '</tbody></table>';

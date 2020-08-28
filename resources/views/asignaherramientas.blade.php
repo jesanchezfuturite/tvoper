@@ -283,7 +283,7 @@ Configuración <small> Asignación de Herramientas</small>
         $.ajax({
             method: "POST",
             url: "{{ url('/asignaherramientas/saveuserprofile') }}",
-            data: { tools: JSON.stringify(saved), username: user, _token: '{{ csrf_token() }}' }
+            data: { tools: JSON.stringify(newsaved), username: user, _token: '{{ csrf_token() }}' }
         })
         .fail(function( msg ) {
             console.log( "AJAX Failed to add in : " + msg );
@@ -559,7 +559,7 @@ Configuración <small> Asignación de Herramientas</small>
         $.ajax({
             method: "POST",
             url: "{{ url('/asignaherramientas/saveuserprofile') }}",
-            data: { tools: JSON.stringify(saved), username: user, _token: '{{ csrf_token() }}' }
+            data: { tools: JSON.stringify(newsaved), username: user, _token: '{{ csrf_token() }}' }
         })
         .fail(function( msg ) {
             console.log( "AJAX Failed to add in : " + msg );
