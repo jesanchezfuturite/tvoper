@@ -66,19 +66,47 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
     {
         try
        { 
-               
             $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
             ->leftjoin('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
             ->leftjoin('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
             ->leftjoin('folios','folios.idTrans', '=','transacciones.idTrans')
             ->leftjoin('status','status.Status','=','transacciones.Status')
-            ->select('transacciones.idTrans','status.Descripcion as status','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado')
+            ->leftjoin('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
+            ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familiaentidad','operacion.oper_familiaentidad.entidad_id','=','oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
+            ->leftjoin('operacion.oper_processedregisters','operacion.oper_processedregisters.transaccion_id','=','transacciones.idTrans')
+            ->select('transacciones.idTrans','status.Descripcion as status','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_processedregisters.transaccion_id','operacion.oper_entidad.nombre as entidad','operacion.oper_familia.nombre as familia')
             ->groupBy('transacciones.idTrans')
             ->get();
             return $data;
             //Log::info($data);
         }catch( \Exception $e ){
-            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransacciones]  ERROR al actualizar las transacciones como procesadas en egobierno");
+            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransacciones]  ERROR al consultar ");
+            return false;
+        }
+    }
+    public function consultaTransaccionesFolio($folio)
+    {
+        try
+       { 
+            $data = Egobiernotransacciones::where('transacciones.idTrans',$folio)
+            ->leftjoin('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
+            ->leftjoin('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
+            ->leftjoin('folios','folios.idTrans', '=','transacciones.idTrans')
+            ->leftjoin('status','status.Status','=','transacciones.Status')
+            ->leftjoin('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
+            ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familiaentidad','operacion.oper_familiaentidad.entidad_id','=','oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
+            ->leftjoin('operacion.oper_processedregisters','operacion.oper_processedregisters.transaccion_id','=','transacciones.idTrans')
+            ->select('transacciones.idTrans','status.Descripcion as status','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_processedregisters.transaccion_id','operacion.oper_entidad.nombre as entidad','operacion.oper_familia.nombre as familia')
+            ->groupBy('transacciones.idTrans')
+            ->get();
+            return $data;
+            //Log::info($data);
+        }catch( \Exception $e ){
+            Log::info("[EgobiernotransaccionesRepositoryEloquent@consultaTransacciones]  ERROR al consultar ".$e);
             return false;
         }
     }
@@ -87,12 +115,17 @@ class EgobiernotransaccionesRepositoryEloquent extends BaseRepository implements
         try
        {                
             $data = Egobiernotransacciones::whereBetween('fechatramite',[$fechaIn,$fechaF])
-             ->join('status','transacciones.Status','=','status.Status')
-            ->join('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
-            ->join('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
-            ->join('folios','folios.idTrans', '=','transacciones.idTrans')
-            ->where('folios.CartKey1',$rfc)
-            ->select('status.Descripcion as status','transacciones.idTrans','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado')
+            ->leftjoin('tipo_servicios', 'tipo_servicios.Tipo_Code','=','transacciones.TipoServicio')
+            ->leftjoin('tipopago','tipopago.TipoPago', '=','transacciones.TipoPago')
+            ->leftjoin('folios','folios.idTrans', '=','transacciones.idTrans')
+            ->leftjoin('status','status.Status','=','transacciones.Status')
+            ->leftjoin('operacion.oper_entidadtramite','operacion.oper_entidadtramite.tipo_servicios_id','=','transacciones.TipoServicio')
+            ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familiaentidad','operacion.oper_familiaentidad.entidad_id','=','oper_entidadtramite.entidad_id')
+            ->leftjoin('operacion.oper_familia','operacion.oper_familia.id','=','operacion.oper_familiaentidad.familia_id')
+            ->leftjoin('operacion.oper_processedregisters','operacion.oper_processedregisters.transaccion_id','=','transacciones.idTrans')
+            ->where($rfc)
+            ->select('transacciones.idTrans','status.Descripcion as status','tipo_servicios.Tipo_Descripcion as tiposervicio','transacciones.TitularTC','transacciones.fechatramite','transacciones.HoraTramite','transacciones.BancoSeleccion','tipopago.Descripcion as tipopago','transacciones.TotalTramite','transacciones.TipoServicio as tiposervicio_id','transacciones.Status as estatus_id','folios.CartKey1 as rfc','folios.CartKey2 as declarado','operacion.oper_processedregisters.transaccion_id','operacion.oper_entidad.nombre as entidad','operacion.oper_familia.nombre as familia')
             ->groupBy('transacciones.idTrans')
             ->get();
             

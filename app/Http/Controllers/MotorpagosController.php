@@ -2146,7 +2146,11 @@ return json_encode($response);
         }
         if($rfc=="")
         {                
-        $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+            $transaccion=$this->transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);
+            if($transaccion<>null)
+            {
+                $response=$this->responseTrasaccionesEgob($transaccion,$response);
+            }
         //log::info($transaccion->count());
         }else{
             if($fecha_inicio=="" && $fecha_fin=="")
@@ -2157,146 +2161,164 @@ return json_encode($response);
                     $fechaFin=$fechaActual->format('Y-m-d');
                    // log::info($fechaIn.' - '.$fechaFin.' - '.$rfc);
                 $transaccion=$this->foliosdb->consultaRFCegob(['CartKey1'=>$rfc],$fechaIn,$fechaFin);
-               
+                if($transaccion<>null)
+                {
+                    $response=$this->responseTrasaccionesEgob($transaccion,$response);
+                }
+                $transaccionFolio=$this->transaccionesdb->consultaTransaccionesFolio($rfc);
+                //log::info($transaccionFolio);
+                if($transaccionFolio<>null)
+                {
+                    $response=$this->responseTrasaccionesEgob($transaccionFolio,$response);
+                }
             }else{
-                $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+                $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['folios.CartKey1'=>$rfc]);
+                if($transaccion<>null)
+                {
+                    $response=$this->responseTrasaccionesEgob($transaccion,$response);
+                }
+                $transaccion=$this->transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['transacciones.idTrans'=>$rfc]);
+                if($transaccion<>null)
+                {
+                    $response=$this->responseTrasaccionesEgob($transaccion,$response);
+                }
             }            
         }
-        if($transaccion<>null){
-          foreach ($transaccion as $trans) {
-            $familia='';
-            $entidad='';
-            $findDeclarado=null;
-            $declarado_anio="Aplica";
-            $declarado_mes= "";
-            $findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->idTrans]);
-            $estatus_C="";
-            $findEntidad=$this->entidadtramitedb->consultaEntidadTramite($trans->tiposervicio_id);
-           if($findEntidad<>null){
-                foreach ($findEntidad as $f) {
-                    $familia=$f->familia;
-                    $entidad=$f->entidad;
-                }
-           } 
-            
-            if($findConcilia->count()==0)
-                {
-                   $estatus_C="No Procesado"; 
-                }else{
-                    foreach ($findConcilia as $c) {
-                       $estatus_C=$c->status;
-                       
-                    }
-            }
-            if((int)$trans->tiposervicio_id==(int)"3")
-            {
-                $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
-                foreach ($findDeclarado as $e) {
-                    $declarado_anio=$e->anodec;
-                    $declarado_mes=$e->mesdec;
-                }                  
-            }
-            elseif((int)$trans->tiposervicio_id==(int)"13")
-            {
-                $findDeclarado=$this->detalleisandb->findWhere(['idTrans'=>$trans->idTrans]);
-                foreach ($findDeclarado as $e) {
-                   $declarado_anio=$e->anio_1;
-                    $declarado_mes=$e->mes_1;
-                }
-            }else{
-
-                if((int)$trans->tiposervicio_id==(int)"14")
-                {
-                    $findDeclarado=$this->detalleishdb->findWhere(['idTrans'=>$trans->idTrans]);                    
-                }
-                
-                if((int)$trans->tiposervicio_id==(int)"15")
-                {
-                    $findDeclarado=$this->detalleisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
-                }
-                if((int)$trans->tiposervicio_id==(int)"23")
-                {
-                    $findDeclarado=$this->detalleisnprestadoradb->findWhere(['idtrans'=>$trans->idTrans]);                    
-                }
-                if((int)$trans->tiposervicio_id==(int)"24")
-                {
-                    $findDeclarado=$this->detalleisnretenedordb->findWhere(['idtrans'=>$trans->idTrans]);                    
-                }
-                if((int)$trans->tiposervicio_id==(int)"25")
-                {
-                    $findDeclarado=$this->detimpisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
-                }                
-                if($findDeclarado<>null)
-                {
-                    foreach ($findDeclarado as $e) {
-                        $declarado_anio=$e->anio;
-                        $declarado_mes=$e->mes;
-                    }
-                }   
-            }       
-            
-            switch ($declarado_mes) {
-                case '1':
-                    $declarado="ENERO";                    
-                    break;
-                case '2':
-                    $declarado="FEBRERO";                    
-                    break;
-                case '3':
-                    $declarado="MARZO";                    
-                    break;
-                case '4':
-                    $declarado="ABRIL";                    
-                    break;
-                case '5':
-                    $declarado="MAYO";                    
-                    break;
-                case '6':
-                    $declarado="JUNIO";                    
-                    break;
-                case '7':
-                    $declarado="JULIO";                    
-                    break;
-                case '8':
-                    $declarado="AGOSTO";                    
-                    break;
-                case '9':
-                    $declarado="SEPTIEMBRE";                    
-                    break;
-                case '10':
-                    $declarado="OCTUBRE";                    
-                    break;
-                case '11':
-                    $declarado="NOVIEMBRE";                    
-                    break;
-                case '12':
-                    $declarado="NOVIEMBRE";                    
-                    break;                                    
-                default:
-                    $declarado="No";
-                    break;
-            }
-                    $response []= array(
-                        'Estatus'=>$trans->status,
-                        'RFC'=>$trans->rfc,
-                        'Transaccion'=>$trans->idTrans,                        
-                        'Familia'=>$familia,
-                        'Entidad'=>$entidad,
-                        'Tramite'=>$trans->tiposervicio,
-                        'Contribuyente'=>$trans->TitularTC,
-                        'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
-                        'Banco'=>$trans->BancoSeleccion,
-                        'Tipo_Pago'=>$trans->tipopago,
-                        'Total_Tramite'=>$trans->TotalTramite,
-                        'Declarado'=>$declarado." ".$declarado_anio,
-                        'estatus'=>$estatus_C
-                        );                 
-                
-            }
-        }
+        
         
         return json_encode($response);
         
+    }
+    private function responseTrasaccionesEgob($transaccion,$response)
+    {
+        if($transaccion<>null){
+            foreach ($transaccion as $trans){
+                $familia='';
+                $entidad='';
+                $findDeclarado=null;
+                $declarado_anio="Aplica";
+                $declarado_mes= "";
+                //$findConcilia=$this->processdb->findWhere(['transaccion_id'=>$trans->idTrans]);
+                $estatus_C="";
+                /*$findEntidad=$this->entidadtramitedb->consultaEntidadTramite($trans->tiposervicio_id);
+                if($findEntidad<>null){
+                    foreach ($findEntidad as $f) {
+                        $familia=$f->familia;
+                        $entidad=$f->entidad;
+                    }
+                } */
+            
+                if($trans->transaccion_id==null)
+                {
+                    $estatus_C='No Procesado'; 
+                }else{
+                    $estatus_C='Procesado';
+                }
+                if((int)$trans->tiposervicio_id==(int)"3")
+                {
+                    $findDeclarado=$this->nominadb->findWhere(['idtran'=>$trans->idTrans]); 
+                    foreach ($findDeclarado as $e) {
+                        $declarado_anio=$e->anodec;
+                        $declarado_mes=$e->mesdec;
+                    }                  
+                }elseif((int)$trans->tiposervicio_id==(int)"13")
+                {
+                    $findDeclarado=$this->detalleisandb->findWhere(['idTrans'=>$trans->idTrans]);
+                    foreach ($findDeclarado as $e) {
+                        $declarado_anio=$e->anio_1;
+                        $declarado_mes=$e->mes_1;
+                    }
+                }else{
+
+                    if((int)$trans->tiposervicio_id==(int)"14")
+                    {
+                        $findDeclarado=$this->detalleishdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                    }
+                    if((int)$trans->tiposervicio_id==(int)"15")
+                    {
+                        $findDeclarado=$this->detalleisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                    }
+                    if((int)$trans->tiposervicio_id==(int)"23")
+                    {
+                        $findDeclarado=$this->detalleisnprestadoradb->findWhere(['idtrans'=>$trans->idTrans]);                    
+                    }
+                    if((int)$trans->tiposervicio_id==(int)"24")
+                    {
+                        $findDeclarado=$this->detalleisnretenedordb->findWhere(['idtrans'=>$trans->idTrans]);         
+                    }
+                    if((int)$trans->tiposervicio_id==(int)"25")
+                    {
+                        $findDeclarado=$this->detimpisopdb->findWhere(['idTrans'=>$trans->idTrans]);                    
+                    }                   
+                    if($findDeclarado<>null)
+                    {
+                        foreach ($findDeclarado as $e) {
+                            $declarado_anio=$e->anio;
+                            $declarado_mes=$e->mes;
+                        }
+                    }   
+                }       
+            
+                switch ($declarado_mes) {
+                    case '1':
+                        $declarado="ENERO";                    
+                        break;
+                    case '2':
+                        $declarado="FEBRERO";                    
+                        break;
+                    case '3':
+                        $declarado="MARZO";                    
+                        break;
+                    case '4':
+                        $declarado="ABRIL";                    
+                        break;
+                    case '5':
+                        $declarado="MAYO";                    
+                        break;
+                    case '6':
+                        $declarado="JUNIO";                    
+                        break;
+                    case '7':
+                        $declarado="JULIO";                    
+                        break;
+                    case '8':
+                        $declarado="AGOSTO";                    
+                        break;
+                    case '9':
+                        $declarado="SEPTIEMBRE";                    
+                        break;
+                    case '10':
+                        $declarado="OCTUBRE";                    
+                        break;
+                    case '11':
+                        $declarado="NOVIEMBRE";                    
+                        break;
+                    case '12':
+                        $declarado="NOVIEMBRE";                    
+                        break;                                    
+                    default:
+                        $declarado="No";
+                        break;
+                }
+                $response []= array(
+                    'Estatus'=>$trans->status,
+                    'RFC'=>$trans->rfc,
+                    'Transaccion'=>$trans->idTrans,                        
+                    'Familia'=>$trans->familia,
+                    'Entidad'=>$trans->entidad,
+                    'Tramite'=>$trans->tiposervicio,
+                    'Contribuyente'=>$trans->TitularTC,
+                    'Inicio_Tramite'=>$trans->fechatramite." ".$trans->HoraTramite,
+                    'Banco'=>$trans->BancoSeleccion,
+                    'Tipo_Pago'=>$trans->tipopago,
+                    'Total_Tramite'=>$trans->TotalTramite,
+                    'Declarado'=>$declarado." ".$declarado_anio,
+                    'estatus'=>$estatus_C
+                );                 
+                
+            }
+        }
+        return $response;
     }
     public function consultaTransaccionesOper(Request $request)
     {
@@ -2321,31 +2343,61 @@ return json_encode($response);
         }       
         if($rfc=="")
         {
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin);             
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin); 
+            if($transaccion<>null){
+                $response=$this->reponseTransacciones($transaccion,$response);
+            }      
         }else{
             if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
-                {
-                    $fechaIn=$fechaActual->subYears(1);
-                    $fechaIn=$fechaIn->format('Y');
-                    $fechaIn=$fechaIn.'-01-01 00:00:00';
-                    $fechaFin=$fechaActual->format('Y-m-d').' 23:59:59';
-                    $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc],$fechaIn,$fechaFin);
-                }else{
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,$rfc);
+            {
+                $fechaIn=$fechaActual->subYears(1);
+                $fechaIn=$fechaIn->format('Y');
+                $fechaIn=$fechaIn.'-01-01 00:00:00';
+                $fechaFin=$fechaActual->format('Y-m-d').' 23:59:59';
+                $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc],$fechaIn,$fechaFin);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                }
+                $transaccionplaca=$this->tramitedb->consultaRFCoper(['auxiliar_2'=>$rfc],$fechaIn,$fechaFin);
+                log::info($rfc.$transaccionplaca);
+                 if($transaccionplaca<>null){
+                    $response=$this->reponseTransacciones($transaccionplaca,$response);
+                }
+                $findFolio=$this->oper_transaccionesdb->consultaFolioTransacciones($rfc,$fechaIn,$fechaFin);
+                //log::info($findFolio);
+                 if($findFolio<>null){
+                    $response=$this->reponseTransacciones($findFolio,$response);
+                }
+            }else{
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.rfc'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.auxiliar_2'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_transacciones.id_transaccion_motor'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
             }
         }    
         //log::info($transaccion);      
-        if($transaccion<>null){
-        foreach ($transaccion as $trans) {
+         return json_encode($response);
+        
+    }
+    private function reponseTransacciones($transacciones,$response)
+    {
+        if($transacciones<>null){
+        foreach ($transacciones as $trans) {
             //$findConcilia=$this->processdb->findWhere(['referencia'=>$trans->referencia]);
             $estatus_C="np";
             if($trans->id==null)
                 {
                    $estatus_C="No Procesado"; 
-                }else{
-                   
-                       $estatus_C='Procesado';
-                  
+                }else{                   
+                       $estatus_C='Procesado';                  
                 }
             
                 $response []= array(
@@ -2366,7 +2418,7 @@ return json_encode($response);
                
             }
         }    
-        return json_encode($response);
+        return $response;
     }
     public function consultaTransaccionesGpm(Request $request)
     {      
