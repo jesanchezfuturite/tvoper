@@ -392,6 +392,10 @@
     }
     function radiobuttons()
     {
+        document.getElementById('fechainicio').value='';
+        document.getElementById('fechafin').value='';
+        document.getElementById('rfc').value='';
+
         var option = document.querySelector('input[name = radio2]:checked').value;        
         if(option=="avanzado")
         {
@@ -401,14 +405,18 @@
             $("#addTimerpicker").css("display", "none");
             if(option=="undia")
            {
-                consultaInicial();
+                consultaOper("1","1");
             }else{
-                consulta3dias();
+                consultaOper("3","3");
             }
         }
     }
     function radiobuttons2()
     {
+        document.getElementById('fechainicio2').value='';
+        document.getElementById('fechafin2').value='';
+        document.getElementById('rfc2').value='';
+        console.log('Egobierno');
         var option = document.querySelector('input[name = radio3]:checked').value;        
         if(option=="avanzado")
         {
@@ -418,9 +426,9 @@
              $("#addTimerpicker2").css("display", "none");
             if(option=="undia")
             {
-                consultaInicial();
+                consultaEgob('1','1');
             }else{
-                consulta3dias();
+                consulta3dias('3','3');
             }
         }
     }
@@ -429,26 +437,20 @@
         //$("#addTimerpicker div").remove();
          //$("#addTimerpicker").append("");
          $("#addTimerpicker").css("display", "block");         
-          
+        document.getElementById('fechainicio').value='';
+        document.getElementById('fechafin').value='';
+        document.getElementById('rfc').value=''; 
     }
      function timpicker2()
     {
         //$("#addTimerpicker2 div").remove();
         /// $("#addTimerpicker2").append("");
-         $("#addTimerpicker2").css("display", "block"); 
-          fechaIn=$("#fechainicio2").val();
-        fechaF=$("#fechafin2").val();
-        var rfc=$("#rfc2").val();        
-        
+        $("#addTimerpicker2").css("display", "block"); 
+        document.getElementById('fechainicio2').value='';
+        document.getElementById('fechafin2').value='';
+        document.getElementById('rfc2').value='';
     }
-    function consultaInicial()
-    {
-        consultaOper("1","1");       
-    }
-    function consulta3dias()
-    {
-        consultaOper("3","3");  
-    }
+    
     $("#rfc").on("keypress", function(e)  {
         if (e.keyCode == 13) {
            var rfc=$('#rfc').val();
