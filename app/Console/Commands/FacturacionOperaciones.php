@@ -250,7 +250,7 @@ class FacturacionOperaciones extends Command
                                         'id_descuento'          => $id->id_descuento
                                     );
                                 }
-                                Log::info($info_detalles);
+                                
                             }
 
                             $tramites []= array(
@@ -350,8 +350,9 @@ class FacturacionOperaciones extends Command
                     try
                     {
                         // insertar los registros de detalles de la transaccion
-                        // $o = $this->detalle->insert( $i_detalles );               
-                        $has = $this->detalle->findWhere( [ 'id_oper' => $d["id_tramite_motor"] ,  'id_mov' => $d["id_detalle_tramite"] ] );
+                        // $o = $this->detalle->insert( $i_detalles );
+
+                        $has = $this->detalle->findWhere(["id_mov" => $d["id_tramite_motor"], "id_oper" => $d["id_transaccion_motor"]]);
 
                         if ($has->count() == 0) {
                             /* no existe */

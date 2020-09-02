@@ -134,7 +134,7 @@
     function GuardarExcel()
     {
         var JSONData=$("#jsonCode").val();
-        JSONToCSVConvertor(JSONData, "INPC", true)
+        JSONToCSVConvertor(JSONData, "NoConciliados", true)
     }
     $('.valida-num').on('input', function () { 
     this.value = this.value.replace(/[^0-9]/g,'');
