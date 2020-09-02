@@ -295,3 +295,10 @@ Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
 Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');	
 Route::post('/cfdi-manual/busca-rfc','ManualcfdiController@searchrfc');
 Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
+
+
+/*************************    PORTAL    ******************************************/
+Route::post('/tramites/list-fields','PortaltramitesController@listFields');
+
+
+
