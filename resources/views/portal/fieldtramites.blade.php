@@ -1,5 +1,7 @@
 @extends('layout.app')
 @section('content')
+<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Configuración de campos para trámites </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -113,7 +115,9 @@
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
+
 <script type="text/javascript">
+
     function limpiar()
     {
         document.getElementById('nombre').value="";
@@ -129,11 +133,32 @@
             Command: toastr.warning("Campo Nombre, Requerido!", "Notifications")
 
         } else {
-            id_.length == 0 ? alert("add") : alert("ipdat");
-                //InpcInsert();
-                //InpcActualizar();
+            id_.length == 0 ? insert() : actualizar();
         }
 
+    }
+
+    function insert()
+    {
+        var campo =$("#nombre").val();
+
+         $.ajax({
+           method: "post",           
+           url: "{{ url('/tramites-add-field') }}",
+           data: {campo ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            console.log( response )
+/*
+          if(response=="true"){
+            Command: toastr.success("Success", "Notifications")
+            CargartablaINPC();
+            limpiar();
+          }else{
+            Command: toastr.warning("Error al Guardar", "Notifications")
+          }*/
+        })
+        .fail(function( msg ) {
+         console.log("Error al Cargar Tabla Partidas");  });
     }
 
     function InpcUpdate( tramite )
