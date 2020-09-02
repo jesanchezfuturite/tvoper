@@ -38,7 +38,31 @@ class PortaltramitesController extends Controller
 
 	public function listFields()
 	{
-		return view('portal/fieldtramites', []);
+		$cmp = $this->campos->all();
+
+		$response = array();
+
+		try{
+	    foreach ($tramits as $t) {
+	      $response []=array(
+	        'id_campo'=> $t->id,
+	        'campo' => $t->descripcion,
+	      );
+	    }
+
+	  }catch(\Exception $e){
+	    Log::info('Error Operacion - ver Tramites: '.$e->getMessage());
+	  }
+
+		return view('portal/fieldtramites', ['data'=> $response]);
+	}
+
+	public function newField(Request $request){
+
+	}
+
+	public function editField(Request $request){
+		
 	}
 
 }

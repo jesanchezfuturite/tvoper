@@ -273,8 +273,8 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::get('/adminmenu', 'AdminMenuController@index');
     Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
     /* set the user menu tools */
-    Route::get('/asignaherramientas', 'AsignaHerramientasController@index'); 
-    Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile'); 
+    Route::get('/asignaherramientas', 'AsignaHerramientasController@index');
+    Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile');
     Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
     Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
 
@@ -292,13 +292,11 @@ Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@search
 Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
-Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');	
+Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');
 Route::post('/cfdi-manual/busca-rfc','ManualcfdiController@searchrfc');
 Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
 
 
 /*************************    PORTAL    ******************************************/
 Route::get('/tramites-list-fields','PortaltramitesController@listFields');
-
-
-
+Route::post('/tramites-add-field','PortaltramitesController@newField');
