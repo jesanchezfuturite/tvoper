@@ -300,3 +300,4 @@ Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
 /*************************    PORTAL    ******************************************/
 Route::get('/tramites-list-fields','PortaltramitesController@listFields');
 Route::post('/tramites-add-field','PortaltramitesController@newField');
+Route::post('/tramites-edit-field','PortaltramitesController@editField');

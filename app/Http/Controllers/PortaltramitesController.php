@@ -28,13 +28,10 @@ class PortaltramitesController extends Controller
     }
 
 
-    /*
+   /*
 	 *  listFields
 	 *
-	 *
-	 *
-	 *
-    */
+   */
 
 	public function listFields()
 	{
@@ -47,6 +44,7 @@ class PortaltramitesController extends Controller
 	      $response []=array(
 	        'id_campo'=> $t->id,
 	        'campo' => $t->descripcion,
+					'estatus' => $t->status,
 	      );
 	    }
 
@@ -57,7 +55,46 @@ class PortaltramitesController extends Controller
 		return view('portal/fieldtramites', ['data'=> $response]);
 	}
 
+	/*
+	*  Add New Fields
+	*/
 	public function newField(Request $request){
+		$desc = $request->campo;
+
+
+		try{
+			$cmp = $this->campos->findWhere('descripcion', $desc);
+
+			if(!empty($cmp)){
+				return response()->json(
+					[
+						"Code" => "400",
+						"Message" => "Error, este campo ya existe",
+					]
+				);
+			} else {
+
+				$c = new Portalcampo();
+
+				$c->descripcion = $desc;
+				$c->status = '1';
+
+				$c->save();
+
+				return response()->json(
+					[
+						"Code" => "200",
+    				"Message" => "Se agrego un nuevo campo",
+					]
+				);
+
+			}
+
+		}
+		catch(\Exception $e){
+			Log::info('Error Add New Field '.$e->getMessage());
+
+		}
 
 	}
 
