@@ -23,7 +23,7 @@ class Portalcampo extends Model implements Transformable
 
     protected $connection = "mysql6";
 
-    protected $fillable = ['campo_id','descripcion'];
+    protected $fillable = ['status','descripcion'];
 
     protected $table = "campos_catalogue";
 
