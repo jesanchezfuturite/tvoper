@@ -36,28 +36,32 @@
                 <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
                 </div>
             </div>
-            <div class="form-group">
-             <div class="col-md-6 text-right">                
-                <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
-              </div>
-            </div>
             <span class="help-block">&nbsp; </span>
             
-                <table class="table table-hover" id="sample_2">
+            <table class="table table-hover" id="sample_2">
                 <thead>
-                <tr>
-                    <th>Año</th>
-                    <th>Mes</th> 
-                    <th>Indice</th>                                       
-                    <th>&nbsp;</th>
-                </tr>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estatus</th>                                      
+                        <th>&nbsp;</th>
+                    </tr>
                 </thead>
                 <tbody>
-                     <td><span class="help-block">No Found</span></td>
-                            <td></td>                         
-                            <td></td>                                                               
+                    @foreach( $data as $tramite)
+                        <tr>                           
+                            <td>                              
+                                {{$tramite["campo"]}}                               
+                            </td>
+                            <td class="text-right">
+                            <td class='text-center' width='20%'>
+                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate( {{ json_encode($tramite) }} )'>
+                                    <i class='fa fa-pencil'></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach                                                              
                 </tbody>
-                </table>
+            </table>
           
         </div>
     </div>
@@ -79,45 +83,9 @@
                     <div class="row">
                         <div class="col-md-12">                        
                        <div class="form-group">
-                            <label class="col-md-3 control-label ">Año</label>
+                            <label class="col-md-3 control-label ">Nombre</label>
                             <div class="col-md-8">
-                                <input id="anio" class="valida-num form-control" maxlength="4"  autocomplete="off" placeholder="Ingresar Año">
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-12">                        
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Mes</label>
-                            <div class="col-md-8">
-                                <select id="mes" class="select2me form-control" >
-                                  <option value="limpia">-------</option>
-                                  <option value="1">Enero</option>
-                                  <option value="2">Febrero</option>
-                                  <option value="3">Marzo</option>
-                                  <option value="4">Abril</option>
-                                  <option value="5">Mayo</option>
-                                  <option value="6">Junio</option>
-                                  <option value="7">Julio</option>
-                                  <option value="8">Agosto</option>
-                                  <option value="9">Septiembre</option>
-                                  <option value="10">Octubre</option>
-                                  <option value="11">Noviembre</option>
-                                  <option value="12">Diciembre</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Indice</label>
-                            <div class="col-md-8">
-                                <input id="indice" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
+                                <input id="nombre" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Nombre">
                             </div>
                         </div>
                         </div>
@@ -140,32 +108,38 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-
 <!-- modal-dialog -->
-<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-             ¿Eliminar Registro?
-                </p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
-            </div>
-            <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminarInpc()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
 <script type="text/javascript">
-   
+    function limpiar()
+    {
+        document.getElementById('nombre').value="";
+        document.getElementById('idupdate').value="";
+    }
+
+    function VerificaInsert()
+    {
+        var nombre=$("#nombre").val();
+        var id_=$("#idupdate").val();
+        if(nombre.length<1)
+        {
+            Command: toastr.warning("Campo Nombre, Requerido!", "Notifications")
+
+        } else {
+            id_.length == 0 ? alert("add") : alert("ipdat");
+                //InpcInsert();
+                //InpcActualizar();
+        }
+
+    }
+
+    function InpcUpdate( tramite )
+    {
+        $("#nombre").val( tramite.campo );
+        $('#idupdate').val( tramite.id_campo );
+    } 
 </script>
 @endsection
