@@ -63,7 +63,7 @@ class PortaltramitesController extends Controller
 
 
 		try{
-			$cmp = $this->campos->findWhere('descripcion', $desc);
+			$cmp = $this->campos->findWhere(['descripcion'=> $desc]);
 
 			if(!empty($cmp)){
 				return response()->json(
