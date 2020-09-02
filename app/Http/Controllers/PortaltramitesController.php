@@ -65,7 +65,7 @@ class PortaltramitesController extends Controller
 		try{
 			$cmp = $this->campos->findWhere(['descripcion'=> $desc]);
 
-			if(!empty($cmp)){
+			if($cmp->count() == 0){
 				return response()->json(
 					[
 						"Code" => "400",
@@ -74,12 +74,7 @@ class PortaltramitesController extends Controller
 				);
 			} else {
 
-				$c = new Portalcampo();
-
-				$c->descripcion = $desc;
-				$c->status = '1';
-
-				$c->save();
+				$this->campos->create( ["descripcion" => $desc, "estatus" => 1] );
 
 				return response()->json(
 					[
