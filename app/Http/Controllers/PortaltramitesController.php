@@ -18,7 +18,7 @@ class PortaltramitesController extends Controller
 {
     //
 
-	protected $campos
+	protected $campos;
 
     public function __construct(
     	PortalcampoRepositoryEloquent $campos
@@ -38,7 +38,7 @@ class PortaltramitesController extends Controller
 
 	public function listFields()
 	{
-		return view('portal.fieldtramites', []);
+		return view('portal/fieldtramites', []);
 	}
 
 }

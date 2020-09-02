@@ -298,7 +298,7 @@ Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
 
 
 /*************************    PORTAL    ******************************************/
-Route::post('/tramites/list-fields','PortaltramitesController@listFields');
+Route::get('/tramites-list-fields','PortaltramitesController@listFields');
 
 
 
