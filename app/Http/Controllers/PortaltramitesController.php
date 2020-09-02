@@ -43,7 +43,7 @@ class PortaltramitesController extends Controller
 		$response = array();
 
 		try{
-	    foreach ($tramits as $t) {
+	    foreach ($cmp as $t) {
 	      $response []=array(
 	        'id_campo'=> $t->id,
 	        'campo' => $t->descripcion,
@@ -62,7 +62,7 @@ class PortaltramitesController extends Controller
 	}
 
 	public function editField(Request $request){
-		
+
 	}
 
 }
