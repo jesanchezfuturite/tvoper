@@ -280,7 +280,7 @@
    
     
     
- function saveCampos() 
+ /*function saveCampos() 
  {           
             
            
@@ -294,7 +294,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
             return false;
-    }
+    }*/
     function FindTramiteCampos()
     {
         var items=$("#itemsTramites").val();
