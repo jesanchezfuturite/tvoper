@@ -72,13 +72,13 @@
                 <div class="tools" id="removeBanco">                
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
-                   <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick="desactivabanco()"><i class='fa fa-remove' style="color:white !important;"></i>
+                   <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Tramite" onclick="desactivaTramite()"><i class='fa fa-remove' style="color:white !important;"></i>
                     </a>
                 </div>
             </div>
-            <div class="portlet-body">
+            <div class="portlet-body" id="Removetable">
                 <div class="table-scrollable">
-                    <table class="table table-hover" id="table">
+                    <table class="table table-hover" id="sample_2">
                     <thead>
                     <tr>
                         <th>Tramite</th>
@@ -130,7 +130,7 @@
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label>Tipo</label>                            
-                                        <select class="select2me form-control"  id="itemsTipo">
+                                        <select class="select2me form-control"  id="itemsTipos">
                                             <option>------</option>                                             
                                         </select>
                                     </div>
@@ -139,13 +139,20 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label >Caracteristicas</label>                            
-                                        <textarea  class="form-control" placeholder="Caracteristicas " id="caracteristica" rows="3"></textarea>
-                                    </div>
-                                </div>
-                            </div>  
+                                <div class='col-md-4'>                                
+                                    <div class='form-group'> 
+                                        <label >Caracteristicas</label>
+                                        <div class='md-checkbox'>
+                                            <input type='checkbox' id='checkbox30' class='md-check'>   
+                                            <label for='checkbox30'> 
+                                                <span></span>  
+                                                <span class='check'></span> <span class='box'>
+                                            </span>  Requerido. </label> 
+                                        </div>
+                                        <span class='help-block'>Marque</span> 
+                                    </div> 
+                                </div>  
+                            </div>             
                         </div>             
                     
                     <div class="form-group">
@@ -175,8 +182,7 @@
             </div>
             <div class="modal-body">
                 <p>
-             ¿Desactivar/Activar Registro?<br>
-             <br> ¡Afectara a todos los <h style="color: #cb5a5e;">Tramites</h> relacionados con la <h style="color: #cb5a5e;">Cuenta Banco</h>!
+                    ¿Desactivar/Activar Registro?<br>
                 </p>
                  <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
                  <input hidden="true" type="text" name="idstatus" id="idstatus" class="idstatus">
@@ -190,7 +196,26 @@
         </div>
     </div>
 </div>
-
+<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="umaeliminar()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -213,14 +238,11 @@
             $("#itemsTramites option").remove();
             $("#itemsTramites").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {                
-                $("#itemsTramites").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-            
-            });
-        
+                $("#itemsTramites").append("<option value='"+item.id+"'>"+item.desc+"</option>");            
+            });        
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-          
+         Command: toastr.warning("No Success", "Notifications")  });          
     }
      function findCampos()
     {     
@@ -235,14 +257,11 @@
             $("#itemsCampo option").remove();
             $("#itemsCampo").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {                
-                $("#itemsCampo").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-            
-            });
-        
+                $("#itemsCampo").append("<option value='"+item.id+"'>"+item.desc+"</option>");            
+            });        
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-          
+         Command: toastr.warning("No Success", "Notifications")  });          
     }
     function findTipos()
     {     
@@ -255,14 +274,11 @@
             $("#itemsTipos option").remove();
             $("#itemsTipos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {                
-                $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-            
-            });
-        
+                $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");            
+            });        
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-           
+         Command: toastr.warning("No Success", "Notifications")  });           
     }
   
     function changeTramites()
@@ -300,7 +316,7 @@
         var items=$("#itemsTramites").val();
        if(items=='limpia')
        {
-        
+        addTable();
        }else{
         
         $.ajax({
@@ -309,24 +325,42 @@
            data: {id:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
-        $.each(Resp, function(i, item) {                
-            
-
-        });
+            addTable();
+            $.each(Resp, function(i, item) {                
+                $('#sample_2 tbody').append("<tr>"
+                +"<td>"+item.anio+"</td>"
+                +"<td>"+item.mes+"</td>"
+                +"<td>"+item.indice+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='InpcDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
+                +"</tr>"
+                );
+            });
+            //TableManaged.init();
         
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-        Cuentas(items);   
+         Command: toastr.warning("No Success", "Notifications")  });   
        }
     }
     
-
+    function addTable()
+    {
+        $('#Removetable').append(
+            "<div class='table-scrollable'><table class='table table-hover' id='sample_2'> <thead> <tr><th>Tramite</th><th>Campo</th><th>Tipo</th><th>Caracteristicas</th> <th></th></tr> </thead><tbody></tbody></table> </div>"
+        );
+    }
     function insertTramiteCampos()
     {
-        var itemTramite=$("#items").val();
-        var metodopago_=$("#itemMetodopago").val();
-        var cuenta=$("#cuenta").val();
+        var itemTramite=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampo").val();
+        var itemsTipos=$("#itemsTipos").val();
+        var check=$("#checkbox30").prop("checked");
+        if(check==true)
+        {
+            
+        }else{
+
+        }
 
        if(itemTramite=="limpia")
         { 
@@ -349,7 +383,7 @@
     }
     function CleanInputs()
     {
-         document.getElementById('caracteristica').value="";
+         //document.getElementById('caracteristica').value="";
          //document.getElementById('itemMetodopago').value="limpia";
          $("#itemsTipo").val("limpia").change();
          $("#itemsCampo").val("limpia").change();
