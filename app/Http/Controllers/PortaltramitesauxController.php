@@ -32,6 +32,7 @@ class PortaltramitesauxController extends Controller
 
     )
     {
+    	$this->middleware('auth');
     	$this->tiposer = $tiposer;
     	$this->campos = $campos;
     	$this->camtip = $campotipos;
@@ -46,7 +47,11 @@ class PortaltramitesauxController extends Controller
 	 *
 	 *	@return json catalogo con ids
     */
-
+    public function index()
+    {
+    	
+    	return view('portal/admincampos');
+    }
 	public function listarTramites()
 	{
 		$sr = $this->tiposer->all();
