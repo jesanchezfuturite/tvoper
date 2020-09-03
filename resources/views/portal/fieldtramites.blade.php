@@ -1,5 +1,7 @@
 @extends('layout.app')
 @section('content')
+<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Configuración de campos para trámites </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -54,7 +56,7 @@
                             </td>
                             <td class="text-right">
                             <td class='text-center' width='20%'>
-                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate( {{ json_encode($tramite) }} )'>
+                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
                                     <i class='fa fa-pencil'></i>
                                 </a>
                             </td>
@@ -113,7 +115,17 @@
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
+
+<script src="assets/global/dataTable/dataTables.min.js"></script>
+<script src="assets/global/dataTable/jszip.min.js"></script>
+<script src="assets/global/dataTable/vfs_fonts.js"></script>
+<script src="assets/global/dataTable/buttons.html5.min.js"></script>
 <script type="text/javascript">
+
+    jQuery(document).ready(function() {
+        $('#sample_2').DataTable( );
+    });
+
     function limpiar()
     {
         document.getElementById('nombre').value="";
@@ -127,16 +139,56 @@
         if(nombre.length<1)
         {
             Command: toastr.warning("Campo Nombre, Requerido!", "Notifications")
-
         } else {
-            id_.length == 0 ? alert("add") : alert("ipdat");
-                //InpcInsert();
-                //InpcActualizar();
+            id_.length == 0 ? insert() : actualizar();
         }
 
     }
 
-    function InpcUpdate( tramite )
+    function insert()
+    {
+        var campo =$("#nombre").val();
+
+         $.ajax({
+           method: "post",           
+           url: "{{ url('/tramites-add-field') }}",
+           data: {campo ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            limpiar();
+            location.reload();
+          }else{
+            Command: toastr.warning(response.Message, "Notifications")
+          }
+        })
+        .fail(function( msg ) {
+            console.log("Error al Cargar Tabla");  
+        });
+    }
+
+    function actualizar( ){
+        var campo =$("#nombre").val();
+        var id_= $("#idupdate").val();
+        $.ajax({
+           method: "post",           
+           url: "{{ url('/tramites-edit-field') }}",
+           data: {campo, id: id_ ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            limpiar();
+            location.reload();
+          }else{
+            Command: toastr.warning(response.Message, "Notifications")
+          }
+        })
+        .fail(function( msg ) {
+            console.log("Error al Cargar Tabla");  
+        });     
+    }
+
+    function update( tramite )
     {
         $("#nombre").val( tramite.campo );
         $('#idupdate').val( tramite.id_campo );
