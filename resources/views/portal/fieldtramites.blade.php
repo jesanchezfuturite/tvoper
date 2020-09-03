@@ -244,7 +244,7 @@
            data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
-            Command: toastr.success("Campo eliminado", "Notifications")
+            Command: toastr.success(response.Message, "Notifications")
             limpiar();
             location.reload();
           }else{
