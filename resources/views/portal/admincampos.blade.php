@@ -290,6 +290,7 @@
             document.getElementById("nameTramite").textContent="Tramite ";
         }else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
+           findRelationship();
         }
     }
    
@@ -309,7 +310,7 @@
             insertTramiteCampos();
         }
     }
-    function changeTramites()
+    function findRelationship()
     {
         var items=$("#itemsTramites").val();
        if(items=='limpia')
@@ -372,7 +373,7 @@
        })
         .done(function (response) {
             CleanInputs();
-            changeTramites();
+            findRelationship();
             Command: toastr.success("Success", "Notifications")     
         })
         .fail(function( msg ) {
