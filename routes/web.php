@@ -303,7 +303,11 @@ Route::post('/tramites-add-field','PortaltramitesController@newField');
 Route::post('/tramites-edit-field','PortaltramitesController@editField');
 Route::post('/tramites-estatus', 'PortaltramitesController@fieldStatus');
 
+Route::get('/traux-campos','PortaltramitesauxController@index');
 Route::get('/traux-get-serv','PortaltramitesauxController@listarTramites');
 Route::get('/traux-get-camp','PortaltramitesauxController@listarCampos');
 Route::get('/traux-get-tcamp','PortaltramitesauxController@listarTipoCampos');
 Route::post('traux-add-serv','PortaltramitesauxController@guardaTramite');
+
+
+
