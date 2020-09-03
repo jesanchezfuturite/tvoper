@@ -178,7 +178,7 @@
     function actualizar( ){
         var campo =$("#nombre").val();
         var id_= $("#idupdate").val();
-        var estatus = $('#estatus').val( );
+        var status = $('#estatus').val( );
         $.ajax({
            method: "post",           
            url: "{{ url('/tramites-edit-field') }}",
