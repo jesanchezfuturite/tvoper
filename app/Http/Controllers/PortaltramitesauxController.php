@@ -138,6 +138,28 @@ class PortaltramitesauxController extends Controller
 	}
 
 	/**
+     * Listar relacion de campos para un tramite
+	 *  
+	 *	@param Request POST 
+	 *
+	 *	@return json resultado por ID
+    */
+
+	public function listarRelacion(Request $request)
+	{
+		
+		try {
+
+			$rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
+			
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
+		}
+
+		return json_encode($rel);
+	}
+
+	/**
      * 	Guarda el tramite creado con campos y caracteristicas
 	 *  
 	 *	@param Request POST 
@@ -155,11 +177,12 @@ class PortaltramitesauxController extends Controller
 				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
 			}
 
-			$this->camrel->create($in);
+			$this->camrel->insert($in);
 			
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
 
 	}
+
 }
