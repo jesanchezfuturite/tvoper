@@ -29,7 +29,7 @@
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-cogs"></i>Registros Indice Nacional de Precios al Consumidor
+                <i class="fa fa-cogs"></i>Campos para trámites
             </div>
         </div>
         <div class="portlet-body" id="Removetable">           
