@@ -52,6 +52,7 @@ class PortaltramitesauxController extends Controller
     	
     	return view('portal/admincampos');
     }
+
 	public function listarTramites()
 	{
 		$sr = $this->tiposer->all();
@@ -147,15 +148,18 @@ class PortaltramitesauxController extends Controller
 	public function guardaTramite(Request $request)
 	{
 		
+		try {
 
-		// try {
+			foreach ($request->campoid as $k => $v) {
+				
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
+			}
 
-		// 	$this->camrel->create(['tramite_id'=>$request->trid,])
+			$this->camrel->create($in);
 			
-		// } catch (\Exception $e) {
-		// 	Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
-		// }
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+		}
 
-		return json_encode($request);
 	}
 }
