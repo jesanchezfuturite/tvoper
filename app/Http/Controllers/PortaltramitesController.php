@@ -67,7 +67,7 @@ class PortaltramitesController extends Controller
 
 			if($cmp->count() > 0){
 
-				Log::info($cmp->count()); 
+				Log::info($cmp->count());
 
 				return response()->json(
 					[
@@ -97,6 +97,26 @@ class PortaltramitesController extends Controller
 	}
 
 	public function editField(Request $request){
+		$desc = $request->campo;
+		$id = $request->id_campo;
+		$status = $request->status;
+
+		try{
+			
+			$campo = $this->campos->update(["descripcion" => $desc, "status" => $status], $id);
+
+			return response()->json(
+				[
+					"Code" => "200",
+					"Message" => "Se agrego un nuevo campo",
+				]
+			);
+
+		} catch(\Exception $e) {
+
+			Log::info('Error Edit Field '.$e->getMessage());
+
+		}
 
 	}
 
