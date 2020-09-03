@@ -35,7 +35,7 @@ class PortaltramitesController extends Controller
 
 	public function listFields()
 	{
-		$cmp = $this->campos->all();
+		$cmp = $this->campos->all()->where('status', 1);
 
 		$response = array();
 
@@ -99,18 +99,30 @@ class PortaltramitesController extends Controller
 	public function editField(Request $request){
 		$desc = $request->campo;
 		$id = $request->id_campo;
-		$status = $request->status;
 
 		try{
+			$cmp = $this->campos->findWhere(['descripcion'=> $desc]);
 
-			$campo = $this->campos->update(["descripcion" => $desc, "status" => $status], $id);
+			if($cmp->count() > 0){
 
-			return response()->json(
-				[
-					"Code" => "200",
-					"Message" => "Se agrego un nuevo campo",
-				]
-			);
+				return response()->json(
+					[
+						"Code" => "400",
+						"Message" => "Error, ya existe un campo con este nombre",
+					]
+				);
+
+			}
+			else{
+				$campo = $this->campos->update(["descripcion" => $desc], $id);
+
+				return response()->json(
+					[
+						"Code" => "200",
+						"Message" => "Edición realizada con éxito",
+					]
+				);
+			}
 
 		} catch(\Exception $e) {
 
@@ -119,6 +131,32 @@ class PortaltramitesController extends Controller
 				[
 					"Code" => "400",
 					"Message" => "Error al editar",
+				]
+			);
+		}
+
+	}
+
+	public function fieldStatus(Request $request){
+		$status = $request->status;
+		$id = $request->id_campo;
+
+		try{
+			$campo = $this->campos->update(["status" => $status], $id);
+
+			return response()->json(
+				[
+					"Code" => "200",
+					"Message" => "Estatus Actualizado",
+				]
+			);
+		}
+		catch(\Exception $e){
+			Log::info('Error Edit Field '.$e->getMessage());
+			return response()->json(
+				[
+					"Code" => "400",
+					"Message" => "Error al actualizar estatus",
 				]
 			);
 		}

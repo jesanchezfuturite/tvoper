@@ -301,6 +301,7 @@ Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
 Route::get('/tramites-list-fields','PortaltramitesController@listFields');
 Route::post('/tramites-add-field','PortaltramitesController@newField');
 Route::post('/tramites-edit-field','PortaltramitesController@editField');
+Route::post('/tramites-estatus', 'PortaltramitesController@fieldStatus');
 
 Route::get('/traux-campos','PortaltramitesauxController@index');
 Route::get('/traux-get-serv','PortaltramitesauxController@listarTramites');

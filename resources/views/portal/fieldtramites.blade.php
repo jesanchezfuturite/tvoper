@@ -29,7 +29,7 @@
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-cogs"></i>Registros Indice Nacional de Precios al Consumidor
+                <i class="fa fa-cogs"></i>Campos para trámites
             </div>
         </div>
         <div class="portlet-body" id="Removetable">           
@@ -54,11 +54,22 @@
                             <td>                              
                                 {{$tramite["campo"]}}                               
                             </td>
-                            <td class="text-right">
+                            <td >  
+                                @if( $tramite["estatus"] == 1 )
+                                   Activo
+                                @else
+                                    Inactivo
+                                @endif
+                            </td>
                             <td class='text-center' width='20%'>
                                 <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
                                     <i class='fa fa-pencil'></i>
                                 </a>
+                                @if( $tramite["estatus"] == 1 )
+                                    <a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted( {{ json_encode($tramite) }} )'>
+                                        <i class='fa fa-minus'></i>
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach                                                              
@@ -82,14 +93,15 @@
                  
                 <div class="form-body">
                     <input hidden="true" type="text"  id="idupdate">
+                    <input hidden="true" type="text"  id="estatus">
                     <div class="row">
                         <div class="col-md-12">                        
-                       <div class="form-group">
-                            <label class="col-md-3 control-label ">Nombre</label>
-                            <div class="col-md-8">
-                                <input id="nombre" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Nombre">
+                           <div class="form-group">
+                                <label class="col-md-3 control-label ">Nombre</label>
+                                <div class="col-md-8">
+                                    <input id="nombre" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Nombre">
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                     <br>
@@ -111,7 +123,26 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal-dialog -->
-
+<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminar()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
@@ -130,6 +161,7 @@
     {
         document.getElementById('nombre').value="";
         document.getElementById('idupdate').value="";
+        document.getElementById('estatus').value="";
     }
 
     function VerificaInsert()
@@ -170,10 +202,11 @@
     function actualizar( ){
         var campo =$("#nombre").val();
         var id_= $("#idupdate").val();
+        var status = $('#estatus').val( );
         $.ajax({
            method: "post",           
            url: "{{ url('/tramites-edit-field') }}",
-           data: {campo, id: id_ ,_token:'{{ csrf_token() }}'}  })
+           data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
             Command: toastr.success(response.Message, "Notifications")
@@ -192,6 +225,35 @@
     {
         $("#nombre").val( tramite.campo );
         $('#idupdate').val( tramite.id_campo );
+        $('#estatus').val( tramite.estatus );
     } 
+
+    function deleted( tramite ){
+        $("#nombre").val( tramite.campo );
+        $('#idupdate').val( tramite.id_campo );
+        $('#estatus').val( tramite.estatus );  
+    }
+
+    function eliminar(){
+        var campo =$("#nombre").val();
+        var id_= $("#idupdate").val();
+        var status = 0;
+        $.ajax({
+           method: "post",           
+           url: "{{ url('/tramites-estatus') }}",
+           data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            limpiar();
+            location.reload();
+          }else{
+            Command: toastr.warning(response.Message, "Notifications")
+          }
+        })
+        .fail(function( msg ) {
+            console.log("Error al Cargar Tabla");  
+        }); 
+    }
 </script>
 @endsection
