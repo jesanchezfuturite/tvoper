@@ -108,7 +108,7 @@ class PortaltramitesController extends Controller
 			return response()->json(
 				[
 					"Code" => "200",
-					"Message" => "Se agrego un nuevo campo",
+					"Message" => "Edición realizada con éxito",
 				]
 			);
 
