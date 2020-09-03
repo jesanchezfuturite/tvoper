@@ -310,4 +310,4 @@ Route::get('/traux-get-tcamp','PortaltramitesauxController@listarTipoCampos');
 Route::post('traux-add-serv','PortaltramitesauxController@guardaTramite');
 
 
-
+Route::get('/solicitudes', 'PortalSolicitudesController@index');

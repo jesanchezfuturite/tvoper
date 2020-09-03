@@ -33,6 +33,7 @@ class PortalSolicitudesController extends Controller
   */
 
   public function index(){
+    return view('portal/solicitudes',[]);
 
   }
 
@@ -55,7 +56,7 @@ class PortalSolicitudesController extends Controller
   /**
   * Eliminar Solicitud
   *
-  *	@return 
+  *	@return
   */
   public function Delete(){
 
