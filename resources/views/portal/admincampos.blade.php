@@ -287,7 +287,9 @@
         if(tramite=="limpia")
         {
             //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
-            document.getElementById("nameTramite").textContent="Tramite ";
+            document.getElementById("nameTramite").textContent="Tramite";
+            addTable();
+            TableManaged.init();
         }else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
            findRelationship();
@@ -312,13 +314,7 @@
     }
     function findRelationship()
     {
-        var items=$("#itemsTramites").val();
-       if(items=='limpia')
-       {
-        addTable();
-        TableManaged.init();
-       }else{
-        
+        var items=$("#itemsTramites").val();        
         $.ajax({
            method: "POST",           
            url: "{{ url('/traux-get-relcamp') }}",
@@ -343,7 +339,6 @@
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });   
-       }
     }
     
     function addTable()
