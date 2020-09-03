@@ -34,6 +34,7 @@
                 <div class="row">
                     <div class="col-md-2 col-ms-12">
                         <div class="form-group">
+                            <span class="help-block"></span>
                             <label >Tramites (Selecciona)</label>   
                         </div>
                     </div>
@@ -77,7 +78,7 @@
                 </div>
             </div>
             <div class="portlet-body" id="Removetable">
-                <div class="table-scrollable">
+                <div id="addtable">
                     <table class="table table-hover" id="sample_2">
                     <thead>
                     <tr>
@@ -88,10 +89,7 @@
                         <th></th>
                     </tr>
                     </thead>
-                    <tbody>                   
-                    <tr>
-                     <td><span class="help-block">No Found</span></td>
-                    </tr>                    
+                    <tbody>                  
                     </tbody>
                     </table>
                 </div>
@@ -118,7 +116,7 @@
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label >Campo</label>                            
-                                        <select class="select2me form-control"  id="itemsCampo">
+                                        <select class="select2me form-control"  id="itemsCampos">
                                             <option>------</option>                                             
                                         </select>
                                     </div>
@@ -222,7 +220,8 @@
 <script src="assets/global/scripts/validar_img.js" type="text/javascript"></script>
 
 <script>
-    jQuery(document).ready(function() {       
+    jQuery(document).ready(function() { 
+    TableManaged.init();      
       findTramites();
       findCampos();
       findTipos();
@@ -252,12 +251,12 @@
            url: "{{ url('/traux-get-camp') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-            console.log(response);
+            //console.log(response);
             var Resp=$.parseJSON(response);
-            $("#itemsCampo option").remove();
-            $("#itemsCampo").append("<option value='limpia'>-------</option>");
+            $("#itemsCampos option").remove();
+            $("#itemsCampos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {                
-                $("#itemsCampo").append("<option value='"+item.id+"'>"+item.desc+"</option>");            
+                $("#itemsCampos").append("<option value='"+item.id+"'>"+item.desc+"</option>");            
             });        
         })
         .fail(function( msg ) {
@@ -295,47 +294,50 @@
     }
    
     
-    
- /*function saveCampos() 
- {           
-            
-           
-    $.ajax({
-        method: "POST",
-        url: "{{ url('/traux-get-tcamp') }}",
-        data: {_token:'{{ csrf_token() }}'}  })
-    .done(function (response) {
-        
-     
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-            return false;
-    }*/
-    function FindTramiteCampos()
+     function metodoSaveUpdate()
+    {
+        var itemsTramites=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampos").val();
+        var itemsTipos=$("#itemsTipos").val();
+        if(itemsTramites=="limpia"){
+           Command: toastr.warning("Tramite sin seleccionar, Requerido!", "Notifications")
+        }else if(itemsCampo=="limpia"){
+           Command: toastr.warning("Campo sin seleccionar, Requerido!", "Notifications")
+        }else if(itemsTipos=="limpia"){
+           Command: toastr.warning("Tipo sin seleccionar, Requerido!", "Notifications")
+        }else{
+            insertTramiteCampos();
+        }
+    }
+    function changeTramites()
     {
         var items=$("#itemsTramites").val();
        if(items=='limpia')
        {
         addTable();
+        TableManaged.init();
        }else{
         
         $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-find') }}",
-           data: {id:items,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/traux-get-relcamp') }}",
+           data: {tramiteid:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
+
             addTable();
-            $.each(Resp, function(i, item) {                
+            $.each(Resp, function(i, item) {  
+                var car=$.parseJSON(item.caracteristicas);              
                 $('#sample_2 tbody').append("<tr>"
-                +"<td>"+item.anio+"</td>"
-                +"<td>"+item.mes+"</td>"
-                +"<td>"+item.indice+"</td>"
+                +"<td>"+item.tramite_id+"</td>"
+                +"<td>"+item.campo_id+"</td>"
+                +"<td>"+item.tipo_id+"</td>"
+                +"<td>"+car.required+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='InpcDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
-            //TableManaged.init();
+            TableManaged.init();
         
         })
         .fail(function( msg ) {
@@ -345,49 +347,44 @@
     
     function addTable()
     {
+        $('#Removetable div').remove();
         $('#Removetable').append(
-            "<div class='table-scrollable'><table class='table table-hover' id='sample_2'> <thead> <tr><th>Tramite</th><th>Campo</th><th>Tipo</th><th>Caracteristicas</th> <th></th></tr> </thead><tbody></tbody></table> </div>"
+            "<div id='addtable'><table class='table table-hover' id='sample_2'> <thead> <tr><th>Tramite</th><th>Campo</th><th>Tipo</th><th>Caracteristicas</th> <th></th></tr> </thead><tbody></tbody></table> </div>"
         );
     }
     function insertTramiteCampos()
     {
         var itemTramite=$("#itemsTramites").val();
-        var itemsCampo=$("#itemsCampo").val();
+        var itemsCampo=$("#itemsCampos").val();
         var itemsTipos=$("#itemsTipos").val();
         var check=$("#checkbox30").prop("checked");
         var valCheck='[{"required":"false"}]';
         if(check==true)
         {
-            valCheck='[{"required":"true"}]';
+            valCheck='{"required":"true"}';
         }else{
-            valCheck='[{"required":"false"}]';
+            valCheck='{"required":"false"}';
         }
-
-       if(itemTramite=="limpia")
-        { 
-            Command: toastr.warning("Tramite Sin Seleccionar", "Notifications")
-            //limpiaCuentapago();
-         }
-        else{
         $.ajax({
            method: "POST",           
            url: "{{ url('/traux-add-serv') }}",
            data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
-        CleanInputs();
-        Command: toastr.success("Success", "Notifications")     
+            CleanInputs();
+            changeTramites();
+            Command: toastr.success("Success", "Notifications")     
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-        }
+        
     }
     function CleanInputs()
     {
          //document.getElementById('caracteristica').value="";
          //document.getElementById('itemMetodopago').value="limpia";
-         $("#itemsTipo").val("limpia").change();
-         $("#itemsCampo").val("limpia").change();
+         $("#itemsTipos").val("limpia").change();
+         $("#itemsCampos").val("limpia").change();
          document.getElementById('idRelantion').value="";
         $("#checkbox30").prop("checked", false);            
         
@@ -445,17 +442,7 @@
          Command: toastr.warning("No Success", "Notifications")  });
         }
     }
-    function metodoSaveUpdate()
-    {
-        var itemsTramites=$("#itemsTramites").val();
-        //var servicio=$("#servicio").val();
-        //var leyenda=$("#leyenda").val();
-        if(itemsTramites=="limpia"){
-           
-       }else{
-            insertTramiteCampos();
-      }
-    }
+   
     
 </script>
 
