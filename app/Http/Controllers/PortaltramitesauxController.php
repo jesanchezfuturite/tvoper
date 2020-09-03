@@ -147,7 +147,7 @@ class PortaltramitesauxController extends Controller
 
 	public function listarRelacion(Request $request)
 	{
-		
+		$rel=array();
 		try {
 
 			$rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
