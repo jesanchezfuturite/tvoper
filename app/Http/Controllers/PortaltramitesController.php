@@ -35,7 +35,7 @@ class PortaltramitesController extends Controller
 
 	public function listFields()
 	{
-		$cmp = $this->campos->all();
+		$cmp = $this->campos->all()->where('status', 1);
 
 		$response = array();
 
