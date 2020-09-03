@@ -355,11 +355,12 @@
         var itemsCampo=$("#itemsCampo").val();
         var itemsTipos=$("#itemsTipos").val();
         var check=$("#checkbox30").prop("checked");
+        var valCheck='[{"required":"false"}]';
         if(check==true)
         {
-            
+            valCheck='[{"required":"true"}]';
         }else{
-
+            valCheck='[{"required":"false"}]';
         }
 
        if(itemTramite=="limpia")
@@ -370,8 +371,8 @@
         else{
         $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-insert') }}",
-           data: {banco_id:banco, metodopago:metodopago_,beneficiario:formdata, monto_min:monto_min_, monto_max:monto_max_, fechaIn:fechaIn_, _token:'{{ csrf_token() }}'}  
+           url: "{{ url('/traux-add-serv') }}",
+           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
         CleanInputs();
@@ -446,13 +447,13 @@
     }
     function metodoSaveUpdate()
     {
-        var cuenta=$("#cuenta").val();
-        var servicio=$("#servicio").val();
-        var leyenda=$("#leyenda").val();
-        if(idbacon=="limpia"){
+        var itemsTramites=$("#itemsTramites").val();
+        //var servicio=$("#servicio").val();
+        //var leyenda=$("#leyenda").val();
+        if(itemsTramites=="limpia"){
            
        }else{
-            validaExisteMtodoP();
+            insertTramiteCampos();
       }
     }
     
