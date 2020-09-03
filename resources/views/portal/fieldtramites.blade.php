@@ -54,7 +54,9 @@
                             <td>                              
                                 {{$tramite["campo"]}}                               
                             </td>
-                            <td class="text-right">
+                            <td > 
+                                {{$tramite["estatus"]}}  
+                            </td>
                             <td class='text-center' width='20%'>
                                 <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
                                     <i class='fa fa-pencil'></i>
@@ -82,6 +84,7 @@
                  
                 <div class="form-body">
                     <input hidden="true" type="text"  id="idupdate">
+                    <input hidden="true" type="text"  id="estatus">
                     <div class="row">
                         <div class="col-md-12">                        
                        <div class="form-group">
@@ -130,6 +133,7 @@
     {
         document.getElementById('nombre').value="";
         document.getElementById('idupdate').value="";
+        document.getElementById('estatus').value="";
     }
 
     function VerificaInsert()
@@ -170,10 +174,11 @@
     function actualizar( ){
         var campo =$("#nombre").val();
         var id_= $("#idupdate").val();
+        var estatus = $('#estatus').val( );
         $.ajax({
            method: "post",           
            url: "{{ url('/tramites-edit-field') }}",
-           data: {campo, id: id_ ,_token:'{{ csrf_token() }}'}  })
+           data: {campo, id: id_, estatus ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
             Command: toastr.success(response.Message, "Notifications")
@@ -192,6 +197,7 @@
     {
         $("#nombre").val( tramite.campo );
         $('#idupdate').val( tramite.id_campo );
+        $('#estatus').val( tramite.estatus );
     } 
 </script>
 @endsection
