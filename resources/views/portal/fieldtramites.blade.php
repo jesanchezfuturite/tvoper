@@ -56,7 +56,7 @@
                             </td>
                             <td class="text-right">
                             <td class='text-center' width='20%'>
-                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate( {{ json_encode($tramite) }} )'>
+                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
                                     <i class='fa fa-pencil'></i>
                                 </a>
                             </td>
@@ -116,7 +116,15 @@
 @endsection
 @section('scripts')
 
+<script src="assets/global/dataTable/dataTables.min.js"></script>
+<script src="assets/global/dataTable/jszip.min.js"></script>
+<script src="assets/global/dataTable/vfs_fonts.js"></script>
+<script src="assets/global/dataTable/buttons.html5.min.js"></script>
 <script type="text/javascript">
+
+    jQuery(document).ready(function() {
+        $('#sample_2').DataTable( );
+    });
 
     function limpiar()
     {
@@ -131,7 +139,6 @@
         if(nombre.length<1)
         {
             Command: toastr.warning("Campo Nombre, Requerido!", "Notifications")
-
         } else {
             id_.length == 0 ? insert() : actualizar();
         }
@@ -147,21 +154,41 @@
            url: "{{ url('/tramites-add-field') }}",
            data: {campo ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-            console.log( response )
-/*
-          if(response=="true"){
-            Command: toastr.success("Success", "Notifications")
-            CargartablaINPC();
+          if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
             limpiar();
+            location.reload();
           }else{
-            Command: toastr.warning("Error al Guardar", "Notifications")
-          }*/
+            Command: toastr.warning(response.Message, "Notifications")
+          }
         })
         .fail(function( msg ) {
-         console.log("Error al Cargar Tabla Partidas");  });
+            console.log("Error al Cargar Tabla");  
+        });
     }
 
-    function InpcUpdate( tramite )
+    function actualizar( ){
+        var campo =$("#nombre").val();
+        var id_= $("#idupdate").val();
+        $.ajax({
+           method: "post",           
+           url: "{{ url('/tramites-edit-field') }}",
+           data: {campo, id: id_ ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+          if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            limpiar();
+            location.reload();
+          }else{
+            Command: toastr.warning(response.Message, "Notifications")
+          }
+        })
+        .fail(function( msg ) {
+            console.log("Error al Cargar Tabla");  
+        });     
+    }
+
+    function update( tramite )
     {
         $("#nombre").val( tramite.campo );
         $('#idupdate').val( tramite.id_campo );
