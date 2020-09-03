@@ -150,7 +150,7 @@ class PortaltramitesauxController extends Controller
 		
 		try {
 
-			$rel = $this->camrel->findWhere(['id_tramite' => $request->tramiteid]);			
+			$rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
 			
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
