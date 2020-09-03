@@ -37,6 +37,19 @@ class PortalSolicitudesController extends Controller
   */
 
   public function index(){
+
+    return view('portal/solicitudes', []);
+
+  }
+
+  /**
+  * Lista de tramites
+  *
+  *	@return json lista de tramites con id
+  */
+
+  public function getTramites(){
+
     $tramits = $this->tramites->all();
 
     //$tmts->tramites
@@ -54,9 +67,9 @@ class PortalSolicitudesController extends Controller
       Log::info('Error Portal - ver Tramites: '.$e->getMessage());
     }
 
-    return view('portal/solicitudes', ['data'=>$tmts]);
-
+    return json_encode($tmts);
   }
+
 
   /**
   * Lista de solicitudes Actuales por tramite
@@ -87,7 +100,7 @@ class PortalSolicitudesController extends Controller
       Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
     }
 
-    return view('portal/solicitudes', ['solicitudes'=>$slctds]);
+    return json_encode($slctds);
   }
 
   /**

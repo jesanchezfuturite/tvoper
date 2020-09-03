@@ -313,3 +313,5 @@ Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
 Route::post('/solicitud-add', 'PostalSolicitudesController@crearSolicitud');
+Route::get('/solicitud-tramites', 'PortalSolicitudesController@getTramites');
+Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
