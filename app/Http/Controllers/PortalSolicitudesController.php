@@ -29,7 +29,7 @@ class PortalSolicitudesController extends Controller
   */
 
   public function index(){
-    
+    return view('portal/solicitudes',[]);
   }
 
 }
