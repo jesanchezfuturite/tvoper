@@ -54,8 +54,12 @@
                             <td>                              
                                 {{$tramite["campo"]}}                               
                             </td>
-                            <td > 
-                                {{$tramite["estatus"]}}  
+                            <td >  
+                                @if( $tramite["estatus"] == 1 )
+                                   Activo
+                                @else
+                                    Inactivo
+                                @endif
                             </td>
                             <td class='text-center' width='20%'>
                                 <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
