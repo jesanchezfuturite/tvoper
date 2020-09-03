@@ -102,15 +102,27 @@ class PortaltramitesController extends Controller
 		$status = $request->status;
 
 		try{
+			$cmp = $this->campos->findWhere(['descripcion'=> $desc]);
+			
+			if($cmp->count() > 0){
 
-			$campo = $this->campos->update(["descripcion" => $desc, "status" => $status], $id);
+				return response()->json(
+					[
+						"Code" => "400",
+						"Message" => "Error, ya existe un campo con este nombre",
+					]
+				);
 
-			return response()->json(
-				[
-					"Code" => "200",
-					"Message" => "Edición realizada con éxito",
-				]
-			);
+			}else{
+				$campo = $this->campos->update(["descripcion" => $desc, "status" => $status], $id);
+
+				return response()->json(
+					[
+						"Code" => "200",
+						"Message" => "Edición realizada con éxito",
+					]
+				);
+			}
 
 		} catch(\Exception $e) {
 
