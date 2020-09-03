@@ -102,7 +102,7 @@ class PortaltramitesController extends Controller
 		$status = $request->status;
 
 		try{
-			
+
 			$campo = $this->campos->update(["descripcion" => $desc, "status" => $status], $id);
 
 			return response()->json(
@@ -115,7 +115,12 @@ class PortaltramitesController extends Controller
 		} catch(\Exception $e) {
 
 			Log::info('Error Edit Field '.$e->getMessage());
-
+			return response()->json(
+				[
+					"Code" => "400",
+					"Message" => "Error al editar",
+				]
+			);
 		}
 
 	}

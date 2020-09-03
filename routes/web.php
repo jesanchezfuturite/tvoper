@@ -300,11 +300,9 @@ Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
 /*************************    PORTAL    ******************************************/
 Route::get('/tramites-list-fields','PortaltramitesController@listFields');
 Route::post('/tramites-add-field','PortaltramitesController@newField');
-<<<<<<< HEAD
+Route::post('/tramites-edit-field','PortaltramitesController@editField');
+
 Route::get('/traux-get-serv','PortaltramitesauxController@listarTramites');
 Route::get('/traux-get-camp','PortaltramitesauxController@listarCampos');
 Route::get('/traux-get-tcamp','PortaltramitesauxController@listarTipoCampos');
 Route::post('traux-add-serv','PortaltramitesauxController@guardaTramite');
-=======
-Route::post('/tramites-edit-field','PortaltramitesController@editField');
->>>>>>> 63149115ae8f7e4a8ef5e7c5df2385755063ccaf
