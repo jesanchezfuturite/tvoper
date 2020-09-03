@@ -178,7 +178,7 @@
         $.ajax({
            method: "post",           
            url: "{{ url('/tramites-edit-field') }}",
-           data: {campo, id: id_, estatus ,_token:'{{ csrf_token() }}'}  })
+           data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
             Command: toastr.success(response.Message, "Notifications")
