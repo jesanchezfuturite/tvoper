@@ -90,21 +90,36 @@ class PortalSolicitudesController extends Controller
     $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
 
 
-    $slctds = array();
+    $slctds = $slctd_hija = array();
 
     try{
       foreach ($solicitud as $s) {
+
+        $id_sol = $s->id;
+        $hija = $this->solicitudes->where('padre_id', $id_sol)->get();
+        if($hija->count() > 0){
+          foreach ($hija as $h) {
+
+            $slctd_hija []= array('id_solcitud' => $h->id,
+              'tramite_id'  => $h->tramite_id,
+              'padre_id'  =>  $h->padre_id,
+              'titulo'  =>  $h->titulo,
+              'status'  =>  $h->status
+              );
+          }
+        }
+
         $slctds []=array(
           'id_solcitud' => $s->id,
           'tramite_id'  => $s->tramite_id,
           'padre_id'  =>  $s->padre_id,
           'titulo'  =>  $s->titulo,
-          'status'  =>  $s->status
+          'status'  =>  $s->status,
+          'hijas'  => $slctd_hija
         );
       }
 
       //dd($slctds);
-
 
     }
     catch(\Exception $e) {
