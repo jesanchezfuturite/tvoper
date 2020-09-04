@@ -81,7 +81,8 @@ class PortalSolicitudesController extends Controller
 
     $id_tramite = $request->id_tramite;
 
-    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->where('padre_id', $id_tramite);
+    $solicitud = $this->solicitudes->where('tramite_id', '258510');
+
 
     $slctds = array();
 
@@ -95,6 +96,10 @@ class PortalSolicitudesController extends Controller
           'status'  =>  $s->status
         );
       }
+
+      dd($slctds);
+
+
     }
     catch(\Exception $e) {
       Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
@@ -102,6 +107,36 @@ class PortalSolicitudesController extends Controller
 
     return json_encode($slctds);
   }
+
+  /**
+  * Lista de solicitudes Actuales por tramite
+  *
+  *	@return data nombre solicitud y solicitud dependiente
+  */
+
+  public function getUsers(){
+
+    $usrs = $this->users->all();
+
+    $user = array();
+
+    try{
+      foreach ($usrs as $u) {
+        $user []=array(
+          'id' => $u->id,
+          'nombre' => $u->name,
+          'email'  => $u->email,
+        );
+      }
+
+    }
+    catch(\Exception $e) {
+      Log::info('Error Portal Solicitudes - consulta de usuarios: '.$e->getMessage());
+    }
+
+    return json_encode($user);
+  }
+
 
   /**
   * Crear una nueva solicitud
@@ -132,8 +167,7 @@ class PortalSolicitudesController extends Controller
         ]
       );
 
-    }
-    catch(\Exception $e) {
+    }catch(\Exception $e) {
 
       Log::info('Error Agregar nueva solicitud '.$e->getMessage());
 
