@@ -224,9 +224,13 @@
 		            "columns": [
 		            	{
 					     	"data": "id_solcitud",
+					     	"class": 'detectarclick',
 						    "render": function ( data, type, row, meta ) {
-						    	console.log( data, type, row, meta )
-						      return '<a onclick="showSolicitudesHijas(' + data +" , " + meta.row +')" ><i class="fa fa-plus"></a>';
+						    	if(  row.hijas.length > 0 ){
+						      		return '<a onclick="showSolicitudesHijas(' + data +" , " + meta.row +')" ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>';
+						  		} else {
+						  			return "";
+						  		}
 						    }
 					    },
 		           		{ "data": "titulo" },
@@ -240,6 +244,27 @@
 		           		}
 		        	]
 		    });
+				$('#example tbody').on('click', 'td.detectarclick', function () {
+					var table = $('#example').DataTable();
+				        var tr = $(this).parents('tr');
+				        var row = table.row( tr );
+				        if(row.data().hijas.length > 0){
+					        if ( row.child.isShown() ) {
+					            // This row is already open - close it
+					            row.child.hide();
+					            tr.removeClass('shown');
+					        	$("#iconShow-" + row.data().id_solcitud).addClass("fa-plus");
+					            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-minus");
+					        }
+					        else {
+					            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-plus");
+					            $("#iconShow-" + row.data().id_solcitud).addClass("fa-minus");
+					            // Open this row
+					            row.child( format(row.data()) ).show();
+					            tr.addClass('shown');
+					        }
+					    }
+				    } );
 		}
 
 		function openModalUpdate( data, row, isDependiente ){
@@ -250,20 +275,38 @@
 			if( !isDependiente ){
 				var table = $('#example').DataTable();
 
-				var data = table
-				    .rows( row )
-				    .data()[0];
-				$("#titulo").val( data.titulo );
-				$("#tramitesSelectModal option[value=" +  data.tramite_id +"]").attr('selected','selected').change();
-	        	$("#usuarioSelectModal").val(data.atendido_por.split(",")).trigger('change'); 
-	        	$("#idupdate").val( data.id_solcitud );
+				var object = typeof data == "object" ? data : table.rows( row ).data()[0];
+				$("#titulo").val( object.titulo );
+				$("#tramitesSelectModal option[value=" +  object.tramite_id +"]").attr('selected','selected').change();
+	        	$("#usuarioSelectModal").val(object.atendido_por.split(",")).trigger('change'); 
+	        	$("#idupdate").val( object.id_solcitud );
 	    	} else {
 	    		$("#padre_id").val( data );
 	    	}
 		}
 
 		function showSolicitudesHijas( idSolicitud, row ){
-			console.log(row)
+			/*
+			
+			var table = $('#example').DataTable();
+
+				var data = table
+				    .rows( row )
+				    .data()[0];
+			
+			var tr = $(this).parents('tr');
+				        var row = table.row( tr );
+				 
+				        if ( row.child.isShown() ) {
+				            // This row is already open - close it
+				            row.child.hide();
+				            tr.removeClass('shown');
+				        }
+				        else {
+				            // Open this row
+				            row.child( format(row.data()) ).show();
+				            tr.addClass('shown');
+				        }*/
 		}
 
 		function verificaInsert(e){
@@ -354,21 +397,27 @@
 
 
 		function format ( d ) {
-		    // `d` is the original data object for the row
-		    return '<table  class="table table-hover" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+			console.log( d.hijas )
+			/*
+				let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+ d +")'><i class='fa fa-pencil'></i></a>";
+
+		    return '<table  class="table table-hover" cellpadding="1" cellspacing="0" border="0" style="padding-left:90px;">'+
 		        '<tr>'+
-		            '<td>Full name:</td>'+
-		            '<td>'+d.name+'</td>'+
-		        '</tr>'+
-		        '<tr>'+
-		            '<td>Extension number:</td>'+
-		            '<td>'+d.extn+'</td>'+
+		            '<td>Titulo:</td>'+
+		            '<td>'+d.titulo  + '</td>'+
 		        '</tr>'+
 		        '<tr>'+
 		            '<td>Extra info:</td>'+
 		            '<td>And any further details here (images etc)...</td>'+
 		        '</tr>'+
-		    '</table>';
+		    '</table>';*/
+		    let html = '<table  class="table table-hover" cellpadding="1" cellspacing="0" border="0" style="padding-left:90px;">';
+		    d.hijas.forEach( (solicitud) =>{
+		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td>'+'</tr>';
+		    });
+		    html+='</table>';
+
+		    return html;
 		}
 
 	    jQuery(document).ready(() => {
