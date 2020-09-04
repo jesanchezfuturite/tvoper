@@ -104,6 +104,7 @@ class PortalSolicitudesController extends Controller
               'tramite_id'  => $h->tramite_id,
               'padre_id'  =>  $h->padre_id,
               'titulo'  =>  $h->titulo,
+              'atendido_por' => $h->atendido_por,
               'status'  =>  $h->status
               );
           }
@@ -114,6 +115,7 @@ class PortalSolicitudesController extends Controller
           'tramite_id'  => $s->tramite_id,
           'padre_id'  =>  $s->padre_id,
           'titulo'  =>  $s->titulo,
+          'atendido_por' => $s->atendido_por,
           'status'  =>  $s->status,
           'hijas'  => $slctd_hija
         );
