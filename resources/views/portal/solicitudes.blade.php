@@ -203,6 +203,10 @@
 	        });			
 		}
 
+		function onlyUnique(value, index, self) { 
+		    return self.indexOf(value) === index;
+		}
+
 
 		function updateTablaSolicitudes(){
 			let url = "{{ url('/solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
@@ -245,12 +249,14 @@
 			setTramites();
 			if( !isDependiente ){
 				var table = $('#example').DataTable();
+
 				var data = table
 				    .rows( row )
 				    .data()[0];
 				$("#titulo").val( data.titulo );
 				$("#tramitesSelectModal option[value=" +  data.tramite_id +"]").attr('selected','selected').change();
-	        	//$("#usuarioSelectModal option:selected").val("").change(); 
+	        	$("#usuarioSelectModal").val(data.atendido_por.split(",")).trigger('change'); 
+	        	$("#idupdate").val( data.id_solcitud );
 	    	} else {
 	    		$("#padre_id").val( data );
 	    	}
@@ -267,7 +273,7 @@
 	        let status = 1;
 	        let usuariosArray = $("#usuarioSelectModal").val();
 
-			var id_=$("#idupdate").val();
+			var id_= $("#idupdate").val();
 	        
 	        if(titulo.length<1) {
 	            Command: toastr.warning("Campo Titulo, Requerido!", "Notifications")
@@ -277,10 +283,10 @@
 				Command: toastr.warning("Campo Usuario, Requerido!", "Notifications")
 	        } else {
 	        	let data = {
-	        		titulo, id_tramite:tramitesSelectModal,user:usuariosArray.join(), status,
+	        		titulo, id_tramite:tramitesSelectModal,user:usuariosArray.filter( onlyUnique ).join(), status,
 	        		_token:'{{ csrf_token() }}', padre_id:$("#padre_id").val()
 	        	}
-	            id_.length == 0 ? insertar( data ) : alert(2);
+	            id_.length == 0 ? insertar( data ) : update(  data, id_ );
 	        }
 		}
 
@@ -310,11 +316,40 @@
 	    	});
 		}
 
+		function update( data, id ){
+			data.id_solcitud = id;
+			$("#iconBtnSave").removeClass("fa-check");
+	        $("#iconBtnSave").addClass("fa-spin fa-spinner");
+	        $("#btnSav").attr("disabled", true)
+			$.ajax({
+	           method: "post",           
+	           url: "{{ url('/solicitud-editar') }}",
+	           dataType: 'json',
+	           data: data
+	       	}).done(function (response) {
+	          if(response.Code =="200"){
+	            Command: toastr.success(response.Message, "Notifications")
+	            limpiar();
+	            updateTablaSolicitudes();
+	          }else{
+	            Command: toastr.warning(response.Message, "Notifications")
+	          }
+	        })
+	        .fail(function( msg ) {
+	            console.log("Error al Cargar Tabla");  
+	        }).always( () =>{
+	   			$("#iconBtnSave").removeClass("fa-spin fa-spinner");
+	        	$("#iconBtnSave").addClass("fa-check");
+	        	$("#btnSav").attr("disabled", false)
+	    	});
+		}
+
 		function limpiar(){
 			$("#padre_id").val("");
+			$("#idupdate").val("");
 	        $("#titulo").val("");
 	        $("#tramitesSelectModal option[value=limpia]").attr('selected','selected').change();
-	        $("#usuarioSelectModal option:selected").val("").change(); 
+	        $("#usuarioSelectModal").val([]).trigger('change');
 		}
 
 
