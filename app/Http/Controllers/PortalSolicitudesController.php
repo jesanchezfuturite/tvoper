@@ -56,7 +56,7 @@ class PortalSolicitudesController extends Controller
 
   public function getTramites(){
 
-    $tramits = $this->tiposer->all();
+    $tramits = $this->tiposer->all()->where('id_gpm', 1);
 
     //$tmts->tramites
     $tmts = array();
@@ -87,24 +87,43 @@ class PortalSolicitudesController extends Controller
 
     $id_tramite = $request->id_tramite;
 
-    $solicitud = $this->solicitudes->where('tramite_id', '258510');
+    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
 
 
-    $slctds = array();
+    $slctds = $slctd_hija = array();
 
     try{
       foreach ($solicitud as $s) {
+
+        $id_sol = $s->id;
+        $hija = $this->solicitudes->where('padre_id', $id_sol)->get();
+        if($hija->count() > 0){
+          foreach ($hija as $h) {
+
+            $slctd_hija []= array('id_solcitud' => $h->id,
+              'tramite_id'  => $h->tramite_id,
+              'padre_id'  =>  $h->padre_id,
+              'titulo'  =>  $h->titulo,
+              'atendido_por' => $h->atendido_por,
+              'status'  =>  $h->status
+              );
+          }
+        }
+
         $slctds []=array(
           'id_solcitud' => $s->id,
           'tramite_id'  => $s->tramite_id,
           'padre_id'  =>  $s->padre_id,
           'titulo'  =>  $s->titulo,
-          'status'  =>  $s->status
+          'atendido_por' => $s->atendido_por,
+          'status'  =>  $s->status,
+          'hijas'  => $slctd_hija
         );
+
+        $slctd_hija = array();
       }
 
-      dd($slctds);
-
+      //dd($slctds);
 
     }
     catch(\Exception $e) {
