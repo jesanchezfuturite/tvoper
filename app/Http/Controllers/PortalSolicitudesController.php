@@ -119,6 +119,8 @@ class PortalSolicitudesController extends Controller
           'status'  =>  $s->status,
           'hijas'  => $slctd_hija
         );
+
+        $slctd_hija = array();
       }
 
       //dd($slctds);
