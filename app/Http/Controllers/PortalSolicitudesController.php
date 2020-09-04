@@ -13,21 +13,27 @@ use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
+use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+
 class PortalSolicitudesController extends Controller
 {
   protected $users;
   protected $solicitudes;
   protected $tramites;
+  protected $tiposer;
 
   public function __construct(
      UsersRepositoryEloquent $users,
      PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
-     TramitedetalleRepositoryEloquent $tramites
+     TramitedetalleRepositoryEloquent $tramites,
+     EgobiernotiposerviciosRepositoryEloquent $tiposer
     )
     {
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
+      $this->tiposer = $tiposer;
     }
 
   /**
@@ -50,7 +56,7 @@ class PortalSolicitudesController extends Controller
 
   public function getTramites(){
 
-    $tramits = $this->tramites->all();
+    $tramits = $this->tiposer->all();
 
     //$tmts->tramites
     $tmts = array();
@@ -58,8 +64,8 @@ class PortalSolicitudesController extends Controller
 
       foreach ($tramits as $t) {
         $tmts []=array(
-          'id_tramite'=> $t->id_detalle_tramite,
-          'tramite' => $t->concepto,
+          'id_tramite'=> $t->Tipo_Code,
+          'tramite' => $t->Tipo_Descripcion,
         );
       }
 
@@ -109,9 +115,9 @@ class PortalSolicitudesController extends Controller
   }
 
   /**
-  * Lista de solicitudes Actuales por tramite
+  * Lista de usuarios
   *
-  *	@return data nombre solicitud y solicitud dependiente
+  *	@return json id, name, email
   */
 
   public function getUsers(){
@@ -141,7 +147,7 @@ class PortalSolicitudesController extends Controller
   /**
   * Crear una nueva solicitud
   *
-  *	@return
+  *	@return response estatus code
   */
   public function crearSolicitud(Request $request){
     $id_tramite = $request->id_tramite;
@@ -224,7 +230,7 @@ class PortalSolicitudesController extends Controller
   *
   *	@return
   */
-  public function Delete(){
+  public function delete(){
 
   }
 

@@ -316,3 +316,5 @@ Route::post('/solicitud-add', 'PortalSolicitudesController@crearSolicitud');
 Route::get('/solicitud-tramites', 'PortalSolicitudesController@getTramites');
 Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
 Route::get('/solicitud-getUsers', 'PortalSolicitudesController@getUsers');
+Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
+Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
