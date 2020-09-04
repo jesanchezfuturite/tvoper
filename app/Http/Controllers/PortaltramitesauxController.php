@@ -55,7 +55,7 @@ class PortaltramitesauxController extends Controller
 
 	public function listarTramites()
 	{
-		$sr = $this->tiposer->all();
+		$sr = $this->tiposer->findWhere([['id_gpm','>=','1']]);
 
 		$response = array();
 
@@ -150,13 +150,61 @@ class PortaltramitesauxController extends Controller
 		$rel=array();
 		try {
 
-			$rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
-			
+			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
+			$rel = $this->camrel->searchRelation($request->tramiteid);
+			Log::info($rel);
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
 		}
 
 		return json_encode($rel);
+	}
+
+	/**
+     * 	Edita el campo del tramite
+	 *  
+	 *	@param Request POST 
+	 *
+	 *	@return ??
+    */
+
+	public function editarTramite(Request $request)
+	{
+		
+		try {
+
+			foreach ($request->campoid as $k => $v) {
+				
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
+			}
+
+			$this->camrel->where('id',$request->id)->update($in);
+			
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+		}
+
+	}
+
+	/**
+     * 	Borrar el campo del tramite 
+	 *  
+	 *	@param Request POST 
+	 *
+	 *	@return ??
+    */
+
+	public function eliminarTramite(Request $request)
+	{
+		
+		try {
+
+			$this->camrel->where('id',$request->id)->delete();
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+		}
+
 	}
 
 	/**
