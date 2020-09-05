@@ -46,7 +46,7 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
             $data = Portalcamporelationship::where(['tramite_id'=>$idrel])       
             ->leftjoin('campos_type','campos_type.id','=','campos_relationship.tipo_id')     
             ->leftjoin('campos_catalogue','campos_catalogue.id','=','campos_relationship.campo_id')     
-            ->select('campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as tipo_nombre','campos_relationship.caracteristicas')
+            ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.caracteristicas')
             ->get();
 
             return $data;

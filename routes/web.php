@@ -309,6 +309,8 @@ Route::get('/traux-get-camp','PortaltramitesauxController@listarCampos');
 Route::get('/traux-get-tcamp','PortaltramitesauxController@listarTipoCampos');
 Route::post('/traux-get-relcamp','PortaltramitesauxController@listarRelacion');
 Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
+Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
+Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
