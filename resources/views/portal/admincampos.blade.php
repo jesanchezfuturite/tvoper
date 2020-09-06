@@ -67,9 +67,8 @@
                             <label id='changeStatus'>No found</label> 
                         </span>&nbsp;&nbsp;&nbsp;&nbsp;
                         --->
-                    
-                </div>
-                
+                   
+                </div> 
                 <div class="tools" id="removeBanco">                
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
@@ -98,7 +97,27 @@
         <!-- END SAMPLE TABLE PORTLET-->
 
 </div>
-<div class="modal fade bs-modal-lg" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modaldelete" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="CleanInputs()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="deleted()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="portlet-config" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -106,7 +125,6 @@
                 <h4 class="modal-title">Configurar Tramite</h4>
             </div>
             <div class="modal-body">
-                 <form action="#" class="form-horizontal">
                     <div class="form-body">
                         <input hidden="true" type="text"  placeholder="Ingrese una Cuenta" id="idRelantion">
                         <div class="modal-body">
@@ -162,63 +180,18 @@
                         <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
                     </div>
                     
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- modal-dialog -->
-<div id="static2" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-                    ¿Desactivar/Activar Registro?<br>
-                </p>
-                 <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
-                 <input hidden="true" type="text" name="idstatus" id="idstatus" class="idstatus">
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="desactiveCuenta()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="static" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-             ¿Eliminar Registro?
-                </p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
-            </div>
-            <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="umaeliminar()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 @endsection
 
 @section('scripts')
-<script src="assets/global/scripts/validar_img.js" type="text/javascript"></script>
-
 <script>
     jQuery(document).ready(function() { 
     TableManaged.init();      
@@ -299,6 +272,7 @@
     
      function metodoSaveUpdate()
     {
+         var idRelantion=$("#idRelantion").val(); 
         var itemsTramites=$("#itemsTramites").val();
         var itemsCampo=$("#itemsCampos").val();
         var itemsTipos=$("#itemsTipos").val();
@@ -309,12 +283,18 @@
         }else if(itemsTipos=="limpia"){
            Command: toastr.warning("Tipo sin seleccionar, Requerido!", "Notifications")
         }else{
-            insertTramiteCampos();
+            if(idRelantion.length>0)
+                {
+                    update();
+                }else{
+                insertTramiteCampos();
+            }
         }
     }
     function findRelationship()
     {
-        var items=$("#itemsTramites").val();        
+        var items=$("#itemsTramites").val();   
+         var tramiteMember=$("#itemsTramites option:selected").text();     
         $.ajax({
            method: "POST",           
            url: "{{ url('/traux-get-relcamp') }}",
@@ -326,11 +306,11 @@
             $.each(Resp, function(i, item) {  
                 var car=$.parseJSON(item.caracteristicas);              
                 $('#sample_2 tbody').append("<tr>"
-                +"<td>"+item.tramite_id+"</td>"
-                +"<td>"+item.campo_id+"</td>"
-                +"<td>"+item.tipo_id+"</td>"
-                +"<td>"+car.required+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='InpcUpdate("+item.id+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='InpcDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>"+tramiteMember+"</td>"
+                +"<td>"+item.campo_nombre+"</td>"
+                +"<td>"+item.tipo_nombre+"</td>"
+                +"<td>"+item.caracteristicas+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car.required+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -382,61 +362,78 @@
          $("#itemsTipos").val("limpia").change();
          $("#itemsCampos").val("limpia").change();
          document.getElementById('idRelantion').value="";
+         document.getElementById('iddeleted').value="";
         $("#checkbox30").prop("checked", false);            
         
     }
-    function editarCuenta(id_)
+    function relationshipUpdate(id_,campo,tipo,carac)
     {
-        document.getElementById('idCuenta').value=id_;
-
-         $.ajax({
-           method: "POST",           
-           url: "{{ url('/cuentasbanco-edit') }}",
-           data: {id:id_,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {
-        
-            
-            document.getElementById('cuenta').value=Cuent;
-            document.getElementById('servicio').value=Serv;
-            document.getElementById('leyenda').value=ley;
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
+        document.getElementById('idRelantion').value=id_;
+        $("#itemsTipos").val(tipo).change();
+        $("#itemsCampos").val(campo).change();
+        if(carac==true)
+        {
+            $("#checkbox30").prop("checked", true); 
+        }else{
+            $("#checkbox30").prop("checked", false); 
+        }
         
 
     }
+    function relationshipDeleted(id_)
+    {
+        document.getElementById('iddeleted').value=id_;      
 
-    function updatecuenta()
+    }
+
+    function update()
     {   
-        var idCuenta=$("#idCuenta").val();        
-        var metodopago_=$("#itemMetodopago").val();
-        var cuenta=$("#cuenta").val();
-        var cuenta=$("#cuenta").val();
-        
-       if(metodopago_=="limpia")
-        { 
-            Command: toastr.warning("No Success", "Notifications")
-            limpiaCuentapago();
-         }
-        else{
+        var idRelantion=$("#idRelantion").val();        
+        var itemTramite=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampos").val();
+        var itemsTipos=$("#itemsTipos").val();
+        var check=$("#checkbox30").prop("checked");
+        var valCheck='[{"required":"false"}]';
+        if(check==true)
+        {
+            valCheck='{"required":"true"}';
+        }else{
+            valCheck='{"required":"false"}';
+        }
         $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-update') }}",
-           data: {id:idCuenta, metodopago:metodopago_,beneficiario:formdata, monto_min:monto_min_, monto_max:monto_max_, fechaIn:fechaIn_, _token:'{{ csrf_token() }}'}  
+           url: "{{ url('/traux-edit-relcamp') }}",
+           data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
-        if(response=="true"){
-            Command: toastr.success("Success", "Notifications")
-           limpiaCuentapago();
-            CuentasBanco();
-        }
-        else{
-            Command: toastr.warning("No Success", "Notifications") 
-        }
+            CleanInputs();
+            findRelationship();
+            if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications") 
+            }    
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-        }
+        
+    }
+    function deleted()
+    {   
+        var idRelantion=$("#iddeleted").val(); 
+        $.ajax({
+           method: "POST",           
+           url: "{{ url('/traux-del-relcamp') }}",
+           data: {id:idRelantion, _token:'{{ csrf_token() }}'}  
+       })
+        .done(function (response) {
+            CleanInputs();
+            findRelationship();
+            if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications") 
+            }    
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
     }
    
     

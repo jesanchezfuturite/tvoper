@@ -249,8 +249,56 @@ class PortalSolicitudesController extends Controller
   *
   *	@return
   */
-  public function delete(){
+  public function delete(Request $request){
 
+    $id_solicitud = $request->id_solcitud;
+
+    try {
+      $registro = $this->solicitudes->where('id', $id_solicitud)->get();
+
+      if($registro->count() > 0){
+
+        foreach ($registro as $r) {
+
+          $id_solicitud = $r->id;
+
+          $hijo = $this->solicitudes->where('padre_id', $id_solicitud)->get();
+
+          if($hijo->count() > 0){
+
+            return response()->json(
+              [
+                "Code" => "400",
+                "Message" => "Error, esta solicitud no se puede eliminar",
+              ]
+            );
+
+          }else {
+
+            $solicitud = $this->solicitudes->delete($id_solicitud);
+
+            return response()->json(
+              [
+                "Code" => "200",
+                "Message" => "Solicitud eliminada",
+              ]
+            );
+
+          }
+
+        }
+      }
+
+    }catch(\Exception $e) {
+
+      Log::info('Error Eliminar Solicitud '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Erro al intentar eliminar la solicitud",
+        ]
+      );
+    }
   }
 
 }

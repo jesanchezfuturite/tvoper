@@ -175,13 +175,17 @@ class PortaltramitesauxController extends Controller
 
 			foreach ($request->campoid as $k => $v) {
 				
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
+				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
 			}
 
 			$this->camrel->where('id',$request->id)->update($in);
+
+			return response()->json(["Code" => "200","Message" => "campo actualizado"]);
 			
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+
+			return response()->json(["Code" => "400","Message" => "Error al editar el campo"]);
 		}
 
 	}
@@ -201,8 +205,12 @@ class PortaltramitesauxController extends Controller
 
 			$this->camrel->where('id',$request->id)->delete();
 
+			return response()->json(["Code" => "200","Message" => "Campo eliminado"]);
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+
+			return response()->json(["Code" => "400","Message" => "Error al eliminar el campo"]);
 		}
 
 	}
