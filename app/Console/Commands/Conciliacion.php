@@ -288,7 +288,15 @@ class Conciliacion extends Command
 
                             
                         }
-
+                         if($this->bankName=='netPay')
+                        {
+                             if(strlen(substr($line, $idStart, $idLength)) == 8)
+                             {
+                                $origen='01';
+                             }else{
+                                $origen     = substr($line, $origenStart, $origenLength);
+                             }                          
+                        }
                         if($haltV == 1) // esto se agrego para validar los cargos de comision en los archivos
                         {
                             $data =
