@@ -325,6 +325,7 @@
 	          if(response.Code =="200"){
 	            Command: toastr.success(response.Message, "Notifications")
 	            limpiar();
+	            $("#add-solicitud-modal").modal("hide");
 	            updateTablaSolicitudes();
 	          }else{
 	            Command: toastr.warning(response.Message, "Notifications")
