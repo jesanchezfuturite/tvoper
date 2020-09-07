@@ -146,6 +146,30 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal-dialog -->
+
+<div id="modalDelete" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
+            </div>
+            <div class="modal-footer">
+	         	<button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+	            <button type="button"  class="btn green" onclick="eliminar()" id="btnDel">
+	            	<i class="fa fa-check" id="iconBtnDel"></i> 
+	            	Confirmar
+	            </button>
+	        </div>
+	   </div>
+	</div>
+</div>
 @endsection
 
 @section('scripts')
@@ -207,8 +231,9 @@
 
 		function getTemplateAcciones( data, type, row, meta  ){
 			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
+			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
 			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>"
-			return botonEditar + botonAddSolicitudDependiente ;	
+			return botonEditar + botonAddSolicitudDependiente + botonEliminar;	
 		}
 
 		function createTable( url){
@@ -322,7 +347,8 @@
 		    let html = '<table class="table table-hover" cellpadding="0" cellspacing="0" border="0" style="margin-left:94px; margin-right:94px">';
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
-		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar + '</td></tr>';
+		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
+		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar + botonEliminar + '</td></tr>';
 		    });
 		    html+='</table>';
 		    return html;
@@ -331,6 +357,31 @@
 		function openModalUpdate( solicitud, isDependiente ){
 			configModal();
 			!isDependiente ? setInfoForm( solicitud ) : $("#padre_id").val( solicitud.id_solcitud );
+		}
+
+		function eliminar(){
+			activarSpinner( true , $("#btnDel"), $("#iconBtnDel"));
+			let url =  "{{ url('/solicitud-delete') }}";
+			let data = { id_solcitud: $("#iddeleted").val()}
+			$.ajax({
+	           method: "post", url,
+	           dataType: 'json', data
+	       	}).done(  (response) => {
+	          if(response.Code =="200"){
+	            Command: toastr.success(response.Message, "Notifications")
+	            $("#modalDelete").modal("hide");
+	            updateTablaSolicitudes();
+	          }else{
+	            Command: toastr.warning(response.Message, "Notifications")
+	          }
+	        })
+	        .fail( ( msg ) => console.log("Error al Cargar Tabla") )
+	        .always( () => activarSpinner( false , $("#btnDel"), $("#iconBtnDel") ) );
+		}
+
+		function openModalDelete( id_solcitud){
+			$("#iddeleted").val( id_solcitud );
+			$("#modalDelete").modal({show: 'true'}); 
 		}
 
 		function configModal(){
@@ -346,11 +397,13 @@
 	        $("#padre_id").val( solicitud.padre_id );
 		}
 
-		function activarSpinner( activar ){
+		function activarSpinner( activar , btn, icono){
+			let elementBtn = btn ? btn : $("#btnSav");
+			let elementIcono = icono ? icono : $("#iconBtnSave");
 			let classRemove = activar ? "fa-check" : "fa-spin fa-spinner";
 			let classAdd = activar ? "fa-spin fa-spinner" : "fa-check";
-			$("#iconBtnSave").removeClass(classRemove).addClass(classAdd);
-	    	$("#btnSav").attr("disabled", activar);
+			elementIcono.removeClass(classRemove).addClass(classAdd);
+	    	elementBtn.attr("disabled", activar);
 		}
 
 	    jQuery(document).ready(() => {
