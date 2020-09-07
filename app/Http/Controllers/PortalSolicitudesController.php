@@ -86,26 +86,25 @@ class PortalSolicitudesController extends Controller
   public function getSolicitudes(Request $request){
 
     $id_tramite = $request->id_tramite;
-
     $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
-
-
     $slctds = $slctd_hija = array();
-
     try{
       foreach ($solicitud as $s) {
-
         $id_sol = $s->id;
+
         $hija = $this->solicitudes->where('padre_id', $id_sol)->get();
         if($hija->count() > 0){
           foreach ($hija as $h) {
+            $id_solh = $h->id;
 
+            $check = $this->getChild($id_solh);
             $slctd_hija []= array('id_solcitud' => $h->id,
               'tramite_id'  => $h->tramite_id,
               'padre_id'  =>  $h->padre_id,
               'titulo'  =>  $h->titulo,
               'atendido_por' => $h->atendido_por,
-              'status'  =>  $h->status
+              'status'  =>  $h->status,
+              'hijas'  => $check
               );
           }
         }
@@ -119,12 +118,9 @@ class PortalSolicitudesController extends Controller
           'status'  =>  $s->status,
           'hijas'  => $slctd_hija
         );
-
         $slctd_hija = array();
       }
-
       //dd($slctds);
-
     }
     catch(\Exception $e) {
       Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
@@ -132,6 +128,25 @@ class PortalSolicitudesController extends Controller
 
     return json_encode($slctds);
   }
+
+  public function getChild($id_solh){
+
+    $hija = $this->solicitudes->where('padre_id', $id_solh)->get();
+    if($hija->count() > 0){
+      foreach ($hija as $h) {
+        $slctd_hija []= array('id_solcitud' => $h->id,
+          'tramite_id'  => $h->tramite_id,
+          'padre_id'  =>  $h->padre_id,
+          'titulo'  =>  $h->titulo,
+          'atendido_por' => $h->atendido_por,
+          'status'  =>  $h->status
+          );
+      }
+    }
+
+    return $slctd_hija;
+  }
+
 
   /**
   * Lista de usuarios
