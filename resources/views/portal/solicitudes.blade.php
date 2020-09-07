@@ -63,10 +63,7 @@
             	</div>
             </div>
             <div class="tools" id="toolsSolicitudes">                
-                <a href="#add-solicitud-modal"  onclick="setTramites()" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
-                </a>
-               	<a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Banco" onclick="desactivaSolicitud()">
-               		<i class='fa fa-remove' style="color:white !important;"></i>
+                <a href="#add-solicitud-modal"  onclick="setInfoModal()" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
                 </a>
             </div>
         </div>
@@ -157,54 +154,49 @@
 	<script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
 		var tramites = [];
-		let tablaSolicitudes = $("#example").clone(true);
+		var usuarios = [];
+
+		function getApi( url , fnDone, fnFail, fnAlways ){
+	        $.ajax({method: "get", url,data: {_token:'{{ csrf_token() }}'}  }).done(fnDone).fail(fnFail).always(fnAlways);
+		}
+
 		function getTramites(){
-	        $.ajax({
-		        method: "get",            
-		        url: "{{ url('/solicitud-tramites') }}",
-		        data: {_token:'{{ csrf_token() }}'}  })
-	        .done((response) => {  
+			let url = "{{ url('/solicitud-tramites') }}";
+			getApi( url , ((response) => {  
 	        	tramites = JSON.parse(response);
-	        	tramites.forEach(tramite => {
-					let option = new Option(tramite.tramite, tramite.id_tramite);
-					$("#tramitesSelect").append(option);
-	        	});
-	        })
-	        .fail(function( msg ) {
-	         	Command: toastr.warning("No Success", "Notifications") 
-	        }).always( () =>{
-	        	$("#spin-animate").hide();
-	        } );
+	        	setTramites( $("#tramitesSelect") );
+	        }), (( msg ) => {
+	         	Command: toastr.warning("No Success", "Notifications") ;
+	        }) ,  () => $("#spin-animate").hide())
 		}
-
-		function setTramites(){
-        	tramites.forEach( (tramite, index) => {
-				let option = new Option(tramite.tramite, tramite.id_tramite, index == 0);
-				$("#tramitesSelectModal").append(option);
-        	});
-        	getUsers();
-		}
-
+		
 		function getUsers(){
-	        $.ajax({
-		        method: "get",            
-		        url: "{{ url('/solicitud-getUsers') }}",
-		        data: {_token:'{{ csrf_token() }}'}  })
-	        .done((response) => {  
-	        	console.log(  response )
-	        	let usuarios = JSON.parse(response);
-	        	usuarios.forEach(usuario => {
-					let option = new Option(usuario.nombre + " - " + usuario.email , usuario.id);
-					$("#usuarioSelectModal").append(option);
-	        	});
-	        })
-	        .fail(function( msg ) {
-	         	Command: toastr.warning("No Success", "Notifications") 
-	        });			
+			let url = "{{ url('/solicitud-getUsers') }}";
+			getApi( url , ((response) => usuarios = JSON.parse(response)), 
+				(( msg ) => {
+	         	Command: toastr.warning("No Success", "Notifications") ;
+	        }));	
+		}
+
+		function setTramites(element){
+        	tramites.forEach(tramite => addOptionToSelect( element, tramite.tramite, tramite.id_tramite ));
+		}
+
+		function addOptionToSelect( element, name, key ){
+			element.append( new Option(name , key) );
+		}
+
+		function setUsuarios(){
+			usuarios.forEach(usuario => addOptionToSelect( $("#usuarioSelectModal"),  usuario.nombre + " - " + usuario.email , usuario.id ));
 		}
 
 		function onlyUnique(value, index, self) { 
 		    return self.indexOf(value) === index;
+		}
+
+		function setInfoModal(){
+			setTramites( $("#tramitesSelectModal")  );
+			setUsuarios();
 		}
 
 
@@ -213,11 +205,17 @@
 			createTable( url);
 		}
 
+		function getTemplateAcciones( data, type, row, meta  ){
+			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
+			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>"
+			return botonEditar + botonAddSolicitudDependiente ;	
+		}
+
 		function createTable( url){
-				var table = $('#example').DataTable();
+			var table = $('#example').DataTable();
                 table.destroy();    
 
-				$('#example').DataTable( {
+			$('#example').DataTable( {
 		            "ajax": {
 		            	"url":url,"dataSrc":""
 		            },  
@@ -226,150 +224,79 @@
 					     	"data": "id_solcitud",
 					     	"class": 'detectarclick',
 						    "render": function ( data, type, row, meta ) {
-						    	if(  row.hijas.length > 0 ){
-						      		return '<a onclick="showSolicitudesHijas(' + data +" , " + meta.row +')" ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>';
-						  		} else {
-						  			return "";
-						  		}
+						    	return row.hijas.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
 						    }
 					    },
 		           		{ "data": "titulo" },
 		           		{
 		           			"data": "id_solcitud",
-		           			"render": function ( data, type, row, meta ) {
-		           				let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+ data +" , " + meta.row + ")'><i class='fa fa-pencil'></i></a>";
-		           				let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+ data +" , " + meta.row + ", true)'><i class='fa fa-code-fork'></i></a>"
-						      return botonEditar + botonAddSolicitudDependiente ;
-						    }
+		           			"render": getTemplateAcciones
 		           		}
 		        	]
 		    });
-				$('#example tbody').on('click', 'td.detectarclick', function () {
-					var table = $('#example').DataTable();
-				        var tr = $(this).parents('tr');
-				        var row = table.row( tr );
-				        if(row.data().hijas.length > 0){
-					        if ( row.child.isShown() ) {
-					            // This row is already open - close it
-					            row.child.hide();
-					            tr.removeClass('shown');
-					        	$("#iconShow-" + row.data().id_solcitud).addClass("fa-plus");
-					            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-minus");
-					        }
-					        else {
-					            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-plus");
-					            $("#iconShow-" + row.data().id_solcitud).addClass("fa-minus");
-					            // Open this row
-					            row.child( format(row.data()) ).show();
-					            tr.addClass('shown');
-					        }
-					    }
-				    } );
+			$('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
 		}
 
-		function openModalUpdate( data, row, isDependiente ){
-			$("#add-solicitud-modal") .modal({
-			    show: 'true'
-			}); 
-			setTramites();
-			if( !isDependiente ){
-				var table = $('#example').DataTable();
-
-				var object = typeof data == "object" ? data : table.rows( row ).data()[0];
-				$("#titulo").val( object.titulo );
-				$("#tramitesSelectModal option[value=" +  object.tramite_id +"]").attr('selected','selected').change();
-	        	$("#usuarioSelectModal").val(object.atendido_por.split(",")).trigger('change'); 
-	        	$("#idupdate").val( object.id_solcitud );
-	    	} else {
-	    		$("#padre_id").val( data );
-	    	}
-		}
-
-		function showSolicitudesHijas( idSolicitud, row ){
-			/*
-			
+		function buildTemplateChild(){
 			var table = $('#example').DataTable();
-
-				var data = table
-				    .rows( row )
-				    .data()[0];
-			
-			var tr = $(this).parents('tr');
-				        var row = table.row( tr );
-				 
-				        if ( row.child.isShown() ) {
-				            // This row is already open - close it
-				            row.child.hide();
-				            tr.removeClass('shown');
-				        }
-				        else {
-				            // Open this row
-				            row.child( format(row.data()) ).show();
-				            tr.addClass('shown');
-				        }*/
+	        var tr = $(this).parents('tr');
+	        var row = table.row( tr );
+	        if(row.data().hijas.length > 0){
+		        if ( row.child.isShown() ) {
+		            row.child.hide();
+		            tr.removeClass('shown');
+		        	$("#iconShow-" + row.data().id_solcitud).addClass("fa-plus").removeClass("fa-minus");
+		        } else {
+		            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-plus").addClass("fa-minus");
+		            row.child( format(row.data()) ).show();
+		            tr.addClass('shown');
+		        }
+		    }
 		}
 
-		function verificaInsert(e){
-			
-	        let titulo=$("#titulo").val();
+		function formularioValido( solicitud ){
+			let valido = false;
+			if(solicitud.titulo.length<1) {
+	            Command: toastr.warning("Campo Titulo, Requerido!", "Notifications");
+	        } else if( solicitud.id_tramite == "limpia"){
+				Command: toastr.warning("Campo Trámite, Requerido!", "Notifications")
+	        } else if( !solicitud.user ){
+				Command: toastr.warning("Campo Usuario, Requerido!", "Notifications")
+	        } else {
+	        	valido = solicitud;
+	        }
+	        return valido;
+		}
+
+		function getSolicitud(){
+			let titulo=$("#titulo").val();
 	        let tramitesSelectModal= $("#tramitesSelectModal").val();
 	        let status = 1;
 	        let usuariosArray = $("#usuarioSelectModal").val();
+			let id_solcitud= $("#idupdate").val();
+			let padre_id = $("#padre_id").val();
 
-			var id_= $("#idupdate").val();
-	        
-	        if(titulo.length<1) {
-	            Command: toastr.warning("Campo Titulo, Requerido!", "Notifications")
-	        } else if( tramitesSelectModal == "limpia"){
-				Command: toastr.warning("Campo Trámite, Requerido!", "Notifications")
-	        } else if( !usuariosArray ){
-				Command: toastr.warning("Campo Usuario, Requerido!", "Notifications")
-	        } else {
-	        	let data = {
-	        		titulo, id_tramite:tramitesSelectModal,user:usuariosArray.filter( onlyUnique ).join(), status,
-	        		_token:'{{ csrf_token() }}', padre_id:$("#padre_id").val()
+			usuariosArray = usuariosArray ? usuariosArray.filter( onlyUnique ) : [];
+			return  {
+	        		titulo, id_tramite:tramitesSelectModal,user:usuariosArray.join(), status,
+	        		_token:'{{ csrf_token() }}', padre_id, id_solcitud
 	        	}
-	            id_.length == 0 ? insertar( data ) : update(  data, id_ );
-	        }
 		}
 
-		function insertar( data ){
-			$("#iconBtnSave").removeClass("fa-check");
-	        $("#iconBtnSave").addClass("fa-spin fa-spinner");
-	        $("#btnSav").attr("disabled", true)
-			$.ajax({
-	           method: "post",           
-	           url: "{{ url('/solicitud-add') }}",
-	           dataType: 'json',
-	           data: data
-	       	}).done(function (response) {
-	          if(response.Code =="200"){
-	            Command: toastr.success(response.Message, "Notifications")
-	            limpiar();
-	          }else{
-	            Command: toastr.warning(response.Message, "Notifications")
-	          }
-	        })
-	        .fail(function( msg ) {
-	            console.log("Error al Cargar Tabla");  
-	        }).always( () =>{
-	   			$("#iconBtnSave").removeClass("fa-spin fa-spinner");
-	        	$("#iconBtnSave").addClass("fa-check");
-	        	$("#btnSav").attr("disabled", false)
-	    	});
+		function verificaInsert(e){
+			let solicitud = formularioValido( getSolicitud() );
+			if( solicitud ){
+				let url = solicitud.id_solcitud.length == 0 ? "{{ url('/solicitud-add') }}" :"{{ url('/solicitud-editar') }}";
+	            postUpdate( url, solicitud );
+			}
 		}
 
-		function update( data, id ){
-			data.id_solcitud = id;
-			$("#iconBtnSave").removeClass("fa-check");
-	        $("#iconBtnSave").addClass("fa-spin fa-spinner");
-	        $("#btnSav").attr("disabled", true)
+		function postUpdate( url, data ){
+			activarSpinner( true);
 			$.ajax({
-	           method: "post",           
-	           url: "{{ url('/solicitud-editar') }}",
-	           dataType: 'json',
-	           data: data
-	       	}).done(function (response) {
+	           method: "post", url,
+	           dataType: 'json', data
+	       	}).done(  (response) => {
 	          if(response.Code =="200"){
 	            Command: toastr.success(response.Message, "Notifications")
 	            limpiar();
@@ -378,13 +305,8 @@
 	            Command: toastr.warning(response.Message, "Notifications")
 	          }
 	        })
-	        .fail(function( msg ) {
-	            console.log("Error al Cargar Tabla");  
-	        }).always( () =>{
-	   			$("#iconBtnSave").removeClass("fa-spin fa-spinner");
-	        	$("#iconBtnSave").addClass("fa-check");
-	        	$("#btnSav").attr("disabled", false)
-	    	});
+	        .fail( ( msg ) => console.log("Error al Cargar Tabla") )
+	        .always( () => activarSpinner( false) );
 		}
 
 		function limpiar(){
@@ -396,32 +318,44 @@
 		}
 
 
-		function format ( d ) {
-			console.log( d.hijas )
-			/*
-				let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+ d +")'><i class='fa fa-pencil'></i></a>";
-
-		    return '<table  class="table table-hover" cellpadding="1" cellspacing="0" border="0" style="padding-left:90px;">'+
-		        '<tr>'+
-		            '<td>Titulo:</td>'+
-		            '<td>'+d.titulo  + '</td>'+
-		        '</tr>'+
-		        '<tr>'+
-		            '<td>Extra info:</td>'+
-		            '<td>And any further details here (images etc)...</td>'+
-		        '</tr>'+
-		    '</table>';*/
-		    let html = '<table  class="table table-hover" cellpadding="1" cellspacing="0" border="0" style="padding-left:90px;">';
+		function format ( d ) {		    
+		    let html = '<table class="table table-hover" cellpadding="0" cellspacing="0" border="0" style="margin-left:94px; margin-right:94px">';
 		    d.hijas.forEach( (solicitud) =>{
-		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td>'+'</tr>';
+		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
+		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar + '</td></tr>';
 		    });
 		    html+='</table>';
-
 		    return html;
+		}
+		
+		function openModalUpdate( solicitud, isDependiente ){
+			configModal();
+			!isDependiente ? setInfoForm( solicitud ) : $("#padre_id").val( solicitud.id_solcitud );
+		}
+
+		function configModal(){
+			$("#add-solicitud-modal").modal({show: 'true'}); 
+			setInfoModal();			
+		}
+
+		function setInfoForm( solicitud ){
+			$("#titulo").val( solicitud.titulo );
+			$("#tramitesSelectModal option[value=" +  solicitud.tramite_id +"]").attr('selected','selected').change();
+	        $("#usuarioSelectModal").val(solicitud.atendido_por.split(",")).trigger('change'); 
+	        $("#idupdate").val( solicitud.id_solcitud );
+	        $("#padre_id").val( solicitud.padre_id );
+		}
+
+		function activarSpinner( activar ){
+			let classRemove = activar ? "fa-check" : "fa-spin fa-spinner";
+			let classAdd = activar ? "fa-spin fa-spinner" : "fa-check";
+			$("#iconBtnSave").removeClass(classRemove).addClass(classAdd);
+	    	$("#btnSav").attr("disabled", activar);
 		}
 
 	    jQuery(document).ready(() => {
 	    	getTramites();
+	    	getUsers();
 	    });
 
 	</script>
