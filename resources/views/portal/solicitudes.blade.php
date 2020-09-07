@@ -232,7 +232,7 @@
 		function getTemplateAcciones( data, type, row, meta  ){
 			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
 			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
-			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>"
+			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>";
 			return botonEditar + botonAddSolicitudDependiente + botonEliminar;	
 		}
 
@@ -248,6 +248,7 @@
 		            	{
 					     	"data": "id_solcitud",
 					     	"class": 'detectarclick',
+					     	"width": "3%",
 						    "render": function ( data, type, row, meta ) {
 						    	return row.hijas.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
 						    }
@@ -349,7 +350,8 @@
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
 		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
-		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar + botonEliminar + '</td></tr>';
+		    	let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(solicitud) +", true)'><i class='fa fa-code-fork'></i></a>";
+		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>';
 		    });
 		    html+='</table>';
 		    return html;
