@@ -241,9 +241,9 @@
                 table.destroy();    
 
 			$('#example').DataTable( {
-		            "ajax": {
+		           "ajax": {
 		            	"url":url,"dataSrc":""
-		            },  
+		            },
 		            "columns": [
 		            	{
 					     	"data": "id_solcitud",
@@ -274,10 +274,28 @@
 		        	$("#iconShow-" + row.data().id_solcitud).addClass("fa-plus").removeClass("fa-minus");
 		        } else {
 		            $("#iconShow-" + row.data().id_solcitud).removeClass("fa-plus").addClass("fa-minus");
-		            row.child( format(row.data()) ).show();
+		            row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
 		            tr.addClass('shown');
 		        }
 		    }
+		}
+
+		function showMore( solicitud, e){
+			var tr = $(e.target).parents('tr');
+			if( solicitud.hijas && solicitud.hijas.length > 0 ){
+
+				if(tr.hasClass("shown") ){
+					tr.removeClass('shown');
+					$("#brothertr-" + solicitud.id_solcitud ).remove();
+
+					$("#iconShowChild-" + solicitud.id_solcitud).addClass("fa-plus").removeClass("fa-minus");
+				} else {
+					$("#iconShowChild-" + solicitud.id_solcitud).removeClass("fa-plus").addClass("fa-minus");
+					tr.addClass('shown');
+					$("#trchild-" + solicitud.id_solcitud).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id_solcitud + "''><td colspan='4'>"  + format( solicitud  ) + "</td></tr>");
+				}
+
+			}
 		}
 
 		function formularioValido( solicitud ){
@@ -346,12 +364,17 @@
 
 
 		function format ( d ) {		    
-		    let html = '<table class="table table-hover" cellpadding="0" cellspacing="0" border="0" style="margin-left:94px; margin-right:94px">';
+		    let html = '<table class="table table-hover">';
+		    html += "<tr> <th></th><th>Titulo</th> <th></th></tr>";
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
 		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
 		    	let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(solicitud) +", true)'><i class='fa fa-code-fork'></i></a>";
-		        html += '<tr><td>Titulo:</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>';
+		   
+				let tdShowHijas = solicitud.hijas && solicitud.hijas.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_solcitud  +"' class='fa fa-plus'></a>" : '';
+				
+		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>'
+		    
 		    });
 		    html+='</table>';
 		    return html;
