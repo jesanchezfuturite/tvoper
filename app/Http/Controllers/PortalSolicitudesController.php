@@ -87,7 +87,9 @@ class PortalSolicitudesController extends Controller
 
     $id_tramite = $request->id_tramite;
     $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
-    $slctds = $slctd_hija = array();
+
+    $slctds = $slctd_hija = $check = array();
+
     try{
       foreach ($solicitud as $s) {
         $id_sol = $s->id;
@@ -98,17 +100,30 @@ class PortalSolicitudesController extends Controller
             $id_solh = $h->id;
 
             $check = $this->getChild($id_solh);
-            $slctd_hija []= array('id_solcitud' => $h->id,
-              'tramite_id'  => $h->tramite_id,
-              'padre_id'  =>  $h->padre_id,
-              'titulo'  =>  $h->titulo,
-              'atendido_por' => $h->atendido_por,
-              'status'  =>  $h->status,
-              'hijas'  => $check
-              );
+
+            if(empty($check)){
+              $slctd_hija []= array('id_solcitud' => $h->id,
+                'tramite_id'  => $h->tramite_id,
+                'padre_id'  =>  $h->padre_id,
+                'titulo'  =>  $h->titulo,
+                'atendido_por' => $h->atendido_por,
+                'status'  =>  $h->status
+                );
+            }else{
+              $slctd_hija []= array('id_solcitud' => $h->id,
+                'tramite_id'  => $h->tramite_id,
+                'padre_id'  =>  $h->padre_id,
+                'titulo'  =>  $h->titulo,
+                'atendido_por' => $h->atendido_por,
+                'status'  =>  $h->status,
+                'hijas'  => $check
+                );
+            }
+            unset($check);
           }
         }
 
+        //dd($slctd_hija);
         $slctds []=array(
           'id_solcitud' => $s->id,
           'tramite_id'  => $s->tramite_id,
@@ -118,6 +133,8 @@ class PortalSolicitudesController extends Controller
           'status'  =>  $s->status,
           'hijas'  => $slctd_hija
         );
+
+
         $slctd_hija = array();
       }
       //dd($slctds);
@@ -131,9 +148,12 @@ class PortalSolicitudesController extends Controller
 
   public function getChild($id_solh){
 
+    $slctd_hija = array();
+
     $hija = $this->solicitudes->where('padre_id', $id_solh)->get();
     if($hija->count() > 0){
       foreach ($hija as $h) {
+
         $slctd_hija []= array('id_solcitud' => $h->id,
           'tramite_id'  => $h->tramite_id,
           'padre_id'  =>  $h->padre_id,
@@ -143,6 +163,8 @@ class PortalSolicitudesController extends Controller
           );
       }
     }
+    $test= json_encode($slctd_hija);
+    //dd($test);
 
     return $slctd_hija;
   }
