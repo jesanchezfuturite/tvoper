@@ -56,7 +56,7 @@ class PortalSolicitudesController extends Controller
 
   public function getTramites(){
 
-    $tramits = $this->tiposer->all()->where('id_gpm', 1);
+    $tramits = $this->tiposer->where('id_gpm','>=', 1)->get();
 
     //$tmts->tramites
     $tmts = array();
@@ -86,7 +86,7 @@ class PortalSolicitudesController extends Controller
   public function getSolicitudes(Request $request){
 
     $id_tramite = $request->id_tramite;
-    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->where('padre_id', null)->get();
+    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
 
     $slctds = $slctd_hija = $check = array();
 
