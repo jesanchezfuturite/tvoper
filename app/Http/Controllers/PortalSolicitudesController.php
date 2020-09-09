@@ -86,7 +86,7 @@ class PortalSolicitudesController extends Controller
   public function getSolicitudes(Request $request){
 
     $id_tramite = $request->id_tramite;
-    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->get();
+    $solicitud = $this->solicitudes->where('tramite_id', $id_tramite)->where('padre_id', null)->get();
 
     $slctds = $slctd_hija = $check = array();
 
