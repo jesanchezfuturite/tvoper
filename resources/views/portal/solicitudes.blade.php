@@ -1,6 +1,7 @@
 @extends('layout.app')
 
 @section('content')
+<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -63,7 +64,7 @@
             	</div>
             </div>
             <div class="tools" id="toolsSolicitudes">                
-                <a href="#add-solicitud-modal"  onclick="setInfoModal()" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
+                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
                 </a>
             </div>
         </div>
@@ -106,7 +107,7 @@
 	                                </div>
 	                            </div>
 	                        </div>
-	                        <div class="col-lg-12">
+	                        <div class="col-lg-12" id="divSelectTramites" hidden>
 	                        	<div class="form-group">
 		                            <label class="col-md-3 control-label">Trámite</label>
 		                            <div class="col-md-8">
@@ -218,8 +219,12 @@
 		    return self.indexOf(value) === index;
 		}
 
-		function setInfoModal(){
-			setTramites( $("#tramitesSelectModal")  );
+		function setInfoModal( ocultarSelect){
+			if( !ocultarSelect ) {
+				setTramites( $("#tramitesSelectModal")  );
+			} else {
+				$("#divSelectTramites").hide();
+			}
 			setUsuarios();
 		}
 
@@ -267,7 +272,7 @@
 			var table = $('#example').DataTable();
 	        var tr = $(this).parents('tr');
 	        var row = table.row( tr );
-	        if(row.data().hijas.length > 0){
+	        if(row.data() && row.data().hijas.length > 0){
 		        if ( row.child.isShown() ) {
 		            row.child.hide();
 		            tr.removeClass('shown');
@@ -314,7 +319,8 @@
 
 		function getSolicitud(){
 			let titulo=$("#titulo").val();
-	        let tramitesSelectModal= $("#tramitesSelectModal").val();
+			//let selectModalIsVisible = $("#divSelectTramites").is(":visible");selectModalIsVisible ? $("#tramitesSelectModal").val() : $("#tramitesSelect").val();
+	        let tramitesSelectModal= $("#tramitesSelect").val();
 	        let status = 1;
 	        let usuariosArray = $("#usuarioSelectModal").val();
 			let id_solcitud= $("#idupdate").val();
