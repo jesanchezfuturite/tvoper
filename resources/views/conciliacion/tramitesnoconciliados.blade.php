@@ -20,7 +20,7 @@
 
 <div class="row">
     <!-- BEGIN SAMPLE TABLE PORTLET-->
-    <div class="portlet box blue" id="Addtable">
+    <div class="portlet box blue" >
         <div class="portlet-title">
             <div class="caption">
                 <i class="fa fa-cogs"></i>Tramites Pagados Sin Conciliar
@@ -46,21 +46,20 @@
                                     <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div>
                                     <span class="help-block">&nbsp; </span>  
                                     <button class='btn green' id='Buscar' onclick='findRepositorio()'>Buscar    </button>
+                                    <span class="help-block">&nbsp; </span>
                                 </div>
-                            </div>
-                            <div class='form-group'> 
-                                <div class='col-md-1'>
-                                    <span class="help-block">&nbsp; </span>                                
-                                </div>
+
                             </div>
                             <div class="form-group">
-                                <div class="col-md-12 text-right">   
-                                    <span class="help-block">&nbsp; </span>             
+                                <div class="col-md-6 text-right">   
+                                               
                                     <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
+                                    <span class="help-block">&nbsp; </span>  
                                 </div>
                             </div>
                         </div>                    
-                        <div class="portlet-body" id="Removetable">
+                        <div id="addSample_2">
+                            <div id="Removetable">
                             <table class="table table-hover" id="sample_2">
                                 <thead>
                                     <tr>
@@ -81,6 +80,7 @@
                                     <td></td>                                                               
                                 </tbody>
                             </table>
+                        </div>
                         </div>
                     </div>
     <!---------------------------------------- Egobierno ----------------------------->
@@ -131,9 +131,9 @@
     });    
     function addTable()
     { 
-        $("#Removetable").remove();
-        $('#Addtable').append(
-            "<div class='portlet-body' id='Removetable'><table class='table table-hover' id='sample_2'><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Fecha Pago</th><th>Estatus</th><th>Monto</th></tr></thead> <tbody><tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td></tbody> </table> </div>"
+        $("#addSample_2 div").remove();
+        $('#addSample_2').append(
+            "<div id='Removetable'><table class='table table-hover' id='sample_2'><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Fecha Pago</th><th>Estatus</th><th>Monto</th></tr></thead> <tbody><tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td></tbody> </table> </div>"
         );
     }
     function findRepositorio()
