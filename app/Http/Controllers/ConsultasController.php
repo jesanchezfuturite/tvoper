@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Validator;
 /**** Repository ****/
 use App\Repositories\ConceptsCalculationRepositoryEloquent;
 use App\Repositories\ConceptsubsidiesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
 use App\Repositories\CurrenciesRepositoryEloquent;
 use App\Repositories\ApplicableSubjectRepositoryEloquent;
+use App\Repositories\UsuariodbentidadRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\PagossolicitudRepositoryEloquent;
 /***/
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -31,7 +34,9 @@ class ConsultasController extends Controller
     protected $umahistorydb;
     protected $currenciesdb;
     protected $applicablesubjectdb;
-
+    protected $usuarioentidaddb;
+    protected $oper_transaccionesdb;
+    protected $pagossolicituddb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -43,7 +48,10 @@ class ConsultasController extends Controller
         ConceptsubsidiesRepositoryEloquent $conceptsubsidiesdb,
         UmahistoryRepositoryEloquent $umahistorydb,
         CurrenciesRepositoryEloquent $currenciesdb,
-        ApplicableSubjectRepositoryEloquent $applicablesubjectdb
+        ApplicableSubjectRepositoryEloquent $applicablesubjectdb,
+        UsuariodbentidadRepositoryEloquent $usuarioentidaddb,
+        TransaccionesRepositoryEloquent $oper_transaccionesdb,
+        PagossolicitudRepositoryEloquent $pagossolicituddb
 
     )
     {
@@ -54,6 +62,9 @@ class ConsultasController extends Controller
         $this->umahistorydb=$umahistorydb;
         $this->currenciesdb=$currenciesdb;
         $this->applicablesubjectdb=$applicablesubjectdb;
+        $this->usuarioentidaddb=$usuarioentidaddb;
+        $this->oper_transaccionesdb=$oper_transaccionesdb;
+        $this->pagossolicituddb=$pagossolicituddb;
     }
 
     public function calculoconceptos(Request $request)
@@ -330,5 +341,89 @@ class ConsultasController extends Controller
         return response()->json($responseJson);
         
        
+    }
+
+    public function consultaPagos(Request $request)
+    { 
+        //log::info($request);
+        $responseJson=array();
+        $response=array();
+        $user=$request->user;
+        $entidad=$request->entidad;
+       /*$validator = Validator::make($request->all(), [
+            'user' => 'required',
+            'entidad' => 'required',
+        ]);
+       if ($validator->fails()) {
+            log::info($validator->fails());
+        }else{*/
+            $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
+            if($userExist->count()>0)
+            {
+                $response=$this->oper_transaccionesdb->findTransaccionesPagado($user,$entidad);
+                log::info('registros: ' . $response->count());
+                if($response<>null)
+                {
+                    $responseJson= array(
+                    'status' => 'ok',
+                    'error' => '',
+                    'reponse' => $response,
+                    );
+                }else{
+
+                }
+                
+            }else{
+                $responseJson= array(
+                    'status' => 'error',
+                    'error' => 'usuaio no existe',
+                    'reponse' => [],
+                );
+            }
+        //}
+        return response()->json($responseJson);
+
+    }
+    public function PagosVerificados(Request $request)
+    { 
+        $fecha=Carbon::now()->format('Y-m-d H:m:s');
+        $responseJson=array();
+        //log::info($request);
+        try{            
+            $response=array();
+            $insolicitud=array();
+            $folios=$request->id_transaccion_motor;
+            //log::info( $folios);
+            //if(is_array ( mixed $folios ))
+            //{
+            foreach ($folios as $f) {                
+                $insolicitud []=array(
+                    'id_transaccion_motor'=>$f,
+                    'created_at'=>$fecha,
+                    'updated_at'=>$fecha,
+                );    
+            }
+             log::info($insolicitud);
+            $inserts=$this->pagossolicituddb->insert($insolicitud);    
+           
+                $responseJson= array(
+                'status' => 'ok',
+                'error' => '',
+                'reponse' => 'guardado exitoso',
+                );
+            //}          
+            
+        //}
+         }catch (\Exception $e) {
+            $responseJson= array(
+                    'status' => 'error',
+                    'error' => 'ocurrio un error',
+                    'reponse' => '',
+                );
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
     }
 }
