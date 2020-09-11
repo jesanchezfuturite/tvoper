@@ -415,10 +415,10 @@ class ConsultasController extends Controller
                         
                     }
                 }else{
-                     $noInsert []=array([
+                     $noInsert []=array(
                         "estatus"=>"no pertenece a una entidad, o no existe el folio",
                         "id_transaccion_motor"=>$f
-                    ]);
+                    );
                 }                       
             }
                 //log::info($insolicitud);               
