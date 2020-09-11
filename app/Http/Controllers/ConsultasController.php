@@ -348,8 +348,9 @@ class ConsultasController extends Controller
         //log::info($request);
         $responseJson=array();
         $response=array();
+        try{
         $user=$request->user;
-        $entidad=$request->entidad;
+        //$entidad=$request->entidad;
        /*$validator = Validator::make($request->all(), [
             'user' => 'required',
             'entidad' => 'required',
@@ -357,6 +358,11 @@ class ConsultasController extends Controller
        if ($validator->fails()) {
             log::info($validator->fails());
         }else{*/
+            if($user==null)
+            {
+                $responseJson= $this->reponsePagosverf('400','user requerido',$noInsert);
+                return response()->json($responseJson);
+            }
             $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
             if($userExist->count()>0)
             {
@@ -364,23 +370,19 @@ class ConsultasController extends Controller
                 log::info('registros: ' . $response->count());
                 if($response<>null)
                 {
-                    $responseJson= array(
-                    'status' => 'ok',
-                    'error' => '',
-                    'reponse' => $response,
-                    );
+                    $responseJson= $this->reponsePagosverf('202','',$response);
                 }else{
-
+                    $responseJson= $this->reponsePagosverf('202','Sin registros',$response);
                 }
                 
             }else{
-                $responseJson= array(
-                    'status' => 'error',
-                    'error' => 'usuaio no existe',
-                    'reponse' => [],
-                );
+                $responseJson= $this->reponsePagosverf('400','usuaio no existe',[]);
             }
-        //}
+        }catch (\Exception $e) {
+            log::info('consultaPagos insert' . $e->getMessage());
+            $responseJson= $this->reponsePagosverf('400','ocurrio un error',[]);     
+          return  response()->json($responseJson);            
+        }
         return response()->json($responseJson);
 
     }
@@ -390,10 +392,21 @@ class ConsultasController extends Controller
         $responseJson=array();
         $noInsert=array();
         //log::info($request->request);
-        //try{            
+        try{            
             $insolicitud=array();            
             $folios=$request->id_transaccion_motor;
             $user=$request->user;
+            if($user==null)
+            {
+                $responseJson= $this->reponsePagosverf('400','user requerido',$noInsert);
+                return response()->json($responseJson);
+            }
+            //(log::info(is_array($folios));
+            if(empty($folios))
+            {
+                $responseJson= $this->reponsePagosverf('400','id_transaccion_motor requerido',$noInsert);
+                return response()->json($responseJson);
+            }
             foreach ($folios as $f) {
                 $findEntTra=$this->oper_transaccionesdb->verifTransaccionesPagado($user,$f);                
                 if($findEntTra->count()>0)
@@ -424,12 +437,12 @@ class ConsultasController extends Controller
                 //log::info($insolicitud);               
             
             $inserts=$this->pagossolicituddb->insert($insolicitud);              
-            $responseJson= $this->reponsePagosverf('ok','Guardado exitoso',$noInsert);  
-         /*}catch (\Exception $e) {
-            $responseJson=$this->reponsePagosverf('error','ocurrio un error',[]);
+            $responseJson= $this->reponsePagosverf('202','Guardado exitoso',$noInsert);  
+         }catch (\Exception $e) {
+            $responseJson=$this->reponsePagosverf('400','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
           return  response()->json($responseJson);            
-        }*/
+        }
         return response()->json($responseJson);
 
     }
@@ -438,8 +451,8 @@ class ConsultasController extends Controller
         $response=array();
 
         $response= array(
-                    'status' => $status,
-                    'estado' => $error,
+                    'code' => $status,
+                    'status' => $error,
                     'reponse' => $responseJ,
                 );
         return $response;
