@@ -402,7 +402,7 @@ class ConsultasController extends Controller
                         if($e->existe<>null)
                         {
                             $noInsert []=array(
-                                "estatus"=>"ya esta Registrado",
+                                "estatus"=>"Ya se encuentra registrado",
                                 "id_transaccion_motor"=>$f
                             );
                         }else{
@@ -416,7 +416,7 @@ class ConsultasController extends Controller
                     }
                 }else{
                      $noInsert []=array(
-                        "estatus"=>"no pertenece a una entidad, o no existe el folio",
+                        "estatus"=>"No pertenece a una entidad, o no existe el folio",
                         "id_transaccion_motor"=>$f
                     );
                 }                       
@@ -424,7 +424,7 @@ class ConsultasController extends Controller
                 //log::info($insolicitud);               
             
             $inserts=$this->pagossolicituddb->insert($insolicitud);              
-            $responseJson= $this->reponsePagosverf('ok','guardado exitoso',$noInsert);  
+            $responseJson= $this->reponsePagosverf('ok','Guardado exitoso',$noInsert);  
          /*}catch (\Exception $e) {
             $responseJson=$this->reponsePagosverf('error','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
