@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\usuariodbentidadRepository;
+use App\Repositories\UsuariodbentidadRepository;
 use App\Entities\Usuariodbentidad;
 use App\Validators\UsuariodbentidadValidator;
 
