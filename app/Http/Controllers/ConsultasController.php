@@ -376,7 +376,7 @@ class ConsultasController extends Controller
                 }
                 
             }else{
-                $responseJson= $this->reponsePagosverf('400','usuaio no existe',[]);
+                $responseJson= $this->reponsePagosverf('400','usuario no existe',[]);
             }
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
