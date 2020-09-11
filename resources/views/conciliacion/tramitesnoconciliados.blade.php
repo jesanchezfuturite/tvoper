@@ -59,7 +59,7 @@
                             </div>
                         </div>                    
                         <div id="addSample_2">
-                            <div id="Removetable">
+                            <div id="removeSample_2">
                             <table class="table table-hover" id="sample_2">
                                 <thead>
                                     <tr>
@@ -86,7 +86,8 @@
     <!---------------------------------------- Egobierno ----------------------------->
                     <div class="tab-pane" id="tab_1">
 
-                        <div class="portlet-body" id="RemovetableEgob">
+                        <div id="addSample_3">
+                            <div id="removeSample_3">
                             <table class="table table-hover" id="sample_3">
                                 <thead>
                                     <tr>
@@ -108,7 +109,7 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        </div>
                     </div>
                 </div>
             </div>
@@ -133,7 +134,7 @@
     { 
         $("#addSample_2 div").remove();
         $('#addSample_2').append(
-            "<div id='Removetable'><table class='table table-hover' id='sample_2'><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Fecha Pago</th><th>Estatus</th><th>Monto</th></tr></thead> <tbody><tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td></tbody> </table> </div>"
+            "<div id='removeSample_2'><table class='table table-hover' id='sample_2'><thead><tr><th>Folio</th><th>Referencia</th><th>Banco</th><th>Fecha Pago</th><th>Estatus</th><th>Monto</th></tr></thead> <tbody><tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td></tbody> </table> </div>"
         );
     }
     function findRepositorio()
