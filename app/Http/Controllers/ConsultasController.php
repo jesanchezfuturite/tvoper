@@ -453,7 +453,7 @@ class ConsultasController extends Controller
         $response= array(
                     'code' => $status,
                     'status' => $error,
-                    'reponse' => $responseJ,
+                    'response' => $responseJ,
                 );
         return $response;
     }
