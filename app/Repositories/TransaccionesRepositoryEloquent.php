@@ -214,6 +214,22 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
           return $data;
        
     }
+     public function verifTransaccionesPagado($user,$id_transaccion_motor)
+    {
+        
+        $data = Transacciones::where('oper_transacciones.estatus','0')
+        ->select('oper_transacciones.id_transaccion_motor AS id_transaccion_motor',
+                'oper_pagos_solicitud.id_transaccion_motor as existe')       
+        ->leftjoin('oper_usuariobd_entidad','oper_usuariobd_entidad.id_entidad','=','oper_transacciones.entidad')
+         ->leftjoin('oper_pagos_solicitud','oper_pagos_solicitud.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
+         ->where('oper_usuariobd_entidad.usuariobd' ,'=', $user)  
+        ->where('oper_transacciones.id_transaccion_motor' ,$id_transaccion_motor)  
+        //->Where('oper_pagos_solicitud.id_transaccion_motor','=',null)
+        ->orderBy('oper_transacciones.id_transaccion_motor', 'DESC')
+        ->get();
+          return $data;
+       
+    }
 
     
     

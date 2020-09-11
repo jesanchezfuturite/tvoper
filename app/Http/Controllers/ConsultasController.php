@@ -388,42 +388,60 @@ class ConsultasController extends Controller
     { 
         $fecha=Carbon::now()->format('Y-m-d H:m:s');
         $responseJson=array();
-        //log::info($request);
-        try{            
-            $response=array();
-            $insolicitud=array();
+        $noInsert=array();
+        //log::info($request->request);
+        //try{            
+            $insolicitud=array();            
             $folios=$request->id_transaccion_motor;
-            //log::info( $folios);
-            //if(is_array ( mixed $folios ))
-            //{
-            foreach ($folios as $f) {                
-                $insolicitud []=array(
-                    'id_transaccion_motor'=>$f,
-                    'created_at'=>$fecha,
-                    'updated_at'=>$fecha,
-                );    
+            $user=$request->user;
+            foreach ($folios as $f) {
+                $findEntTra=$this->oper_transaccionesdb->verifTransaccionesPagado($user,$f);                
+                if($findEntTra->count()>0)
+                {
+                    foreach ($findEntTra as $e) {                        
+                        if($e->existe<>null)
+                        {
+                            $noInsert []=array(
+                                "estatus"=>"ya esta Registrado",
+                                "id_transaccion_motor"=>$f
+                            );
+                        }else{
+                            $insolicitud []=array(
+                            'id_transaccion_motor'=>$f,
+                            'created_at'=>$fecha,
+                            'updated_at'=>$fecha,
+                            );
+                        }
+                        
+                    }
+                }else{
+                     $noInsert []=array([
+                        "estatus"=>"no pertenece a una entidad, o no existe el folio",
+                        "id_transaccion_motor"=>$f
+                    ]);
+                }                       
             }
-             log::info($insolicitud);
-            $inserts=$this->pagossolicituddb->insert($insolicitud);    
-           
-                $responseJson= array(
-                'status' => 'ok',
-                'error' => '',
-                'reponse' => 'guardado exitoso',
-                );
-            //}          
+                //log::info($insolicitud);               
             
-        //}
-         }catch (\Exception $e) {
-            $responseJson= array(
-                    'status' => 'error',
-                    'error' => 'ocurrio un error',
-                    'reponse' => '',
-                );
+            $inserts=$this->pagossolicituddb->insert($insolicitud);              
+            $responseJson= $this->reponsePagosverf('ok','guardado exitoso',$noInsert);  
+         /*}catch (\Exception $e) {
+            $responseJson=$this->reponsePagosverf('error','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
           return  response()->json($responseJson);            
-        }
+        }*/
         return response()->json($responseJson);
 
+    }
+    private function reponsePagosverf($status,$error,$responseJ)
+    {
+        $response=array();
+
+        $response= array(
+                    'status' => $status,
+                    'estado' => $error,
+                    'reponse' => $responseJ,
+                );
+        return $response;
     }
 }
