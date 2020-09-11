@@ -184,7 +184,7 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
           return $data;
        
     }
-    public function findTransaccionesPagado($user,$entidad)
+    public function findTransaccionesPagado($user)
     {
         
         $data = Transacciones::where('oper_transacciones.estatus','0')

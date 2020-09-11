@@ -360,14 +360,14 @@ class ConsultasController extends Controller
         }else{*/
             if($user==null)
             {
-                $responseJson= $this->reponsePagosverf('400','user requerido',$noInsert);
+                $responseJson= $this->reponsePagosverf('400','user requerido',[]);
                 return response()->json($responseJson);
             }
             $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
             if($userExist->count()>0)
             {
-                $response=$this->oper_transaccionesdb->findTransaccionesPagado($user,$entidad);
-                log::info('registros: ' . $response->count());
+                $response=$this->oper_transaccionesdb->findTransaccionesPagado($user);
+               //log::info('registros: ' . $response->count());
                 if($response<>null)
                 {
                     $responseJson= $this->reponsePagosverf('202','',$response);
@@ -379,7 +379,7 @@ class ConsultasController extends Controller
                 $responseJson= $this->reponsePagosverf('400','usuaio no existe',[]);
             }
         }catch (\Exception $e) {
-            log::info('consultaPagos insert' . $e->getMessage());
+            log::info('consultaPagos ' . $e->getMessage());
             $responseJson= $this->reponsePagosverf('400','ocurrio un error',[]);     
           return  response()->json($responseJson);            
         }
