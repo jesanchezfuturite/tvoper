@@ -170,6 +170,34 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
             return false;
         }
     }
+    public function updatefechaPago($id,$fecha,$banco,$cuenta)
+    {
+        try
+        {
+            $data = Transacciones::where('referencia','=', $id)->update(['fecha_pago' => $fecha,'banco'=>$banco,'cuenta_deposito'=>$cuenta]);
+
+        }catch( \Exception $e ){
+            Log::info("[TransaccionesRepositoryEloquent@updateStatusReferenceStatus65]  ERROR al actualizar las transacciones como procesadas");
+            return false;
+        }
+    }
+    public function findTransaccionesFechaPago($info)
+    {
+        try
+        {
+            $data = Transacciones::whereIn('oper_transacciones.referencia', $info)
+            ->select('oper_transacciones.referencia','oper_processedregisters.day','oper_processedregisters.month','oper_processedregisters.year','oper_banco.nombre as banco','oper_processedregisters.cuenta_banco')
+            ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','oper_transacciones.referencia')
+            ->leftjoin('oper_banco','oper_banco.id','oper_processedregisters.banco_id')
+            ->where('oper_transacciones.fecha_pago','=',null)
+            ->get();
+
+            return $data;
+        }catch( \Exception $e ){
+            Log::info("[TransaccionesRepositoryEloquent@findTransaccionesFechaPago]  ERROR al buscar las transacciones" . $e );
+            return false;
+        }
+    }
      public function findTransaccionesNoConciliadas($fechaIn,$fechaF)
     {
         
