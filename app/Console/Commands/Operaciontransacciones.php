@@ -292,6 +292,8 @@ class Operaciontransacciones extends Command
             $oper = $this->pr->updateStatusPerReferenceTo($this->valid,"p");
             $updateoper = $this->tr->updateStatusReferenceStatus60($this->valid);
             $updateoper2 = $this->tr->updateStatusReferenceStatus65($this->valid);
+            //log::info($this->valid);
+            $this->updateFechPago($this->valid);
 
         }catch( \Exception $e ){
             dd($e->getMessage());
@@ -309,5 +311,20 @@ class Operaciontransacciones extends Command
         }
 
         
+    }
+    private function updateFechPago($refencias)
+    {
+        $findSinFechaPago=$this->tr->findTransaccionesFechaPago($refencias);
+        
+        //log::info("inicia consulta");
+        if($findSinFechaPago<>null)
+        {
+            foreach ($findSinFechaPago as $k) {
+                $fecha=$k->year . '-' . $k->month . '-' . $k->day;
+                $optr=$this->tr->updatefechaPago($k->referencia,$fecha,$k->banco,$k->cuenta_banco);
+                //log::info($fecha);
+            }
+        }
+        //log::info("termina consulta");
     }
 }
