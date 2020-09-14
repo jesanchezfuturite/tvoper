@@ -184,6 +184,57 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
           return $data;
        
     }
+    public function findTransaccionesPagado($user)
+    {
+        
+        $data = Transacciones::where('oper_transacciones.estatus','0')
+        ->select('oper_usuariobd_entidad.usuariobd AS usuario',
+            'oper_transacciones.entidad AS entidad',
+            'oper_transacciones.referencia AS referencia',
+            'oper_transacciones.id_transaccion_motor AS id_transaccion_motor',
+            'oper_transacciones.id_transaccion AS id_transaccion',
+            'oper_transacciones.estatus AS estatus',
+            'oper_transacciones.importe_transaccion  AS Total',
+            'oper_metodopago.nombre AS MetododePago',
+            'oper_banco.id AS cve_Banco',
+            'oper_transacciones.banco AS Banco',
+            'oper_transacciones.fecha_transaccion AS FechaTransaccion',
+            'oper_transacciones.fecha_pago AS FechaPago',
+            'oper_processedregisters.fecha_ejecucion AS FechaConciliacion')
+        ->leftjoin('oper_metodopago','oper_metodopago.id','=','oper_transacciones.metodo_pago_id')
+        ->leftjoin('oper_banco','oper_banco.id','=','oper_transacciones.banco')
+        ->leftjoin('oper_processedregisters','oper_processedregisters.referencia','=','oper_transacciones.referencia')
+        ->leftjoin('oper_usuariobd_entidad','oper_usuariobd_entidad.id_entidad','=','oper_transacciones.entidad')
+         ->leftjoin('oper_pagos_solicitud','oper_pagos_solicitud.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
+         ->where('oper_usuariobd_entidad.usuariobd' ,'=', $user)  
+        //->whereIn('oper_transacciones.entidad' ,$entidad)  
+        ->Where('oper_pagos_solicitud.id_transaccion_motor','=',null)
+        ->orderBy('oper_transacciones.id_transaccion_motor', 'DESC')
+        ->get();
+          return $data;
+       
+    }
+     public function verifTransaccionesPagado($user,$id_transaccion_motor)
+    {
+        try{
+            $data = Transacciones::where('oper_transacciones.estatus','0')
+            ->select('oper_transacciones.id_transaccion_motor AS id_transaccion_motor',
+                'oper_pagos_solicitud.id_transaccion_motor as existe')       
+            ->leftjoin('oper_usuariobd_entidad','oper_usuariobd_entidad.id_entidad','=','oper_transacciones.entidad')
+            ->leftjoin('oper_pagos_solicitud','oper_pagos_solicitud.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
+            ->where('oper_usuariobd_entidad.usuariobd' ,'=', $user)  
+            ->where('oper_transacciones.id_transaccion_motor' ,$id_transaccion_motor)  
+            //->Where('oper_pagos_solicitud.id_transaccion_motor','=',null)
+            ->orderBy('oper_transacciones.id_transaccion_motor', 'DESC')
+            ->get();
+            return $data;
+        }catch( \Exception $e ){
+            Log::info("[TransaccionesRepositoryEloquent@verifTransaccionesPagado]  ERROR al buscar transaccione");
+            return false;
+        }
+
+       
+    }
 
     
     
