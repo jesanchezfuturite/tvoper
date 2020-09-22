@@ -257,7 +257,7 @@ class PortaltramitesauxController extends Controller
 	/****************************** COSTOS / SUBSIDIOS *******************************/
 	public function Viewtipopagocosto()
     {
-        return view('motorpagos/tipopagocostos');
+        return view('portal/tipopagocostos');
     }
     public function findTramites()
     {

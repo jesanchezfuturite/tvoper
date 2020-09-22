@@ -3,7 +3,7 @@
 
 @section('content')
 <link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
-<h3 class="page-title">Motor de pagos <small>Configuración de Costos</small></h3>
+<h3 class="page-title">Portal <small>Configuración de Costos</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -12,7 +12,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Motor de pagos</a>
+            <a href="#">Portal</a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
@@ -25,11 +25,7 @@
     <strong>Info: </strong>Esta configuración te permite dar...
 </div>
 <div class="row">
-  <div hidden="true">
-  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
-  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
-  <div id="blockui_sample_3_1_element">
-        <!-- BEGIN SAMPLE TABLE PORTLET-->
+ <!-- BEGIN SAMPLE TABLE PORTLET-->
         <div class="portlet box blue">
             <div class="portlet-title" >
                 <div class="caption" id="headerTabla">
@@ -50,7 +46,7 @@
                     <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> 
                   </div>
                 </div>
-                <span class="help-block">&nbsp;</span>             	                
+                <span class="help-block">&nbsp;</span>                              
               </div>
             </div>
             <div class="portlet-body" id="addtables">
@@ -73,7 +69,6 @@
             </div>             
           </div>
         </div>
-      </div>
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 
@@ -125,8 +120,8 @@
                 <label >Tipo</label>
                 <select id="itemsTipo" class="select2me form-control" >
                   <option value="limpia">-------</option>
-                  <option value="f">Fijo</option>
-                  <option value="v">Variable</option>
+                  <option value="F">Fijo</option>
+                  <option value="V">Variable</option>
                 </select>                                            
               </div>
             </div>            
@@ -140,7 +135,7 @@
                 <span class="help-block">Selecciona una Opcion. </span>
                   <div class="md-radio-inline">
                     <div class="md-radio">
-                      <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="h">
+                      <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="H">
                       <label for="radio6">
                         <span></span>
                         <span class="check"></span>
@@ -148,7 +143,7 @@
                         Hoja.</label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="m" >
+                      <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="M" >
                         <label for="radio7">
                         <span></span>
                         <span class="check"></span>
@@ -156,7 +151,7 @@
                           Millar.</label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="l" >
+                      <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="L" >
                       <label for="radio8">
                       <span></span>
                       <span class="check"></span>
@@ -264,7 +259,7 @@
 @section('scripts')
 
 <script type="text/javascript">
-	jQuery(document).ready(function() {
+  jQuery(document).ready(function() {
       findCostos();
       ItemsTramite();     
       valorCuota();
@@ -395,9 +390,9 @@
           if(item.tipo=='f')
           {tipo="Fijo";}else{tipo="Variable";}
 
-          if(item.costo=='h')
+          if(item.costo=='H')
           {costo="Hoja";
-          }else if(item.costo=='m')
+          }else if(item.costo=='M')
           {costo="Millar";
           }else{ costo="Lote";}               
             $('#sample_2 tbody').append("<tr>"
