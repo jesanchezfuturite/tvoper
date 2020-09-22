@@ -7,7 +7,7 @@ use Prettus\Repository\Criteria\RequestCriteria;
 use App\Repositories\PortalcamporelationshipRepository;
 use App\Entities\Portalcamporelationship;
 use App\Validators\PortalcamporelationshipValidator;
-
+use Illuminate\Support\Facades\Log;
 /**
  * Class PortalcamporelationshipRepositoryEloquent.
  *
@@ -53,6 +53,19 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
        
        }catch( \Exception $e){
             Log::info('[PortalcamporelationshipRepositoryEloquent@searchRelation] Error ' . $e->getMessage());
+        } 
+    }
+    public function findTramite()
+    {
+        try{
+        $data = Portalcamporelationship::select('campos_relationship.tramite_id as id',$this->db  . '.tipo_servicios.Tipo_Descripcion as nombre')    
+            ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','campos_relationship.tramite_id')
+            ->groupBy('campos_relationship.tramite_id')
+            ->get();
+
+            return $data;
+        }catch( \Exception $e){
+            Log::info('[PortalcamporelationshipRepositoryEloquent@findTramite] Error ' . $e->getMessage());
         } 
     }
     

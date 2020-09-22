@@ -320,3 +320,14 @@ Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
 Route::get('/solicitud-getUsers', 'PortalSolicitudesController@getUsers');
 Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
+
+
+
+Route::get('/traux-pago-costos','PortaltramitesauxController@Viewtipopagocosto');
+Route::get('/traux-get-tramites','PortaltramitesauxController@findTramites');
+Route::get('/traux-get-costos','PortaltramitesauxController@findCostos');
+Route::get('/traux-get-cuota','PortaltramitesauxController@findValorcuota');
+Route::post('/traux-post-tramites','PortaltramitesauxController@insertCostos');
+Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
+Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
+Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
