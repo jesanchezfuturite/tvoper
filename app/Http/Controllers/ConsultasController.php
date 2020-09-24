@@ -360,7 +360,7 @@ class ConsultasController extends Controller
         }else{*/
             if($user==null)
             {
-                $responseJson= $this->reponsePagosverf('400','user requerido',[]);
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
                 return response()->json($responseJson);
             }
             $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
@@ -370,17 +370,17 @@ class ConsultasController extends Controller
                //log::info('registros: ' . $response->count());
                 if($response<>null)
                 {
-                    $responseJson= $this->reponsePagosverf('202','',$response);
+                    $responseJson= $this->reponseVerf('202','',$response);
                 }else{
-                    $responseJson= $this->reponsePagosverf('202','Sin registros',$response);
+                    $responseJson= $this->reponseVerf('202','Sin registros',$response);
                 }
                 
             }else{
-                $responseJson= $this->reponsePagosverf('400','usuario no existe',[]);
+                $responseJson= $this->reponseVerf('400','usuario no existe',[]);
             }
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
-            $responseJson= $this->reponsePagosverf('400','ocurrio un error',[]);     
+            $responseJson= $this->reponseVerf('400','ocurrio un error',[]);     
           return  response()->json($responseJson);            
         }
         return response()->json($responseJson);
@@ -398,13 +398,13 @@ class ConsultasController extends Controller
             $user=$request->user;
             if($user==null)
             {
-                $responseJson= $this->reponsePagosverf('400','user requerido',$noInsert);
+                $responseJson= $this->reponseVerf('400','user requerido',$noInsert);
                 return response()->json($responseJson);
             }
             //(log::info(is_array($folios));
             if(empty($folios))
             {
-                $responseJson= $this->reponsePagosverf('400','id_transaccion_motor requerido',$noInsert);
+                $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
                 return response()->json($responseJson);
             }
             foreach ($folios as $f) {
@@ -437,16 +437,49 @@ class ConsultasController extends Controller
                 //log::info($insolicitud);               
             
             $inserts=$this->pagossolicituddb->insert($insolicitud);              
-            $responseJson= $this->reponsePagosverf('202','Guardado exitoso',$noInsert);  
+            $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);  
          }catch (\Exception $e) {
-            $responseJson=$this->reponsePagosverf('400','ocurrio un error',[]);
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
           return  response()->json($responseJson);            
         }
         return response()->json($responseJson);
 
     }
-    private function reponsePagosverf($status,$error,$responseJ)
+    public function consultaEntidadFolios(Request $request)
+    { 
+        $responseJson=array();
+        $select=array();
+        try{            
+            $insolicitud=array();            
+            $folios=$request->id_transaccion_motor;
+            $entidad=$request->entidad;
+            $user=$request->user;
+            if($user==null){
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null && $folios==null){
+                $responseJson= $this->reponseVerf('400','entidad / id_transaccion_motor requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null)
+            {
+                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
+            }else{
+                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.entidad',$entidad);
+            }           
+                   
+            $responseJson= $this->reponseVerf('202','',$select);  
+         }catch (\Exception $e) {
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
+    }
+    private function reponseVerf($status,$error,$responseJ)
     {
         $response=array();
 
