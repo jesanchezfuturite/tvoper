@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\TramitesTipoCampoRepository;
-use App\Entities\TramitesTipoCampo;
-use App\Validators\TramitesTipoCampoValidator;
+use App\Repositories\PortalsubsidiotramitesRepository;
+use App\Entities\Portalsubsidiotramites;
+use App\Validators\PortalsubsidiotramitesValidator;
 
 /**
- * Class TramitesTipoCampoRepositoryEloquent.
+ * Class PortalsubsidiotramitesRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class TramitesTipoCampoRepositoryEloquent extends BaseRepository implements TramitesTipoCampoRepository
+class PortalsubsidiotramitesRepositoryEloquent extends BaseRepository implements PortalsubsidiotramitesRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class TramitesTipoCampoRepositoryEloquent extends BaseRepository implements Tram
      */
     public function model()
     {
-        return TramitesTipoCampo::class;
+        return Portalsubsidiotramites::class;
     }
 
     

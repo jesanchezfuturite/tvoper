@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitesBDsTable.
+ * Class CreatePortalcostotramitesTable.
  */
-class CreateTramitesBDsTable extends Migration
+class CreatePortalcostotramitesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,9 +15,9 @@ class CreateTramitesBDsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites_b_ds', function(Blueprint $table) {
+		Schema::create('portalcostotramites', function(Blueprint $table) {
             $table->increments('id');
-						$table->string('descripcion', 250);
+
             $table->timestamps();
 		});
 	}
@@ -29,6 +29,6 @@ class CreateTramitesBDsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramites_b_ds');
+		Schema::drop('portalcostotramites');
 	}
 }

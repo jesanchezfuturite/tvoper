@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitesTipoCamposTable.
+ * Class CreatePortalcampotypesTable.
  */
-class CreateTramitesTipoCamposTable extends Migration
+class CreatePortalcampotypesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,9 +15,9 @@ class CreateTramitesTipoCamposTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites_tipo_campos', function(Blueprint $table) {
+		Schema::create('portal.campos_type', function(Blueprint $table) {
             $table->increments('id');
-						$table->string('tipo',255);
+            $table->string('descripcion',200);
             $table->timestamps();
 		});
 	}
@@ -29,6 +29,6 @@ class CreateTramitesTipoCamposTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramites_tipo_campos');
+		Schema::drop('portal.campos_type');
 	}
 }

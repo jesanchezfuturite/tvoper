@@ -273,8 +273,8 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::get('/adminmenu', 'AdminMenuController@index');
     Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
     /* set the user menu tools */
-    Route::get('/asignaherramientas', 'AsignaHerramientasController@index'); 
-    Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile'); 
+    Route::get('/asignaherramientas', 'AsignaHerramientasController@index');
+    Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile');
     Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
     Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
 
@@ -292,6 +292,43 @@ Route::post('/cfdi-correccion/busca-foliounico','CorreccioncfdiController@search
 Route::post('/cfdi-correccion/edit','CorreccioncfdiController@edit');
 Route::get('/cfdi-correccion/encabezado','CorreccioncfdiController@encabezado');
 Route::get('/cfdi-correccion/detalle','CorreccioncfdiController@detalle');
-Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');	
+Route::post('/cfdi-manual/busca-datos','ManualcfdiController@datosfiscales');
 Route::post('/cfdi-manual/busca-rfc','ManualcfdiController@searchrfc');
 Route::post('/cfdi-manual/savecfdi','ManualcfdiController@savecfdi');
+
+
+/*************************    PORTAL    ******************************************/
+Route::get('/tramites-list-fields','PortaltramitesController@listFields');
+Route::post('/tramites-add-field','PortaltramitesController@newField');
+Route::post('/tramites-edit-field','PortaltramitesController@editField');
+Route::post('/tramites-estatus', 'PortaltramitesController@fieldStatus');
+
+Route::get('/traux-campos','PortaltramitesauxController@index');
+Route::get('/traux-get-serv','PortaltramitesauxController@listarTramites');
+Route::get('/traux-get-camp','PortaltramitesauxController@listarCampos');
+Route::get('/traux-get-tcamp','PortaltramitesauxController@listarTipoCampos');
+Route::post('/traux-get-relcamp','PortaltramitesauxController@listarRelacion');
+Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
+Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
+Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
+
+
+Route::get('/solicitudes', 'PortalSolicitudesController@index');
+Route::post('/solicitud-add', 'PortalSolicitudesController@crearSolicitud');
+Route::get('/solicitud-tramites', 'PortalSolicitudesController@getTramites');
+Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
+Route::get('/solicitud-getUsers', 'PortalSolicitudesController@getUsers');
+Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
+Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
+
+
+
+Route::get('/traux-pago-costos','PortaltramitesauxController@Viewtipopagocosto');
+Route::get('/traux-get-tramites','PortaltramitesauxController@findTramites');
+Route::get('/traux-get-costos','PortaltramitesauxController@findCostos');
+Route::get('/traux-get-cuota','PortaltramitesauxController@findValorcuota');
+Route::post('/traux-post-tramites','PortaltramitesauxController@insertCostos');
+Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
+Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
+Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
+Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
