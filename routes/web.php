@@ -331,3 +331,4 @@ Route::post('/traux-post-tramites','PortaltramitesauxController@insertCostos');
 Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
 Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
+Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');

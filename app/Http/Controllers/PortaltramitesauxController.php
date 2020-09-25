@@ -39,7 +39,7 @@ class PortaltramitesauxController extends Controller
     	EgobiernotiposerviciosRepositoryEloquent $tiposer,
     	PortalcostotramitesRepositoryEloquent $costotramitedb,
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
-    	UmahistoryRepositoryEloquent $umadb    	
+    	UmahistoryRepositoryEloquent $umadb
 
     )
     {
@@ -56,14 +56,14 @@ class PortaltramitesauxController extends Controller
 
     /**
      * 	Lista los tramites disponibles por catalogo
-	 *  
+	 *
 	 *	@param NULL datos iniciales de catalogo
 	 *
 	 *	@return json catalogo con ids
     */
     public function index()
     {
-    	
+
     	return view('portal/admincampos');
     }
 
@@ -81,7 +81,7 @@ class PortaltramitesauxController extends Controller
 					'desc' => $v['Tipo_Descripcion']
 				);
 			}
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar servicios: '.$e->getMessage());
 		}
@@ -91,7 +91,7 @@ class PortaltramitesauxController extends Controller
 
 	/**
      * 	Lista los campos disponibles por catalogo
-	 *  
+	 *
 	 *	@param NULL datos iniciales de catalogo
 	 *
 	 *	@return json catalogo con ids
@@ -112,7 +112,7 @@ class PortaltramitesauxController extends Controller
 					'st' => $v['status']
 				);
 			}
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos: '.$e->getMessage());
 		}
@@ -123,7 +123,7 @@ class PortaltramitesauxController extends Controller
 
 	/**
      * 	Lista los tipos de campo disponibles por catalogo
-	 *  
+	 *
 	 *	@param NULL datos iniciales de catalogo
 	 *
 	 *	@return json catalogo con ids
@@ -143,7 +143,7 @@ class PortaltramitesauxController extends Controller
 					'desc' => $v['descripcion']
 				);
 			}
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
@@ -153,8 +153,8 @@ class PortaltramitesauxController extends Controller
 
 	/**
      * Listar relacion de campos para un tramite
-	 *  
-	 *	@param Request POST 
+	 *
+	 *	@param Request POST
 	 *
 	 *	@return json resultado por ID
     */
@@ -164,7 +164,7 @@ class PortaltramitesauxController extends Controller
 		$rel=array();
 		try {
 
-			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);			
+			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);
 			$rel = $this->camrel->searchRelation($request->tramiteid);
 			Log::info($rel);
 		} catch (\Exception $e) {
@@ -176,26 +176,26 @@ class PortaltramitesauxController extends Controller
 
 	/**
      * 	Edita el campo del tramite
-	 *  
-	 *	@param Request POST 
+	 *
+	 *	@param Request POST
 	 *
 	 *	@return ??
     */
 
 	public function editarTramite(Request $request)
 	{
-		
+
 		try {
 
 			foreach ($request->campoid as $k => $v) {
-				
-				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
+
+				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->where('id',$request->id)->update($in);
 
 			return response()->json(["Code" => "200","Message" => "campo actualizado"]);
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 
@@ -205,16 +205,16 @@ class PortaltramitesauxController extends Controller
 	}
 
 	/**
-     * 	Borrar el campo del tramite 
-	 *  
-	 *	@param Request POST 
+     * 	Borrar el campo del tramite
+	 *
+	 *	@param Request POST
 	 *
 	 *	@return ??
     */
 
 	public function eliminarTramite(Request $request)
 	{
-		
+
 		try {
 
 			$this->camrel->where('id',$request->id)->delete();
@@ -231,24 +231,24 @@ class PortaltramitesauxController extends Controller
 
 	/**
      * 	Guarda el tramite creado con campos y caracteristicas
-	 *  
-	 *	@param Request POST 
+	 *
+	 *	@param Request POST
 	 *
 	 *	@return ??
     */
 
 	public function guardaTramite(Request $request)
 	{
-		
+
 		try {
 
 			foreach ($request->campoid as $k => $v) {
-				
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]); 
+
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->insert($in);
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
@@ -280,7 +280,7 @@ class PortaltramitesauxController extends Controller
 
     		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'status'=>'1']);
     		return response()->json(["Code" => "200","Message" => "Success"]);
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - insertCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al obtner insertar"]);
@@ -293,7 +293,7 @@ class PortaltramitesauxController extends Controller
     		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo],$request->id);
 
     		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
@@ -306,7 +306,7 @@ class PortaltramitesauxController extends Controller
     		$this->costotramitedb->update(['status'=>'0'],$request->id);
 
     		return response()->json(["Code" => "200","Message" => "Registro Eliminado."]);
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - updateStatusCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
@@ -314,7 +314,7 @@ class PortaltramitesauxController extends Controller
     }
     public function findValorcuota()
     {
-    	try 
+    	try
     	{
     		$response=array();
     		$date = Carbon::now();
@@ -323,7 +323,7 @@ class PortaltramitesauxController extends Controller
         	if($findUMA->count()==0)
         	{
             	$date=$date-1;
-           	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);            
+           	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);
         	}
         	//log::info($findUMA);
         	foreach ($findUMA as $u) {
@@ -346,11 +346,58 @@ class PortaltramitesauxController extends Controller
     			$this->subsidiotramitedb->update(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'limite_cuotas'=>$request->limite_cuotas],$request->id);
     			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
     		}
-    		
-			
+
+
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - updateSubsidio: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
     }
+
+		public function addCaracteristics(Request $request){
+			try{
+				$id = $request->id;
+				$nombre = $request->nombre;
+				$valor = $request->valor;
+				// $nombre = 'Adriana';
+				// $valor = 'ad';
+
+
+				$registro = $this->camrel->findWhere(['id' => $id]);
+				// $registro = $this->camrel->findWhere(['id' =>17]);
+
+				foreach ($registro as $reg) {
+					$caract = $reg['caracteristicas'];
+					$car = json_decode($caract);
+					$req = $car->required;
+					$c = $car->opciones;
+
+					$c[] = array(
+						$valor => $nombre
+					);
+
+					$caracteristicas = array(
+						'required' => $req,
+						'opciones'	=> $c
+					);
+
+				}
+
+				$res = json_encode($caracteristicas);
+
+				$update = $this->camrel->update(['caracteristicas'=>$res], $id);
+
+				return response()->json([
+					"Code" => "200",
+					"Message" => "Se agrego correctamente"
+				]);
+
+			}catch(\Exception $e){
+				Log::info('Error PortaltramitesauxController - addCaracteristics: '.$e->getMessage());
+				return response()->json([
+					"Code" => "400",
+					"Message" => "Error al agregar"
+				]);
+			}
+		}
 }
