@@ -153,6 +153,9 @@ Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransac
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
 
+Route::get('/reporte-actualizaciones','MasterlogController@index');
+Route::post('/report-paid-operation','MasterlogController@consultamasterlog');
+
 /************************ FAMILIA ***********************/
 Route::get('/familia','MotorpagosController@familia');
 Route::post('/familia-insert','MotorpagosController@familiaInsert');

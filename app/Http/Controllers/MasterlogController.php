@@ -8,36 +8,41 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**** Repository ****/
+use App\Repositories\PagosupdatelogRepositoryEloquent;
 
 
-
-class ConsulatasactualizacionesController extends Controller
+class MasterlogController extends Controller
 {
+	protected $masterlog;
 
-	public function __construct() {
+	public function __construct( PagosupdatelogRepositoryEloquent $masterlog ) {
 
-
+		$this->log = $masterlog;
 	}
 
-	public function consultalogws(Request $request)
-	{
+	public function index() {
+
+		return view('motorpagos/masterlog');
+	}
+
+	public function consultamasterlog(Request $request) {	 	
 
 		try {
 
-			$data = json_encode($request->data);
+			$fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
+        	$fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
+        	$fechaIn= $fechaIn . ' 00:00:00';
+        	$fechaFi=$fechaFi . ' 23:59:59';
 
-			if(empty($data)){
-				$json_response = $this->messagerror();
-			}
-			else {
+			$result = $this->log->findbyDates($fechaIn,$fechaFi);
 
-			}
+            return response()->json($result);
 			
 		} catch (Exception $e) {
 			
 		}
 
-		return response()->json($json_response);
+		return response()->json($request);
 	}
 
 	private function messagerror()
