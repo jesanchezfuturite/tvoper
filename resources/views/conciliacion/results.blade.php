@@ -147,6 +147,7 @@
     </div>
 </div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
+<input type="csv_name" name="csv_name" id="csv_name" hidden="true">
 @endsection
 
 @section('scripts')
@@ -236,8 +237,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Internet</td>';
                     internet += '<td align="right">'+int.tramites+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,1) id="conc">'+int.conciliados+'</a></td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,0) id="noconc">'+int.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,1,"'+info.descripcion+'") id="conc">'+int.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,0,"'+info.descripcion+'") id="noconc">'+int.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+int.monto_conciliado+'</td>';
                     internet += '<td align="right">'+int.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -247,8 +248,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Repositorio</td>';
                     internet += '<td align="right">'+rep.tramites+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,1) id="conc">'+rep.conciliados+'</a></td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,0) id="noconc">'+rep.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,1,"'+info.descripcion+'") id="conc">'+rep.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,0,"'+info.descripcion+'") id="noconc">'+rep.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+rep.monto_conciliado+'</td>';
                     internet += '<td align="right">'+rep.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -258,8 +259,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>AS400</td>';
                     internet += '<td align="right">'+as4.tramites+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,1) id="conc">'+as4.conciliados+'</a></td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,0) id="noconc">'+as4.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,1,"'+info.descripcion+'") id="conc">'+as4.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,0,"'+info.descripcion+'") id="noconc">'+as4.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+as4.monto_conciliado+'</td>';
                     internet += '<td align="right">'+as4.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -269,8 +270,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Otros</td>';
                     internet += '<td align="right">'+otr.tramites+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,1) id="conc">'+otr.conciliados+'</a></td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,0) id="noconc">'+otr.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,1,"'+info.descripcion+'") id="conc">'+otr.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,0,"'+info.descripcion+'") id="noconc">'+otr.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+otr.monto_conciliado+'</td>';
                     internet += '<td align="right">'+otr.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -407,11 +408,18 @@
     }
 
     /* buscar el detalle de las transacciones de internet */ 
-    function noconc(alias,cuenta,fuente,opcion_)
+    function noconc(alias,cuenta,fuente,opcion_,banco)
     {
         // obtener la fecha 
         var fecha = $("#fecha").val();
-
+        op='';
+        if(opcion_==1)
+        {
+            op='conciliados';
+        }else{
+            op='noconciliados';
+        }
+        document.getElementById('csv_name').value=banco + " "+alias+ " "+ cuenta +" " + op;
         $.ajax({
             method: "post",
             beforeSend:  function(){
@@ -497,13 +505,15 @@
 function GuardarExcel()
 {
   var JSONData=$("#jsonCode").val();
-  JSONToCSVConvertor(JSONData, "Detalle Incidencias", true)
+  var name=$("#csv_name").val();
+  JSONToCSVConvertor(JSONData, name, true)
   
   
 }
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
-  var f = new Date();
-  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+  var f=$("#fecha").val();
+  f = new Date(f);
+  fecha =  ("0"+f.getDate()).slice(-2)+""+("0"+(f.getMonth() +1)).slice(-2)+""+f.getFullYear()+"_";
     //var arrData = Object.values(JSONData);    
     var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
     var CSV = '';    
