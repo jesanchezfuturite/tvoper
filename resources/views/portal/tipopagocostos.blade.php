@@ -586,7 +586,7 @@ function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
 
     var fileName = fecha;
     fileName += ReportTitle.replace(/ /g,"_");
-    var uri = 'data:text/csv,' + escape(CSV);
+    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
     var link = document.createElement("a");    
     link.href = uri;
     link.style = "visibility:hidden";

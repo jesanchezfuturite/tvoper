@@ -800,13 +800,19 @@ class ConciliacionController extends Controller
     public function getAnomalia(Request $request)
     {
         // get parameters
-
+        $option='<>';
         $date = explode("/",$request->f);
 
         $f = $date[2] . "-" . $date[0] . "-" . $date[1];
         $internet= array("idTrans" => "N / A",
                             "TotalTramite" => "N / A",
                             "CostoMensajeria" => "N / A" );
+        if($request->opcion==1)
+        {
+            $option='=';
+        }else{
+            $option='<>';
+        }
 
        // $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00"; commented to use fecha_ejecucion
 
@@ -826,7 +832,7 @@ class ConciliacionController extends Controller
         {
             try{
 
-                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(1),'p','<>');
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(1),'p',$option);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -870,7 +876,7 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(11) ,'p','<>');
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(11) ,'p',$option);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -897,7 +903,7 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(2,5,7,20) ,'p','<>');
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(2,5,7,20) ,'p',$option);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -924,7 +930,7 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr->findnoconcNotIn($cuenta,$alias,$f,array(1,2,5,7,11,20) ,'p','<>');
+                $data = $this->pr->findnoconcNotIn($cuenta,$alias,$f,array(1,2,5,7,11,20) ,'p',$option);
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
             }
