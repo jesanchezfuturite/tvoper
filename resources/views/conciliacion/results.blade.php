@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="control-label col-md-3">Consultar resultados conciliación</label>
             <div class="col-md-3">
-                <input id="fecha" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha" required="true">
+                <input id="fecha" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" data-date-format='mm/dd/yyyy'placeholder="Selecciona una fecha" required="true">
                 <span class="help-block">
                  </span>
                 <button class="btn blue" id="busqueda" type="submit">
@@ -140,9 +140,14 @@
             <div class="modal-body" id="detalleIncidencia">
                              
             </div>
+             <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn default">Cerrar</button>
+            </div>
         </div>
     </div>
 </div>
+<input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
+<input type="csv_name" name="csv_name" id="csv_name" hidden="true">
 @endsection
 
 @section('scripts')
@@ -232,8 +237,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Internet</td>';
                     internet += '<td align="right">'+int.tramites+'</td>';
-                    internet += '<td align="right">'+int.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1) id="noconc">'+int.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,1,"'+info.descripcion+'") id="conc">'+int.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",1,0,"'+info.descripcion+'") id="noconc">'+int.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+int.monto_conciliado+'</td>';
                     internet += '<td align="right">'+int.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -243,8 +248,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Repositorio</td>';
                     internet += '<td align="right">'+rep.tramites+'</td>';
-                    internet += '<td align="right">'+rep.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2) id="noconc">'+rep.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,1,"'+info.descripcion+'") id="conc">'+rep.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",2,0,"'+info.descripcion+'") id="noconc">'+rep.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+rep.monto_conciliado+'</td>';
                     internet += '<td align="right">'+rep.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -254,8 +259,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>AS400</td>';
                     internet += '<td align="right">'+as4.tramites+'</td>';
-                    internet += '<td align="right">'+as4.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3) id="noconc">'+as4.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,1,"'+info.descripcion+'") id="conc">'+as4.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",3,0,"'+info.descripcion+'") id="noconc">'+as4.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+as4.monto_conciliado+'</td>';
                     internet += '<td align="right">'+as4.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -265,8 +270,8 @@
                     internet += '<tr>';
                     internet += '<td>&nbsp;</td><td>&nbsp;</td><td>Otros</td>';
                     internet += '<td align="right">'+otr.tramites+'</td>';
-                    internet += '<td align="right">'+otr.conciliados+'</td>';
-                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4) id="noconc">'+otr.no_conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,1,"'+info.descripcion+'") id="conc">'+otr.conciliados+'</a></td>';
+                    internet += '<td align="right"><a href="#" onclick=noconc("'+por_cuenta.alias+'","'+por_cuenta.cuenta+'",4,0,"'+info.descripcion+'") id="noconc">'+otr.no_conciliados+'</a></td>';
                     internet += '<td align="right">'+otr.monto_conciliado+'</td>';
                     internet += '<td align="right">'+otr.monto_no_conciliado+'</td>';
                     internet += '</tr>';
@@ -308,7 +313,7 @@
 
             var fecha_correcta = fecha.split("/");
             var fc = fecha_correcta[2]+"-"+fecha_correcta[0]+"-"+fecha_correcta[1];
-            console.log(fc);
+            //console.log(fc);
             boton = '<button class="btn blue" id="corte_button" onclick="enviarCorte(\''+fc+'\')"; type="button">Corte</button>';
             // boton = $('<button>',{text:'Corte',id:'corte_button',class: 'btn blue',click: function(){ alert('Proximamente') }});
             $("#corte_div").append(boton);
@@ -403,11 +408,18 @@
     }
 
     /* buscar el detalle de las transacciones de internet */ 
-    function noconc(alias,cuenta,fuente)
+    function noconc(alias,cuenta,fuente,opcion_,banco)
     {
         // obtener la fecha 
         var fecha = $("#fecha").val();
-
+        op='';
+        if(opcion_==1)
+        {
+            op='conciliados';
+        }else{
+            op='noconciliados';
+        }
+        document.getElementById('csv_name').value=banco + " "+alias+ " "+ cuenta +" " + op;
         $.ajax({
             method: "post",
             beforeSend:  function(){
@@ -416,27 +428,28 @@
                 $('#imageloading').html('Procesando ...').show();
             },
             url: "{{ url('/conciliacion-detalle-anomalia') }}",
-            data: { f: fecha, fuente: fuente, alias: alias, cuenta: cuenta, _token: '{{ csrf_token() }}' }
+            data: { f: fecha, fuente: fuente, alias: alias, cuenta: cuenta, opcion: opcion_, _token: '{{ csrf_token() }}' }
         })
         .done(function(data){
 
             var titleModal = 'Detalles de incidencia en la cuenta ('+alias+') ' + cuenta;
-
             if(data.response == 1)
             {
                 $("#detalleIncidencia").empty();
                 var info = data.data;
+                //console.log(info);
+                 document.getElementById('jsonCode').value=JSON.stringify(info);
 
-                var tabla = '<div class="portlet-body"><table class="table table-hover"><thead><tr><th>Índice de transacción</th><th>Referencia</th><th>Monto en archivo</th><th>Monto total</th><th>Monto de mensajeria</th><th>Archivo fuente</th><th>Fecha de carga para conciliar</th><th>Estatus</th></tr></thead><tbody>';
+                var tabla = '<div class="portlet-body">' + '<div class="row"><span class="help-block"></span>  <div class="col-md-12 text-right">  <div class="form-group">    <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>   </div> </div><span class="help-block">&nbsp;</span> </div>' + '<table id="sample_7" class="table table-hover"><thead><tr><th>Índice de transacción</th><th>Referencia</th><th>Monto en archivo</th><th>Monto total</th><th>Monto de mensajeria</th><th>Archivo fuente</th><th>Fecha de carga para conciliar</th><th>Estatus</th></tr></thead><tbody>';
                     
                 $.each(info, function(i,d){
                     
-                    var internet = d.internet;
-                    var repositorio = d.repositorio;
+                    //var internet = d.internet;
+                   //var repositorio = d.repositorio;
 
-                    var monto = repositorio.monto;
-                    var tt = internet.TotalTramite;
-                    var cm = internet.CostoMensajeria;
+                    var monto = d.monto;
+                    var tt = d.TotalTramite;
+                    var cm = d.CostoMensajeria;
 
                     if(monto == ''){
                         monto = 0.00;
@@ -450,16 +463,16 @@
                         cm = 0.00;
                     }
 
-                    console.log(internet);
+                   // console.log(internet);
                     tabla += '<tr>';
-                    tabla += '<td>'+internet.idTrans+'</td>'
-                    tabla += '<td>'+repositorio.referencia+'</td>'
+                    tabla += '<td>'+d.idTrans+'</td>'
+                    tabla += '<td>'+d.referencia+'</td>'
                     tabla += '<td class="moneyformat">'+monto+'</td>'
                     tabla += '<td class="moneyformat">'+tt+'</td>'
                     tabla += '<td class="moneyformat">'+cm+'</td>'
-                    tabla += '<td>'+repositorio.filename+'</td>'
-                    tabla += '<td>'+repositorio.created_at+'</td>'
-                    tabla += '<td>'+repositorio.status+'</td>'
+                    tabla += '<td>'+d.filename+'</td>'
+                    tabla += '<td>'+d.created_at+'</td>'
+                    tabla += '<td>'+d.status+'</td>'
                     tabla += '</tr>';
 
                 });
@@ -470,24 +483,73 @@
 
                 $('.moneyformat').formatCurrency();
 
+                  TableAdvanced7.init();
             }else{
                 $("#detalleIncidencia").empty();
                 var mensaje = '<div class="alert alert-info alert-dismissable">';
                 mensaje += '<strong>Info:</strong> Esta cuenta no presenta incidendencias.</div>'
                 $("#detalleIncidencia").append(mensaje);
+                document.getElementById('jsonCode').value=[];
             }
 
             // open modalbox
 
             $('#titulo_modal').empty();
             $('#titulo_modal').append(titleModal);
-
+            $('#imageloading').html('');
             $('#modalinfo').modal('show');
 
         });
 
     }
-
+function GuardarExcel()
+{
+  var JSONData=$("#jsonCode").val();
+  var name=$("#csv_name").val();
+  JSONToCSVConvertor(JSONData, name, true)
+  
+  
+}
+function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+  var f=$("#fecha").val();
+  f = new Date(f);
+  fecha =  ("0"+f.getDate()).slice(-2)+""+("0"+(f.getMonth() +1)).slice(-2)+""+f.getFullYear()+"_";
+    //var arrData = Object.values(JSONData);    
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+    var CSV = '';    
+    //CSV += ReportTitle + '\r\n\n';
+    if (ShowLabel) {
+        var row = ""; 
+        for (var index in arrData[0]) { 
+            row += index + ',';
+        }
+        row = row.slice(0, -1);
+        CSV += row + '\r\n';
+    } 
+    for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+            row += '"' + arrData[i][index] + '",';
+        }
+        row.slice(0, row.length - 1); 
+        CSV += row + '\r\n';
+    }
+    if (CSV == '') {        
+        alert("Invalid data");
+        return;
+    }
+    var fileName = fecha;
+    fileName += ReportTitle.replace(/ /g,"_");
+    var uri = 'data:text/csv;charset=utf-32,' + escape(CSV);
+    var link = document.createElement("a");    
+    link.href = uri;
+    link.style = "visibility:hidden";
+    link.download = fileName + ".csv";
+     Command: toastr.success("Success", "Notifications")
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
 
 </script>

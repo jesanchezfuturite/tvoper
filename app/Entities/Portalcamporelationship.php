@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class TramitesTipoCampo.
+ * Class Portalcamporelationship.
  *
  * @package namespace App\Entities;
  */
-class TramitesTipoCampo extends Model implements Transformable
+class Portalcamporelationship extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,11 +20,10 @@ class TramitesTipoCampo extends Model implements Transformable
      *
      * @var array
      */
-     protected $connection = "mysql6";
-     protected $fillable = [
-       'id',
-       'tipo'
-     ];
+    protected $connection = "mysql6";
 
-     protected $table = "tramites_tipo_campos";
+    protected $fillable = ['id','tramite_id','campo_id','tipo_id','caracteristicas'];
+
+    protected $table = "campos_relationship";
+
 }

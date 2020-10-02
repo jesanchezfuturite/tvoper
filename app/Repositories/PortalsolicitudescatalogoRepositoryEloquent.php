@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\TramitesBDRepository;
-use App\Entities\TramitesBD;
-use App\Validators\TramitesBDValidator;
+use App\Repositories\PortalsolicitudescatalogoRepository;
+use App\Entities\Portalsolicitudescatalogo;
+use App\Validators\PortalsolicitudescatalogoValidator;
 
 /**
- * Class TramitesBDRepositoryEloquent.
+ * Class PortalsolicitudescatalogoRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class TramitesBDRepositoryEloquent extends BaseRepository implements TramitesBDRepository
+class PortalsolicitudescatalogoRepositoryEloquent extends BaseRepository implements PortalsolicitudescatalogoRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class TramitesBDRepositoryEloquent extends BaseRepository implements TramitesBDR
      */
     public function model()
     {
-        return TramitesBD::class;
+        return Portalsolicitudescatalogo::class;
     }
 
     

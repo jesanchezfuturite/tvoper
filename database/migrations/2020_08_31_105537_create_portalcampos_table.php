@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitesCamposTable.
+ * Class CreatePortalcamposTable.
  */
-class CreateTramitesCamposTable extends Migration
+class CreatePortalcamposTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,9 +15,9 @@ class CreateTramitesCamposTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites_campos', function(Blueprint $table) {
+		Schema::create('portal.campos_catalogue', function(Blueprint $table) {
             $table->increments('id');
-						$table->string('descripcion', 250);
+            $table->string('descripcion',200);
             $table->timestamps();
 		});
 	}
@@ -29,6 +29,6 @@ class CreateTramitesCamposTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramites_campos');
+		Schema::drop('campos_catalogue');
 	}
 }

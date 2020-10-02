@@ -5,11 +5,11 @@ namespace App\Repositories;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface TramitesTipoCampoRepository.
+ * Interface PortalcampoRepository.
  *
  * @package namespace App\Repositories;
  */
-interface TramitesTipoCampoRepository extends RepositoryInterface
+interface PortalcampoRepository extends RepositoryInterface
 {
     //
 }
