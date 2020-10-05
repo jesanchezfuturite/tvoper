@@ -707,12 +707,10 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });  
     }
-    function limpiarSub()
+    function limpiarPerf()
     {
-      document.getElementById('id_costo').value='';
-      document.getElementById('id_tramite').value='';       
-      document.getElementById('cuotas').value='';       
-      document.getElementById('cuotaLimit').value=''; 
+      $("#itemsTipo ").val("limpia").change();
+    document.getElementById('nameUser').value=""; 
     }
     function deleteTipoServicio()
     {
@@ -734,15 +732,14 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function limpiar()
+  function limpiarNot()
   {
-    $("#itemsTramites").val("limpia").change();
-    $("#itemsTipo").val("limpia").change();
-    document.getElementById('cuotaMin').value="";
-    document.getElementById('cuotaMax').value="";
+    $("#itemsTipoNotario").val("limpia").change();
+    document.getElementById('numNotario').value="";
+    document.getElementById('telNotario').value="";
+    document.getElementById('telNotario2').value="";
     document.getElementById('idcosto').value="";
-    $("input:radio").attr("checked", false);
-    document.getElementById('iddeleted').value="";
+    //$("input:radio").attr("checked", false);
 
 }
 function onechange2()
@@ -751,10 +748,10 @@ function onechange2()
         if(nombre=="fa fa-eye-slash")
         {
             $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
-            $('#confirmpassword').attr('type', 'text');
+            $('#passNotario').attr('type', 'text');
         }else{
             $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
-            $('#confirmpassword').attr('type', 'password');
+            $('#passNotario').attr('type', 'password');
         }
     }
     function onechange1()
