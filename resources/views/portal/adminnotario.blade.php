@@ -226,6 +226,50 @@
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
+                <label >Usuario</label>                                             
+                <input type="text" class="form-control" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Correo Electrónico</label>                                                       
+                <input type="text" class="form-control" name="emailNotario" id="emailNotario" placeholder="Ingrese Correo Electrónico...">
+             </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Nombre (s)</label>                                                       
+                <input type="text" class="form-control" name="nameNotario" id="nameNotario" placeholder="Ingrese Nombre..."> 
+            </div>
+            </div>
+          </div>
+        </div>
+         <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label >Apellido Paterno</label>                                             
+                <input type="text" class="form-control" name="apPatNotario" id="apPatNotario" placeholder="Ingrese Apellido Paterno...">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Apellido Materno</label>                                                       
+                <input type="text" class="form-control" name="apMatNotario" id="apMatNotario" placeholder="Ingrese Apellido Materno...">
+             </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Numero de Teléfono</label>                                                       
+                <input type="text" class="form-control" name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
+            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
                 <label >Curp</label>                                             
                 <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp...">
               </div>
