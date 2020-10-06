@@ -335,5 +335,6 @@ Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics'
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
+Route::get('/notary','PortalNotaryOfficesController@index');
 
 

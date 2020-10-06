@@ -97,6 +97,20 @@ class PortalNotaryOfficesController extends Controller
         return $data;
     }
 
-    
+    public function index()
+    {
+        $notarys = $this->listNotary();
+        $responseinfo = array();
+
+        foreach($notarys as $n)
+        {
+            $responseinfo []= array(
+                "id"=>$n->id,
+                "notary_number" => $n->notary_number  
+            );
+        }
+
+        return view('portal/adminnotario',[ "notary" => $responseinfo ]);
+    }  
 
 }
