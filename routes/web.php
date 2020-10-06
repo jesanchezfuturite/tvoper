@@ -332,3 +332,8 @@ Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
 Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
+
+Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
+Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
+
+
