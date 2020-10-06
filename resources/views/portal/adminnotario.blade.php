@@ -573,9 +573,9 @@
       "zip": codigopostNotario,
       "titular": titular_}
 
-    //console.log(notary);
+    //console.log(notary_off);
     $.ajax({
-           method: "POST",            
+           method: "POST", 
            url: "{{ url('/notary-offices') }}",
            data: {notary_office:notary_off,_token:'{{ csrf_token() }}'}   })
         .done(function (response) {     
@@ -590,6 +590,8 @@
                 "<option value='"+item.id+"'>"+item.notary_number+"</option>"
                    );
                 });
+            limpiarNot();
+            Command: toastr.success("Success", "Notifications") 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -598,7 +600,6 @@
   function changeNotario()
   {
     var id=$("#itemsNotario").val();
-    id=17;
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
