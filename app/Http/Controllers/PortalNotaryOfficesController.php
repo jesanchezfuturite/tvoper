@@ -49,8 +49,7 @@ class PortalNotaryOfficesController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $remote_server_output = curl_exec($ch);
             curl_close ($ch);
-            $response = json_decode($remote_server_output);
-            
+            $response = json_decode($remote_server_output);            
           
     
         }catch( \Exception $e ){
@@ -96,6 +95,56 @@ class PortalNotaryOfficesController extends Controller
         $data = $jsonArrayResponse->response->notary_office_users;
         return $data;
     }
+    public function editUsersNotary(Request $request){
+        $notary_id = $request->notary_id;
+        $user_id = $request->id;
+        $json=json_encode($data);
+
+        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);     
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');   
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        $jsonArrayResponse = json_decode($response);
+        
+        return $jsonArrayResponse;
+    }
+   public function status(Request $request){
+        $json = json_encode($requets->all());
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/users/statusSubUser/");
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $remote_server_output = curl_exec($ch);
+        curl_close ($ch);
+        $response = json_decode($remote_server_output);  
+        return $response;
+   }
+   public function createUsersNotary(Request $request){
+        $id = $request->notary_id;
+        $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
+        $json = json_encode($request->all());
+
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $remote_server_output = curl_exec($ch);
+        curl_close ($ch);
+        $response = json_decode($remote_server_output);  
+        return $response;
+   }
 
     public function index()
     {
