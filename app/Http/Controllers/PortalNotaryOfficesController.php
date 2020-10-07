@@ -97,15 +97,14 @@ class PortalNotaryOfficesController extends Controller
     }
     public function editUsersNotary(Request $request){
         $notary_id = $request->notary_id;
-        $user_id = $request->id;
+        $user_id = $request->user_id;
+        $data = $request->user;
         $json=json_encode($data);
-
         $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');   
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);        
         $response = curl_exec($ch);
         curl_close($ch);
@@ -119,7 +118,6 @@ class PortalNotaryOfficesController extends Controller
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/users/statusSubUser/");
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -132,11 +130,10 @@ class PortalNotaryOfficesController extends Controller
         $id = $request->notary_id;
         $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
         $json = json_encode($request->all());
-
+ 
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
