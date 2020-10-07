@@ -92,6 +92,7 @@
               <th>Nombre</th>
               <th>RFC</th>
               <th>Curp</th>
+              <th>Status</th>
             <th>&nbsp;</th>
             </tr>
           </thead>
@@ -105,27 +106,6 @@
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 
-<!----------------------------------------- deleted perfil-------------------------------------------->
-<div id="portlet-deleted" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-             ¿Eliminar Registro?
-                </p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
-            </div>
-            <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="deletePerfil()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 <!----------------------------------------- Nuevo Notario-------------------------------------------->
 <div class="modal fade" id="portlet-notario" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog" style="width: 80%">
@@ -460,6 +440,32 @@
     </div>
   </div>
 </div>
+
+<!----------------------------------------- status perfil-------------------------------------------->
+<div id="portlet-deleted" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Desactivar/Activar Registro?<br>
+                </p>
+                 <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
+                 <input hidden="true" type="text" name="status" id="status" class="status">
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="desactivaAtiva()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 
@@ -632,14 +638,32 @@
           
         addtable();
         $.each(Resp, function(i, item) {   
-             //console.log(item);             
+             //console.log(item);        
+             status=item.status;    
+            if (status=='1') 
+              { label="success";
+                msgg="Activa";
+                icon="red"; 
+                title="Desactivar";
+              }else if(status=='0'){ 
+                label="danger";
+                msgg="Inactiva"; 
+                icon="green";  
+                title="Activar";
+              }else{
+                label="warning";
+                msgg="Sin estatus"; 
+                icon="green";
+                title="Activar";
+              }     
             $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
                 +"<td>"+item.name+"</td>"
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate(\""+item.id+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='perfilDelete(\""+item.id+"\")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate(\""+item.id+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -678,7 +702,7 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();
 
   }
@@ -697,25 +721,34 @@
     .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function perfilDelete(id)
+  function perfilDelete(id,status)
   {
-    document.getElementById('iddeleted').value=id;
+    document.getElementById('idregistro').value=id;
+    document.getElementById('status').value=status;
   }
-  function deletePerfil()
+  function desactivaAtiva()
   {
-    var id_=$("#iddeleted").val();
+    var id_=$("#idregistro").val();
+    var status_=$("#status").val();
+    if(status_=="null")
+    {
+      estatus="1";
+      title="Activado";
+    }else if(status_=="1")
+    {
+      estatus="0";
+      title="Desactivado";
+    }else{
+      estatus="1";
+      title="Activado";
+    }
     $.ajax({
            method: "POST",            
-           url: "{{ url('') }}",
-           data: {id:id_, _token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/notary-offices-user-status') }}",
+           data: {user_id:id_,status:status_, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-        
-         if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } limpiar();
-             findPerfil();
-
-
+          changeNotario();
+          Command: toastr.warning(title+" Correctamente", "Notifications") 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -820,6 +853,9 @@
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
              limpiarPerf();
+             Command: toastr.success("Success", "Notifications")
+             changeNotario();
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
