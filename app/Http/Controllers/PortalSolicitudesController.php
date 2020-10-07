@@ -359,16 +359,16 @@ class PortalSolicitudesController extends Controller
   {
     $data = array();
     try{
-      
+
       $info = $this->partidas->findWhere( ["id_servicio" =>  $id] );
-      
+
       if($info->count() > 0){
         foreach($info as $i)
         {
           $data []= array(
             "id_partida"  => $i->id_partida,
             "descripcion" => $i->descripcion
-          )
+          );
         }
       }else{
         $data = 0;
@@ -384,8 +384,8 @@ class PortalSolicitudesController extends Controller
       );
     }
 
-    return $data
-    
+    return $data;
+
   }
 
 }
