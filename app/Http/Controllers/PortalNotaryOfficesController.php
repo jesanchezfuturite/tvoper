@@ -127,6 +127,8 @@ class PortalNotaryOfficesController extends Controller
         return $response;
    }
    public function createUsersNotary(Request $request){
+
+        dd($request->headers);
         $id = $request->notary_id;
         $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
         $json = json_encode($request->all());
