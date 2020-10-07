@@ -527,8 +527,8 @@
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
-    }else if(!/[a-z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
-       Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
+    }else if(userNotario.length < 1){
+       Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
     }else if (!emailRegex.test(emailNotario2)) {
        Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if (telNotario2.length<10) {
@@ -763,8 +763,8 @@
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
-      }else if(!/[a-z]/.test(users)  || !/[0-9]/.test(users) || users.length < 8){
-        Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
+      }else if(users.length < 1){
+        Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
       }else if (!emailRegex.test(emailUser)) {
         Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
       }else if (telUser.length<10) {
