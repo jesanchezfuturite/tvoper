@@ -638,7 +638,7 @@
           
         addtable();
         $.each(Resp, function(i, item) {   
-             //console.log(item);        
+             json=JSON.stringify(item);        
              status=item.status;    
             if (status=='1') 
               { label="success";
@@ -663,7 +663,7 @@
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate(\""+item.id+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -672,33 +672,6 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-
-  function saveUpdate()
-  {
-    var upd=$("#nameUser").val();
-  
-    
-    if(upd.length==0)
-    {
-      Command: toastr.warning("Campo Couta Minimo, Requerido!", "Notifications")
-    }else if(upd.length==0)
-    {
-      Command: toastr.warning("Campo Couta Maximo, Requerido!", "Notifications")
-    }else{
-      if(upd.length==0)
-        {
-          insertPerfil();
-        }else{
-          updatePerfil();
-        }
-    }
-  }
-  
-
-  function OperacionTramite(id_)
-  {
-    document.getElementById('idcosto').value=id_;
-  }
   function addtable()
   {
     $("#addtables div").remove();
@@ -706,21 +679,7 @@
      //TableManaged3.init3();
 
   }
-  function findPerfil()
-  {
-    
-    $.ajax({
-      method: "get",
-      url: "{{ url('/') }}",
-      data: { _token: '{{ csrf_token() }}' }
-      })
-      .done(function (response) { 
-         
 
-    })
-    .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-  }
   function perfilDelete(id,status)
   {
     document.getElementById('idregistro').value=id;
@@ -753,30 +712,58 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function PerfilUpdate(id)
+  function perfilUpdate(json)
   {
-    document.getElementById('idcosto').value=id;
+   //console.log(json);
+   $("#itemsTipoUser").val("0").change();
+      document.getElementById('idperfil').value=json.id; 
+      document.getElementById('users').value=json.username; 
+      document.getElementById('emailUser').value=json.email; 
+      document.getElementById('telUser').value=json.phone; 
+      document.getElementById('nameUser').value=json.name; 
+      document.getElementById('apePatUser').value=json.fathers_surname; 
+      document.getElementById('apeMatUser').value=json.mothers_surname; 
+      document.getElementById('curpUser').value=json.curp; 
+      document.getElementById('rfcUser').value=json.rfc; 
+      document.getElementById('password').value=""; 
+
   }
   function updatePerfil()
   {
     
-    var id_=$("#idcosto").val();
-    
+    var id_notary=$("#itemsNotario").val();
+    var id_user=$("#idperfil").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var telUser=$("#telUser").val();
+      var nameUser=$("#nameUser").val();
+      var apePatUser=$("#apePatUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var curpUser=$("#curpUser").val();
+      var rfcUser=$("#rfcUser").val();
+      var password=$("#password").val();
+      var user_={username: users,
+                email: emailUser,
+                name: nameUser,
+                mothers_surname: apeMatUser,
+                fathers_surname: apePatUser,
+                curp: curpUser,
+                rfc: rfcUser,
+                phone: telUser
+            };
       $.ajax({
            method: "POST",            
-           url: "{{ url('') }}",
-           data: {id:id_, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
-         if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
-             findPerfil();
+           url: "{{ url('/notary-offices-edit-user') }}",
+           data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+             limpiarPerf();
+             Command: toastr.success("Success", "Notifications")
+             changeNotario();
 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-
     }
   function saveUpdatePerf()
   {    var id_notary=$("#itemsNotario").val();
@@ -812,12 +799,10 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
-      }else if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
-        Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
       }else{
         if(id.length>0)
           {
-
+            updatePerfil();
           }else{
             insertPerfil();
           }
@@ -836,6 +821,10 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
+        Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+        return;
+      }
       var user_={username: users,
                 email: emailUser,
                 password: password,
@@ -874,26 +863,6 @@
       document.getElementById('curpUser').value=""; 
       document.getElementById('rfcUser').value=""; 
       document.getElementById('password').value=""; 
-    }
-    function deleteTipoServicio()
-    {
-        var id_=$("#idvalor").val();
-        $.ajax({
-           method: "POST",
-           url: "{{ url('/') }}",
-           data: { id:id_, _token: '{{ csrf_token() }}' }
-       })
-        .done(function (response) { 
-     
-        if(response=="true")
-        {          
-             
-            Command: toastr.success("Success", "Notifications")
-
-        }
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
   }
   function limpiarNot()
   {
@@ -921,29 +890,29 @@
 
 }
 function onechange2()
+{
+    var nombre=$("#pass2").attr("class");
+    if(nombre=="fa fa-eye-slash")
     {
-        var nombre=$("#pass2").attr("class");
-        if(nombre=="fa fa-eye-slash")
-        {
-            $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
-            $('#passNotario').attr('type', 'text');
-        }else{
-            $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
-            $('#passNotario').attr('type', 'password');
-        }
+      $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
+      $('#passNotario').attr('type', 'text');
+    }else{
+      $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
+      $('#passNotario').attr('type', 'password');
     }
-    function onechange1()
+}
+function onechange1()
+{
+  var nombre=$("#pass1").attr("class");
+    if(nombre=="fa fa-eye-slash")
     {
-        var nombre=$("#pass1").attr("class");
-        if(nombre=="fa fa-eye-slash")
-        {
-            $("#pass1").removeClass("fa-eye-slash").addClass("fa-eye");
-            $('#password').attr('type', 'text');
-        }else{
-            $("#pass1").removeClass("fa-eye").addClass("fa-eye-slash");
-            $('#password').attr('type', 'password');
-        }
+      $("#pass1").removeClass("fa-eye-slash").addClass("fa-eye");
+      $('#password').attr('type', 'text');
+    }else{
+      $("#pass1").removeClass("fa-eye").addClass("fa-eye-slash");
+      $('#password').attr('type', 'password');
     }
+}
 function GuardarExcel()
 {
   var JSONData=$("#jsonCode").val();
