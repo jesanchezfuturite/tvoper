@@ -48,7 +48,7 @@
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
                   <select class="select2me form-control"name="itemsNotario" id="itemsNotario" onchange="changeNotario()">
-                    <option value="limpia">------</option>
+                    <option value="0">------</option>
                      @foreach( $notary as $sd)
                         <option value="{{$sd['id']}}">{{$sd["notary_number"]}}</option>
                       @endforeach     
@@ -184,7 +184,7 @@
             <div class="col-md-3">
               <div class="form-group">
                 <label >Numero</label>                                                       
-                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
+                <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
              </div> 
            </div>
                           
@@ -205,7 +205,7 @@
               <div class="form-group">
                 <label >Entidad Federativa</label>  
                 <select id="itemsEntidadNot" class="select2me form-control" >
-                  <option value="limpia">-------</option>
+                  <option value="0">-------</option>
                 </select>    
               </div>
             </div>
@@ -213,14 +213,14 @@
               <div class="form-group">
                 <label >Ciudad</label>
                 <select id="itemsCiudadNot" class="select2me form-control" >
-                  <option value="limpia">-------</option>
+                  <option value="0">-------</option>
                 </select>
              </div> 
            </div>
             <div class="col-md-3">
               <div class="form-group">
                 <label >Codigo Postal</label>                                                       
-                <input type="text" class="form-control" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
+                <input type="text" class="form-control valida-numeros" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
              </div> 
            </div>          
           </div>
@@ -230,7 +230,7 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Usuario</label>                                             
-                <input type="text" class="form-control" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
+                <input type="text" class="form-control valida-user" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
               </div>
             </div>
             <div class="col-md-4">
@@ -265,7 +265,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label >Numero de Teléfono</label>                                                       
-                <input type="text" class="form-control" name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
+                <input type="text" class="form-control valida-numeros" name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
             </div>
             </div>
           </div>
@@ -275,20 +275,20 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp...">
+                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC...">
+                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();">
              </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
                 <label >Tipo</label>                                                       
                 <select id="itemsTipoNotario" class="select2me form-control" >
-                  <option value="limpia">-------</option>
+                  <option value="0">-------</option>
                   <option value="fisica">Fisica</option>
                   <option value="moral">Moral</option>
                 </select>
@@ -311,7 +311,8 @@
                 <label >Contraseña</label>                                             
                 <div class="input-icon right">
                     <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
-                    <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
+                    <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña..." value="">
+                   
                 </div>
               </div>                                
               </div>
@@ -340,7 +341,7 @@
   <div class="modal-dialog  modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarPerf()"></button>
         <h4 class="modal-title">Configuracion Perfil</h4>
         <input hidden="true" type="text" name="idperfil" id="idperfil">
       </div>
@@ -352,7 +353,7 @@
               <div class="form-group">
                 <div class="form-group">
                 <label >Usuario</label>                                             
-                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre de Usuario...">
+                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
               </div>                                           
               </div>
             </div>
@@ -360,7 +361,7 @@
               <div class="form-group">
                 <div class="form-group">
                 <label >Correo Electrónico</label>                                             
-                <input type="text" class="form-control" name="userEmail" id="userEmail" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
                 <span id="emailOK" class="help-block"></span>
               </div>                                            
               </div>
@@ -372,14 +373,14 @@
              <div class="col-md-6"> 
               <div class="form-group">
                 <label >Numero de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="numTel" id="numTel" placeholder="Ingrese Numero de Teléfono..." autocomplete="off">
+                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off">
               </div>
             </div>
              <div class="col-md-6"> 
               <div class="form-group"> 
                    <div class="form-group">
                 <label >Nombre(s)</label>                                             
-                <input type="text" class="form-control" name="cuotaMin" id="cuotaMin" placeholder="Ingrese Nombre(s)..."autocomplete="off">
+                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
               </div>                                
               </div>
             </div>            
@@ -390,13 +391,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Apellido Paterno</label>                                             
-                <input type="text" class="form-control" name="apePat" id="apePat" placeholder="Ingrese Apellido Paterno...">
+                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >Apellido Materno</label>                                                       
-                <input type="text" class="form-control" name="apeMat" id="apeMat" placeholder="Ingrese Apellido Materno...">
+                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
              </div>
             </div>
           </div>
@@ -406,13 +407,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curp" id="curp" placeholder="Ingrese Curp..."autocomplete="off">
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfc" id="rfc" placeholder="Ingrese RFC..."autocomplete="off">
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
              </div>
             </div>
           </div>
@@ -422,8 +423,8 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label >Tipo</label>                                                       
-                <select id="itemsTipo" class="select2me form-control" >
-                  <option value="limpia">-------</option>
+                <select id="itemsTipoUser" class="select2me form-control" >
+                  <option value="0">-------</option>
                   <option value="fisica">Fisica</option>
                   <option value="moral">Moral</option>
                 </select>
@@ -447,13 +448,13 @@
         <div class="col-md-12">
           <div class="col-md-12">             
             <div class="form-group">
-              <button type="submit" class="btn blue" onclick="saveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue" onclick="saveUpdatePerf()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarPerf()">Cerrar</button>
       </div>
     </div>
     </div>
@@ -513,12 +514,41 @@
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var passNotario=$("#passNotario").val();
-    insertNotario();
+
+    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+    
+    if (numNotario.length<1) {
+       Command: toastr.warning("Campo Numero Notario, requerido!", "Notifications") 
+    }else if (telNotario.length<10) {
+       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
+    }else if (numeroNotario.length<3) {
+       Command: toastr.warning("Campo Numero, longitud minima 3!", "Notifications") 
+    }else if (codigopostNotario.length<5) {
+       Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
+    }else if (!emailRegex.test(emailNotario)) {
+       Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
+    }else if(!/[a-z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
+       Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
+    }else if (!emailRegex.test(emailNotario2)) {
+       Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
+    }else if (telNotario2.length<10) {
+       Command: toastr.warning("Segundo Campo Numero Teléfono, longitud minima 10!", "Notifications") 
+    }else if (!curpValida(curpNotario)) {
+       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
+    }else if (rfcNotario.length<13) {
+       Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
+    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8)
+    {
+      Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+    }else{
+      insertNotario();
+    }
   }
 
   function insertNotario()
   {
-   var numNotario=$("#numNotario").val();
+   var numNotario='';
+   numNotario=$("#numNotario").val();
     var telNotario=$("#telNotario").val();
     var faxNotario=$("#faxNotario").val();
     var emailNotario=$("#emailNotario").val();
@@ -538,52 +568,43 @@
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var passNotario=$("#passNotario").val();
-    if(itemsEntidadNot=="limpia")
-    {
-      itemsEntidadNot='';
-    }
-    if(itemsCiudadNot=="limpia")
-    {
-      itemsCiudadNot='';
-    }
     if(itemsTipoNotario=="limpia")
     {
-      itemsTipoNotario='';
+      itemsTipoNotario="0";
     }
-    var titular_ ={"username": userNotario,
-    "email": emailNotario2,
-    "password": passNotario,
-    "name": nameNotario,
-    "mothers_surname":apMatNotario ,
-    "fathers_surname":apPatNotario,
-    "curp": curpNotario,
-    "rfc": rfcNotario,
-    "phone":telNotario2,
-    "person_type":itemsTipoNotario };
+    var titular_={username: userNotario,
+    email: emailNotario2,
+    password: passNotario,
+    name: nameNotario,
+    mothers_surname:apMatNotario ,
+    fathers_surname:apPatNotario,
+    curp: curpNotario,
+    rfc: rfcNotario,
+    phone:telNotario2,
+    person_type:itemsTipoNotario };
 
-    var notary_off = {"notary_number": numNotario,
-      "phone": telNotario,
-      "fax": faxNotario,
-      "email": emailNotario,
-      "street": calleNotario,
-      "number": numNotario,
-      "district": distritoNotario,
-      "federal_entity_id": itemsEntidadNot,
-      "city_id": itemsCiudadNot,
-      "zip": codigopostNotario,
-      "titular": titular_}
-
+    var notary_off= {notary_number: numNotario,
+      phone: telNotario,
+      fax: faxNotario,
+      email: emailNotario,
+      street: calleNotario,
+      number: numeroNotario,
+      district: distritoNotario,
+      federal_entity_id: itemsEntidadNot,
+      city_id: itemsCiudadNot,
+      zip: codigopostNotario,
+      titular: titular_}; 
     //console.log(notary_off);
     $.ajax({
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
-           data: {notary_office:notary_off,_token:'{{ csrf_token() }}'}   })
+           data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
         
           $("#itemsNotario option").remove();
             var Resp=$.parseJSON(response);
             $('#itemsNotario').append(
-                "<option value='limpia'>------</option>"
+                "<option value='0'>------</option>"
             );
             $.each(Resp, function(i, item) {                
                  $('#itemsNotario').append(
@@ -611,7 +632,7 @@
           
         addtable();
         $.each(Resp, function(i, item) {   
-             console.log(item);             
+             //console.log(item);             
             $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
@@ -648,27 +669,7 @@
         }
     }
   }
-  function insertPerfil()
-  {
-    var idTramites=$("#itemsTramites").val();
-
-      $.ajax({
-           method: "POST",            
-           url: "{{ url('') }}",
-           data: { _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
-         if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
-             findCostos();
-             limpiar();
-
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-    
-  }  
+  
 
   function OperacionTramite(id_)
   {
@@ -744,11 +745,99 @@
          Command: toastr.warning("No Success", "Notifications")  });
 
     }
+  function saveUpdatePerf()
+  {    var id_notary=$("#itemsNotario").val();
+      var id=$("#idperfil").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var telUser=$("#telUser").val();
+      var nameUser=$("#nameUser").val();
+      var apePatUser=$("#apePatUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var curpUser=$("#curpUser").val();
+      var rfcUser=$("#rfcUser").val();
+      var password=$("#password").val();
+
+          emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
-    function limpiarPerf()
+      if(id_notary=='0'){
+        Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
+      }else if(!/[a-z]/.test(users)  || !/[0-9]/.test(users) || users.length < 8){
+        Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
+      }else if (!emailRegex.test(emailUser)) {
+        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
+      }else if (telUser.length<10) {
+        Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
+      }else if (nameUser.length<1) {
+        Command: toastr.warning("Campo Nombre, requerido!", "Notifications") 
+      }else if (apePatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
+      }else if (apeMatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
+      }else if (!curpValida(curpUser)) {
+       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
+      }else if (rfcUser.length<13) {
+        Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
+      }else if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
+        Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+      }else{
+        if(id.length>0)
+          {
+
+          }else{
+            insertPerfil();
+          }
+      }
+  }
+  function insertPerfil()
+  {
+      var id_notary=$("#itemsNotario").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var telUser=$("#telUser").val();
+      var nameUser=$("#nameUser").val();
+      var apePatUser=$("#apePatUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var curpUser=$("#curpUser").val();
+      var rfcUser=$("#rfcUser").val();
+      var password=$("#password").val();
+      var user_={username: users,
+                email: emailUser,
+                password: password,
+                name: nameUser,
+                mothers_surname: apeMatUser,
+                fathers_surname: apePatUser,
+                curp: curpUser,
+                rfc: rfcUser,
+                phone: telUser,
+                person_type: TipoUser
+            };
+      $.ajax({
+           method: "POST",            
+           url: "{{ url('/notary-offices-create-users') }}",
+           data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+             limpiarPerf();
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    
+  }  
+  function limpiarPerf()
     {
-      $("#itemsTipo ").val("limpia").change();
-    document.getElementById('nameUser').value=""; 
+      $("#itemsTipoUser").val("0").change();
+      document.getElementById('idperfil').value=""; 
+      document.getElementById('users').value=""; 
+      document.getElementById('emailUser').value=""; 
+      document.getElementById('telUser').value=""; 
+      document.getElementById('nameUser').value=""; 
+      document.getElementById('apePatUser').value=""; 
+      document.getElementById('apeMatUser').value=""; 
+      document.getElementById('curpUser').value=""; 
+      document.getElementById('rfcUser').value=""; 
+      document.getElementById('password').value=""; 
     }
     function deleteTipoServicio()
     {
@@ -779,8 +868,8 @@
     document.getElementById('numeroNotario').value="";
     document.getElementById('calleNotario').value="";
     document.getElementById('distritoNotario').value="";
-    $("#itemsCiudadNot").val("limpia").change();
-    $("#itemsEntidadNot").val("limpia").change();
+    $("#itemsCiudadNot").val("0").change();
+    $("#itemsEntidadNot").val("0").change();
     document.getElementById('codigopostNotario').value="";
     document.getElementById('userNotario').value="";
     document.getElementById('emailNotario2').value="";
@@ -790,7 +879,7 @@
     document.getElementById('telNotario2').value="";
     document.getElementById('curpNotario').value="";
     document.getElementById('rfcNotario').value="";
-    $("#itemsTipoNotario").val("limpia").change();
+    $("#itemsTipoNotario").val("0").change();
     document.getElementById('passNotario').value="";
     //$("input:radio").attr("checked", false);
 
@@ -829,7 +918,10 @@ function GuardarExcel()
 $('.valida-numeros').on('input', function () { 
     this.value = this.value.replace(/[^0-9]/g,'');
 });
-document.getElementById('userEmail').addEventListener('input', function() {
+$('.valida-user').on('input', function () { 
+    this.value = this.value.replace(/[^0-9a-zA-Z]/g,'');
+});
+document.getElementById('emailUser').addEventListener('input', function() {
     campo = event.target;
     valido = document.getElementById('emailOK');        
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
@@ -862,6 +954,41 @@ document.getElementById('emailNotario2').addEventListener('input', function() {
       document.getElementById("emailNot2").style.color = "red";
     }
 });
+$('#passNotario').keyup(function(e){
+  var alfan = /^[a-zA-Z0-9]$/
+  valido = document.getElementById('pass1');
+  if(alfan.test($(this).val()))
+   valido.innerText = "";
+  else
+    valido.innerText = "Incorrecto";
+      document.getElementById("pass1").style.color = "red"
+
+});
+function curpValida(curp) {
+    var re = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/,
+        validado = curp.match(re);
+  
+    if (!validado)  //Coincide con el formato general?
+      return false;
+    
+    //Validar que coincida el dígito verificador
+    function digitoVerificador(curp17) {
+        //Fuente https://consultas.curp.gob.mx/CurpSP/
+        var diccionario  = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
+            lngSuma      = 0.0,
+            lngDigito    = 0.0;
+        for(var i=0; i<17; i++)
+            lngSuma = lngSuma + diccionario.indexOf(curp17.charAt(i)) * (18 - i);
+        lngDigito = 10 - lngSuma % 10;
+        if (lngDigito == 10) return 0;
+        return lngDigito;
+    }
+  
+    if (validado[2] != digitoVerificador(validado[1])) 
+      return false;
+        
+    return true; //Validado
+}
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
