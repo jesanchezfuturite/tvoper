@@ -704,7 +704,7 @@
     $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-user-status') }}",
-           data: {user_id:id_,status:status_, _token:'{{ csrf_token() }}'}  })
+           data: {user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
           changeNotario();
           Command: toastr.warning(title+" Correctamente", "Notifications") 
