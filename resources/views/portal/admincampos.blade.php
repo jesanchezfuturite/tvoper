@@ -197,7 +197,7 @@
         </div>
         <div class="modal-body">
             <div class="form-body">
-                <input type="text" id="idcampo" type="hidden">
+                <input type="hidden" id="idcampo" >
                 <div class="modal-body">
                   <input hidden="true" type="text"  id="idAdd">
                   <div class="row">
@@ -205,7 +205,7 @@
                             <div class="col-md-8">
                                 <div class="form-group">
                                     <label >Nombre</label>
-                                    <input type="text" name="nombre" id="nombre">
+                                    <input type="text" name="nombre" id="nombre" class="form-control" >
                                 </div>
                             </div>
                         </div>
@@ -215,7 +215,7 @@
                             <div class="col-md-8">
                                 <div class="form-group">
                                     <label>Value</label>
-                                    <input type="text" name="valor" id="valor">
+                                    <input type="text" name="valor" id="valor" class="form-control">
                                 </div>
                             </div>
                         </div>
