@@ -33,7 +33,7 @@ class OperacionRolesController extends Controller
        
         $roles = $this->roles->get();
 
-        // return view('',[ "roles" => $responseinfo ]);
+        return view('portal/rolesuser',[ "roles" => $roles ]);
     }
     public function createRol(Request $request){
         $data = $request->all();
