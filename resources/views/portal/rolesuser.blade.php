@@ -49,9 +49,9 @@
                 <div class="form-group">           
                   <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeNotario()">
                     <option value="0">------</option>
-                    {{-- @foreach( $notary as $sd)
-                        <option value="{{$sd['id']}}">{{$sd["notary_number"]}}</option>
-                      @endforeach --}}     
+                    @foreach( $roles as $sd)
+                        <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
+                      @endforeach     
                   </select>            
                 </div>
             </div>           
@@ -230,7 +230,7 @@
     $.ajax({
            method: "POST", 
            url: "{{ url('/') }}",
-           data:{name:nameRol,_token:'{{ csrf_token() }}'}  })
+           data:{descripcion:nameRol,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var resp=$.parseJSON(response);
           if(resp.error){
@@ -240,10 +240,10 @@
             $('#itemsRoles').append(
                 "<option value='0'>------</option>"
             );
-            var listusers = resp.list_users;
+            var listusers = resp.list_roles;
             $.each(listusers, function(i, item) {                
                  $('#itemsRoles').append(
-                "<option value='"+item.id+"'>"+item.name+"</option>"
+                "<option value='"+item.id+"'>"+item.descripcion+"</option>"
                    );
                 });
             limpiarNot();
