@@ -605,23 +605,29 @@
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
            data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
-          $("#itemsNotario option").remove();
-            var Resp=$.parseJSON(response);
+        .done(function (response) {
+          var resp=$.parseJSON(response);
+          if(resp.error){
+            Command: toastr.warning(resp.error.message, "Notifications");
+          }else{
+            $("#itemsNotario option").remove();
             $('#itemsNotario').append(
                 "<option value='0'>------</option>"
             );
-            $.each(Resp, function(i, item) {                
+            var listusers = resp.list_users;
+            $.each(listusers, function(i, item) {                
                  $('#itemsNotario').append(
                 "<option value='"+item.id+"'>"+item.notary_number+"</option>"
                    );
                 });
             limpiarNot();
-            Command: toastr.success("Success", "Notifications") 
+            Command: toastr.success("Success", "Notifications");
+          }
+         
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
+         Command: toastr.warning("Error", "Notifications");
+        });
     
   }
   function changeNotario()
@@ -689,6 +695,7 @@
   {
     var id_=$("#idregistro").val();
     var status_=$("#status").val();
+    var id_notary=$("#itemsNotario").val();
     if(status_=="null")
     {
       estatus="1";
@@ -704,7 +711,7 @@
     $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-user-status') }}",
-           data: {user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
+           data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
           changeNotario();
           Command: toastr.warning(title+" Correctamente", "Notifications") 
