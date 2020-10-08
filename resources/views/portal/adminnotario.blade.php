@@ -714,7 +714,7 @@
            data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
           changeNotario();
-          Command: toastr.warning(title+" Correctamente", "Notifications") 
+          Command: toastr.success(title+" Correctamente", "Notifications") 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
