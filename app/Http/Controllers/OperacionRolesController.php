@@ -140,11 +140,14 @@ class OperacionRolesController extends Controller
         return json_encode($tramites);
     }
    
-    public function editRoles(Request $request){
+    public function editRol(Request $request){
+       $tramites = empty($request->tramites) ? json_encode($request->tramites) : $request->tramites;
+        
         try {
-            $this->roles->where('id',$request->id)->update(
-                ["descripcion"=>$request->descripcion]
-            );
+            $roles= $this->roles->where('id',$request->id)->update([
+                "descripcion"=>$request->descripcion,
+                "tramites"=>$request->tramites
+            ]);
 
             return response()->json(["Code" => "200","Message" => "El rol ha sido editado"]);
 
@@ -156,7 +159,7 @@ class OperacionRolesController extends Controller
     }
     public function eliminarRol(Request $request){        
         try {
-			$this->roles->where('id',$request->id)->update(["status"=>0]);
+			$roles =$this->roles->where('id',$request->id)->update(["status"=>0]);
 
 			return response()->json(["Code" => "200","Message" => "Campo eliminado"]);
 
