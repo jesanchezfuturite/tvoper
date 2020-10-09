@@ -2,7 +2,7 @@
 
 
 @section('content')
-
+<link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Configuración Roles</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -140,24 +140,35 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarTramites()"></button>
-        <h4 class="modal-title">Configuracion Tramite</h4>
+        <h4 class="modal-title">Configuracion Tramites</h4>
         <input hidden="true" type="text" name="idtramite" id="idtramite">
       </div>
       <div class="modal-body">
         <div class="modal-body">
         <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label >Tramite</label>                                             
-                <select id="itemsTramites" class="select2me form-control" >
-                  <option value="0">-------</option>                  
-                </select>
-              </div>                                           
-              </div>
-            </div>           
+           <div class="col-md-12">
+            <div class='form-group'>
+              <label for="search" class="col-md-2" >Buscar:</label> 
+              <div class="col-md-10"> 
+                <input type="text" name="search" id="search" class="form-control" placeholder="Escribe...">
+              <!--  <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div>-->
+              </div> 
+            </div>
           </div>
+          <div  id="demo">              
+            <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
+              <thead>
+                <tr>            
+                <th>Selecciona</th>
+                </tr>
+            </thead>
+            <tbody>  
+                        
+            </tbody>
+          </table>
+        </div> 
+        <br>
+      <br>
         </div>
       <div class="row">
         <div class="col-md-12">
