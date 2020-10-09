@@ -47,7 +47,7 @@
             </div>
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
-                  <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeNotario()">
+                  <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeRol()">
                     <option value="0">------</option>
                     @foreach( $roles as $sd)
                         <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
@@ -240,14 +240,12 @@
     //console.log(notary_off);
     $.ajax({
            method: "POST", 
-           url: "{{ url('/') }}",
+           url: "{{ url('/operacion-roles-create') }}",
            data:{descripcion:nameRol,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var resp=$.parseJSON(response);
-          if(resp.error){
-            Command: toastr.warning(resp.error.message, "Notifications");
-          }else{
-            $("#itemsRoles option").remove();
+          if(resp.Code=="200"){
+           /* $("#itemsRoles option").remove();
             $('#itemsRoles').append(
                 "<option value='0'>------</option>"
             );
@@ -256,9 +254,12 @@
                  $('#itemsRoles').append(
                 "<option value='"+item.id+"'>"+item.descripcion+"</option>"
                    );
-                });
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
+                });*/
+            limpiarRol();
+            Command: toastr.success(resp.Message, "Notifications");
+          }else{
+            
+            Command: toastr.warning(resp.Message, "Notifications");
           }
          
         })
@@ -267,12 +268,12 @@
         });
     
   }
-  function changeNotario()
+  function changeRol()
   {
-    var id=$("#itemsNotario").val();
+    var id=$("#itemsRoles").val();
     $.ajax({
            method: "get",            
-           url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
+           url: "{{ url('') }}",
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) {     
         
@@ -280,33 +281,11 @@
           var Resp=response;
           
         addtable();
-        $.each(Resp, function(i, item) {   
-             json=JSON.stringify(item);        
-             status=item.status;    
-            if (status=='1') 
-              { label="success";
-                msgg="Activa";
-                icon="red"; 
-                title="Desactivar";
-              }else if(status=='0'){ 
-                label="danger";
-                msgg="Inactiva"; 
-                icon="green";  
-                title="Activar";
-              }else{
-                label="warning";
-                msgg="Sin estatus"; 
-                icon="green";
-                title="Activar";
-              }     
+        $.each(Resp, function(i, item) {        
             $('#sample_3 tbody').append("<tr>"
-                +"<td>"+item.username+"</td>"
-                +"<td>"+item.email+"</td>"
-                +"<td>"+item.name+"</td>"
-                +"<td>"+item.rfc+"</td>"
-                +"<td>"+item.curp+"</td>"
-                +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>"+rol+"</td>"
+                +"<td>"+item.tramite+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted'  title='Eliminar' onclick='tramiteDelete(\""+item.id+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -318,39 +297,26 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Rol</th><th>Tramite</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();
 
   }
 
-  function perfilDelete(id,status)
+  function tramiteDelete(id,status)
   {
     document.getElementById('idregistro').value=id;
     document.getElementById('status').value=status;
   }
-  function desactivaAtiva()
+  function deleteTramite()
   {
-    var id_=$("#idregistro").val();
-    var status_=$("#status").val();
-    var id_notary=$("#itemsNotario").val();
-    if(status_=="null")
-    {
-      estatus="1";
-      title="Activado";
-    }else if(status_=="1")
-    {
-      estatus="0";
-      title="Desactivado";
-    }else{
-      estatus="1";
-      title="Activado";
-    }
+    var id_=$("#idrol").val();
+    var id_tramite=$("#idtramite").val();
     $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-user-status') }}",
            data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-          changeNotario();
+          changeRols();
           Command: toastr.success(title+" Correctamente", "Notifications") 
         })
         .fail(function( msg ) {
