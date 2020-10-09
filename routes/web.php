@@ -341,8 +341,13 @@ Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 
 Route::get('/operacion-roles', 'OperacionRolesController@index');
-Route::post('/operacion-roles-create', 'OperacionRolesController@createRol');
+Route::get('/operacion-roles-create', 'OperacionRolesController@createRol');
 Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite');
+Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites');
+Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol');
+Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol');
+
+
 
 
 

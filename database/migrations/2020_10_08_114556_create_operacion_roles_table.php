@@ -19,6 +19,7 @@ class CreateOperacionRolesTable extends Migration
 			$table->increments('id');
 			$table->string('descripcion');
 			$table->json('tramites');
+			$table->tinyInteger('status')->default('1');
 			$table->timestamps();
 		});
 	}
