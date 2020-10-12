@@ -322,6 +322,9 @@ Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
 
 
+/*estas son para crear los tickets de solicitud*/
+Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
+
 
 Route::get('/traux-pago-costos','PortaltramitesauxController@Viewtipopagocosto');
 Route::get('/traux-get-tramites','PortaltramitesauxController@findTramites');
