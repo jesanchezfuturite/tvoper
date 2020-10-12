@@ -213,9 +213,9 @@
     </div>
 </div>
 
-<input type="text" name="jsonTramites" id="jsonTramites"  value="[]" >
+<input type="text" name="jsonTramites" id="jsonTramites"  value="[]" hidden="true">
 <input type="text" name="jsonCode" id="jsonCode" hidden="true">
-<input type="text" name="selectedChecks" id="selectedChecks" value="[]" >
+<input type="text" name="selectedChecks" id="selectedChecks" value="[]" hidden="true">
 @endsection
 
 @section('scripts')

@@ -346,7 +346,8 @@ Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite
 Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites');
 Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol');
 Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol');
-
+Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
+Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
 
 
 
