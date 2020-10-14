@@ -284,7 +284,16 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            
+            <div class="col-md-4"> 
+              <div class="form-group"> 
+                   <div class="form-group">
+                <label >Rol</label> 
+                   <select id="itemsRoles" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>
+              </div>                                
+              </div>
+            </div>
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
@@ -412,14 +421,24 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <div class="form-group">
+                <label >Rol</label>
+                <select id="itemsRoles2" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>                               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-6"> 
+              <div class="form-group"> 
                 <label >Contraseña</label> 
                 <div class="input-icon right">
                     <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
                 </div>
-              </div>                                
-              </div>
+              </div> 
             </div>
           </div>
         </div>
@@ -473,31 +492,28 @@
 
 <script type="text/javascript">
   jQuery(document).ready(function() {
-
     TableManaged.init();
+    ItemsTramite();
     });
-  /*function ItemsTramite()
+  function ItemsTramite()
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/traux-get-tramites') }}",
+        url: "{{ url('/operacion-roles-get-rol') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-            $("#itemsTramites option").remove();
-            var Resp=$.parseJSON(response);
-            $('#itemsTramites').append(
-                "<option value='limpia'>------</option>"
-            );
-            $.each(Resp, function(i, item) {                
-                 $('#itemsTramites').append(
-                "<option value='"+item.id+"'>"+item.nombre+"</option>"
-                   );
-                });
+            $("#itemsRoles option").remove();
+            $("#itemsRoles2 option").remove();
+            $('#itemsRoles').append("<option value='0'>------</option>");
+            $('#itemsRoles2').append("<option value='0'>------</option>");
+            $.each(response, function(i, item) {                
+                $('#itemsRoles').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsRoles2').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+            });
         })
         .fail(function( msg ) {
-         Command: toastr.warning("Error al Cargar Select", "Notifications")   });
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-*/
   function saveNotario()
   {
     var numNotario=$("#numNotario").val();
@@ -533,16 +549,16 @@
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
-    }else if(userNotario.length < 1){
-       Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
+    }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
+       Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
     }else if (!emailRegex.test(emailNotario2)) {
        Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if (telNotario2.length<10) {
        Command: toastr.warning("Segundo Campo Numero Teléfono, longitud minima 10!", "Notifications") 
     }else if (!curpValida(curpNotario)) {
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-    }else if (rfcNotario.length<13) {
-       Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
+    }else if (rfcNotario.length<12) {
+       Command: toastr.warning("Campo RFC, longitud minima 12!", "Notifications") 
     }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8)
     {
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
@@ -573,11 +589,9 @@
     var curpNotario=$("#curpNotario").val();
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
+    var itemsRoles=$("#itemsRoles").val();
     var passNotario=$("#passNotario").val();
-    if(itemsTipoNotario=="limpia")
-    {
-      itemsTipoNotario="0";
-    }
+
     var titular_={username: userNotario,
     email: emailNotario2,
     password: passNotario,
@@ -587,7 +601,8 @@
     curp: curpNotario,
     rfc: rfcNotario,
     phone:telNotario2,
-    person_type:itemsTipoNotario };
+    person_type:itemsTipoNotario,
+    role_id:itemsRoles };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -722,7 +737,8 @@
   function perfilUpdate(json)
   {
    //console.log(json);
-   $("#itemsTipoUser").val("0").change();
+    $("#itemsTipoUser").val("0").change();
+    $("#itemsRoles2").val(json.role_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
@@ -741,6 +757,7 @@
     var id_notary=$("#itemsNotario").val();
     var id_user=$("#idperfil").val();
       var TipoUser=$("#itemsTipoUser").val();
+      var itemsRol=$("#itemsRoles2").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -757,7 +774,8 @@
                 fathers_surname: apePatUser,
                 curp: curpUser,
                 rfc: rfcUser,
-                phone: telUser
+                phone: telUser,
+                role_id:itemsRol
             };
       $.ajax({
            method: "POST",            
@@ -828,6 +846,7 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      var itemsRol=$("#itemsRoles2").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
         return;
@@ -841,7 +860,8 @@
                 curp: curpUser,
                 rfc: rfcUser,
                 phone: telUser,
-                person_type: TipoUser
+                person_type: TipoUser,
+                role_id: itemsRol
             };
       $.ajax({
            method: "POST",            
@@ -860,6 +880,7 @@
   function limpiarPerf()
     {
       $("#itemsTipoUser").val("0").change();
+      $("#itemsRoles2").val("0").change();
       document.getElementById('idperfil').value=""; 
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
@@ -881,6 +902,7 @@
     document.getElementById('calleNotario').value="";
     document.getElementById('distritoNotario').value="";
     $("#itemsCiudadNot").val("0").change();
+    $("#itemsRoles").val("0").change();
     $("#itemsEntidadNot").val("0").change();
     document.getElementById('codigopostNotario').value="";
     document.getElementById('userNotario').value="";
@@ -965,16 +987,6 @@ document.getElementById('emailNotario2').addEventListener('input', function() {
       valido.innerText = "Incorrecto";
       document.getElementById("emailNot2").style.color = "red";
     }
-});
-$('#passNotario').keyup(function(e){
-  var alfan = /^[a-zA-Z0-9]$/
-  valido = document.getElementById('pass1');
-  if(alfan.test($(this).val()))
-   valido.innerText = "";
-  else
-    valido.innerText = "Incorrecto";
-      document.getElementById("pass1").style.color = "red"
-
 });
 function curpValida(curp) {
     var re = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/,
