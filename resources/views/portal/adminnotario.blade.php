@@ -92,6 +92,7 @@
               <th>Nombre</th>
               <th>RFC</th>
               <th>Curp</th>
+              <th>Status</th>
             <th>&nbsp;</th>
             </tr>
           </thead>
@@ -105,27 +106,6 @@
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 
-<!----------------------------------------- deleted perfil-------------------------------------------->
-<div id="portlet-deleted" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-             ¿Eliminar Registro?
-                </p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
-            </div>
-            <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="deletePerfil()">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 <!----------------------------------------- Nuevo Notario-------------------------------------------->
 <div class="modal fade" id="portlet-notario" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog" style="width: 80%">
@@ -460,6 +440,32 @@
     </div>
   </div>
 </div>
+
+<!----------------------------------------- status perfil-------------------------------------------->
+<div id="portlet-deleted" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Desactivar/Activar Registro?<br>
+                </p>
+                 <input hidden="true" type="text" name="idregistro" id="idregistro" class="idregistro">
+                 <input hidden="true" type="text" name="status" id="status" class="status">
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="desactivaAtiva()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 
@@ -599,23 +605,29 @@
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
            data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
-          $("#itemsNotario option").remove();
-            var Resp=$.parseJSON(response);
+        .done(function (response) {
+          var resp=$.parseJSON(response);
+          if(resp.error){
+            Command: toastr.warning(resp.error.message, "Notifications");
+          }else{
+            $("#itemsNotario option").remove();
             $('#itemsNotario').append(
                 "<option value='0'>------</option>"
             );
-            $.each(Resp, function(i, item) {                
+            var listusers = resp.list_users;
+            $.each(listusers, function(i, item) {                
                  $('#itemsNotario').append(
                 "<option value='"+item.id+"'>"+item.notary_number+"</option>"
                    );
                 });
             limpiarNot();
-            Command: toastr.success("Success", "Notifications") 
+            Command: toastr.success("Success", "Notifications");
+          }
+         
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
+         Command: toastr.warning("Error", "Notifications");
+        });
     
   }
   function changeNotario()
@@ -632,14 +644,32 @@
           
         addtable();
         $.each(Resp, function(i, item) {   
-             //console.log(item);             
+             json=JSON.stringify(item);        
+             status=item.status;    
+            if (status=='1') 
+              { label="success";
+                msgg="Activa";
+                icon="red"; 
+                title="Desactivar";
+              }else if(status=='0'){ 
+                label="danger";
+                msgg="Inactiva"; 
+                icon="green";  
+                title="Activar";
+              }else{
+                label="warning";
+                msgg="Sin estatus"; 
+                icon="green";
+                title="Activar";
+              }     
             $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
                 +"<td>"+item.name+"</td>"
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate(\""+item.id+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='perfilDelete(\""+item.id+"\")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -648,102 +678,99 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-
-  function saveUpdate()
-  {
-    var upd=$("#nameUser").val();
-  
-    
-    if(upd.length==0)
-    {
-      Command: toastr.warning("Campo Couta Minimo, Requerido!", "Notifications")
-    }else if(upd.length==0)
-    {
-      Command: toastr.warning("Campo Couta Maximo, Requerido!", "Notifications")
-    }else{
-      if(upd.length==0)
-        {
-          insertPerfil();
-        }else{
-          updatePerfil();
-        }
-    }
-  }
-  
-
-  function OperacionTramite(id_)
-  {
-    document.getElementById('idcosto').value=id_;
-  }
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();
 
   }
-  function findPerfil()
-  {
-    
-    $.ajax({
-      method: "get",
-      url: "{{ url('/') }}",
-      data: { _token: '{{ csrf_token() }}' }
-      })
-      .done(function (response) { 
-         
 
-    })
-    .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-  }
-  function perfilDelete(id)
+  function perfilDelete(id,status)
   {
-    document.getElementById('iddeleted').value=id;
+    document.getElementById('idregistro').value=id;
+    document.getElementById('status').value=status;
   }
-  function deletePerfil()
+  function desactivaAtiva()
   {
-    var id_=$("#iddeleted").val();
+    var id_=$("#idregistro").val();
+    var status_=$("#status").val();
+    var id_notary=$("#itemsNotario").val();
+    if(status_=="null")
+    {
+      estatus="1";
+      title="Activado";
+    }else if(status_=="1")
+    {
+      estatus="0";
+      title="Desactivado";
+    }else{
+      estatus="1";
+      title="Activado";
+    }
     $.ajax({
            method: "POST",            
-           url: "{{ url('') }}",
-           data: {id:id_, _token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/notary-offices-user-status') }}",
+           data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-        
-         if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } limpiar();
-             findPerfil();
-
-
+          changeNotario();
+          Command: toastr.success(title+" Correctamente", "Notifications") 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function PerfilUpdate(id)
+  function perfilUpdate(json)
   {
-    document.getElementById('idcosto').value=id;
+   //console.log(json);
+   $("#itemsTipoUser").val("0").change();
+      document.getElementById('idperfil').value=json.id; 
+      document.getElementById('users').value=json.username; 
+      document.getElementById('emailUser').value=json.email; 
+      document.getElementById('telUser').value=json.phone; 
+      document.getElementById('nameUser').value=json.name; 
+      document.getElementById('apePatUser').value=json.fathers_surname; 
+      document.getElementById('apeMatUser').value=json.mothers_surname; 
+      document.getElementById('curpUser').value=json.curp; 
+      document.getElementById('rfcUser').value=json.rfc; 
+      document.getElementById('password').value=""; 
+
   }
   function updatePerfil()
   {
     
-    var id_=$("#idcosto").val();
-    
+    var id_notary=$("#itemsNotario").val();
+    var id_user=$("#idperfil").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var telUser=$("#telUser").val();
+      var nameUser=$("#nameUser").val();
+      var apePatUser=$("#apePatUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var curpUser=$("#curpUser").val();
+      var rfcUser=$("#rfcUser").val();
+      var password=$("#password").val();
+      var user_={username: users,
+                email: emailUser,
+                name: nameUser,
+                mothers_surname: apeMatUser,
+                fathers_surname: apePatUser,
+                curp: curpUser,
+                rfc: rfcUser,
+                phone: telUser
+            };
       $.ajax({
            method: "POST",            
-           url: "{{ url('') }}",
-           data: {id:id_, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
-         if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
-             findPerfil();
+           url: "{{ url('/notary-offices-edit-user') }}",
+           data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+             limpiarPerf();
+             Command: toastr.success("Success", "Notifications")
+             changeNotario();
 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-
     }
   function saveUpdatePerf()
   {    var id_notary=$("#itemsNotario").val();
@@ -779,12 +806,10 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
-      }else if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
-        Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
       }else{
         if(id.length>0)
           {
-
+            updatePerfil();
           }else{
             insertPerfil();
           }
@@ -803,6 +828,10 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
+        Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+        return;
+      }
       var user_={username: users,
                 email: emailUser,
                 password: password,
@@ -820,6 +849,9 @@
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
              limpiarPerf();
+             Command: toastr.success("Success", "Notifications")
+             changeNotario();
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -838,26 +870,6 @@
       document.getElementById('curpUser').value=""; 
       document.getElementById('rfcUser').value=""; 
       document.getElementById('password').value=""; 
-    }
-    function deleteTipoServicio()
-    {
-        var id_=$("#idvalor").val();
-        $.ajax({
-           method: "POST",
-           url: "{{ url('/') }}",
-           data: { id:id_, _token: '{{ csrf_token() }}' }
-       })
-        .done(function (response) { 
-     
-        if(response=="true")
-        {          
-             
-            Command: toastr.success("Success", "Notifications")
-
-        }
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
   }
   function limpiarNot()
   {
@@ -885,29 +897,29 @@
 
 }
 function onechange2()
+{
+    var nombre=$("#pass2").attr("class");
+    if(nombre=="fa fa-eye-slash")
     {
-        var nombre=$("#pass2").attr("class");
-        if(nombre=="fa fa-eye-slash")
-        {
-            $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
-            $('#passNotario').attr('type', 'text');
-        }else{
-            $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
-            $('#passNotario').attr('type', 'password');
-        }
+      $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
+      $('#passNotario').attr('type', 'text');
+    }else{
+      $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
+      $('#passNotario').attr('type', 'password');
     }
-    function onechange1()
+}
+function onechange1()
+{
+  var nombre=$("#pass1").attr("class");
+    if(nombre=="fa fa-eye-slash")
     {
-        var nombre=$("#pass1").attr("class");
-        if(nombre=="fa fa-eye-slash")
-        {
-            $("#pass1").removeClass("fa-eye-slash").addClass("fa-eye");
-            $('#password').attr('type', 'text');
-        }else{
-            $("#pass1").removeClass("fa-eye").addClass("fa-eye-slash");
-            $('#password').attr('type', 'password');
-        }
+      $("#pass1").removeClass("fa-eye-slash").addClass("fa-eye");
+      $('#password').attr('type', 'text');
+    }else{
+      $("#pass1").removeClass("fa-eye").addClass("fa-eye-slash");
+      $('#password').attr('type', 'password');
     }
+}
 function GuardarExcel()
 {
   var JSONData=$("#jsonCode").val();

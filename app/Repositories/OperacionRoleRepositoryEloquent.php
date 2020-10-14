@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\OperrolesRepository;
-use App\Entities\Operroles;
-use App\Validators\OperrolesValidator;
+use App\Repositories\OperacionRoleRepository;
+use App\Entities\OperacionRole;
+use App\Validators\OperacionRoleValidator;
 
 /**
- * Class OperrolesRepositoryEloquent.
+ * Class OperacionRoleRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class OperrolesRepositoryEloquent extends BaseRepository implements OperrolesRepository
+class OperacionRoleRepositoryEloquent extends BaseRepository implements OperacionRoleRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class OperrolesRepositoryEloquent extends BaseRepository implements OperrolesRep
      */
     public function model()
     {
-        return Operroles::class;
+        return OperacionRole::class;
     }
 
     
