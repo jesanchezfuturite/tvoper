@@ -185,6 +185,12 @@
                 <input type="text" class="valida-decimal form-control" name="cuotaMax" id="cuotaMax" placeholder="Ingrese la Cuota Máximo...">
              </div>
             </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Valor</label>
+                <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
+             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -222,6 +228,17 @@
           <div class="col-md-12">
             <div class="col-md-9">
               <div class="form-group">
+                <label >Partidas</label>
+                <select class="select2me form-control" name="itemsPartidas" id="itemsPartidas">
+                    <option value="limpia">------</option>
+
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-9">
+              <div class="form-group">
                 <label >Cuotas</label>
                 <input type="text" class="valida-decimal form-control" name="cuotas" id="cuotas" placeholder="Ingrese Cuotas...">
               </div>
@@ -230,6 +247,12 @@
               <div class="form-group">
                 <label >Limite Cuota</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaLimit" id="cuotaLimit" placeholder="Ingrese Limite de Cuotas...">
+             </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label ># de Oficio ó Decreto</label>
+                <input type="text" class="valida-decimal form-control" name="oficio" id="oficio" placeholder="Ingrese el numero de oficio del subsidio">
              </div>
             </div>
           </div>
@@ -271,7 +294,9 @@
       findCostos();
       ItemsTramite();
       valorCuota();
+      findPartidas();
     });
+
   function ItemsTramite()
     {
         $.ajax({
@@ -307,6 +332,26 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select", "Notifications")   });
   }
+  //funcion para cargar partidas
+  function findPartidas()
+  {
+      $.ajax({
+         method: "get",
+         url: "{{ url('/traux-get-partida') }}",
+         data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {
+      var Resp=$.parseJSON(response);
+          $("#itemsPartidas option").remove();
+          $("#itemsPartidas").append("<option value='limpia'>-------</option>");
+          $.each(Resp, function(i, item) {
+              $("#itemsPartidas").append("<option value='"+item.id+"'>"+item.id+" - "+item.desc+"</option>");
+          });
+      })
+      .fail(function( msg ) {
+       Command: toastr.warning("No Success", "Notifications")  });
+  }
+
+
   function saveUpdate()
   {
     var upd=$("#idcosto").val();
@@ -314,6 +359,7 @@
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor = $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked');
 
     if(option!=null)
@@ -351,12 +397,13 @@
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor= $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
 
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, _token:'{{ csrf_token() }}'}  })
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -378,7 +425,7 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Costo</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Costo</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Valor</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
   }
   function findCostos()
   {
@@ -411,7 +458,8 @@
                 +"<td>"+costo+"</td>"
                 +"<td>"+item.minimo+"</td>"
                 +"<td>"+item.maximo+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\","+item.minimo+","+item.maximo+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\")'><i class='fa fa-usd'></i></a></td>"
+                +"<td>"+item.valor+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -444,7 +492,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,minimo,maximo)
+  function costoUpdate(id,tramite_id,tipo,costo,minimo,maximo,valor)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
@@ -452,6 +500,7 @@
     document.getElementById('cuotaMin').value=minimo;
     document.getElementById('cuotaMax').value=maximo;
     $("input[name=radio2][value='"+costo+"']").prop("checked",true);
+    document.getElementById('valor').value=valor;
   }
   function updateCosto()
   {
@@ -461,12 +510,13 @@
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor=$("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
 
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -479,7 +529,7 @@
          Command: toastr.warning("No Success", "Notifications")  });
 
     }
-    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas)
+    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas, oficio, partidas)
     {
       document.getElementById('id_costo').value=id_;
       document.getElementById('id_tramite').value=tramite_id;
@@ -489,9 +539,15 @@
       { cuotas='';}
       if(limite_cuotas=='null')
       { limite_cuotas=''; }
+      if(partidas=='null')
+      { partidas=''; }
+      if(oficio=='null')
+      { oficio=''; }
       document.getElementById('id_subsidio').value=subsidio_id;
       document.getElementById('cuotas').value=cuotas;
       document.getElementById('cuotaLimit').value=limite_cuotas;
+      document.getElementById('oficio').value=oficio;
+      $("#itemsPartidas").val(partidas).change();
     }
     function save()
     {
@@ -499,11 +555,13 @@
       var id_costo=$("#id_costo").val();
       var id_tramite=$("#id_tramite").val();
       var cuotas_=$("#cuotas").val();
+      var oficio = $("#oficio").val();
       var cuotaLimit=$("#cuotaLimit").val();
+      var partida = $("#itemsPartidas").val();
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-subsidios') }}",
-           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,limite_cuotas:cuotaLimit, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,oficio:oficio ,limite_cuotas:cuotaLimit, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -521,6 +579,7 @@
       document.getElementById('id_tramite').value='';
       document.getElementById('cuotas').value='';
       document.getElementById('cuotaLimit').value='';
+      document.getElementById('oficio').value='';
     }
     function deleteTipoServicio()
     {

@@ -311,6 +311,7 @@ Route::post('/traux-get-relcamp','PortaltramitesauxController@listarRelacion');
 Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
 Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
+Route::get('/traux-get-partida', 'PortaltramitesauxController@listarPartidas');
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
@@ -348,9 +349,3 @@ Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol');
 Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol');
 Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
 Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
-
-
-
-
-
-
