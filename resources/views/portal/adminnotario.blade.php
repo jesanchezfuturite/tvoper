@@ -287,8 +287,8 @@
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
-                <label >Rol</label> 
-                   <select id="itemsRoles" class="select2me form-control" >
+                <label >Usuario configurado para</label> 
+                   <select id="itemsCofigNotario" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>
               </div>                                
@@ -421,8 +421,8 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <label >Rol</label>
-                <select id="itemsRoles2" class="select2me form-control" >
+                <label >Usuario configurado para</label>
+                <select id="itemsConfigUser" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>                               
               </div>
@@ -439,6 +439,14 @@
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
                 </div>
               </div> 
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group"> 
+                <label >Permiso</label>
+                <select id="itemsPermiso" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>                               
+              </div>
             </div>
           </div>
         </div>
@@ -502,13 +510,13 @@
         url: "{{ url('/operacion-roles-get-rol') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-            $("#itemsRoles option").remove();
-            $("#itemsRoles2 option").remove();
-            $('#itemsRoles').append("<option value='0'>------</option>");
-            $('#itemsRoles2').append("<option value='0'>------</option>");
+            $("#itemsCofigNotario option").remove();
+            $("#itemsConfigUser option").remove();
+            $('#itemsCofigNotario').append("<option value='0'>------</option>");
+            $('#itemsConfigUser').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
-                $('#itemsRoles').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
-                $('#itemsRoles2').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsCofigNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsConfigUser').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {
@@ -589,7 +597,7 @@
     var curpNotario=$("#curpNotario").val();
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var itemsRoles=$("#itemsRoles").val();
+    var itemsCofigNotario=$("#itemsCofigNotario").val();
     var passNotario=$("#passNotario").val();
 
     var titular_={username: userNotario,
@@ -602,7 +610,7 @@
     rfc: rfcNotario,
     phone:telNotario2,
     person_type:itemsTipoNotario,
-    role_id:itemsRoles };
+    config_id: itemsConfigUser };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -738,7 +746,8 @@
   {
    //console.log(json);
     $("#itemsTipoUser").val("0").change();
-    $("#itemsRoles2").val(json.role_id).change();
+    $("#itemsPermiso").val(json.role_id).change();
+    $("#itemsConfigUser").val(json.role_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
@@ -757,7 +766,8 @@
     var id_notary=$("#itemsNotario").val();
     var id_user=$("#idperfil").val();
       var TipoUser=$("#itemsTipoUser").val();
-      var itemsRol=$("#itemsRoles2").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -775,7 +785,8 @@
                 curp: curpUser,
                 rfc: rfcUser,
                 phone: telUser,
-                role_id:itemsRol
+                configuracion_id:itemsConfigUser,
+                role_id:itemsPermiso
             };
       $.ajax({
            method: "POST",            
@@ -846,7 +857,8 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      var itemsRol=$("#itemsRoles2").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
         return;
@@ -861,7 +873,8 @@
                 rfc: rfcUser,
                 phone: telUser,
                 person_type: TipoUser,
-                role_id: itemsRol
+                config_id: itemsConfigUser,
+                role_id: itemsPermiso
             };
       $.ajax({
            method: "POST",            
@@ -880,7 +893,8 @@
   function limpiarPerf()
     {
       $("#itemsTipoUser").val("0").change();
-      $("#itemsRoles2").val("0").change();
+      $("#itemsPermiso").val("0").change();
+      $("#itemsConfigUser").val("0").change();
       document.getElementById('idperfil').value=""; 
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
@@ -902,7 +916,7 @@
     document.getElementById('calleNotario').value="";
     document.getElementById('distritoNotario').value="";
     $("#itemsCiudadNot").val("0").change();
-    $("#itemsRoles").val("0").change();
+    $("#itemsCofigNotario").val("0").change();
     $("#itemsEntidadNot").val("0").change();
     document.getElementById('codigopostNotario').value="";
     document.getElementById('userNotario').value="";
