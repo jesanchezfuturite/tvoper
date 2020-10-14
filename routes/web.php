@@ -311,6 +311,7 @@ Route::post('/traux-get-relcamp','PortaltramitesauxController@listarRelacion');
 Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
 Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
+Route::get('/traux-get-partida', 'PortaltramitesauxController@listarPartidas');
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
@@ -339,6 +340,3 @@ Route::get('/notary','PortalNotaryOfficesController@index');
 Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUsersNotary');
 Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status');
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
-
-
-

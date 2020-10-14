@@ -26,7 +26,7 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
         return Portalcostotramites::class;
     }
 
-    
+
 
     /**
      * Boot up the repository, pushing criteria
@@ -46,9 +46,12 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             'portal_costo_tramites.costo',
             'portal_costo_tramites.minimo',
             'portal_costo_tramites.maximo',
+            'portal_costo_tramites.valor',
             'portal_sub_tramites.id as subsidio_id',
             'portal_sub_tramites.cuotas',
-            'portal_sub_tramites.limite_cuotas')    
+            'portal_sub_tramites.id_partida',
+            'portal_sub_tramites.oficio',
+            'portal_sub_tramites.limite_cuotas')
             ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','portal_costo_tramites.tramite_id')
             ->leftjoin('portal_sub_tramites','portal_sub_tramites.costo_id','=','portal_costo_tramites.id')
             ->where('portal_costo_tramites.status','=','1')
@@ -58,6 +61,6 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             return $data;
         }catch( \Exception $e){
             Log::info('[PortalcamporelationshipRepositoryEloquent@searchTramite] Error ' . $e->getMessage());
-        } 
+        }
     }
 }
