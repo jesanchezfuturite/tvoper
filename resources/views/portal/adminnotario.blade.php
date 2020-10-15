@@ -297,6 +297,16 @@
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
+                <label >Permiso</label> 
+                   <select id="itemsPermisoNotario" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>
+              </div>                                
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group"> 
+                   <div class="form-group">
                 <label >Contraseña</label>                                             
                 <div class="input-icon right">
                     <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
@@ -502,7 +512,30 @@
   jQuery(document).ready(function() {
     TableManaged.init();
     ItemsTramite();
+    ItemsPermisos();
     });
+  function ItemsPermisos()
+    {
+        $.ajax({
+        method: "get",            
+        url: "{{ url('/notary-offices-roles') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+          //console.log(response);
+          var resp=$.parseJSON(response);
+            $("#itemsPermiso option").remove();
+            $('#itemsPermiso').append("<option value='0'>------</option>");
+            $("#itemsPermisoNotario option").remove();
+            $('#itemsPermisoNotario').append("<option value='0'>------</option>");
+            $.each(resp.response, function(i, item) {
+                $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+                $('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
+                //console.log(item.id);
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
   function ItemsTramite()
     {
         $.ajax({
@@ -545,6 +578,9 @@
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var passNotario=$("#passNotario").val();
 
+    var itemsCofigNotario=$("#itemsCofigNotario").val();
+    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
+
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
     if (numNotario.length<1) {
@@ -567,9 +603,12 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
     }else if (rfcNotario.length<12) {
        Command: toastr.warning("Campo RFC, longitud minima 12!", "Notifications") 
-    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8)
-    {
+    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+    }else if(itemsCofigNotario =='0'){
+      Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
+    }else if(itemsPermisoNotario =='0'){
+      Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
     }else{
       insertNotario();
     }
@@ -598,6 +637,7 @@
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var itemsCofigNotario=$("#itemsCofigNotario").val();
+    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
     var passNotario=$("#passNotario").val();
 
     var titular_={username: userNotario,
@@ -610,7 +650,8 @@
     rfc: rfcNotario,
     phone:telNotario2,
     person_type:itemsTipoNotario,
-    config_id: itemsConfigUser };
+    config_id: itemsCofigNotario,
+    role_id: itemsPermisoNotario };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -747,7 +788,7 @@
    //console.log(json);
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
-    $("#itemsConfigUser").val(json.role_id).change();
+    $("#itemsConfigUser").val(json.config_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
@@ -785,7 +826,7 @@
                 curp: curpUser,
                 rfc: rfcUser,
                 phone: telUser,
-                configuracion_id:itemsConfigUser,
+                config_id:itemsConfigUser,
                 role_id:itemsPermiso
             };
       $.ajax({
@@ -814,6 +855,8 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
 
           emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
@@ -835,6 +878,10 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
+      }else if(itemsConfigUser =='0'){
+        Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
+      }else if(itemsPermiso =='0'){
+        Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
         if(id.length>0)
           {
