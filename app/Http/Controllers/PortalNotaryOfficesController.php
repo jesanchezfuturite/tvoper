@@ -165,7 +165,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function getRolesPermission(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-14.herokuapp.com/notary-offices/roles");        
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/roles");        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
         $listRoles = curl_exec($ch);
         curl_close($ch);
