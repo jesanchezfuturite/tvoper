@@ -42,7 +42,7 @@ class PortalNotaryOfficesController extends Controller
         $datos;
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/");
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-15.herokuapp.com/notary-offices/");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -86,7 +86,7 @@ class PortalNotaryOfficesController extends Controller
     }
 
     public function getUsers($id){
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$id/users";
+        $link ="https://session-api-pr-15.herokuapp.com/notary-offices/". "$id/users";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
