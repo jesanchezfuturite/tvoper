@@ -75,7 +75,7 @@ class PortalNotaryOfficesController extends Controller
 
     public function listNotary(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/");        
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-15.herokuapp.com/notary-offices/");        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
         $listNotary = curl_exec($ch);
         curl_close($ch);
@@ -104,7 +104,7 @@ class PortalNotaryOfficesController extends Controller
         $data = $request->user;
         $data["id"] = $user_id;
         $json=json_encode($data);
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
+        $link ="https://session-api-pr-15.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');  
@@ -127,7 +127,7 @@ class PortalNotaryOfficesController extends Controller
             "status"=>$request->status
         );
         $json = json_encode($data);
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
+        $link ="https://session-api-pr-15.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); 
@@ -145,7 +145,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
+        $link ="https://session-api-pr-15.herokuapp.com/notary-offices/"."$id/users";
         $users[]=$request->users;
         $users = array("users"=>$users);
         $json = array("notary_office"=>$users);
@@ -165,7 +165,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function getRolesPermission(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/roles");        
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-15.herokuapp.com/notary-offices/roles");        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
         $listRoles = curl_exec($ch);
         curl_close($ch);
