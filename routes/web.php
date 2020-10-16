@@ -311,6 +311,7 @@ Route::post('/traux-get-relcamp','PortaltramitesauxController@listarRelacion');
 Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
 Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
+Route::get('/traux-get-partida', 'PortaltramitesauxController@listarPartidas');
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
@@ -339,6 +340,15 @@ Route::get('/notary','PortalNotaryOfficesController@index');
 Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUsersNotary');
 Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status');
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
+Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
 
 
+Route::get('/operacion-roles', 'OperacionRolesController@index');
+Route::get('/operacion-roles-create', 'OperacionRolesController@createRol');
+Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite');
+Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites');
+Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol');
+Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol');
+Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
+Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
 

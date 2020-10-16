@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Operroles.
+ * Class OperacionRole.
  *
  * @package namespace App\Entities;
  */
-class Operroles extends Model implements Transformable
+class OperacionRole extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,6 +20,10 @@ class Operroles extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $connection = "mysql";
+
+    protected $fillable = ['id','descripcion','tramites','status','created_at','updated_at'];
+
+    protected $table = "oper_roles";
 
 }
