@@ -146,10 +146,10 @@ class PortalNotaryOfficesController extends Controller
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
         $link ="https://session-api-pr-15.herokuapp.com/notary-offices/"."$id/users";
-        $users[]=$request->users;
-        $users = array("users"=>$users);
-        $json = array("notary_office"=>$users);
-
+        $users=$request->users;
+   
+        $json = array("users"=>$users);
+      
         $json = json_encode($json);
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);
