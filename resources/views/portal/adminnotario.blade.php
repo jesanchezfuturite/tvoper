@@ -928,10 +928,18 @@
            url: "{{ url('/notary-offices-create-users') }}",
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+          response=$.parseJSON(response);
+             var error=response.error;
+             console.log(error);
+             if(response.data=="error")
+             {
+               Command: toastr.warning(error.message, "Notifications")
+               return;
+             }
              limpiarPerf();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
-
+             //console.log(response);
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
