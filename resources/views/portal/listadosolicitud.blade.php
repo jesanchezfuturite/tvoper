@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+
 <h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -28,34 +28,39 @@
         </div>
         <div class="portlet-body">
 	        <div class="form-body">
-		        <div class="row">
-		            <div class="col-md-1 col-ms-12">
-		                <div class="form-group">
-		                    <label >Tipo de Solicitud</label>
-		                  </div>
-		            </div>
+		        <div class="row">		          
 		            <div class="col-md-3 col-ms-12">
-		                <div class="form-group">           
+		                <div class="form-group">
+		                	<label >Tipo de Solicitud</label>           
 						    <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
-						       <option value="limpia">------</option>
+						       <option value="0">------</option>
+						        @foreach(json_decode($tramites,true) as $tr)
+                       			 <option value="{{$tr['id_tramite']}}">{{$tr["tramite"]}}</option>
+                      			@endforeach     
 						    </select>   
 		                </div>
 		            </div>
-		            <div class="col-md-1 col-ms-12">
-		                <div class="form-group">
-		                    <label >Estatus</label>
-		                  </div>
+		            <div class="col-md-3 col-ms-12">
+		                <div class="form-group"> 
+		                	<label >Estatus</label>          
+						    <select class="select2me form-control" name="opEstatus" id="opEstatus" onchange="">	       	
+						       <option value="0">------</option>
+						       @foreach( $status as $sd)
+                       			 <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
+                      			@endforeach     
+						    </select>  
+		                </div>
 		            </div>
 		            <div class="col-md-3 col-ms-12">
-		                <div class="form-group">           
-						    <select class="select2me form-control" name="opEstatus" id="opEstatus" onchange="">
-						       <option value="limpia">------</option>
-						    </select>  
+		                <div class="form-group"> 
+		                	<label >No. Solicitud</label>          
+						    <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Ingrese Numero de Solicitud...">  
 		                </div>
 		            </div>
 		            <div class="col-md-1 col-ms-12">
                     	<div class="form-group">
-                    		<button type="button" class="btn green" onclick="">Buscar</button>
+                    		<span class="help-block">&nbsp;</span>
+                    		<button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
                     	</div>
             		</div>
 		            
@@ -79,75 +84,118 @@
                 </a>
             </div>
         </div>
-        <div class="portlet-body">
-            <table id="example" class="table table-hover" cellspacing="0" width="100%" >
-				<thead>
-				    <tr>
-				        <th></th>
-				        <th>Titulo</th>
-				        <th></th>
-				    </tr>
-				</thead>
-			</table>
-        </div>
+         <div class="portlet-body" id="addtables">
+    		<div id="removetable">
+          		<table class="table table-hover" id="sample_2">
+            		<thead>
+              			<tr>
+              			<th>ID</th>
+              			<th>Titulo</th>
+              			<th>Mensaje</th>
+              			<th>Descripción</th>
+            			<th>&nbsp;</th>
+            			</tr>
+          			</thead>
+          			<tbody>                   
+                         
+          			</tbody>
+        		</table>  
+      		</div>             
+    	</div>
     </div>
 </div>
 
 <!-- modal-dialog -->
-
-<div id="modalDelete" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-             ¿Eliminar Registro?
-                </p>
-                 <input hidden="true" type="text" name="iddeleted" id="iddeleted" class="iddeleted">
-            </div>
-            <div class="modal-footer">
-	         	<button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-	            <button type="button"  class="btn green" onclick="eliminar()" id="btnDel">
-	            	<i class="fa fa-check" id="iconBtnDel"></i> 
-	            	Confirmar
-	            </button>
-	        </div>
-	   </div>
-	</div>
+<!----------------------------------------- Nuevo Rol Tramite-------------------------------------------->
+<div class="modal fade" id="portlet-atender" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog" style="width: 80%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" ></button>
+        <h4 class="modal-title">Configuracion Solicitudes</h4>
+        <input hidden="true" type="text" name="idtramite" id="idtramite">
+      </div>
+      <div class="modal-body">
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      	&nbsp;
+      <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn default" >Cerrar</button>
+      </div>
+    </div>
+    </div>
+  </div>
 </div>
 @endsection
 
 @section('scripts')
-	<script src="assets/global/dataTable/dataTables.min.js"></script>
-	<script src="assets/global/dataTable/jszip.min.js"></script>
-	<script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
-		jQuery(document).ready(() => {
-	    	//getTramites();
-	    });
-	    /*function getApi( url , fnDone, fnFail, fnAlways ){
-	        $.ajax({method: "get", url,data: {_token:'{{ csrf_token() }}'}  }).done(fnDone).fail(fnFail).always(fnAlways);
-		}
-		function getTramites(){
-			let url = "{{ url('/solicitud-tramites') }}";
-			getApi( url , ((response) => {  
-	        	tramites = JSON.parse(response);
-	        	setTramites( $("#tramitesSelect") );
-	        }), (( msg ) => {
-	         	Command: toastr.warning("No Success", "Notifications") ;
-	        }) ,  () => $("#spin-animate").hide())
-		}
-		function setTramites(element){
-        	tramites.forEach(tramite => addOptionToSelect( element, tramite.tramite, tramite.id_tramite ));
-		}
+	jQuery(document).ready(function() {
+    TableManaged2.init2();
+    });
 
-		function addOptionToSelect( element, name, key ){
-			element.append( new Option(name , key) );
-		}*/
+   	function findSolicitudes(){
+    	var noSolicitud=$("#noSolicitud").val();
+    	var opTipoSolicitud=$("#opTipoSolicitud").val();
+    	var opEstatus=$("#opEstatus").val();
+    	var formdata = new FormData();
 
-
+    	if(noSolicitud.length>0){
+    		formdata.append("id_solicitud", noSolicitud);  
+    	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
+    		formdata.append("estatus", opEstatus);    
+    		formdata.append("tipo_tramite", opTipoSolicitud);   
+    	}else if(opTipoSolicitud != "0"){
+    		formdata.append("tipo_tramite", opTipoSolicitud);  
+    	}else if( opEstatus != "0"){
+    		formdata.append("estatus", opEstatus);    
+    	}else{
+    		Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
+    		return;
+    	}
+    	formdata.append("_token", '{{ csrf_token() }}');  
+    	$.ajax({
+           method: "POST", 
+           contentType: false,
+            processData: false,
+           url: "{{ url('/filtrar-solicitudes') }}",
+           data: formdata })
+        .done(function (response) {
+        	//var Resp=$.parseJSON(response);
+            addtable();
+            //console.log(response);
+            //console.log(JSON.stringify(response));
+            if(JSON.stringify(response)=='[]')
+            	{TableManaged2.init2();  return;}
+            var Resp=$.parseJSON(JSON.stringify(response));
+            $.each(Resp, function(i, item) {
+            	$('#sample_2 tbody').append("<tr>"
+                	+"<td>"+item.id+"</td>"
+                	+"<td>"+item.titulo+"</td>"
+                	+"<td>"+item.mensaje+"</td>"
+                	+"<td>"+item.descripcion+"</td>"
+                	+ "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender'> Atender </a></td>"
+                	+"</tr>"
+                );
+            });
+        	TableManaged2.init2();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+  	}
+  	function addtable(){
+    	$("#addtables div").remove();
+    	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Mensaje</th><th>Descripción</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+     	
+	}
 	</script>
 @endsection
