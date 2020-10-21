@@ -41,6 +41,7 @@ class PagosupdatelogRepositoryEloquent extends BaseRepository implements Pagosup
         
         $data = Pagosupdatelog::whereBetween('fecha_pago',[$fechaIn,$fechaF])
         ->select('fecha_pago','referencia','id_transaccion','banco_desc','plataforma','monto')
+        ->groupBy('id_transaccion')
         ->get();
         
         return $data;

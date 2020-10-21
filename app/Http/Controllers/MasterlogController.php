@@ -29,10 +29,27 @@ class MasterlogController extends Controller
 
 		try {
 
-			$fechaIn=Carbon::parse($request->fechaInicio)->format('Y-m-d');
-        	$fechaFi=Carbon::parse($request->fechaFin)->format('Y-m-d');
-        	$fechaIn= $fechaIn . ' 00:00:00';
-        	$fechaFi=$fechaFi . ' 23:59:59';
+			if((int)$request->fechaInicio == 1) {
+
+				$fechaAnt = Carbon::now()->subDays(1);
+				$fechaAct = Carbon::now();
+				$fechaIn = $fechaAnt->format('Y-m-d');
+				$fechaFi = $fechaAct->format('Y-m-d');
+	        }	        
+	        elseif((int)$request->fechaInicio == 3) {
+
+				$fechaAnt = Carbon::now()->subDays(3);
+				$fechaAct = Carbon::now();
+				$fechaIn = $fechaAnt->format('Y-m-d');
+				$fechaFi = $fechaAct->format('Y-m-d');
+	        }
+	        else {
+				$fechaIn = Carbon::parse($request->fechaInicio)->format('Y-m-d');
+				$fechaFi = Carbon::parse($request->fechaFin)->format('Y-m-d');	        	
+	        }
+
+			$fechaIn = $fechaIn . ' 00:00:00';
+			$fechaFi = $fechaFi . ' 23:59:59';
 
 			$result = $this->log->findbyDates($fechaIn,$fechaFi);
 
@@ -40,9 +57,8 @@ class MasterlogController extends Controller
 			
 		} catch (Exception $e) {
 			
+			return response()->json(['error'=>true,'msg'=>$e->getMessage(),'data'=>[]]);
 		}
-
-		return response()->json($request);
 	}
 
 	private function messagerror()
