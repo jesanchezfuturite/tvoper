@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Portalsolicitudescatalogo.
+ * Class PortalSolicitudesStatus.
  *
  * @package namespace App\Entities;
  */
-class Portalsolicitudescatalogo extends Model implements Transformable
+class PortalSolicitudesStatus extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -22,14 +22,9 @@ class Portalsolicitudescatalogo extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['tramite_id','padre_id','titulo','atendido_por','status'];
+    protected $fillable = ['id','descripcion'];
 
-    protected $table = "solicitudes_catalogo";
+    protected $table = "solicitudes_status";
 
-    
-	public function ticket(){
-		return $this->hasMany('App\Entities\PortalSolicitudesTicket', 'catalogo_id', 'id');
-	}
- 
 
 }
