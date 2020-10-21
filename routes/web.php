@@ -352,3 +352,6 @@ Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarR
 Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
 Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
 
+Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
+Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
+
