@@ -31,22 +31,22 @@
                 <div class="caption" id="headerTabla">
                   <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configurar Costos</div>
                   </div>
-                 <div class="tools">                
+                 <div class="tools">
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo">
                     </a>
                    <a id="Remov" href="javascript:;" data-original-title="" title=""><i class='fa fa-remove' style="color:white !important;"></i>
                     </a>
-                </div>           
+                </div>
             </div>
             <div class="portlet-body">
               <div class="row">
-                <span class="help-block"></span>             
+                <span class="help-block"></span>
                 <div class='col-md-12 text-right'>
-                  <div class='form-group'>                      
-                    <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> 
+                  <div class='form-group'>
+                    <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button>
                   </div>
                 </div>
-                <span class="help-block">&nbsp;</span>                              
+                <span class="help-block">&nbsp;</span>
               </div>
             </div>
             <div class="portlet-body" id="addtables">
@@ -62,11 +62,11 @@
                     <th>&nbsp;</th>
                   </tr>
                 </thead>
-                <tbody>                   
-                    <tr> <td>No found</td> </tr>         
+                <tbody>
+                    <tr> <td>No found</td> </tr>
                 </tbody>
-              </table>  
-            </div>             
+              </table>
+            </div>
           </div>
         </div>
         <!-- END SAMPLE TABLE PORTLET-->
@@ -107,31 +107,31 @@
         <div class="modal-body">
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9"> 
+            <div class="col-md-9">
               <div class="form-group">
                 <label >Tramite</label>
                 <select id="itemsTramites" class="select2me form-control" >
                   <option value="limpia">-------</option>
-                </select>                                            
+                </select>
               </div>
             </div>
-            <div class="col-md-9"> 
+            <div class="col-md-9">
               <div class="form-group">
                 <label >Tipo</label>
                 <select id="itemsTipo" class="select2me form-control" >
                   <option value="limpia">-------</option>
                   <option value="F">Fijo</option>
                   <option value="V">Variable</option>
-                </select>                                            
+                </select>
               </div>
-            </div>            
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9"> 
-              <div class="form-group"> 
-              <label >Costo</label> 
+            <div class="col-md-9">
+              <div class="form-group">
+              <label >Costo</label>
                 <span class="help-block">Selecciona una Opcion. </span>
                   <div class="md-radio-inline">
                     <div class="md-radio">
@@ -157,24 +157,38 @@
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
-                      </div>
-                    </div>                                       
+                    </div>
+                    <div class="md-radio">
+                      <input type="radio" id="radio9" name="radio2" class="md-radiobtn" value="N">
+                      <label for="radio9">
+                        <span></span>
+                        <span class="check"></span>
+                        <span class="box"></span>
+                        No Aplica.</label>
+                    </div>
+                  </div>
               </div>
-            </div>            
+            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9"> 
+            <div class="col-md-9">
               <div class="form-group">
-                <label >Cuota Minima</label>                                             
+                <label >Cuota Minima</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaMin" id="cuotaMin" placeholder="Ingrese Cuota Minima...">
               </div>
             </div>
             <div class="col-md-9">
               <div class="form-group">
-                <label >Cuota Máximo</label>                                                       
+                <label >Cuota Máximo</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaMax" id="cuotaMax" placeholder="Ingrese la Cuota Máximo...">
+             </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Valor</label>
+                <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
              </div>
             </div>
           </div>
@@ -182,7 +196,7 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <div class="col-md-12">             
+          <div class="col-md-12">
             <div class="form-group">
               <button type="submit" class="btn blue" onclick="saveUpdate()"><i class="fa fa-check"></i> Guardar</button>
             </div>
@@ -209,28 +223,45 @@
       </div>
       <div class="modal-body">
         <div class="modal-body">
-        
+
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9"> 
+            <div class="col-md-9">
               <div class="form-group">
-                <label >Cuotas</label>                                             
+                <label >Partidas</label>
+                <select class="select2me form-control" name="itemsPartidas" id="itemsPartidas">
+                    <option value="limpia">------</option>
+
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Cuotas</label>
                 <input type="text" class="valida-decimal form-control" name="cuotas" id="cuotas" placeholder="Ingrese Cuotas...">
               </div>
             </div>
             <div class="col-md-9">
               <div class="form-group">
-                <label >Limite Cuota</label>                                                       
+                <label >Limite Cuota</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaLimit" id="cuotaLimit" placeholder="Ingrese Limite de Cuotas...">
+             </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label ># de Oficio ó Decreto</label>
+                <input type="text" class="valida-decimal form-control" name="oficio" id="oficio" placeholder="Ingrese el numero de oficio del subsidio">
              </div>
             </div>
           </div>
         </div>
       <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9"> 
+            <div class="col-md-9">
               <div class="form-group">
-                <label >Valor de Cuota</label>                                             
+                <label >Valor de Cuota</label>
                 <input type="text" class="valida-decimal form-control" name="uma" id="uma" placeholder="Ingrese Valor de Cuota..." disabled="true">
               </div>
             </div>
@@ -239,7 +270,7 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <div class="col-md-12">             
+          <div class="col-md-12">
             <div class="form-group">
               <button type="submit" class="btn blue" onclick="save()"><i class="fa fa-check"></i> Guardar</button>
             </div>
@@ -261,22 +292,24 @@
 <script type="text/javascript">
   jQuery(document).ready(function() {
       findCostos();
-      ItemsTramite();     
+      ItemsTramite();
       valorCuota();
+      findPartidas();
     });
+
   function ItemsTramite()
     {
         $.ajax({
-        method: "get",            
+        method: "get",
         url: "{{ url('/traux-get-tramites') }}",
         data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
+        .done(function (response) {
             $("#itemsTramites option").remove();
             var Resp=$.parseJSON(response);
             $('#itemsTramites').append(
                 "<option value='limpia'>------</option>"
             );
-            $.each(Resp, function(i, item) {                
+            $.each(Resp, function(i, item) {
                  $('#itemsTramites').append(
                 "<option value='"+item.id+"'>"+item.nombre+"</option>"
                    );
@@ -288,17 +321,37 @@
   function valorCuota()
     {
         $.ajax({
-        method: "get",            
+        method: "get",
         url: "{{ url('/traux-get-cuota') }}",
         data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
+        .done(function (response) {
             var Resp=$.parseJSON(response);
           document.getElementById('uma').value=Resp.cuota_costo;
-                
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select", "Notifications")   });
   }
+  //funcion para cargar partidas
+  function findPartidas()
+  {
+      $.ajax({
+         method: "get",
+         url: "{{ url('/traux-get-partida') }}",
+         data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {
+      var Resp=$.parseJSON(response);
+          $("#itemsPartidas option").remove();
+          $("#itemsPartidas").append("<option value='limpia'>-------</option>");
+          $.each(Resp, function(i, item) {
+              $("#itemsPartidas").append("<option value='"+item.id+"'>"+item.id+" - "+item.desc+"</option>");
+          });
+      })
+      .fail(function( msg ) {
+       Command: toastr.warning("No Success", "Notifications")  });
+  }
+
+
   function saveUpdate()
   {
     var upd=$("#idcosto").val();
@@ -306,8 +359,9 @@
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor = $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked');
-     
+
     if(option!=null)
     {
       option = document.querySelector('input[name = radio2]:checked').value;
@@ -343,25 +397,26 @@
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor= $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
-    
+
       $.ajax({
-           method: "POST",            
+           method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+
          if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
+            Command: toastr.success(response.Message, "Notifications")
+            }
              findCostos();
              limpiar();
 
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
-    
-  }  
+
+  }
 
   function OperacionTramite(id_)
   {
@@ -370,38 +425,41 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Costo</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Costo</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Valor</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
   }
   function findCostos()
   {
-    
+
     $.ajax({
       method: "get",
       url: "{{ url('/traux-get-costos') }}",
       data: { _token: '{{ csrf_token() }}' }
       })
-      .done(function (response) { 
-         document.getElementById('jsonCode').value=response;            
+      .done(function (response) {
+         document.getElementById('jsonCode').value=response;
           var Resp=$.parseJSON(response);
         addtable();
         var tipo="";
         var costo="";
-        $.each(Resp, function(i, item) {   
-          if(item.tipo=='f')
+        $.each(Resp, function(i, item) {
+          if(item.tipo=='F')
           {tipo="Fijo";}else{tipo="Variable";}
 
           if(item.costo=='H')
           {costo="Hoja";
           }else if(item.costo=='M')
           {costo="Millar";
-          }else{ costo="Lote";}               
+        }else if(item.costo=='N')
+          {costo="No Aplica";
+          }else{ costo="Lote";}
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
                 +"<td>"+costo+"</td>"
                 +"<td>"+item.minimo+"</td>"
                 +"<td>"+item.maximo+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\","+item.minimo+","+item.maximo+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\")'><i class='fa fa-usd'></i></a></td>"
+                +"<td>"+item.valor+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -419,13 +477,13 @@
   {
     var id_=$("#iddeleted").val();
     $.ajax({
-           method: "POST",            
+           method: "POST",
            url: "{{ url('/traux-del-tramites') }}",
            data: {id:id_, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
+        .done(function (response) {
+
          if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
+            Command: toastr.success(response.Message, "Notifications")
             } limpiar();
              findCostos();
 
@@ -434,34 +492,36 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,minimo,maximo)
+  function costoUpdate(id,tramite_id,tipo,costo,minimo,maximo,valor)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
     $("#itemsTipo").val(tipo).change();
-    document.getElementById('cuotaMin').value=minimo;    
+    document.getElementById('cuotaMin').value=minimo;
     document.getElementById('cuotaMax').value=maximo;
     $("input[name=radio2][value='"+costo+"']").prop("checked",true);
+    document.getElementById('valor').value=valor;
   }
   function updateCosto()
   {
-    
+
     var id_=$("#idcosto").val();
     var idTramites=$("#itemsTramites").val();
     var tipoTramite=$("#itemsTipo").val();
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
+    var valor=$("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
-    
+
       $.ajax({
-           method: "POST",            
+           method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+
          if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
+            Command: toastr.success(response.Message, "Notifications")
+            }
              findCostos();
 
         })
@@ -469,19 +529,25 @@
          Command: toastr.warning("No Success", "Notifications")  });
 
     }
-    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas)
-    { 
+    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas, oficio, partidas)
+    {
       document.getElementById('id_costo').value=id_;
-      document.getElementById('id_tramite').value=tramite_id; 
+      document.getElementById('id_tramite').value=tramite_id;
       if(subsidio_id=='null')
-      {   subsidio_id=''; }  
+      {   subsidio_id=''; }
       if(cuotas=='null')
-      { cuotas='';}  
+      { cuotas='';}
       if(limite_cuotas=='null')
-      { limite_cuotas=''; }  
-      document.getElementById('id_subsidio').value=subsidio_id;       
-      document.getElementById('cuotas').value=cuotas;       
-      document.getElementById('cuotaLimit').value=limite_cuotas;       
+      { limite_cuotas=''; }
+      if(partidas=='null')
+      { partidas=''; }
+      if(oficio=='null')
+      { oficio=''; }
+      document.getElementById('id_subsidio').value=subsidio_id;
+      document.getElementById('cuotas').value=cuotas;
+      document.getElementById('cuotaLimit').value=limite_cuotas;
+      document.getElementById('oficio').value=oficio;
+      $("#itemsPartidas").val(partidas).change();
     }
     function save()
     {
@@ -489,28 +555,31 @@
       var id_costo=$("#id_costo").val();
       var id_tramite=$("#id_tramite").val();
       var cuotas_=$("#cuotas").val();
+      var oficio = $("#oficio").val();
       var cuotaLimit=$("#cuotaLimit").val();
+      var partida = $("#itemsPartidas").val();
       $.ajax({
-           method: "POST",            
+           method: "POST",
            url: "{{ url('/traux-post-subsidios') }}",
-           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,limite_cuotas:cuotaLimit, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-        
+           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,oficio:oficio ,limite_cuotas:cuotaLimit, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+
          if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications") 
-            } 
+            Command: toastr.success(response.Message, "Notifications")
+            }
              findCostos();
 
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });  
+         Command: toastr.warning("No Success", "Notifications")  });
     }
     function limpiarSub()
     {
       document.getElementById('id_costo').value='';
-      document.getElementById('id_tramite').value='';       
-      document.getElementById('cuotas').value='';       
-      document.getElementById('cuotaLimit').value=''; 
+      document.getElementById('id_tramite').value='';
+      document.getElementById('cuotas').value='';
+      document.getElementById('cuotaLimit').value='';
+      document.getElementById('oficio').value='';
     }
     function deleteTipoServicio()
     {
@@ -520,11 +589,11 @@
            url: "{{ url('/tipo-servicio-delete') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
-        .done(function (response) { 
-     
+        .done(function (response) {
+
         if(response=="true")
-        {          
-            ActualizaTabla();  
+        {
+            ActualizaTabla();
             Command: toastr.success("Success", "Notifications")
 
         }
@@ -547,38 +616,38 @@ function GuardarExcel()
 {
   var JSONData=$("#jsonCode").val();
   JSONToCSVConvertor(JSONData, "Costos", true)
-  
-  
+
+
 }
-$('.valida-formula').on('input', function () { 
+$('.valida-formula').on('input', function () {
     this.value = this.value.replace(/[^0-9./*+()v-]/g,'');
 });
-$('.valida-decimal').on('input', function () { 
+$('.valida-decimal').on('input', function () {
     this.value = this.value.replace(/[^0-9.]/g,'');
 });
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
-    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
-    var CSV = '';    
+    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+    var CSV = '';
     //CSV += ReportTitle + '\r\n\n';
     if (ShowLabel) {
-        var row = ""; 
-        for (var index in arrData[0]) { 
+        var row = "";
+        for (var index in arrData[0]) {
             row += index + ',';
         }
         row = row.slice(0, -1);
         CSV += row + '\r\n';
-    } 
+    }
     for (var i = 0; i < arrData.length; i++) {
         var row = "";
         for (var index in arrData[i]) {
             row += '"' + arrData[i][index] + '",';
         }
-        row.slice(0, row.length - 1); 
+        row.slice(0, row.length - 1);
         CSV += row + '\r\n';
     }
-    if (CSV == '') {        
+    if (CSV == '') {
         alert("Invalid data");
         return;
     }
@@ -587,7 +656,7 @@ function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
     var fileName = fecha;
     fileName += ReportTitle.replace(/ /g,"_");
     var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
-    var link = document.createElement("a");    
+    var link = document.createElement("a");
     link.href = uri;
     link.style = "visibility:hidden";
     link.download = fileName + ".csv";

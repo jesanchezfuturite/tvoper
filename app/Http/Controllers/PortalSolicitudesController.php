@@ -14,6 +14,7 @@ use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+use App\Repositories\EgobiernopartidasRepositoryEloquent;
 
 class PortalSolicitudesController extends Controller
 {
@@ -21,12 +22,15 @@ class PortalSolicitudesController extends Controller
   protected $solicitudes;
   protected $tramites;
   protected $tiposer;
+  protected $partidas;
+
 
   public function __construct(
      UsersRepositoryEloquent $users,
      PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
      TramitedetalleRepositoryEloquent $tramites,
-     EgobiernotiposerviciosRepositoryEloquent $tiposer
+     EgobiernotiposerviciosRepositoryEloquent $tiposer,
+     EgobiernopartidasRepositoryEloquent $partidas
     )
     {
       $this->middleware('auth');
@@ -34,6 +38,8 @@ class PortalSolicitudesController extends Controller
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
       $this->tiposer = $tiposer;
+      $this->partidas = $partidas;
+
     }
 
   /**
@@ -66,6 +72,7 @@ class PortalSolicitudesController extends Controller
         $tmts []=array(
           'id_tramite'=> $t->Tipo_Code,
           'tramite' => $t->Tipo_Descripcion,
+          'partidas' => $this->getPartidasTramites($t->Tipo_Code),
         );
       }
 
@@ -336,6 +343,49 @@ class PortalSolicitudesController extends Controller
         ]
       );
     }
+  }
+
+  /**
+   *
+   * getPartidasTramites . Busca en la tabla de partidas los valores
+   *
+   * @param $id es el valor del tramite
+   *
+   * @return Array con los valores de la partida
+   *
+   */
+
+  public function getPartidasTramites($id)
+  {
+    $data = array();
+    try{
+
+      $info = $this->partidas->findWhere( ["id_servicio" =>  $id] );
+
+      if($info->count() > 0){
+        foreach($info as $i)
+        {
+          $data []= array(
+            "id_partida"  => $i->id_partida,
+            "descripcion" => $i->descripcion
+          );
+        }
+      }else{
+        $data = 0;
+      }
+
+    }catch(\Exception $e){
+      Log::info('Error Eliminar Solicitud '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al getPartidasTramites",
+        ]
+      );
+    }
+
+    return $data;
+
   }
 
 }

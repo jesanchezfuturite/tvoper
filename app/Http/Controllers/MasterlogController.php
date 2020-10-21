@@ -8,36 +8,57 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**** Repository ****/
+use App\Repositories\PagosupdatelogRepositoryEloquent;
 
 
-
-class ConsulatasactualizacionesController extends Controller
+class MasterlogController extends Controller
 {
+	protected $masterlog;
 
-	public function __construct() {
+	public function __construct( PagosupdatelogRepositoryEloquent $masterlog ) {
 
-
+		$this->log = $masterlog;
 	}
 
-	public function consultalogws(Request $request)
-	{
+	public function index() {
+
+		return view('motorpagos/masterlog');
+	}
+
+	public function consultamasterlog(Request $request) {	 	
 
 		try {
 
-			$data = json_encode($request->data);
+			if((int)$request->fechaInicio == 1) {
 
-			if(empty($data)){
-				$json_response = $this->messagerror();
-			}
-			else {
+				$fechaAnt = Carbon::now()->subDays(1);
+				$fechaAct = Carbon::now();
+				$fechaIn = $fechaAnt->format('Y-m-d');
+				$fechaFi = $fechaAct->format('Y-m-d');
+	        }	        
+	        elseif((int)$request->fechaInicio == 3) {
 
-			}
+				$fechaAnt = Carbon::now()->subDays(3);
+				$fechaAct = Carbon::now();
+				$fechaIn = $fechaAnt->format('Y-m-d');
+				$fechaFi = $fechaAct->format('Y-m-d');
+	        }
+	        else {
+				$fechaIn = Carbon::parse($request->fechaInicio)->format('Y-m-d');
+				$fechaFi = Carbon::parse($request->fechaFin)->format('Y-m-d');	        	
+	        }
+
+			$fechaIn = $fechaIn . ' 00:00:00';
+			$fechaFi = $fechaFi . ' 23:59:59';
+
+			$result = $this->log->findbyDates($fechaIn,$fechaFi);
+
+            return response()->json($result);
 			
 		} catch (Exception $e) {
 			
+			return response()->json(['error'=>true,'msg'=>$e->getMessage(),'data'=>[]]);
 		}
-
-		return response()->json($json_response);
 	}
 
 	private function messagerror()

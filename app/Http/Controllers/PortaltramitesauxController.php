@@ -12,6 +12,7 @@ use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalcampotypeRepositoryEloquent;
 use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
@@ -30,6 +31,7 @@ class PortaltramitesauxController extends Controller
 	protected $costotramitedb;
 	protected $subsidiotramitedb;
 	protected $umadb;
+	protected $partidas;
 
     public function __construct(
 
@@ -39,7 +41,8 @@ class PortaltramitesauxController extends Controller
     	EgobiernotiposerviciosRepositoryEloquent $tiposer,
     	PortalcostotramitesRepositoryEloquent $costotramitedb,
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
-    	UmahistoryRepositoryEloquent $umadb
+    	UmahistoryRepositoryEloquent $umadb,
+			EgobiernopartidasRepositoryEloquent $partidas
 
     )
     {
@@ -51,6 +54,7 @@ class PortaltramitesauxController extends Controller
     	$this->costotramitedb = $costotramitedb;
     	$this->subsidiotramitedb = $subsidiotramitedb;
     	$this->umadb = $umadb;
+			$this->partidas = $partidas;
     }
 
 
@@ -189,7 +193,7 @@ class PortaltramitesauxController extends Controller
 
 			foreach ($request->campoid as $k => $v) {
 
-				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->where('id',$request->id)->update($in);
@@ -244,7 +248,7 @@ class PortaltramitesauxController extends Controller
 
 			foreach ($request->campoid as $k => $v) {
 
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v[$k],'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->insert($in);
@@ -259,59 +263,59 @@ class PortaltramitesauxController extends Controller
     {
         return view('portal/tipopagocostos');
     }
-    public function findTramites()
+  public function findTramites()
     {
     	$response=array();
     	$response=$this->camrel->findTramite();
 
     	return json_encode($response);
     }
-    public function findCostos()
-    {
-    	$response=array();
+  public function findCostos()
+  {
+  	$response=array();
 
-    	$response=$this->costotramitedb->findCostotramites();
-    	//log::info($response);
-    	return json_encode($response);
-    }
-    public function insertCostos(Request $request)
-    {
-    	try {
+  	$response=$this->costotramitedb->findCostotramites();
+  	//dd($response);
+  	return json_encode($response);
+  }
+  public function insertCostos(Request $request)
+  {
+  	try {
 
-    		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'status'=>'1']);
-    		return response()->json(["Code" => "200","Message" => "Success"]);
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'status'=>'1']);
+  		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - insertCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al obtner insertar"]);
 		}
-    }
-    public function updateCostos(Request $request)
-    {
-    	try {
-    		//log::info($request);
-    		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo],$request->id);
+  }
+  public function updateCostos(Request $request)
+  {
+  	try {
+  		//log::info($request);
+  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor],$request->id);
 
-    		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
 
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
-    }
-    public function updateStatusCostos(Request $request)
-    {
-    	try {
-    		//log::info($request);
-    		$this->costotramitedb->update(['status'=>'0'],$request->id);
+  }
+  public function updateStatusCostos(Request $request)
+  {
+  	try {
+  		//log::info($request);
+  		$this->costotramitedb->update(['status'=>'0'],$request->id);
 
-    		return response()->json(["Code" => "200","Message" => "Registro Eliminado."]);
+  		return response()->json(["Code" => "200","Message" => "Registro Eliminado."]);
 
 		} catch (\Exception $e) {
 			Log::info('Error PortaltramitesauxController - updateStatusCostos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
-    }
+  }
     public function findValorcuota()
     {
     	try
@@ -339,11 +343,11 @@ class PortaltramitesauxController extends Controller
     {
     	try {
     		if($request->id==''){
-    			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'limite_cuotas'=>$request->limite_cuotas]);
+    			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida,'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas]);
 
 				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
     		}else{
-    			$this->subsidiotramitedb->update(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'limite_cuotas'=>$request->limite_cuotas],$request->id);
+    			$this->subsidiotramitedb->update(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida, 'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas],$request->id);
     			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
     		}
 
@@ -400,4 +404,27 @@ class PortaltramitesauxController extends Controller
 				]);
 			}
 		}
+
+		public function listarPartidas()
+    {
+			$sr = $this->partidas->get();
+
+			$response = array();
+
+			try {
+
+				foreach ($sr as $k => $v) {
+					$response[] = array(
+						'id' => $v['id_partida'],
+						'desc' => $v['descripcion']
+					);
+				}
+
+			} catch (\Exception $e) {
+				Log::info('Error Tramites - listar partidas: '.$e->getMessage());
+			}
+
+			return json_encode($response);
+    }
+
 }
