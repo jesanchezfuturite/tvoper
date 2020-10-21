@@ -399,7 +399,7 @@ class PortalSolicitudesController extends Controller
     ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
     ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
-    ->leftjoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+    ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
    
 
     if($request->has('tipo_tramite')){
@@ -407,7 +407,7 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('estatus')){
-      $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      $solicitudes->where('solicitudes_catalogo.status', $request->estatus);
     }
 
     if($request->has('id_solicitud')){
