@@ -38,7 +38,7 @@ class PortalSolicitudesController extends Controller
      
     )
     {
-      // $this->middleware('auth');
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
