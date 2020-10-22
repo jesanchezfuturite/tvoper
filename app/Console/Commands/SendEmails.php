@@ -195,7 +195,7 @@ class SendEmails extends Command
         {
           File::makeDirectory($path1);
         }   
-        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(10);             
+        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(100);             
         foreach ($findTransaccion as $k) {
              $correo='';
              $enviar='404';
@@ -232,7 +232,7 @@ class SendEmails extends Command
             }else{
                 $url_recibo=$url->url_recibo;
             }
-            if($correo=='')
+            if($correo=='' || $correo==null)
             {
               $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]); 
               }else{
@@ -294,7 +294,7 @@ class SendEmails extends Command
           {
             File::makeDirectory($path1);
           }  
-        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(10);
+        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(100);
         //log::info($findTransaccion);       
         foreach ($findTransaccion as $k) {
              $correo='';
@@ -342,7 +342,7 @@ class SendEmails extends Command
             $servicio_txt='Servicio: ' .(string)$servicio;
             $banco_txt='Banco receptor del pago: '.$banco;
             $footer_txt='<p>**Teléfono de atención 20 33 24 20 en horario de 8:30 a 16:30 de Lunes a Viernes. Por favor conserve este correo y/o recibo de pago descargable de la liga adjunta para cualquier aclaración. Agradecemos su preferencia y lo invitamos a que siga disfrutando de los beneficios que este servicio brinda.</p>';
-            if($correo=='')
+            if($correo=='' || $correo==null)
             {
 
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
