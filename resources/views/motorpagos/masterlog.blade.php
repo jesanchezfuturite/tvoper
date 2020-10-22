@@ -98,7 +98,7 @@
                         <div class='row'>
                             <div class='form-group'>
                                 <div class='col-md-12 text-right'>
-                                    <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i>Descargar CSV</button>
+                                    <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button>
                                 </div>
                             </div>
                         </div>
@@ -271,7 +271,7 @@
         )
         .done(function (response) { 
 
-            document.getElementById('jsonCode1').value=response;        
+            document.getElementById('jsonCode1').value = JSON.stringify(response);;        
             $("#sample_3 tbody tr").remove();   
             // var Resp = $.parseJSON(response);
             var color   = '';
@@ -295,11 +295,11 @@
         })
         .fail(function( msg ) {
 
-        //     $("#sample_3 tbody tr").remove(); 
-        //     $("#sample_3 tbody").append("<tr>"
-        //         +"<td>No Found</td>"
-        //         +"</tr>");
-        //     Command: toastr.warning("Registro No Encontrado", "Notifications")
+            $("#sample_3 tbody tr").remove(); 
+            $("#sample_3 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+            Command: toastr.warning("Registro No Encontrado", "Notifications")
 
         });
 
@@ -343,9 +343,59 @@
     {
         //$("#addTimerpicker div").remove();
          //$("#addTimerpicker").append("");
-         $("#addTimerpicker").css("display", "block");         
+        $("#addTimerpicker").css("display", "block");         
         document.getElementById('fechainicio').value='';
         document.getElementById('fechafin').value='';
+    }
+
+    function saveOper()
+    {
+        var JSONData=$("#jsonCode1").val();
+        var ReportTitle='Transacciones_Actualizadas';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+        
+        var f = new Date();
+        fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+        // var arrData = JSONData;   
+        // console.log(arrData); 
+        var CSV = '';    
+    
+        if (ShowLabel) {
+            var row = ""; 
+            for (var index in arrData[0]) { 
+                row += index + ',';
+            }
+            row = row.slice(0, -1);
+            CSV += row + '\r\n';
+        } 
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+            row.slice(0, row.length - 1); 
+            CSV += row + '\r\n';
+        }
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
+        }
+    
+        var fileName = fecha;
+        fileName += ReportTitle.replace(/ /g,"_");
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        var link = document.createElement("a");    
+        link.href = uri;
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        Command: toastr.success("Success", "Notifications")
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
 </script>
