@@ -53,10 +53,10 @@ class Kernel extends ConsoleKernel
 
         /*  Genera el Archivo para corte y envia por correo  */
         $schedule->command('CorteSendEmail:SendEmail')
-               ->everyMinute();
+               ->everyFiveMinutes();
                 /*->dailyAt('15:26');*/
         $schedule->command('SendEmails:EmailGrid')
-               ->everyMinute();
+               ->everyFiveMinutes();
                /*->dailyAt('15:26');*/
 
     }   
