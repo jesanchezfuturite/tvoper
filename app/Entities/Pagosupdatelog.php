@@ -23,6 +23,6 @@ class Pagosupdatelog extends Model implements Transformable
 
     protected $table = "oper_pagosupdate_log";
 
-    protected $fillable = ['fecha_pago','referencia','id_transaccion','banco_desc','plataforma','monto','data'];
+    protected $fillable = ['fecha_pago','referencia','id_transaccion','banco_desc','plataforma','monto','data','extra'];
 
 }
