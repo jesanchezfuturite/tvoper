@@ -13,7 +13,9 @@ use App\Entities\PortalSolicitudesTicket;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
-
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -26,6 +28,8 @@ class PortalSolicitudesController extends Controller
   protected $tramites;
   protected $tiposer;
   protected $partidas;
+  protected $notary;
+  protected $configUserNotary;
 
 
   public function __construct(
@@ -34,17 +38,23 @@ class PortalSolicitudesController extends Controller
      TramitedetalleRepositoryEloquent $tramites,
      EgobiernotiposerviciosRepositoryEloquent $tiposer,
      EgobiernopartidasRepositoryEloquent $partidas,
-     PortalSolicitudesStatusRepositoryEloquent $status
+     PortalSolicitudesStatusRepositoryEloquent $status,
+     PortalSolicitudesTicketRepositoryEloquent $ticket,
+     PortalNotaryOfficesRepositoryEloquent $notary,
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
      
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
       $this->tiposer = $tiposer;
       $this->partidas = $partidas;
       $this->status = $status;
+      $this->ticket = $ticket;
+      $this->notary = $notary;
+      $this->configUserNotary = $configUserNotary;
 
     }
 
@@ -423,5 +433,74 @@ class PortalSolicitudesController extends Controller
     $status = $this->status->all()->toArray();
     return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
 
+  }
+
+  public function registarSolicitud(Request $request){
+    $error =null;
+    $solicitantes = $request->solicitantes; 
+    $clave = $request->clave;
+    $catalogo_id = $request->catalogo_id;
+    $solicitantes = to_object($solicitantes);
+    try {
+
+      foreach($solicitantes as $key => $value){
+        $ticket = $this->ticket->create([
+          "clave" => $clave,
+          "catalogo_id" => $catalogo_id,
+          "info"=> $value->solicitante,
+          "status"=>99
+  
+        ]);
+        
+      }
+    } catch (\Exception $e) {
+      $error = [
+          "Code" => "400",
+          "Message" => "Error al guardar la solicitud",
+      ];
+  
+    }
+    if($error) return response()->json($error);
+    return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud registrada",
+        ]
+      );
+  }
+  public function eliminarSolicitud(Request $request, $id){
+    $valor = $request->tipo;
+
+    try {
+      if($valor=="u"){
+        $this->ticket->where('id',$id)->where('status', 99)->delete();
+      }else{
+        $this->ticket->where('clave',$id)->where('status', 99)->delete();
+      }
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud eliminada",
+        ]
+      );
+
+    } catch (\Exception $e) {
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al eliminar solicitud",
+        ]
+      );
+    }
+  }
+  public function getInfo($user_id){
+    try {
+      $tickets = $this->ticket->where('user_id', $user_id)->get();
+      
+      $relation = $this->configUserNotary->where('user_id')->first();
+      dd($relation);
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
   }
 }
