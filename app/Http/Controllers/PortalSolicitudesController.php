@@ -495,10 +495,15 @@ class PortalSolicitudesController extends Controller
   }
   public function getInfo($user_id){
     try {
-      $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get();            
+      $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
+      
       $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
       $notary_id = $relation->notary_office_id;
       $notary_offices=  $this->notary->where('id', $notary_id)->first();
+      
+      $solicitudesCatalogo = $this->solicitudes->whereIn('id', $tickets)->get();
+
+     
 
     } catch (\Throwable $th) {
       //throw $th;
