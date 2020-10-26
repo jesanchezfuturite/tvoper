@@ -354,7 +354,7 @@ Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramit
 
 Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
 Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
-Route::get('/solicitudes-register', 'PortalSolicitudesController@registarSolicitud');
+Route::post('/solicitudes-register', 'PortalSolicitudesController@registarSolicitud');
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesController@getInfo');
 

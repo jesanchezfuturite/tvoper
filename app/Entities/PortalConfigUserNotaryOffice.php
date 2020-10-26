@@ -21,7 +21,7 @@ class PortalConfigUserNotaryOffice extends Model implements Transformable
      * @var array
      */
     
-    protected $connection = "mysql";
+    protected $connection = "mysql6";
      
 	protected $fillable = [
 		"notary_office_id",

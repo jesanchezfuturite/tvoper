@@ -45,7 +45,7 @@ class PortalSolicitudesController extends Controller
      
     )
     {
-      // $this->middleware('auth');
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -495,10 +495,11 @@ class PortalSolicitudesController extends Controller
   }
   public function getInfo($user_id){
     try {
-      $tickets = $this->ticket->where('user_id', $user_id)->get();
-      
-      $relation = $this->configUserNotary->where('user_id')->first();
-      dd($relation);
+      $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get();            
+      $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
+      $notary_id = $relation->notary_office_id;
+      $notary_offices=  $this->notary->where('id', $notary_id)->first();
+
     } catch (\Throwable $th) {
       //throw $th;
     }
