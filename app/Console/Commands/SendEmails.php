@@ -195,7 +195,7 @@ class SendEmails extends Command
         {
           File::makeDirectory($path1);
         }   
-        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(10);             
+        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'60','email_referencia'=>null])->paginate(100);             
         foreach ($findTransaccion as $k) {
              $correo='';
              $enviar='404';
@@ -232,7 +232,7 @@ class SendEmails extends Command
             }else{
                 $url_recibo=$url->url_recibo;
             }
-            if($correo=='')
+            if($correo=='' || $correo==null)
             {
               $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]); 
               }else{
@@ -267,9 +267,9 @@ class SendEmails extends Command
                 //log::info($valida_);
                 if($valida_!==false)
                   {
-                    $enviar=$this->SendEmial($id,$nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf,$banco_txt,$footer_txt);
+                    $enviar=$this->SendEmialRefencia($id,$nombre,$correo,$encabezado,$subencabezado,$transaccion_txt,$url_txt,$referencia_txt,$fecha_txt,$servicio_txt,$pdf,$banco_txt,$footer_txt);
                   }else{
-                    //$updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]);
+                    $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]);
                   }
                 if (File::exists($pdf))
                 {
@@ -294,7 +294,7 @@ class SendEmails extends Command
           {
             File::makeDirectory($path1);
           }  
-        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(10);
+        $findTransaccion=$this->oper_transaccionesdb->ConsultaCorreo(['estatus'=>'0','email_pago'=>null])->paginate(100);
         //log::info($findTransaccion);       
         foreach ($findTransaccion as $k) {
              $correo='';
@@ -342,7 +342,7 @@ class SendEmails extends Command
             $servicio_txt='Servicio: ' .(string)$servicio;
             $banco_txt='Banco receptor del pago: '.$banco;
             $footer_txt='<p>**Teléfono de atención 20 33 24 20 en horario de 8:30 a 16:30 de Lunes a Viernes. Por favor conserve este correo y/o recibo de pago descargable de la liga adjunta para cualquier aclaración. Agradecemos su preferencia y lo invitamos a que siga disfrutando de los beneficios que este servicio brinda.</p>';
-            if($correo=='')
+            if($correo=='' || $correo==null)
             {
 
              $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_pago'=>'0'],['id_transaccion_motor'=>$id]); 
@@ -413,7 +413,34 @@ class SendEmails extends Command
         }
         return $response;
     }
-
+    public function SendEmialRefencia($folio,$nombre,$correo,$encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$pdf,$banco,$footer)
+    {
+         $mail = new PHPMailer(true);
+         $response='202';
+         $message=$this->plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$banco,$footer);
+        //log::info($correo.'  '.$nombre.' '.$folio);
+        try{
+            
+            $mail->isSMTP();
+            $mail->CharSet = 'utf-8';
+            $mail->SMTPAuth =true;
+            $mail->SMTPSecure = 'tls';
+            $mail->Host = 'smtp.gmail.com';
+            $mail->Port = '587'; 
+            $mail->Username = 'noreply.tesoreria.pago@gmail.com';
+            $mail->Password = 'T3s0rer142020';
+            $mail->setFrom('noreply.tesoreria.pago@gmail.com', 'noreply tesoreria'); 
+            $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
+            $mail->MsgHTML($message);
+           $mail->addAttachment($pdf);                     
+            $mail->addAddress($correo, $nombre); 
+            $mail->send();
+        }catch(phpmailerException $e){
+            log::info($e);
+            $response='404';
+        }
+        return $response;
+    }
     
     private function plantillaEmail($encabezado,$subencabezado,$transaccion,$url,$referencia,$fecha,$servicio,$banco,$footer)
     {
