@@ -6,11 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
+use DB;
 use Carbon\Carbon;
+use App\Entities\PortalSolicitudesTicket;
 
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
+use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -23,6 +28,8 @@ class PortalSolicitudesController extends Controller
   protected $tramites;
   protected $tiposer;
   protected $partidas;
+  protected $notary;
+  protected $configUserNotary;
 
 
   public function __construct(
@@ -30,7 +37,12 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
      TramitedetalleRepositoryEloquent $tramites,
      EgobiernotiposerviciosRepositoryEloquent $tiposer,
-     EgobiernopartidasRepositoryEloquent $partidas
+     EgobiernopartidasRepositoryEloquent $partidas,
+     PortalSolicitudesStatusRepositoryEloquent $status,
+     PortalSolicitudesTicketRepositoryEloquent $ticket,
+     PortalNotaryOfficesRepositoryEloquent $notary,
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
+     
     )
     {
       $this->middleware('auth');
@@ -39,6 +51,10 @@ class PortalSolicitudesController extends Controller
       $this->tramites = $tramites;
       $this->tiposer = $tiposer;
       $this->partidas = $partidas;
+      $this->status = $status;
+      $this->ticket = $ticket;
+      $this->notary = $notary;
+      $this->configUserNotary = $configUserNotary;
 
     }
 
@@ -387,5 +403,110 @@ class PortalSolicitudesController extends Controller
     return $data;
 
   }
+  public function filtrar(Request $request){
+   
+    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
+    ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
+    ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
+   
 
+    if($request->has('tipo_tramite')){
+        $solicitudes->whereIn('solicitudes_catalogo.tramite_id', array($request->tipo_tramite));
+    }
+
+    if($request->has('estatus')){
+      $solicitudes->where('solicitudes_catalogo.status', $request->estatus);
+    }
+
+    if($request->has('id_solicitud')){
+      $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
+     
+    }
+    $solicitudes->max('solicitudes_mensajes.ticket_id');
+    $solicitudes = $solicitudes->get();
+    return $solicitudes;
+  }
+  public function listSolicitudes(){
+    $tramites = $this->getTramites();
+    $status = $this->status->all()->toArray();
+    return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
+
+  }
+
+  public function registarSolicitud(Request $request){
+    $error =null;
+    $solicitantes = $request->solicitantes; 
+    $clave = $request->clave;
+    $catalogo_id = $request->catalogo_id;
+    $solicitantes = to_object($solicitantes);
+    try {
+
+      foreach($solicitantes as $key => $value){
+        $ticket = $this->ticket->create([
+          "clave" => $clave,
+          "catalogo_id" => $catalogo_id,
+          "info"=> $value->solicitante,
+          "status"=>99
+  
+        ]);
+        
+      }
+    } catch (\Exception $e) {
+      $error = [
+          "Code" => "400",
+          "Message" => "Error al guardar la solicitud",
+      ];
+  
+    }
+    if($error) return response()->json($error);
+    return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud registrada",
+        ]
+      );
+  }
+  public function eliminarSolicitud(Request $request, $id){
+    $valor = $request->tipo;
+
+    try {
+      if($valor=="u"){
+        $this->ticket->where('id',$id)->where('status', 99)->delete();
+      }else{
+        $this->ticket->where('clave',$id)->where('status', 99)->delete();
+      }
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud eliminada",
+        ]
+      );
+
+    } catch (\Exception $e) {
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al eliminar solicitud",
+        ]
+      );
+    }
+  }
+  public function getInfo($user_id){
+    try {
+      $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
+      
+      $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
+      $notary_id = $relation->notary_office_id;
+      $notary_offices=  $this->notary->where('id', $notary_id)->first();
+      
+      $solicitudesCatalogo = $this->solicitudes->whereIn('id', $tickets)->get();
+
+     
+
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
+  }
 }
