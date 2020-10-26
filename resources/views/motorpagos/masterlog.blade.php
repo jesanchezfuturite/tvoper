@@ -112,6 +112,7 @@
                                                 <th>Fecha de Pago</th> 
                                                 <th>Referencia</th> 
                                                 <th>Id Transaccion</th> 
+                                                <th>Tramite</th> 
                                                 <th>Banco</th>
                                                 <th>Plataforma</th>
                                                 <th>Monto</th>
@@ -284,6 +285,7 @@
                         .append($('<td>').html(item.fecha_pago))
                         .append($('<td>').html(item.referencia))
                         .append($('<td>').html(item.id_transaccion))
+                        .append($('<td>').html(item.extra))
                         .append($('<td>').html(item.banco_desc))
                         .append($('<td>').html(item.plataforma))
                         .append($('<td>').html(item.monto))
@@ -319,6 +321,7 @@
                                 .append($('<th>').html('Fecha de Pago'))
                                 .append($('<th>').html('Referencia'))
                                 .append($('<th>').html('Id Transaccion'))
+                                .append($('<th>').html('Tramite'))
                                 .append($('<th>').html('Banco'))
                                 .append($('<th>').html('Plataforma'))
                                 .append($('<th>').html('Monto'))
@@ -327,6 +330,7 @@
                         .append($('<tbody>')
                             .append($('<tr>')
                                 .append($('<td>').html('Espere Cargando.....'))
+                                .append($('<td>').html(''))
                                 .append($('<td>').html(''))
                                 .append($('<td>').html(''))
                                 .append($('<td>').html(''))
