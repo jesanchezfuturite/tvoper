@@ -357,9 +357,12 @@ Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramit
 
 Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
 Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
-Route::post('/solicitudes-register', 'PortalSolicitudesController@registarSolicitud');
-Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesController@eliminarSolicitud');
-Route::get('/solicitudes-info/{id}', 'PortalSolicitudesController@getInfo');
+
+Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registarSolicitud');
+Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
+Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
+Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
+
 
 
 
