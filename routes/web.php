@@ -346,7 +346,7 @@ Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@creat
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
 
 
-Route::get('/operacion-roles', 'OperacionRolesController@index');
+Route::get('/comunidades', 'OperacionRolesController@index');
 Route::get('/operacion-roles-create', 'OperacionRolesController@createRol');
 Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite');
 Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites');
@@ -358,7 +358,7 @@ Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramit
 Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
 Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
 
-Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registarSolicitud');
+Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
