@@ -362,6 +362,8 @@ Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registar
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
+Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
+
 
 
 
