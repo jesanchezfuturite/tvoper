@@ -9,6 +9,8 @@ use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
+use App\Repositories\TramitedetalleRepositoryEloquent;
+use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use DB;
 
 class PortalSolicitudesTicketController extends Controller
@@ -18,11 +20,15 @@ class PortalSolicitudesTicketController extends Controller
     protected $notary;
     protected $status;  
     protected $configUserNotary;
+    protected $tramites;
+    protected $tiposer;
 
     public function __construct(
         PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
         PortalSolicitudesStatusRepositoryEloquent $status,
         PortalSolicitudesTicketRepositoryEloquent $ticket,
+        TramitedetalleRepositoryEloquent $tramites,
+        EgobiernotiposerviciosRepositoryEloquent $tiposer,
         PortalNotaryOfficesRepositoryEloquent $notary,
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
         
@@ -32,25 +38,45 @@ class PortalSolicitudesTicketController extends Controller
          $this->status = $status;
          $this->ticket = $ticket;
          $this->notary = $notary;
+         $this->tiposer = $tiposer;
          $this->configUserNotary = $configUserNotary;
    
        }
     
 
+    public function getTramites($trmts){
+        $tramits = $this->tiposer->whereIn('Tipo_Code', $trmts)->get();
 
-    public function registarSolicitud(Request $request){
+        $tmts = array();
+        try{
+
+            foreach ($tramits as $t) {
+                $tmts []=array(
+                    'tramite_id'=> $t->Tipo_Code,
+                    'tramite' => $t->Tipo_Descripcion,
+                );
+            }
+
+        }catch(\Exception $e){
+            Log::info('Error Portal - ver Tramites: '.$e->getMessage());
+        }
+
+        return $tmts;
+    }
+    public function registrarSolicitud(Request $request){
         $error =null;
         $solicitantes = $request->solicitantes; 
         $clave = $request->clave;
         $catalogo_id = $request->catalogo_id;
         $solicitantes = to_object($solicitantes);
-        try {
-    
+        $info = $request->info;
+        try {    
           foreach($solicitantes as $key => $value){
+            $info["solicitante"]=$value;
             $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
-              "info"=> $value->solicitante,
+              "info"=> json_encode($info),
               "status"=>99
       
             ]);
@@ -96,6 +122,20 @@ class PortalSolicitudesTicketController extends Controller
           );
         }
       }
+      public function check_diff_multi($array1, $array2){
+        $result = array();
+        foreach($array1 as $key => $val) {
+             if(isset($array2[$key])){
+               if(is_array($val) && $array2[$key]){
+                   $result[$key] = $this->check_diff_multi($val, $array2[$key]);
+               }
+           } else {
+               $result[$key] = $val;
+           }
+        }
+    
+        return $result;
+    }
       public function getInfo($user_id){
         try {
           $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
@@ -104,32 +144,30 @@ class PortalSolicitudesTicketController extends Controller
           $notary_id = $relation->notary_office_id;
           $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
 
-          $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+          $solicitudesCatalogo = DB::connection('mysql6')->table('solicitudes_catalogo')
           ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
           ->where('solicitudes_ticket.user_id', $user_id)->where('solicitudes_ticket.status', 99)
           ->get()->toArray();         
+          $tramite_id = $this->solicitudes->whereIn('id', $tickets)->get()->pluck('tramite_id')->toArray();
             
-          $tramite_id = $this->solicitudes->whereIn('id', $tickets)->get(["tramite_id"])->toArray();
+          $tempArr = array_unique($tramite_id);
+          $array2 = $this->getTramites($tempArr);
        
-    
-          $tempArr = array_unique(array_column($tramite_id, 'tramite_id'));
-          $tramite_id = array_intersect_key($tramite_id, $tempArr);
                
           $tmts=[];
           $response =[];
-          foreach($tramite_id as $t => $tramite){
-            foreach ($solicitudes as $d => $dato) {      
+          foreach($array2 as $t => $tramite){
+            foreach ($solicitudesCatalogo as $d => $dato) {      
               if($dato->tramite_id == $tramite["tramite_id"]){
                 $data=array(
                   "id"=>$dato->id,
-                  "titulo"=>$dato->titulo,
                   "clave"=>$dato->clave,
                   "catalogo_id"=>$dato->catalogo_id,
                   "user_id"=>$dato->user_id,
                   "info"=>$dato->info,
                   "status"=>$dato->status
                 );
-    
+                
                 array_push($tramite, $data);
                
               }
@@ -173,4 +211,34 @@ class PortalSolicitudesTicketController extends Controller
           );
         }
       }
+      public function updateTramite(Request $request){
+          $id_transaccion = $request->id_transaccion;
+          $id = $request->id;
+          
+        try{
+
+            $solicitudTicket = $this->ticket->where('id',$request->id)
+            ->update(['id_transaccion'=>$id_transaccion,'status'=> 1]);
+      
+          return response()->json(
+            [
+              "Code" => "200",
+              "Message" => "Solicitud actualizada",
+            ]
+          );
+      
+          }catch(\Exception $e){
+      
+            Log::info('Error Editar solicitud '.$e->getMessage());
+      
+            return response()->json(
+              [
+                "Code" => "400",
+                "Message" => "Error al editar la solicitud",
+              ]
+            );
+          }
+      
+      }
+    
 }
