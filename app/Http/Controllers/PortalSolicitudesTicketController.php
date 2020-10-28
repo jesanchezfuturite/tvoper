@@ -68,6 +68,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitantes = $request->solicitantes; 
         $clave = $request->clave;
         $catalogo_id = $request->catalogo_id;
+        $user_id = $request->user_id;
         $solicitantes = to_object($solicitantes);
         $info = $request->info;
         try {    
@@ -76,7 +77,8 @@ class PortalSolicitudesTicketController extends Controller
             $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
+              "info"=> json_encode($info),              
+              "user_id"=>$user_id,
               "status"=>99
       
             ]);
