@@ -26,9 +26,11 @@ class PortalSolicitudesController extends Controller
   protected $users;
   protected $solicitudes;
   protected $tramites;
+  protected $tickets;
   protected $tiposer;
   protected $partidas;
   protected $notary;
+  protected $status;  
   protected $configUserNotary;
 
 
@@ -435,73 +437,5 @@ class PortalSolicitudesController extends Controller
 
   }
 
-  public function registarSolicitud(Request $request){
-    $error =null;
-    $solicitantes = $request->solicitantes; 
-    $clave = $request->clave;
-    $catalogo_id = $request->catalogo_id;
-    $solicitantes = to_object($solicitantes);
-    try {
-
-      foreach($solicitantes as $key => $value){
-        $ticket = $this->ticket->create([
-          "clave" => $clave,
-          "catalogo_id" => $catalogo_id,
-          "info"=> $value->solicitante,
-          "status"=>99
-  
-        ]);
-        
-      }
-    } catch (\Exception $e) {
-      $error = [
-          "Code" => "400",
-          "Message" => "Error al guardar la solicitud",
-      ];
-  
-    }
-    if($error) return response()->json($error);
-    return response()->json(
-        [
-          "Code" => "200",
-          "Message" => "Solicitud registrada",
-        ]
-      );
-  }
-  public function eliminarSolicitud(Request $request, $id){
-    $valor = $request->tipo;
-
-    try {
-      if($valor=="u"){
-        $this->ticket->where('id',$id)->where('status', 99)->delete();
-      }else{
-        $this->ticket->where('clave',$id)->where('status', 99)->delete();
-      }
-      return response()->json(
-        [
-          "Code" => "200",
-          "Message" => "Solicitud eliminada",
-        ]
-      );
-
-    } catch (\Exception $e) {
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "Error al eliminar solicitud",
-        ]
-      );
-    }
-  }
-  public function getInfo($user_id){
-    try {
-      $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get();            
-      $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
-      $notary_id = $relation->notary_office_id;
-      $notary_offices=  $this->notary->where('id', $notary_id)->first();
-
-    } catch (\Throwable $th) {
-      //throw $th;
-    }
-  }
+ 
 }
