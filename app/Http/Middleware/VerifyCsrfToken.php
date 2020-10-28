@@ -23,7 +23,8 @@ class VerifyCsrfToken extends Middleware
         'solicitudes-discard*',
         'solicitudes-register*',
         'solicitudes-info*',
-        'solicitudes-detalle-tramite*'
+        'solicitudes-detalle-tramite*',
+        'solicitudes-update*'
 
     ];
 }

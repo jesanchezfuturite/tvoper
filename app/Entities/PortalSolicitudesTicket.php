@@ -22,7 +22,7 @@ class PortalSolicitudesTicket extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['id','clave','catalogo_id', 'info','relacionado_a','creado_por', 'asignado_a', 'status'];
+    protected $fillable = ['id','clave','catalogo_id', 'info','relacionado_a','id_transaccion', 'user_id','creado_por', 'asignado_a', 'status'];
 
     protected $table = "solicitudes_ticket";
 
