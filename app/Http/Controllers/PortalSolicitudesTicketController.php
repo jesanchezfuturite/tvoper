@@ -140,34 +140,31 @@ class PortalSolicitudesTicketController extends Controller
     }
       public function getInfo($user_id){
         try {
-          $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
           
           $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
           $notary_id = $relation->notary_office_id;
           $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
 
-          $solicitudesCatalogo = DB::connection('mysql6')->table('solicitudes_catalogo')
-          ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-          ->where('solicitudes_ticket.user_id', $user_id)->where('solicitudes_ticket.status', 99)
-          ->get()->toArray();         
-          $tramite_id = $this->solicitudes->whereIn('id', $tickets)->get()->pluck('tramite_id')->toArray();
-            
-          $tempArr = array_unique($tramite_id);
-          $array2 = $this->getTramites($tempArr);
        
-               
+          $solicitudesCatalogo = $this->ticket->where('status', 99)->where('user_id', $user_id)->get()->toArray();
+          $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
+
+            
+          $tempArr = array_unique($tickets);
+          $array2 = $this->getTramites($tempArr);
+
           $tmts=[];
           $response =[];
           foreach($array2 as $t => $tramite){
-            foreach ($solicitudesCatalogo as $d => $dato) {      
-              if($dato->tramite_id == $tramite["tramite_id"]){
+            foreach ($solicitudesCatalogo as $d => $dato) {   
+              if($dato["catalogo_id"]== $tramite["tramite_id"]){
                 $data=array(
-                  "id"=>$dato->id,
-                  "clave"=>$dato->clave,
-                  "catalogo_id"=>$dato->catalogo_id,
-                  "user_id"=>$dato->user_id,
-                  "info"=>$dato->info,
-                  "status"=>$dato->status
+                  "id"=>$dato["id"],
+                  "clave"=>$dato["clave"],
+                  "catalogo_id"=>$dato["catalogo_id"],
+                  "user_id"=>$dato["user_id"],
+                  "info"=>$dato["info"],
+                  "status"=>$dato["status"]
                 );
                 
                 array_push($tramite, $data);
