@@ -6,11 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
+use DB;
 use Carbon\Carbon;
+use App\Entities\PortalSolicitudesTicket;
 
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
+use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -21,8 +26,12 @@ class PortalSolicitudesController extends Controller
   protected $users;
   protected $solicitudes;
   protected $tramites;
+  protected $tickets;
   protected $tiposer;
   protected $partidas;
+  protected $notary;
+  protected $status;  
+  protected $configUserNotary;
 
 
   public function __construct(
@@ -30,7 +39,12 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
      TramitedetalleRepositoryEloquent $tramites,
      EgobiernotiposerviciosRepositoryEloquent $tiposer,
-     EgobiernopartidasRepositoryEloquent $partidas
+     EgobiernopartidasRepositoryEloquent $partidas,
+     PortalSolicitudesStatusRepositoryEloquent $status,
+     PortalSolicitudesTicketRepositoryEloquent $ticket,
+     PortalNotaryOfficesRepositoryEloquent $notary,
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
+     
     )
     {
       $this->middleware('auth');
@@ -39,6 +53,10 @@ class PortalSolicitudesController extends Controller
       $this->tramites = $tramites;
       $this->tiposer = $tiposer;
       $this->partidas = $partidas;
+      $this->status = $status;
+      $this->ticket = $ticket;
+      $this->notary = $notary;
+      $this->configUserNotary = $configUserNotary;
 
     }
 
@@ -387,5 +405,37 @@ class PortalSolicitudesController extends Controller
     return $data;
 
   }
+  public function filtrar(Request $request){
+   
+    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
+    ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
+    ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
+   
 
+    if($request->has('tipo_tramite')){
+        $solicitudes->whereIn('solicitudes_catalogo.tramite_id', array($request->tipo_tramite));
+    }
+
+    if($request->has('estatus')){
+      $solicitudes->where('solicitudes_catalogo.status', $request->estatus);
+    }
+
+    if($request->has('id_solicitud')){
+      $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
+     
+    }
+    $solicitudes->max('solicitudes_mensajes.ticket_id');
+    $solicitudes = $solicitudes->get();
+    return $solicitudes;
+  }
+  public function listSolicitudes(){
+    $tramites = $this->getTramites();
+    $status = $this->status->all()->toArray();
+    return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
+
+  }
+
+ 
 }

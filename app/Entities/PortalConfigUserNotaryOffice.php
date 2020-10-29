@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Portalsolicitudescatalogo.
+ * Class PortalConfigUserNotaryOffice.
  *
  * @package namespace App\Entities;
  */
-class Portalsolicitudescatalogo extends Model implements Transformable
+class PortalConfigUserNotaryOffice extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,16 +20,15 @@ class Portalsolicitudescatalogo extends Model implements Transformable
      *
      * @var array
      */
-    protected $connection = "mysql6";
-
-    protected $fillable = ['tramite_id','padre_id','titulo','atendido_por','status'];
-
-    protected $table = "solicitudes_catalogo";
-
     
-	public function ticket(){
-		return $this->hasMany('App\Entities\PortalSolicitudesTicket', 'catalogo_id', 'id');
-	}
- 
+    protected $connection = "mysql6";
+     
+	protected $fillable = [
+		"notary_office_id",
+		"user_id"
+    ];
+    
+    protected $table = "config_user_notary_offices";
+	
 
 }

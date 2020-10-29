@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\OperacionRoleRepositoryEloquent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use SoapClient;
@@ -20,14 +21,16 @@ class PortalNotaryOfficesController extends Controller
      * @var PortalNotaryOfficesRepository
      */
     protected $notary;
+    protected $roles;
 
     /*
      * PortalNotaryOfficesController constructor.
      *
      */
-    public function __construct(PortalNotaryOfficesRepositoryEloquent $notary)
+    public function __construct(PortalNotaryOfficesRepositoryEloquent $notary,  OperacionRoleRepositoryEloquent $roles)
     {
         $this->notary = $notary;
+        $this->roles = $roles;
     }
     public function createNotary(Request $request){
         $error =null;
@@ -143,10 +146,10 @@ class PortalNotaryOfficesController extends Controller
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
         $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
-        $users[]=$request->users;
-        $users = array("users"=>$users);
-        $json = array("notary_office"=>$users);
-
+        $users=$request->users;
+   
+        $json = array("users"=>$users);
+      
         $json = json_encode($json);
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);
@@ -160,10 +163,32 @@ class PortalNotaryOfficesController extends Controller
         $response =$remote_server_output;  
         return $response;
    }
+   public function getRolesPermission(){
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/roles");        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        $listRoles = curl_exec($ch);
+        curl_close($ch);
+        
+        return $listRoles;
+   }
+   public function getRoles(){
+        try{
+            $roles = $this->roles->get(["id", "descripcion"])->toArray();
+
+        }
+        catch(\Exception $e) {
+            Log::info('Error Portal Roles - consulta de roles: '.$e->getMessage());
+        }
+
+        return $roles;
+   }
 
     public function index()
     {
         $notarys = $this->listNotary();
+        $roles = $this->getRoles();
+        $rolesPermission = $this->getRolesPermission();
         $responseinfo = array();
 
         foreach($notarys as $n)
@@ -174,7 +199,7 @@ class PortalNotaryOfficesController extends Controller
             );
         }
 
-        return view('portal/adminnotario',[ "notary" => $responseinfo ]);
+        return view('portal/adminnotario',[ "notary" => $responseinfo, "roles"=>$roles, "rolesPermission"=>$rolesPermission]);
     }
  
 

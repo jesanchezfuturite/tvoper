@@ -287,8 +287,18 @@
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
-                <label >Rol</label> 
-                   <select id="itemsRoles" class="select2me form-control" >
+                <label >Usuario configurado para</label> 
+                   <select id="itemsCofigNotario" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>
+              </div>                                
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group"> 
+                   <div class="form-group">
+                <label >Permiso</label> 
+                   <select id="itemsPermisoNotario" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>
               </div>                                
@@ -421,8 +431,8 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <label >Rol</label>
-                <select id="itemsRoles2" class="select2me form-control" >
+                <label >Usuario configurado para</label>
+                <select id="itemsConfigUser" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>                               
               </div>
@@ -439,6 +449,14 @@
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
                 </div>
               </div> 
+            </div>
+            <div class="col-md-6"> 
+              <div class="form-group"> 
+                <label >Permiso</label>
+                <select id="itemsPermiso" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>                               
+              </div>
             </div>
           </div>
         </div>
@@ -494,7 +512,30 @@
   jQuery(document).ready(function() {
     TableManaged.init();
     ItemsTramite();
+    ItemsPermisos();
     });
+  function ItemsPermisos()
+    {
+        $.ajax({
+        method: "get",            
+        url: "{{ url('/notary-offices-roles') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+          //console.log(response);
+          var resp=$.parseJSON(response);
+            $("#itemsPermiso option").remove();
+            $('#itemsPermiso').append("<option value='0'>------</option>");
+            $("#itemsPermisoNotario option").remove();
+            $('#itemsPermisoNotario').append("<option value='0'>------</option>");
+            $.each(resp.response, function(i, item) {
+                $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+                $('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
+                //console.log(item.id);
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
   function ItemsTramite()
     {
         $.ajax({
@@ -502,13 +543,13 @@
         url: "{{ url('/operacion-roles-get-rol') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-            $("#itemsRoles option").remove();
-            $("#itemsRoles2 option").remove();
-            $('#itemsRoles').append("<option value='0'>------</option>");
-            $('#itemsRoles2').append("<option value='0'>------</option>");
+            $("#itemsCofigNotario option").remove();
+            $("#itemsConfigUser option").remove();
+            $('#itemsCofigNotario').append("<option value='0'>------</option>");
+            $('#itemsConfigUser').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
-                $('#itemsRoles').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
-                $('#itemsRoles2').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsCofigNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsConfigUser').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {
@@ -537,6 +578,9 @@
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var passNotario=$("#passNotario").val();
 
+    var itemsCofigNotario=$("#itemsCofigNotario").val();
+    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
+
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
     if (numNotario.length<1) {
@@ -559,9 +603,12 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
     }else if (rfcNotario.length<12) {
        Command: toastr.warning("Campo RFC, longitud minima 12!", "Notifications") 
-    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8)
-    {
+    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
+    }else if(itemsCofigNotario =='0'){
+      Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
+    }else if(itemsPermisoNotario =='0'){
+      Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
     }else{
       insertNotario();
     }
@@ -589,7 +636,8 @@
     var curpNotario=$("#curpNotario").val();
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var itemsRoles=$("#itemsRoles").val();
+    var itemsCofigNotario=$("#itemsCofigNotario").val();
+    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
     var passNotario=$("#passNotario").val();
 
     var titular_={username: userNotario,
@@ -602,7 +650,8 @@
     rfc: rfcNotario,
     phone:telNotario2,
     person_type:itemsTipoNotario,
-    role_id:itemsRoles };
+    config_id: itemsCofigNotario,
+    role_id: itemsPermisoNotario };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -738,7 +787,8 @@
   {
    //console.log(json);
     $("#itemsTipoUser").val("0").change();
-    $("#itemsRoles2").val(json.role_id).change();
+    $("#itemsPermiso").val(json.role_id).change();
+    $("#itemsConfigUser").val(json.config_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
@@ -757,7 +807,8 @@
     var id_notary=$("#itemsNotario").val();
     var id_user=$("#idperfil").val();
       var TipoUser=$("#itemsTipoUser").val();
-      var itemsRol=$("#itemsRoles2").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -775,7 +826,8 @@
                 curp: curpUser,
                 rfc: rfcUser,
                 phone: telUser,
-                role_id:itemsRol
+                config_id:itemsConfigUser,
+                role_id:itemsPermiso
             };
       $.ajax({
            method: "POST",            
@@ -803,6 +855,8 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
 
           emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
@@ -824,6 +878,10 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
+      }else if(itemsConfigUser =='0'){
+        Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
+      }else if(itemsPermiso =='0'){
+        Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
         if(id.length>0)
           {
@@ -846,7 +904,8 @@
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      var itemsRol=$("#itemsRoles2").val();
+      var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsPermiso=$("#itemsPermiso").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
         return;
@@ -861,17 +920,26 @@
                 rfc: rfcUser,
                 phone: telUser,
                 person_type: TipoUser,
-                role_id: itemsRol
+                config_id: itemsConfigUser,
+                role_id: itemsPermiso
             };
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+          response=$.parseJSON(response);
+             var error=response.error;
+             console.log(error);
+             if(response.data=="error")
+             {
+               Command: toastr.warning(error.message, "Notifications")
+               return;
+             }
              limpiarPerf();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
-
+             //console.log(response);
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -880,7 +948,8 @@
   function limpiarPerf()
     {
       $("#itemsTipoUser").val("0").change();
-      $("#itemsRoles2").val("0").change();
+      $("#itemsPermiso").val("0").change();
+      $("#itemsConfigUser").val("0").change();
       document.getElementById('idperfil').value=""; 
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
@@ -902,7 +971,7 @@
     document.getElementById('calleNotario').value="";
     document.getElementById('distritoNotario').value="";
     $("#itemsCiudadNot").val("0").change();
-    $("#itemsRoles").val("0").change();
+    $("#itemsCofigNotario").val("0").change();
     $("#itemsEntidadNot").val("0").change();
     document.getElementById('codigopostNotario').value="";
     document.getElementById('userNotario').value="";
