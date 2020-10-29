@@ -68,6 +68,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitantes = $request->solicitantes; 
         $clave = $request->clave;
         $catalogo_id = $request->catalogo_id;
+        $user_id = $request->user_id;
         $solicitantes = to_object($solicitantes);
         $info = $request->info;
         try {    
@@ -76,7 +77,8 @@ class PortalSolicitudesTicketController extends Controller
             $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
+              "info"=> json_encode($info),              
+              "user_id"=>$user_id,
               "status"=>99
       
             ]);
@@ -138,37 +140,36 @@ class PortalSolicitudesTicketController extends Controller
     }
       public function getInfo($user_id){
         try {
-          $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
           
           $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
           $notary_id = $relation->notary_office_id;
           $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
 
-          $solicitudesCatalogo = DB::connection('mysql6')->table('solicitudes_catalogo')
-          ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-          ->where('solicitudes_ticket.user_id', $user_id)->where('solicitudes_ticket.status', 99)
-          ->get()->toArray();         
-          $tramite_id = $this->solicitudes->whereIn('id', $tickets)->get()->pluck('tramite_id')->toArray();
-            
-          $tempArr = array_unique($tramite_id);
-          $array2 = $this->getTramites($tempArr);
        
-               
+          $solicitudesCatalogo = $this->ticket->where('status', 99)->where('user_id', $user_id)->get()->toArray();
+          $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
+
+            
+          $tempArr = array_unique($tickets);
+          $array2 = $this->getTramites($tempArr);
+
           $tmts=[];
           $response =[];
           foreach($array2 as $t => $tramite){
-            foreach ($solicitudesCatalogo as $d => $dato) {      
-              if($dato->tramite_id == $tramite["tramite_id"]){
+            $datos=[];
+            foreach ($solicitudesCatalogo as $d => $dato) { 
+              if($dato["catalogo_id"]== $tramite["tramite_id"]){
                 $data=array(
-                  "id"=>$dato->id,
-                  "clave"=>$dato->clave,
-                  "catalogo_id"=>$dato->catalogo_id,
-                  "user_id"=>$dato->user_id,
-                  "info"=>$dato->info,
-                  "status"=>$dato->status
+                  "id"=>$dato["id"],
+                  "clave"=>$dato["clave"],
+                  "catalogo_id"=>$dato["catalogo_id"],
+                  "user_id"=>$dato["user_id"],
+                  "info"=>$dato["info"],
+                  "status"=>$dato["status"]
                 );
-                
-                array_push($tramite, $data);
+
+                array_push($datos, $data);
+                $tramite["solicitudes"]= $datos;
                
               }
             
