@@ -156,7 +156,8 @@ class PortalSolicitudesTicketController extends Controller
           $tmts=[];
           $response =[];
           foreach($array2 as $t => $tramite){
-            foreach ($solicitudesCatalogo as $d => $dato) {   
+            $datos=[];
+            foreach ($solicitudesCatalogo as $d => $dato) { 
               if($dato["catalogo_id"]== $tramite["tramite_id"]){
                 $data=array(
                   "id"=>$dato["id"],
@@ -166,8 +167,9 @@ class PortalSolicitudesTicketController extends Controller
                   "info"=>$dato["info"],
                   "status"=>$dato["status"]
                 );
-                
-                array_push($tramite, $data);
+
+                array_push($datos, $data);
+                $tramite["solicitudes"]= $datos;
                
               }
             
