@@ -54,7 +54,17 @@
                       @endforeach     
                   </select>            
                 </div>
-            </div>           
+            </div>
+            <div class="col-md-5 col-ms-12">
+              <div class="form-group">
+                  <label class="col-md-4 control-label">Comunidades</label>
+                    <div class="col-md-6 col-ms-12">
+                      <select id="itemsConfigUser" class="select2me form-control" >
+                        <option value="0">-------</option>
+                      </select> 
+                  </div>
+                </div>
+              </div>          
           </div>
         </div>
     </div>
@@ -431,18 +441,6 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <label >Usuario configurado para</label>
-                <select id="itemsConfigUser" class="select2me form-control" >
-                  <option value="0">-------</option>
-                </select>                               
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group"> 
                 <label >Contraseña</label> 
                 <div class="input-icon right">
                     <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
@@ -450,6 +448,11 @@
                 </div>
               </div> 
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            
             <div class="col-md-6"> 
               <div class="form-group"> 
                 <label >Permiso</label>
@@ -862,6 +865,8 @@
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
+      }else if(itemsConfigUser =='0'){
+        Command: toastr.warning("Campo Comunidades, requerido!", "Notifications") 
       }else if(users.length < 1){
         Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
       }else if (!emailRegex.test(emailUser)) {
@@ -878,8 +883,6 @@
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
-      }else if(itemsConfigUser =='0'){
-        Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
       }else if(itemsPermiso =='0'){
         Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
@@ -949,7 +952,7 @@
     {
       $("#itemsTipoUser").val("0").change();
       $("#itemsPermiso").val("0").change();
-      $("#itemsConfigUser").val("0").change();
+      //$("#itemsConfigUser").val("0").change();
       document.getElementById('idperfil').value=""; 
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
