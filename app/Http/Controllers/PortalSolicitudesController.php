@@ -14,6 +14,7 @@ use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
@@ -32,6 +33,7 @@ class PortalSolicitudesController extends Controller
   protected $notary;
   protected $status;  
   protected $configUserNotary;
+  protected  $mensajes;
 
 
   public function __construct(
@@ -43,11 +45,12 @@ class PortalSolicitudesController extends Controller
      PortalSolicitudesStatusRepositoryEloquent $status,
      PortalSolicitudesTicketRepositoryEloquent $ticket,
      PortalNotaryOfficesRepositoryEloquent $notary,
-     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
+     PortalSolicitudesMensajesRepositoryEloquent $mensajes
      
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -57,6 +60,7 @@ class PortalSolicitudesController extends Controller
       $this->ticket = $ticket;
       $this->notary = $notary;
       $this->configUserNotary = $configUserNotary;
+      $this->mensajes = $mensajes;
 
     }
 
@@ -436,6 +440,49 @@ class PortalSolicitudesController extends Controller
     return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
 
   }
+  public function atenderSolicitud($id){
+    $ticket = $this->ticket->where('id', $id)->get(["info"])->toArray();
+    
+    $info = $ticket[0]["info"];
 
+    return $info; 
+
+  }
+
+  public function guardarSolicitud(Request $request){
+    $file = $request->file('file');
+    $mensaje = $request->mensaje;
+    $ticket_id = $request->id;
+    $attach =  $file->getClientOriginalName();
+    \Storage::disk('local')->put($attach,  \File::get($file));
+
+    try {
+
+      $mensajes =$this->mensajes->create([
+        'ticket_id'=> $ticket_id,
+        'mensaje'  =>  $mensaje,
+        'attach'    =>  $attach
+      ]);
+
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Mensaje guardado con éxito",
+          "data"=>$mensajes
+          
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar mensaje",
+        ]
+      );
+    }
+  }
  
 }
