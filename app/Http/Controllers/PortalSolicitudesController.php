@@ -484,5 +484,35 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
+
+  public function cerrarTicket(Request $request){
+      $id = $request->id;
+
+      try{
+
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>0]);
+
+        return response()->json(
+          [
+          "Code" => "200",
+          "Message" => "Ticket cerrado",
+          ]
+        );
+
+      }catch(\Exception $e){
+
+        Log::info('Error Cerrar Ticket '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cerrar ticket",
+          ]
+        );
+      }
+
+    }
+
  
 }
