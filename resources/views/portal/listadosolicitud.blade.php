@@ -90,8 +90,8 @@
               			<tr>
               			<th>ID</th>
               			<th>Titulo</th>
-              			<th>Mensaje</th>
-              			<th>Descripción</th>
+              			<th>Estatus</th>
+              			<th>Fecha de Ingreso</th>
             			<th>&nbsp;</th>
             			</tr>
           			</thead>
