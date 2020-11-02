@@ -137,46 +137,59 @@
               </div>                                           
               </div>
             </div>
-            <div class="col-md-4"> 
+            <div class="col-md-3"> 
               <div class="form-group">
-                <label >Numero de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono...">
+                <label >Entidad Federativa</label>  
+                <select id="itemsEntidadNot" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>    
               </div>
             </div>
              <div class="col-md-4"> 
+              <div class="form-group">
+                <label >Calle</label>                                             
+                <input type="text" class="form-control" name="calleNotario" id="calleNotario" placeholder="Ingrese Calle...">
+              </div>
+            </div>                        
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            
+           <div class="col-md-2">
+              <div class="form-group">
+                <label >Numero</label>                                                       
+                <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
+             </div> 
+           </div>
+           <div class="col-md-2">
+              <div class="form-group">
+                <label >Numero Exterior</label>                                                       
+                <input type="text" class="form-control valida-numeros" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior...">
+             </div> 
+           </div> 
+           <div class="col-md-3">
+              <div class="form-group">
+                <label >Codigo Postal</label>                                                       
+                <input type="text" class="form-control valida-numeros" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
+             </div> 
+           </div>            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label >Correo Electrónico</label>                                             
+                <input type="text" class="form-control" name="emailNotario" id="emailNotario" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                <span id="emailNot" class="help-block"></span>                                           
+              </div>
+            </div>             
+            <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
                 <label >Fax</label>                                             
                 <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax...">
               </div>                                
               </div>
-            </div>           
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
+            </div>
             
-             <div class="col-md-4"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label >Correo Electrónico</label>                                             
-                <input type="text" class="form-control" name="emailNotario" id="emailNotario" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
-                <span id="emailNot" class="help-block"></span>
-              </div>                                            
-              </div>
-            </div>
-            <div class="col-md-4"> 
-              <div class="form-group">
-                <label >Calle</label>                                             
-                <input type="text" class="form-control" name="calleNotario" id="calleNotario" placeholder="Ingrese Calle...">
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="form-group">
-                <label >Numero</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
-             </div> 
-           </div>
                           
           </div>
         </div>
@@ -190,13 +203,11 @@
                 <input type="text" class="form-control" name="distritoNotario" id="distritoNotario" placeholder="Ingrese Distrito..." autocomplete="off">
               </div>                                            
               </div>
-            </div>
-            <div class="col-md-3"> 
+            </div>            
+            <div class="col-md-4"> 
               <div class="form-group">
-                <label >Entidad Federativa</label>  
-                <select id="itemsEntidadNot" class="select2me form-control" >
-                  <option value="0">-------</option>
-                </select>    
+                <label >Numero de Teléfono</label>                                             
+                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono...">
               </div>
             </div>
             <div class="col-md-3">
@@ -207,12 +218,7 @@
                 </select>
              </div> 
            </div>
-            <div class="col-md-3">
-              <div class="form-group">
-                <label >Codigo Postal</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
-             </div> 
-           </div>          
+                     
           </div>
         </div>
         <div class="row">
@@ -289,11 +295,6 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
@@ -324,6 +325,28 @@
                    
                 </div>
               </div>                                
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <span class="btn green fileinput-button">
+                  <i class="fa fa-plus"></i>&nbsp;
+                  <span>Adjuntar Constancia SAT</span>
+                  <input type="file" name="file" id="file">
+                </span>
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <span class="btn green fileinput-button">
+                  <i class="fa fa-plus"></i>&nbsp;
+                  <span>Adjuntar Constancia Notario</span>
+                  <input type="file" name="file" id="file">
+                </span>
               </div>
             </div>
           </div>
@@ -1084,6 +1107,17 @@ function curpValida(curp) {
       return false;
         
     return true; //Validado
+}
+function getBase64(file) {
+   var reader = new FileReader();
+   reader.readAsDataURL(file);
+   reader.onload = function () {
+     console.log(reader.result);
+     return reader.result;
+   };
+   reader.onerror = function (error) {
+     console.log('Error: ', error);
+   };
 }
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
