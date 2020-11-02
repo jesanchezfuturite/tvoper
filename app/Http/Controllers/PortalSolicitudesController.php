@@ -33,7 +33,7 @@ class PortalSolicitudesController extends Controller
   protected $notary;
   protected $status;  
   protected $configUserNotary;
-  protected  $mensajes;
+  protected $mensajes;
 
 
   public function __construct(
@@ -50,7 +50,7 @@ class PortalSolicitudesController extends Controller
      
     )
     {
-      // $this->middleware('auth');
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -412,14 +412,14 @@ class PortalSolicitudesController extends Controller
   public function filtrar(Request $request){
    
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
     ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
     ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
    
 
-    if($request->has('tipo_tramite')){
-        $solicitudes->whereIn('solicitudes_catalogo.tramite_id', array($request->tipo_tramite));
+    if($request->has('tipo_solicitud')){
+        $solicitudes->whereIn('solicitudes_catalogo.id', array($request->tipo_solicitud));
     }
 
     if($request->has('estatus')){
@@ -431,13 +431,15 @@ class PortalSolicitudesController extends Controller
      
     }
     $solicitudes->max('solicitudes_mensajes.ticket_id');
+    $solicitudes->where('solicitudes_ticket.status', '!=', 99);
     $solicitudes = $solicitudes->get();
     return $solicitudes;
   }
   public function listSolicitudes(){
-    $tramites = $this->getTramites();
+    $user_id = auth()->user()->id;
+    $tipoSolicitud = $this->solicitudes->where("atendido_por", $user_id)->get(["titulo", "id"])->toArray();
     $status = $this->status->all()->toArray();
-    return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
+    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
   }
   public function atenderSolicitud($id){
