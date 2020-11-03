@@ -24,7 +24,7 @@ class VerifyCsrfToken extends Middleware
         'solicitudes-register*',
         'solicitudes-info*',
         'solicitudes-detalle-tramite*',
-        'solicitudes-update*'
+        'solicitudes-update*',
 
     ];
 }
