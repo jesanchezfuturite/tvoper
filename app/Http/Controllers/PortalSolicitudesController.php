@@ -446,17 +446,23 @@ class PortalSolicitudesController extends Controller
     $ticket = $this->ticket->where('id', $id)->get(["info"])->toArray();
     
     $info = $ticket[0]["info"];
-
+  
     return $info; 
 
   }
 
   public function guardarSolicitud(Request $request){
-    $file = $request->file('file');
     $mensaje = $request->mensaje;
     $ticket_id = $request->id;
-    $attach =  $file->getClientOriginalName();
-    \Storage::disk('local')->put($attach,  \File::get($file));
+  
+    if($request->has("file")){
+      $file = $request->file('file'); 
+      $attach =  $file->getClientOriginalName();
+      \Storage::disk('local')->put($attach,  \File::get($file));
+    }else{
+      $attach ="";
+    }
+  
 
     try {
 
@@ -493,7 +499,7 @@ class PortalSolicitudesController extends Controller
       try{
 
         $solicitudTicket = $this->ticket->where('id',$id)
-        ->update(['status'=>0]);
+        ->update(['status'=>2]);
 
         return response()->json(
           [
@@ -514,6 +520,23 @@ class PortalSolicitudesController extends Controller
         );
       }
 
+    }
+    public function getMensajes($id){      
+      try{
+         $mensajes = $this->mensajes->where('ticket_id', $id)
+                    ->get(["id", "ticket_id", "mensaje", "attach", "created_at"])->toArray();
+      }catch(\Exception $e){
+
+        Log::info('Error Obtener Mensajes '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al obtener mensajes",
+          ]
+        );
+      }
+      return json_encode($mensajes);
     }
 
  
