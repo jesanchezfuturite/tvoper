@@ -457,15 +457,14 @@ class PortalSolicitudesController extends Controller
   
     if($request->has("file")){
       $file = $request->file('file'); 
-      $attach =  $file->getClientOriginalName();
+      $extension = $file->getClientOriginalExtension();
+      $attach = "archivo_solicitud_".$request->id.".".$extension;
       \Storage::disk('local')->put($attach,  \File::get($file));
     }else{
       $attach ="";
     }
   
-
     try {
-
       $mensajes =$this->mensajes->create([
         'ticket_id'=> $ticket_id,
         'mensaje'  =>  $mensaje,
