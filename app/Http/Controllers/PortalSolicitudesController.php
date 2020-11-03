@@ -13,7 +13,10 @@ use App\Entities\PortalSolicitudesTicket;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
-
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
+use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -24,8 +27,13 @@ class PortalSolicitudesController extends Controller
   protected $users;
   protected $solicitudes;
   protected $tramites;
+  protected $tickets;
   protected $tiposer;
   protected $partidas;
+  protected $notary;
+  protected $status;  
+  protected $configUserNotary;
+  protected $mensajes;
 
 
   public function __construct(
@@ -34,7 +42,11 @@ class PortalSolicitudesController extends Controller
      TramitedetalleRepositoryEloquent $tramites,
      EgobiernotiposerviciosRepositoryEloquent $tiposer,
      EgobiernopartidasRepositoryEloquent $partidas,
-     PortalSolicitudesStatusRepositoryEloquent $status
+     PortalSolicitudesStatusRepositoryEloquent $status,
+     PortalSolicitudesTicketRepositoryEloquent $ticket,
+     PortalNotaryOfficesRepositoryEloquent $notary,
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
+     PortalSolicitudesMensajesRepositoryEloquent $mensajes
      
     )
     {
@@ -45,6 +57,10 @@ class PortalSolicitudesController extends Controller
       $this->tiposer = $tiposer;
       $this->partidas = $partidas;
       $this->status = $status;
+      $this->ticket = $ticket;
+      $this->notary = $notary;
+      $this->configUserNotary = $configUserNotary;
+      $this->mensajes = $mensajes;
 
     }
 
@@ -396,14 +412,14 @@ class PortalSolicitudesController extends Controller
   public function filtrar(Request $request){
    
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
     ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
     ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
    
 
-    if($request->has('tipo_tramite')){
-        $solicitudes->whereIn('solicitudes_catalogo.tramite_id', array($request->tipo_tramite));
+    if($request->has('tipo_solicitud')){
+        $solicitudes->whereIn('solicitudes_catalogo.id', array($request->tipo_solicitud));
     }
 
     if($request->has('estatus')){
@@ -415,13 +431,90 @@ class PortalSolicitudesController extends Controller
      
     }
     $solicitudes->max('solicitudes_mensajes.ticket_id');
+    $solicitudes->where('solicitudes_ticket.status', '!=', 99);
     $solicitudes = $solicitudes->get();
     return $solicitudes;
   }
   public function listSolicitudes(){
-    $tramites = $this->getTramites();
+    $user_id = auth()->user()->id;
+    $tipoSolicitud = $this->solicitudes->where("atendido_por", $user_id)->get(["titulo", "id"])->toArray();
     $status = $this->status->all()->toArray();
-    return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
+    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
   }
+  public function atenderSolicitud($id){
+    $ticket = $this->ticket->where('id', $id)->get(["info"])->toArray();
+    
+    $info = $ticket[0]["info"];
+
+    return $info; 
+
+  }
+
+  public function guardarSolicitud(Request $request){
+    $file = $request->file('file');
+    $mensaje = $request->mensaje;
+    $ticket_id = $request->id;
+    $attach =  $file->getClientOriginalName();
+    \Storage::disk('local')->put($attach,  \File::get($file));
+
+    try {
+
+      $mensajes =$this->mensajes->create([
+        'ticket_id'=> $ticket_id,
+        'mensaje'  =>  $mensaje,
+        'attach'    =>  $attach
+      ]);
+
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Mensaje guardado con éxito",
+          "data"=>$mensajes
+          
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar mensaje",
+        ]
+      );
+    }
+  }
+
+  public function cerrarTicket(Request $request){
+      $id = $request->id;
+
+      try{
+
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>0]);
+
+        return response()->json(
+          [
+          "Code" => "200",
+          "Message" => "Ticket cerrado",
+          ]
+        );
+
+      }catch(\Exception $e){
+
+        Log::info('Error Cerrar Ticket '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cerrar ticket",
+          ]
+        );
+      }
+
+    }
+
+ 
 }

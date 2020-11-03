@@ -3,7 +3,7 @@
 
 @section('content')
 <link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
-<h3 class="page-title">Portal <small>Configuración Roles</small></h3>
+<h3 class="page-title">Portal <small>Comunidades</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -16,7 +16,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Configuración Roles</a>
+            <a href="#">Comunidades</a>
         </li>
     </ul>
 </div>
@@ -28,7 +28,7 @@
     <div class="portlet box blue">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-bank"></i>Agregar Roles
+                <i class="fa fa-bank"></i>Agregar Comunidad
             </div>
             <div class="tools">                
               <a href="#portlet-rol" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo"></a>
@@ -43,7 +43,7 @@
         <div class="row">            
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">
-                    <label >Roles Registrados </label>  
+                    <label >Comunidades Registrados </label>  
                     <span class="help-block">(Selecciona para ver los Roles)</span> 
                   </div>
             </div>
@@ -81,7 +81,7 @@
           <table class="table table-hover" id="sample_2">
             <thead>
               <tr>
-              <th>Rol</th>
+              <th>Comunidad</th>
               <th>Tramite</th>
             <!--<th>&nbsp;</th> --->
             </tr>
@@ -102,7 +102,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarRol()"></button>
-        <h4 class="modal-title">Configuracion Rol</h4>
+        <h4 class="modal-title">Configuracion Comunidad</h4>
         <input type="text" name="id_rol" id="id_rol" hidden="true">
       </div>
       <div class="modal-body">
@@ -112,7 +112,7 @@
             <div class="col-md-12"> 
               <div class="form-group">
                 <label >Nombre</label>                                             
-                <input type="text" class="form-control" name="nameRol" id="nameRol" placeholder="Ingrese Nombre de Rol...">
+                <input type="text" class="form-control" name="nameRol" id="nameRol" placeholder="Ingrese Nombre de la Comunidad...">
               </div>
             </div>        
           </div>
@@ -347,7 +347,7 @@
         url: "{{ url('/operacion-roles-get-tramites') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {   
-         
+         console.log(response);
         var Resp=$.parseJSON(response);        
         Resp.sort(function (a, b) {
           if (a.tramite > b.tramite) {
@@ -362,7 +362,7 @@
           $("#table2 tbody tr").remove();
         $.each(Resp, function(i, item) {                
             $("#table2").append("<tr>"
-              +"<td><input id='ch_"+item.id_tramite+"' type='checkbox'onclick='addRemoveElement("+item.id_tramite+");' value='"+item.id_tramite+"'> &nbsp <label for='ch_"+item.id_tramite+"'>"+decodeURI(item.tramite)+"</label></td>"
+              +"<td><input id='ch_"+item.id_tramite+"' type='checkbox'onclick='addRemoveElement("+item.id_tramite+");' value='"+item.id_tramite+"'> &nbsp <label for='ch_"+item.id_tramite+"'>"+item.tramite+"</label></td>"
               +"</tr>"
             );  
          
@@ -448,7 +448,7 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Rol</th><th>Tramite</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Comunidad</th><th>Tramite</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();<th>&nbsp;</th>
 
   }
