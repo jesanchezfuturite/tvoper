@@ -169,16 +169,20 @@
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-12">
-              <div class="addtableMsg">
-                <table class="table table-hover" id="sample_7">
-                  <thead>
-                    <tr>
-                      <th>Mensajes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  </tbody>
-                </table>
+              <div id="addtableMsg">
+                <div class="removeMsg"> 
+                  <table class="table table-hover" id="sample_7">
+                    <thead>
+                      <tr>
+                        <th>Mensajes</th>
+                        <th>Archivo</th>
+                        <th>Fecha</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>          
@@ -228,7 +232,7 @@
         .done(function (response) {
         	//var Resp=$.parseJSON(response);
             addtable();
-            //console.log(response);
+            console.log(response);
             //console.log(JSON.stringify(response));
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
@@ -253,10 +257,15 @@
     	$("#addtables div").remove();
     	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
     }
+    function tableMsg(){
+      $("#addtableMsg div").remove();
+      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
+    }
     function findAtender(id)
     {
       document.getElementById("idmodal").textContent=id;
-      document.getElementById("idTicket").textContent=id;
+      document.getElementById("idTicket").value=id;
+      findMessage(id);
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
@@ -270,6 +279,32 @@
           document.getElementById("rfc").textContent=soli.rfc;
            
           //TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+     function findMessage(id_)
+    {
+     // console.log(id_);
+      $.ajax({
+           method: "GET", 
+           url: "{{ url('/listado-mensajes') }}" + "/"+id_,
+           data:{_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response.solicitante);
+          tableMsg();
+          var resp=$.parseJSON(response);
+           $.each(resp, function(i, item) {
+              $('#sample_7 tbody').append("<tr>"
+                  +"<td>"+item.mensaje+"</td>"
+                  +"<td>"+item.attach+"</td>"
+                  +"<td>"+item.created_at+"</td>"
+                  +"</tr>"
+                );
+            });
+          
+          TableManaged7.init7();   
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -303,12 +338,13 @@
       var id_=$("#idTicket").val();
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
-      }else if(file.length==0){ 
-         Command: toastr.warning("Archivo, Requerido!", "Notifications")
       }else{
         var fileV = $("#file")[0].files[0];                  
         var formdata = new FormData();
-        formdata.append("file", fileV);      
+
+        if(file.length>0){ 
+          formdata.append("file", fileV);
+        }              
         formdata.append("id", id_);      
         formdata.append("mensaje", mensaje);
         formdata.append("_token",'{{ csrf_token() }}');
@@ -324,6 +360,7 @@
              {
               document.getElementById("message").value="";
               document.getElementById("file").value="";
+              findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
                return;
              }
