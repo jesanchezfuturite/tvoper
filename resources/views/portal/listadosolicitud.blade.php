@@ -140,6 +140,18 @@
                 <label id="rfc"></label>
               </div>
             </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong>Valor catastral:</strong></label><br>                
+                <label id="vcatastral"></label>
+              </div>
+            </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong></strong></label><br>                
+                <label id=""></label>
+              </div>
+            </div>
           </div>        
         </div>
         <div class="row">
@@ -206,7 +218,7 @@
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
-    TableManaged7.init7();
+    //TableManaged7.init7();
     });
 
    	function findSolicitudes(){
@@ -277,19 +289,14 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response.solicitante);
-          var Resp=$.parseJSON(response);
+          console.log(response);
+          var Resp=response;
           var soli=Resp.solicitante;
-          document.getElementById("nomsolic").textContent=Resp.nombre;
-          document.getElementById("apMat").textContent=Resp.apellido_materno;
-          document.getElementById("apPat").textContent=Resp.apellido_paterno;
-          document.getElementById("rfc").textContent=Resp.rfc;
-          if(Resp.rfc==null || Resp.rfc ==""){
-            document.getElementById("rfc").textContent=soli.rfc;
-          }
-          if(Resp.nombre==null || Resp.nombre ==""){
-            document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
-          }
+          document.getElementById("nomsolic").textContent=Resp.campos["Nombre"];
+          document.getElementById("apMat").textContent=Resp.campos["Apellido paterno"];
+          document.getElementById("apPat").textContent=Resp.campos["Apellido materno"];
+          document.getElementById("rfc").textContent=Resp.campos["RFC"];
+          document.getElementById("vcatastral").textContent=Resp.campos["Valor catastral"];
           //TableManaged7.init7();   
         })
         .fail(function( msg ) {
@@ -306,17 +313,28 @@
         .done(function (response) {
           //console.log(response.solicitante);
           tableMsg();
+          var icon="";
+          var attach="";
           var resp=$.parseJSON(response);
            $.each(resp, function(i, item) {
+            if(item.attach== null || item.attach=="")
+            {
+              icon="";
+              attach="";
+            }else {
+              icon="<i class='fa fa-download'></i>";
+              attach=item.attach;
+            }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td>"+item.attach+"</td>"
+                  +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
-                );
+                );           
+            
             });
           
-          TableManaged7.init7();   
+          //TableManaged7.init7();   
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");

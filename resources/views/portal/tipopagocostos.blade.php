@@ -104,7 +104,6 @@
         <input hidden="true" type="text" name="idcosto" id="idcosto">
       </div>
       <div class="modal-body">
-        <div class="modal-body">
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-9">
@@ -198,9 +197,10 @@
                   <label >Costo Fijo</label>
                   <input type="text" class="valida-decimal form-control" name="fijo" id="fijo" placeholder="Ingrese el costo fijo del trámite">
                 </div>
+              </div>
             </div>
           </div>
-        </row>
+        </div>
         <div class="row">
           <div class="col-md-12 cuotas">
             <div class="col-md-9">
@@ -236,7 +236,6 @@
       <div class="modal-footer">
           <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
       </div>
-    </div>
     </div>
   </div>
 </div>

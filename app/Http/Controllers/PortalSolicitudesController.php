@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Entities\PortalSolicitudesTicket;
 
 use App\Repositories\UsersRepositoryEloquent;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
@@ -34,6 +35,7 @@ class PortalSolicitudesController extends Controller
   protected $status;  
   protected $configUserNotary;
   protected $mensajes;
+  protected $campo;
 
 
   public function __construct(
@@ -46,7 +48,8 @@ class PortalSolicitudesController extends Controller
      PortalSolicitudesTicketRepositoryEloquent $ticket,
      PortalNotaryOfficesRepositoryEloquent $notary,
      PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
-     PortalSolicitudesMensajesRepositoryEloquent $mensajes
+     PortalSolicitudesMensajesRepositoryEloquent $mensajes,
+     PortalcampoRepositoryEloquent $campo
      
     )
     {
@@ -61,6 +64,7 @@ class PortalSolicitudesController extends Controller
       $this->notary = $notary;
       $this->configUserNotary = $configUserNotary;
       $this->mensajes = $mensajes;
+      $this->campo = $campo;
 
     }
 
@@ -413,25 +417,23 @@ class PortalSolicitudesController extends Controller
    
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
     ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
-    ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-    ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
-    ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
-   
-
+    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+    
     if($request->has('tipo_solicitud')){
-        $solicitudes->whereIn('solicitudes_catalogo.id', array($request->tipo_solicitud));
+        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
-      $solicitudes->where('solicitudes_catalogo.status', $request->estatus);
+      $solicitudes->where('solicitudes_ticket.status', $request->estatus);
     }
 
     if($request->has('id_solicitud')){
       $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
      
     }
-    $solicitudes->max('solicitudes_mensajes.ticket_id');
-    $solicitudes->where('solicitudes_ticket.status', '!=', 99);
+    $solicitudes->where('solicitudes_ticket.status', '!=', 99)
+    ->orderBy('solicitudes_ticket.created_at', 'DESC');
     $solicitudes = $solicitudes->get();
     return $solicitudes;
   }
@@ -443,11 +445,21 @@ class PortalSolicitudesController extends Controller
 
   }
   public function atenderSolicitud($id){
-    $ticket = $this->ticket->where('id', $id)->get(["info"])->toArray();
+    $ticket = $this->ticket->where('id', $id)->first();
+    $informacion = json_decode($ticket->info);
+    $informacion = json_decode(json_encode($informacion), true);
+    $campos = $informacion["campos"];   
+    $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+    $keys = array_column($catalogo, 'id');
+    $values = array_column($catalogo, 'descripcion');
+    $combine = array_combine($keys, $values);
+    $catalogue = array_intersect_key($combine, $campos);
     
-    $info = $ticket[0]["info"];
-  
-    return $info; 
+    $camposnuevos = array_combine($catalogue, $campos);
+    unset($informacion["campos"]);
+    $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+    return $informacion; 
+    
 
   }
 
@@ -467,7 +479,7 @@ class PortalSolicitudesController extends Controller
     try {
       $mensajes =$this->mensajes->create([
         'ticket_id'=> $ticket_id,
-        'mensaje'  =>  $mensaje,
+        'mensaje' => $mensaje,
         'attach'    =>  $attach
       ]);
 
@@ -523,7 +535,9 @@ class PortalSolicitudesController extends Controller
     public function getMensajes($id){      
       try{
          $mensajes = $this->mensajes->where('ticket_id', $id)
-                    ->get(["id", "ticket_id", "mensaje", "attach", "created_at"])->toArray();
+                    ->orderBy('created_at', 'DESC')
+                    ->get()
+                    ->toArray();
       }catch(\Exception $e){
 
         Log::info('Error Obtener Mensajes '.$e->getMessage());
@@ -537,6 +551,15 @@ class PortalSolicitudesController extends Controller
       }
       return json_encode($mensajes);
     }
-
+    public function downloadFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->download($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@downloadFile");
+      }
+    }
  
 }
+
