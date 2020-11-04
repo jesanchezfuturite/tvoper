@@ -144,7 +144,7 @@ class PortalSolicitudesTicketController extends Controller
         return $result;
     }
     public function getInfo($user_id){
-      try {
+      // try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         $notary_id = $relation->notary_office_id;
@@ -202,14 +202,14 @@ class PortalSolicitudesTicketController extends Controller
         return $response;
         
   
-      } catch (\Exception $e) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al obtener información",
-          ]
-        );
-      }
+      // } catch (\Exception $e) {
+      //   return response()->json(
+      //     [
+      //       "Code" => "400",
+      //       "Message" => "Error al obtener información",
+      //     ]
+      //   );
+      // }
     }
   
     public function detalleTramite($clave){
@@ -264,6 +264,7 @@ class PortalSolicitudesTicketController extends Controller
     public function asignarClavesCatalogo($info){
         $informacion = json_decode($info);
         $informacion = to_array($informacion);
+        extract($informacion, EXTR_PREFIX_SAME, "informacion");
         unset($informacion["costo_final"], $informacion["partidas"], $informacion["solicitante"]);
 
         $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
@@ -272,7 +273,11 @@ class PortalSolicitudesTicketController extends Controller
         $combine = array_combine($keys, $values);
         $campos = array_intersect_key($combine, $informacion);
         
-        $info = array_combine($campos, $informacion);        
+        $info = array_combine($campos, $informacion);  
+        $info["costo_final"]=$costo_final;
+        $info["partidas"]=$partidas;
+        $info["solicitante"]=$solicitante;
+
         return json_encode($info); 
     }
     
