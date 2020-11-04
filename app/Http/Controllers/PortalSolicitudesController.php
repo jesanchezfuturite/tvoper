@@ -11,9 +11,11 @@ use Carbon\Carbon;
 use App\Entities\PortalSolicitudesTicket;
 
 use App\Repositories\UsersRepositoryEloquent;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
@@ -32,6 +34,8 @@ class PortalSolicitudesController extends Controller
   protected $notary;
   protected $status;  
   protected $configUserNotary;
+  protected $mensajes;
+  protected $campo;
 
 
   public function __construct(
@@ -43,7 +47,9 @@ class PortalSolicitudesController extends Controller
      PortalSolicitudesStatusRepositoryEloquent $status,
      PortalSolicitudesTicketRepositoryEloquent $ticket,
      PortalNotaryOfficesRepositoryEloquent $notary,
-     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
+     PortalSolicitudesMensajesRepositoryEloquent $mensajes,
+     PortalcampoRepositoryEloquent $campo
      
     )
     {
@@ -57,6 +63,8 @@ class PortalSolicitudesController extends Controller
       $this->ticket = $ticket;
       $this->notary = $notary;
       $this->configUserNotary = $configUserNotary;
+      $this->mensajes = $mensajes;
+      $this->campo = $campo;
 
     }
 
@@ -408,34 +416,140 @@ class PortalSolicitudesController extends Controller
   public function filtrar(Request $request){
    
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_mensajes.mensaje","solicitudes_status.descripcion")
-    ->leftjoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-    ->leftjoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id')
-    ->leftjoin('solicitudes_status', 'solicitudes_catalogo.status', '=', 'solicitudes_status.id');
-   
-
-    if($request->has('tipo_tramite')){
-        $solicitudes->whereIn('solicitudes_catalogo.tramite_id', array($request->tipo_tramite));
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
+    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+    
+    if($request->has('tipo_solicitud')){
+        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
-      $solicitudes->where('solicitudes_catalogo.status', $request->estatus);
+      $solicitudes->where('solicitudes_ticket.status', $request->estatus);
     }
 
     if($request->has('id_solicitud')){
       $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
      
     }
-    $solicitudes->max('solicitudes_mensajes.ticket_id');
+    $solicitudes->where('solicitudes_ticket.status', '!=', 99)
+    ->orderBy('solicitudes_ticket.created_at', 'DESC');
     $solicitudes = $solicitudes->get();
     return $solicitudes;
   }
   public function listSolicitudes(){
-    $tramites = $this->getTramites();
+    $user_id = auth()->user()->id;
+    $tipoSolicitud = $this->solicitudes->where("atendido_por", $user_id)->get(["titulo", "id"])->toArray();
     $status = $this->status->all()->toArray();
-    return view('portal/listadosolicitud', ["tramites" => $tramites , "status" => $status]);
+    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
   }
+  public function atenderSolicitud($id){
+    $ticket = $this->ticket->where('id', $id)->first();
+    $informacion = json_decode($ticket->info);
+    $informacion = to_array($informacion);
+    unset($informacion["costo_final"], $informacion["partidas"], $informacion["solicitante"]);
+
+    $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+    $keys = array_column($catalogo, 'id');
+    $values = array_column($catalogo, 'descripcion');
+    $combine = array_combine($keys, $values);
+    $campos = array_intersect_key($combine, $informacion);
+    
+    $info = array_combine($campos, $informacion);
+    
+    return $info; 
+
+  }
+
+  public function guardarSolicitud(Request $request){
+    $mensaje = $request->mensaje;
+    $ticket_id = $request->id;
+  
+    if($request->has("file")){
+      $file = $request->file('file'); 
+      $extension = $file->getClientOriginalExtension();
+      $attach = "archivo_solicitud_".$request->id.".".$extension;
+      \Storage::disk('local')->put($attach,  \File::get($file));
+    }else{
+      $attach ="";
+    }
+  
+    try {
+      $mensajes =$this->mensajes->create([
+        'ticket_id'=> $ticket_id,
+        'mensaje' => $mensaje,
+        'attach'    =>  $attach
+      ]);
+
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Mensaje guardado con éxito",
+          "data"=>$mensajes
+          
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar mensaje",
+        ]
+      );
+    }
+  }
+
+  public function cerrarTicket(Request $request){
+      $id = $request->id;
+
+      try{
+
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>2]);
+
+        return response()->json(
+          [
+          "Code" => "200",
+          "Message" => "Ticket cerrado",
+          ]
+        );
+
+      }catch(\Exception $e){
+
+        Log::info('Error Cerrar Ticket '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cerrar ticket",
+          ]
+        );
+      }
+
+    }
+    public function getMensajes($id){      
+      try{
+         $mensajes = $this->mensajes->where('ticket_id', $id)
+                    ->orderBy('created_at', 'DESC')
+                    ->get()
+                    ->toArray();
+      }catch(\Exception $e){
+
+        Log::info('Error Obtener Mensajes '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al obtener mensajes",
+          ]
+        );
+      }
+      return json_encode($mensajes);
+    }
 
  
 }

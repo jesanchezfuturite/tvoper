@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Entities\PortalSolicitudesTicket;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
@@ -22,6 +23,7 @@ class PortalSolicitudesTicketController extends Controller
     protected $configUserNotary;
     protected $tramites;
     protected $tiposer;
+    protected $campo;
 
     public function __construct(
         PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
@@ -30,7 +32,8 @@ class PortalSolicitudesTicketController extends Controller
         TramitedetalleRepositoryEloquent $tramites,
         EgobiernotiposerviciosRepositoryEloquent $tiposer,
         PortalNotaryOfficesRepositoryEloquent $notary,
-        PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary
+        PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
+        PortalcampoRepositoryEloquent $campo
         
        )
        {
@@ -40,6 +43,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->notary = $notary;
          $this->tiposer = $tiposer;
          $this->configUserNotary = $configUserNotary;
+         $this->campo = $campo;
    
        }
     
@@ -64,10 +68,12 @@ class PortalSolicitudesTicketController extends Controller
         return $tmts;
     }
     public function registrarSolicitud(Request $request){
+        $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
+        $catalogo_id = $tramite->id;        
         $error =null;
         $solicitantes = $request->solicitantes; 
         $clave = $request->clave;
-        $catalogo_id = $request->catalogo_id;
+        
         $user_id = $request->user_id;
         $solicitantes = to_object($solicitantes);
         $info = $request->info;
@@ -98,148 +104,176 @@ class PortalSolicitudesTicketController extends Controller
               "Message" => "Solicitud registrada",
             ]
           );
+    }
+    public function eliminarSolicitud(Request $request, $id){
+      $valor = $request->tipo;
+  
+      try {
+        if($valor=="u"){
+          $this->ticket->where('id',$id)->where('status', 99)->delete();
+        }else{
+          $this->ticket->where('clave',$id)->where('status', 99)->delete();
+        }
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud eliminada",
+          ]
+        );
+  
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al eliminar solicitud",
+          ]
+        );
       }
-      public function eliminarSolicitud(Request $request, $id){
-        $valor = $request->tipo;
-    
-        try {
-          if($valor=="u"){
-            $this->ticket->where('id',$id)->where('status', 99)->delete();
-          }else{
-            $this->ticket->where('clave',$id)->where('status', 99)->delete();
+    }
+    public function check_diff_multi($array1, $array2){
+      $result = array();
+      foreach($array1 as $key => $val) {
+            if(isset($array2[$key])){
+              if(is_array($val) && $array2[$key]){
+                  $result[$key] = $this->check_diff_multi($val, $array2[$key]);
+              }
+          } else {
+              $result[$key] = $val;
           }
-          return response()->json(
-            [
-              "Code" => "200",
-              "Message" => "Solicitud eliminada",
-            ]
-          );
-    
-        } catch (\Exception $e) {
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "Error al eliminar solicitud",
-            ]
-          );
-        }
-      }
-      public function check_diff_multi($array1, $array2){
-        $result = array();
-        foreach($array1 as $key => $val) {
-             if(isset($array2[$key])){
-               if(is_array($val) && $array2[$key]){
-                   $result[$key] = $this->check_diff_multi($val, $array2[$key]);
-               }
-           } else {
-               $result[$key] = $val;
-           }
-        }
-    
+      }   
         return $result;
     }
-      public function getInfo($user_id){
-        try {
-          
-          $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
-          $notary_id = $relation->notary_office_id;
-          $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+    public function getInfo($user_id){
+      try {
+        
+        $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
+        $notary_id = $relation->notary_office_id;
+        $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
 
-       
-          $solicitudesCatalogo = $this->ticket->where('status', 99)->where('user_id', $user_id)->get()->toArray();
-          $tickets = $this->ticket->where('user_id', $user_id)->where('status', 99)->get()->pluck('catalogo_id')->toArray(); 
+        $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)
+        ->with(['catalogo' => function ($query) {
+          $query->select('id', 'tramite_id');
+        }])->get()->toArray();
 
-            
-          $tempArr = array_unique($tickets);
-          $array2 = $this->getTramites($tempArr);
+    
+        $ids_tramites=[];
+        foreach ($solicitudes as &$sol){
+          foreach($sol["catalogo"]  as $s){
+            $sol["tramite_id"]=$s["tramite_id"];            
+          }
+        }
 
-          $tmts=[];
-          $response =[];
-          foreach($array2 as $t => $tramite){
-            $datos=[];
-            foreach ($solicitudesCatalogo as $d => $dato) { 
-              if($dato["catalogo_id"]== $tramite["tramite_id"]){
-                $data=array(
-                  "id"=>$dato["id"],
-                  "clave"=>$dato["clave"],
-                  "catalogo_id"=>$dato["catalogo_id"],
-                  "user_id"=>$dato["user_id"],
-                  "info"=>$dato["info"],
-                  "status"=>$dato["status"]
-                );
+        $ids_tramites= array_column($solicitudes, 'tramite_id');
+        
+        $idstmts = array_unique($ids_tramites);
+      
+        
+        $tramites = $this->getTramites($idstmts);
+    
+        $tmts=[];
+        $response =[];
+        foreach($tramites as $t => $tramite){
+          $datos=[];
+          foreach ($solicitudes as $d => $dato) { 
+            if($dato["tramite_id"]== $tramite["tramite_id"]){
+              $info = $this->asignarClavesCatalogo($dato["info"]);
+              $data=array(
+                "id"=>$dato["id"],
+                "clave"=>$dato["clave"],
+                "catalogo_id"=>$dato["catalogo_id"],
+                "user_id"=>$dato["user_id"],
+                "info"=>$info,
+                "status"=>$dato["status"]
+              );
 
-                array_push($datos, $data);
-                $tramite["solicitudes"]= $datos;
-               
-              }
-            
+              array_push($datos, $data);
+              $tramite["solicitudes"]= $datos;
+              
             }
-                array_push($tmts, $tramite);
-    
+          
           }
-          $response["notary_offices"]=$notary_offices;
-          $response["tramites"] =$tmts;
-    
-          return $response;
-          
-    
-        } catch (\Exception $e) {
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "Error al obtener información",
-            ]
-          );
+            array_push($tmts, $tramite);
+  
         }
-      }
-    
-      public function detalleTramite($clave){
-        try {
-          $tickets = $this->ticket->where('clave', $clave)->get()->toArray();
-          return response()->json(
-            [
-              "Code" => "200",
-              "resultado" => $tickets
-            ]
-          );
-          
-        } catch (\Exception $e) {
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "Error al obtener detalle",
-            ]
-          );
-        }
-      }
-      public function updateTramite(Request $request){
-          $id_transaccion = $request->id_transaccion;
-          $id = $request->id;
-          
-        try{
 
-            $solicitudTicket = $this->ticket->where('id',$request->id)
-            ->update(['id_transaccion'=>$id_transaccion,'status'=> 1]);
-      
+        $response["notary_offices"]=$notary_offices;
+        $response["tramites"] =$tmts;
+  
+        return $response;
+        
+  
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener información",
+          ]
+        );
+      }
+    }
+  
+    public function detalleTramite($clave){
+      try {
+        $tickets = $this->ticket->where('clave', $clave)->get()->toArray();
+        return response()->json(
+          [
+            "Code" => "200",
+            "resultado" => $tickets
+          ]
+        );
+        
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener detalle",
+          ]
+        );
+      }
+    }
+    public function updateTramite(Request $request){
+        $id_transaccion = $request->id_transaccion;
+        $id = $request->id;
+        
+      try{
+
+          $solicitudTicket = $this->ticket->where('clave',$request->id)
+          ->update(['id_transaccion'=>$id_transaccion,'status'=> 1]);
+    
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud actualizada",
+          ]
+        );
+    
+        }catch(\Exception $e){
+    
+          Log::info('Error Editar solicitud '.$e->getMessage());
+    
           return response()->json(
             [
-              "Code" => "200",
-              "Message" => "Solicitud actualizada",
+              "Code" => "400",
+              "Message" => "Error al editar la solicitud",
             ]
           );
-      
-          }catch(\Exception $e){
-      
-            Log::info('Error Editar solicitud '.$e->getMessage());
-      
-            return response()->json(
-              [
-                "Code" => "400",
-                "Message" => "Error al editar la solicitud",
-              ]
-            );
-          }
-      
-      }
+        }
+    
+    }
+
+    public function asignarClavesCatalogo($info){
+        $informacion = json_decode($info);
+        $informacion = to_array($informacion);
+        unset($informacion["costo_final"], $informacion["partidas"], $informacion["solicitante"]);
+
+        $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+        $keys = array_column($catalogo, 'id');
+        $values = array_column($catalogo, 'descripcion');
+        $combine = array_combine($keys, $values);
+        $campos = array_intersect_key($combine, $informacion);
+        
+        $info = array_combine($campos, $informacion);        
+        return json_encode($info); 
+    }
     
 }

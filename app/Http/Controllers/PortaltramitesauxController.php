@@ -282,7 +282,7 @@ class PortaltramitesauxController extends Controller
   {
   	try {
 
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'status'=>'1']);
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
@@ -294,7 +294,7 @@ class PortaltramitesauxController extends Controller
   {
   	try {
   		//log::info($request);
-  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor],$request->id);
+  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor],$request->id);
 
   		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
 

@@ -34,8 +34,8 @@
 		                	<label >Tipo de Solicitud</label>           
 						    <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
 						       <option value="0">------</option>
-						        @foreach(json_decode($tramites,true) as $tr)
-                       			 <option value="{{$tr['id_tramite']}}">{{$tr["tramite"]}}</option>
+						        @foreach($tipo_solicitud as $tr)
+                       			 <option value="{{$tr['id']}}">{{$tr["titulo"]}}</option>
                       			@endforeach     
 						    </select>   
 		                </div>
@@ -90,8 +90,8 @@
               			<tr>
               			<th>ID</th>
               			<th>Titulo</th>
-              			<th>Mensaje</th>
-              			<th>Descripción</th>
+              			<th>Estatus</th>
+              			<th>Fecha de Ingreso</th>
             			<th>&nbsp;</th>
             			</tr>
           			</thead>
@@ -110,19 +110,34 @@
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" ></button>
         <h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4>
-        <div style="text-align: right !important;"><button type="button"  data-dismiss="modal" class="btn green right" style="text-align: right;">Cerrar Ticket</button></div>
+        <div style="text-align: right !important;"><button type="button"  data-dismiss="modal" class="btn green right" style="text-align: right;" onclick="cerrarTicket()">Cerrar Ticket</button></div>
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
+        <input type="text" name="idTicket" id="idTicket" hidden="true">
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-6">             
+            <div class="col-md-4">             
               <div class="form-group">
-                <label><strong>Descripción</strong></label>
+                <label><strong>Nombre Solicitante:</strong></label><br>                
+                <label id="nomsolic"></label>
               </div>
             </div>
-            <div class="col-md-6">             
+            <div class="col-md-4">             
               <div class="form-group">
-                <label><strong>Descripción</strong></label>
+                <label><strong>Apellido Paterno:</strong></label><br>                
+                <label id="apPat"></label>
+              </div>
+            </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong>Apellido Materno:</strong></label><br>                
+                <label id="apMat"></label>
+              </div>
+            </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong>RFC:</strong></label><br>                
+                <label id="rfc"></label>
               </div>
             </div>
           </div>        
@@ -139,13 +154,13 @@
             <div class="col-md-9">             
               <div class="form-group">
                 <label>Mensaje</label>
-                <textarea class="form-control" rows="4" placeholder="Escribe..."></textarea>
+                <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
               </div>
             </div>
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>
-                <button type="button" class="btn blue"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage()"><i class="fa fa-check"></i> Guardar</button>
                 <br>
                 <br>
                 <span class="btn green fileinput-button">
@@ -160,53 +175,27 @@
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-12">
-              <div class="addtableMsg">
-                <table class="table table-hover" id="sample_7">
-                  <thead>
-                    <tr>
-                      <th>Mensajes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr>   
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr> 
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr> 
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr> 
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr> 
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr>
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr>
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr>
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr> 
-                  <tr>
-                    <td>mensaje mensaje mensaje</td>
-                  </tr>                
-                  </tbody>
-                </table>
+              <div id="addtableMsg">
+                <div class="removeMsg"> 
+                  <table class="table table-hover" id="sample_7">
+                    <thead>
+                      <tr>
+                        <th>Mensajes</th>
+                        <th>Archivo</th>
+                        <th>Fecha</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>          
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn green" >Cerrar Ticket</button>
+          <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarTicket()" >Cerrar Ticket</button>
       </div>   
     </div>
   </div>
@@ -230,9 +219,9 @@
     		formdata.append("id_solicitud", noSolicitud);  
     	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
     		formdata.append("estatus", opEstatus);    
-    		formdata.append("tipo_tramite", opTipoSolicitud);   
+    		formdata.append("tipo_solicitud", opTipoSolicitud);   
     	}else if(opTipoSolicitud != "0"){
-    		formdata.append("tipo_tramite", opTipoSolicitud);  
+    		formdata.append("tipo_solicitud", opTipoSolicitud);  
     	}else if( opEstatus != "0"){
     		formdata.append("estatus", opEstatus);    
     	}else{
@@ -249,7 +238,7 @@
         .done(function (response) {
         	//var Resp=$.parseJSON(response);
             addtable();
-            //console.log(response);
+            console.log(response);
             //console.log(JSON.stringify(response));
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
@@ -258,8 +247,8 @@
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
                 	+"<td>"+item.titulo+"</td>"
-                	+"<td>"+item.mensaje+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
+                	+"<td>"+item.created_at+"</td>"
                 	+ "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\")'> Atender </a></td>"
                 	+"</tr>"
                 );
@@ -272,11 +261,130 @@
   	}
   	function addtable(){
     	$("#addtables div").remove();
-    	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Mensaje</th><th>Descripción</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+    	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+    }
+    function tableMsg(){
+      $("#addtableMsg div").remove();
+      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
     function findAtender(id)
     {
       document.getElementById("idmodal").textContent=id;
+      document.getElementById("idTicket").value=id;
+      findMessage(id);
+      $.ajax({
+           method: "GET", 
+           url: "{{ url('/atender-solicitudes') }}" + "/"+id,
+           data:{ _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response.solicitante);
+          var Resp=$.parseJSON(response);
+          var soli=Resp.solicitante;
+          document.getElementById("nomsolic").textContent=Resp.nombre;
+          document.getElementById("apMat").textContent=Resp.apellido_materno;
+          document.getElementById("apPat").textContent=Resp.apellido_paterno;
+          document.getElementById("rfc").textContent=Resp.rfc;
+          if(Resp.rfc==null || Resp.rfc ==""){
+            document.getElementById("rfc").textContent=soli.rfc;
+          }
+          if(Resp.nombre==null || Resp.nombre ==""){
+            document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
+          }
+          //TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+     function findMessage(id_)
+    {
+     // console.log(id_);
+      $.ajax({
+           method: "GET", 
+           url: "{{ url('/listado-mensajes') }}" + "/"+id_,
+           data:{_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response.solicitante);
+          tableMsg();
+          var resp=$.parseJSON(response);
+           $.each(resp, function(i, item) {
+              $('#sample_7 tbody').append("<tr>"
+                  +"<td>"+item.mensaje+"</td>"
+                  +"<td>"+item.attach+"</td>"
+                  +"<td>"+item.created_at+"</td>"
+                  +"</tr>"
+                );
+            });
+          
+          TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function cerrarTicket()
+    {
+      var idT=$("#idTicket").val();
+      $.ajax({
+           method: "POST", 
+           url: "{{ url('/cerrar-ticket') }}",
+           data:{ id:idT ,_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response.solicitante);
+
+           if(response.Code=="200")
+             {
+               Command: toastr.success(response.Message, "Notifications")
+               return;
+             }
+          //TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function saveMessage()
+    {
+      var mensaje=$("#message").val();
+      var file=$("#file").val();
+      var id_=$("#idTicket").val();
+      if(mensaje.length==0){
+        Command: toastr.warning("Mensaje, Requerido!", "Notifications")
+      }else{
+        var fileV = $("#file")[0].files[0];                  
+        var formdata = new FormData();
+
+        if(file.length>0){ 
+          formdata.append("file", fileV);
+        }              
+        formdata.append("id", id_);      
+        formdata.append("mensaje", mensaje);
+        formdata.append("_token",'{{ csrf_token() }}');
+        $.ajax({
+           method: "POST",
+           contentType: false,
+            processData: false, 
+           url: "{{ url('/guardar-solicitudes') }}",
+           data: formdata })
+        .done(function (response) {
+          //console.log(response.solicitante);
+           if(response.Code=="200")
+             {
+              document.getElementById("message").value="";
+              document.getElementById("file").value="";
+              findMessage(id_);
+               Command: toastr.success(response.Message, "Notifications")
+               return;
+             }
+             else{
+                Command: toastr.warning("Ocurrio un Error", "Notifications")
+             }
+          //TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+      }
     }
 	</script>
 @endsection
