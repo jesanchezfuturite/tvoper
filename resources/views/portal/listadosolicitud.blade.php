@@ -140,6 +140,18 @@
                 <label id="rfc"></label>
               </div>
             </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong>Valor catastral:</strong></label><br>                
+                <label id="vcatastral"></label>
+              </div>
+            </div>
+            <div class="col-md-4">             
+              <div class="form-group">
+                <label><strong></strong></label><br>                
+                <label id=""></label>
+              </div>
+            </div>
           </div>        
         </div>
         <div class="row">
@@ -278,18 +290,13 @@
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           console.log(response);
-          var Resp=$.parseJSON(response);
+          var Resp=response;
           var soli=Resp.solicitante;
-          document.getElementById("nomsolic").textContent=Resp.nombre;
-          document.getElementById("apMat").textContent=Resp.apellido_materno;
-          document.getElementById("apPat").textContent=Resp.apellido_paterno;
-          document.getElementById("rfc").textContent=Resp.rfc;
-          if(Resp.rfc==null || Resp.rfc ==""){
-            document.getElementById("rfc").textContent=soli.rfc;
-          }
-          if(Resp.nombre==null || Resp.nombre ==""){
-            document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
-          }
+          document.getElementById("nomsolic").textContent=Resp.campos["Nombre"];
+          document.getElementById("apMat").textContent=Resp.campos["Apellido paterno"];
+          document.getElementById("apPat").textContent=Resp.campos["Apellido materno"];
+          document.getElementById("rfc").textContent=Resp.campos["RFC"];
+          document.getElementById("vcatastral").textContent=Resp.campos["Valor catastral"];
           //TableManaged7.init7();   
         })
         .fail(function( msg ) {

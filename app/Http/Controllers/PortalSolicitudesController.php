@@ -551,9 +551,14 @@ class PortalSolicitudesController extends Controller
       }
       return json_encode($mensajes);
     }
-    public function downloadFile($file){
+    public function downloadFile($file)
+    {
+      try{
       $pathtoFile = storage_path('app/'.$file);
       return response()->download($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@downloadFile");
+      }
     }
  
 }
