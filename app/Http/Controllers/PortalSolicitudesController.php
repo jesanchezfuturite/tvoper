@@ -448,21 +448,17 @@ class PortalSolicitudesController extends Controller
     $ticket = $this->ticket->where('id', $id)->first();
     $informacion = json_decode($ticket->info);
     $informacion = json_decode(json_encode($informacion), true);
-    extract($informacion, EXTR_PREFIX_SAME, "informacion");
-    unset($informacion["costo_final"], $informacion["partidas"], $informacion["solicitante"]);
-
+    $campos = $informacion["campos"];   
     $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
     $keys = array_column($catalogo, 'id');
     $values = array_column($catalogo, 'descripcion');
     $combine = array_combine($keys, $values);
-    $campos = array_intersect_key($combine, $informacion);
+    $catalogue = array_intersect_key($combine, $campos);
     
-    $info = array_combine($campos, $informacion);
-    $info["costo_final"]=$costo_final;
-    $info["partidas"]=$partidas;
-    $info["solicitante"]=$solicitante;
-    
-    return $info; 
+    $camposnuevos = array_combine($catalogue, $campos);
+    unset($informacion["campos"]);
+    $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+    return $informacion; 
     
 
   }
@@ -561,3 +557,4 @@ class PortalSolicitudesController extends Controller
     }
  
 }
+
