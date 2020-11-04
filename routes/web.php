@@ -360,8 +360,6 @@ Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 
 
-
-
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
