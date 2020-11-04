@@ -124,6 +124,12 @@
             </div>
             <div class="col-md-4">             
               <div class="form-group">
+                <label><strong>Apellido Paterno:</strong></label><br>                
+                <label id="apPat"></label>
+              </div>
+            </div>
+            <div class="col-md-4">             
+              <div class="form-group">
                 <label><strong>Apellido Materno:</strong></label><br>                
                 <label id="apMat"></label>
               </div>
@@ -274,10 +280,16 @@
           //console.log(response.solicitante);
           var Resp=$.parseJSON(response);
           var soli=Resp.solicitante;
-          document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
-          document.getElementById("apMat").textContent=soli.apMat;
-          document.getElementById("rfc").textContent=soli.rfc;
-           
+          document.getElementById("nomsolic").textContent=Resp.nombre;
+          document.getElementById("apMat").textContent=Resp.apellido_materno;
+          document.getElementById("apPat").textContent=Resp.apellido_paterno;
+          document.getElementById("rfc").textContent=Resp.rfc;
+          if(Resp.rfc==null || Resp.rfc ==""){
+            document.getElementById("rfc").textContent=soli.rfc;
+          }
+          if(Resp.nombre==null || Resp.nombre ==""){
+            document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
+          }
           //TableManaged7.init7();   
         })
         .fail(function( msg ) {
