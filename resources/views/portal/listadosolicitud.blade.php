@@ -206,7 +206,7 @@
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
-    TableManaged7.init7();
+    //TableManaged7.init7();
     });
 
    	function findSolicitudes(){
@@ -306,17 +306,28 @@
         .done(function (response) {
           //console.log(response.solicitante);
           tableMsg();
+          var icon="";
+          var attach="";
           var resp=$.parseJSON(response);
            $.each(resp, function(i, item) {
+            if(item.attach== null || item.attach=="")
+            {
+              icon="";
+              attach="";
+            }else {
+              icon="<i class='fa fa-download'></i>";
+              attach=item.attach;
+            }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td>"+item.attach+"</td>"
+                  +"<td><a href='/download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
-                );
+                );           
+            
             });
           
-          TableManaged7.init7();   
+          //TableManaged7.init7();   
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
