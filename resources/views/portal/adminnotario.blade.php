@@ -3,7 +3,7 @@
 
 @section('content')
 
-<h3 class="page-title">Portal <small>Configuración Notario</small></h3>
+<h3 class="page-title">Portal <small> Asignación de usuarios por Notaria </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -16,7 +16,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Configuración Notario</a>
+            <a href="#">Asignación de usuarios por Notaria</a>
         </li>
     </ul>
 </div>
@@ -122,15 +122,24 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarNot()"></button>
-        <h4 class="modal-title">Configuracion Notario</h4>        
+        <h3 class="modal-title">Configuración Notario</h3>        
       </div>
       <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos generales sobre la notaría</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
                 <div class="form-group">
-                <label >Numero de Notario</label>                                             
+                <label >Número de Notario</label>                                             
                 <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notario...">
               </div>                                           
               </div>
@@ -156,19 +165,19 @@
             
            <div class="col-md-2">
               <div class="form-group">
-                <label >Numero</label>                                                       
+                <label >Número Interior</label>                                                       
                 <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
              </div> 
            </div>
            <div class="col-md-2">
               <div class="form-group">
-                <label >Numero Exterior</label>                                                       
+                <label >Número Exterior</label>                                                       
                 <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior...">
              </div> 
            </div> 
            <div class="col-md-3">
               <div class="form-group">
-                <label >Codigo Postal</label>                                                       
+                <label >Código Postal</label>                                                       
                 <input type="text" class="form-control valida-numeros" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
              </div> 
            </div>
@@ -203,12 +212,10 @@
             </div>            
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Numero de Teléfono</label>                                             
+                <label >Número de Teléfono</label>                                             
                 <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono...">
               </div>
-            </div>
-            
-                     
+            </div> 
           </div>
         </div>
         <div class="row">
@@ -219,32 +226,16 @@
                 <input type="text" class="form-control" name="emailNotario" id="emailNotario" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
                 <span id="emailNot" class="help-block"></span>                                           
               </div>
-            </div>
-            <div class="col-md-4"> 
-              <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia SAT</span>
-                  <input type="file" name="fileSAT" id="fileSAT">
-                </span>
-              </div>
-            </div>
-            <div class="col-md-4"> 
-              <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia Notario</span>
-                  <input type="file" name="fileNotario" id="fileNotario">
-                </span>
-              </div>
-            </div>
+            </div>            
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <h4 class="form-section">Datos del notario titular</h4>
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos del notario titular</strong></h4>
+              </div>
+            </div>
           </div>
         </div>
         <div class="row">
@@ -324,7 +315,7 @@
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
-                <label >Usuario configurado para</label> 
+                <label >Comunidad</label> 
                    <select id="itemsCofigNotario" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>
@@ -347,7 +338,35 @@
                 <div class="input-icon right">
                     <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña..." value="">                   
-                </div>                              
+                </div>
+                <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordNot()"> Generar</a></span>                           
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+             
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <span class="help-block">&nbsp;</span>
+                <span class="btn green fileinput-button">
+                  <i class="fa fa-plus"></i>&nbsp;
+                  <span>Adjuntar Constancia SAT</span>
+                  <input type="file" name="fileSAT" id="fileSAT">
+                </span>
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <span class="help-block">&nbsp;</span>
+                <span class="btn green fileinput-button">
+                  <i class="fa fa-plus"></i>&nbsp;
+                  <span>Adjuntar Constancia Notario</span>
+                  <input type="file" name="fileNotario" id="fileNotario">
+                </span>
               </div>
             </div>
           </div>
@@ -402,7 +421,7 @@
           <div class="col-md-12">
              <div class="col-md-6"> 
               <div class="form-group">
-                <label >Numero de Teléfono</label>                                             
+                <label >Número de Teléfono</label>                                             
                 <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off">
               </div>
             </div>
@@ -466,6 +485,7 @@
                 <div class="input-icon right">
                     <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
+                    <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
                 </div>
               </div> 
             </div>
@@ -533,6 +553,7 @@
 @endsection
 
 @section('scripts')
+<script src="assets/global/scripts/validar_pdf.js" type="text/javascript"></script>
 
 <script type="text/javascript">
   jQuery(document).ready(function() {
@@ -1049,7 +1070,8 @@ function getBase64Notario(file) {
     document.getElementById('curpNotario').value="";
     document.getElementById('rfcNotario').value="";
     $("#itemsTipoNotario").val("0").change();
-    document.getElementById('passNotario').value="";
+    document.getElementById('passNotario').value=""; 
+    $("#itemsPermisoNotario").val("0").change();
     //$("input:radio").attr("checked", false);
     document.getElementById('base64pdf1').value="";
     document.getElementById('base64pdf2').value="";
@@ -1156,6 +1178,20 @@ function curpValida(curp) {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
+function gPasswordNot()
+{
+  var caracteres = "abcdefghijkmnpqrtuvwxyzABCDEFGHJKMNPQRTUVWXYZ123467890";
+  var pass = "";
+  for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
+  document.getElementById("passNotario").value=pass;
+}
+function gPasswordPerf()
+{
+  var caracteres = "abcdefghijkmnpqrtuvwxyzABCDEFGHJKMNPQRTUVWXYZ123467890";
+  var pass = "";
+  for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
+  document.getElementById("password").value=pass;
+}
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
