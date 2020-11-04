@@ -144,7 +144,7 @@ class PortalSolicitudesTicketController extends Controller
         return $result;
     }
     public function getInfo($user_id){
-      // try {
+      try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         $notary_id = $relation->notary_office_id;
@@ -202,14 +202,14 @@ class PortalSolicitudesTicketController extends Controller
         return $response;
         
   
-      // } catch (\Exception $e) {
-      //   return response()->json(
-      //     [
-      //       "Code" => "400",
-      //       "Message" => "Error al obtener información",
-      //     ]
-      //   );
-      // }
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener información",
+          ]
+        );
+      }
     }
   
     public function detalleTramite($clave){
@@ -263,22 +263,20 @@ class PortalSolicitudesTicketController extends Controller
 
     public function asignarClavesCatalogo($info){
         $informacion = json_decode($info);
-        $informacion = to_array($informacion);
-        extract($informacion, EXTR_PREFIX_SAME, "informacion");
-        unset($informacion["costo_final"], $informacion["partidas"], $informacion["solicitante"]);
+        $informacion = json_decode(json_encode($informacion), true);
 
         $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+        $campos = $informacion["campos"]; 
         $keys = array_column($catalogo, 'id');
         $values = array_column($catalogo, 'descripcion');
         $combine = array_combine($keys, $values);
-        $campos = array_intersect_key($combine, $informacion);
+        $catalogue = array_intersect_key($combine, $campos);
         
-        $info = array_combine($campos, $informacion);  
-        $info["costo_final"]=$costo_final;
-        $info["partidas"]=$partidas;
-        $info["solicitante"]=$solicitante;
+        $camposnuevos = array_combine($catalogue, $campos);
+        unset($informacion["campos"]);
+        $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
 
-        return json_encode($info); 
+        return json_encode($informacion); 
     }
     
 }
