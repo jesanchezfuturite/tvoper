@@ -550,6 +550,9 @@ class PortalSolicitudesController extends Controller
       }
       return json_encode($mensajes);
     }
-
+    public function downloadFile($file){
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->download($pathtoFile);
+    }
  
 }

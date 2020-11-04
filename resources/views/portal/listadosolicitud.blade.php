@@ -277,7 +277,7 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response.solicitante);
+          console.log(response);
           var Resp=$.parseJSON(response);
           var soli=Resp.solicitante;
           document.getElementById("nomsolic").textContent=Resp.nombre;
@@ -320,7 +320,7 @@
             }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='/download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
                 );           
