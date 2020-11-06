@@ -33,7 +33,7 @@ class PortalReglaOperativaController extends Controller
 
       public function index()
       {
-      	return view('');
+      	return view('portal/reglasoperativas');
       }
 
       public function getReglas(){
