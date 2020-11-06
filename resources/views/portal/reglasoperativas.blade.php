@@ -32,16 +32,16 @@
 		      <div class="col-md-3 col-ms-12">
 		        <div class="form-group">
 		          <label >Trámite</label> 
-              <span class="help-block">(Selecciona el Trámite)</span>          
-						  <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
-						      <option value="0">------</option>
-						   <!-- @foreach($tramites as $tr)
-                  <option value="{{$tr['id']}}">{{$tr["tramite"]}}</option>
-                @endforeach   
-                -->  
-						  </select>   
+              <span class="help-block">(Selecciona el Trámite)</span>  
 		        </div>
 		      </div>
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">      
+              <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
+                  <option value="0">------</option>              
+              </select>   
+            </div>
+          </div>
 	     </div> 
       </div>
     </div>
@@ -52,7 +52,7 @@
       <div class="portlet-title">
         <div class="caption" id="headerTabla">
           <div id="borraheader"> 
-            <i class="fa fa-cogs"></i>&nbsp;Solicitudes &nbsp;
+            <i class="fa fa-cogs"></i>&nbsp;Reglas Operativos Campos &nbsp;
           </div>
         </div>
         <div class="tools" id="toolsSolicitudes">                
