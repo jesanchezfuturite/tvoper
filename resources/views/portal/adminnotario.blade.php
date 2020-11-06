@@ -38,35 +38,38 @@
             </div>
         </div>
         <div class="portlet-body">
-        <div class="row">            
-            <div class="col-md-3 col-ms-12">
-                <div class="form-group">
-                    <label >Notarios Registrados </label>  
-                    <span class="help-block">(Selecciona para ver los Perfiles)</span> 
-                  </div>
+        <div class="row">
+          <div class="col-md-2 col-ms-12">
+            <div class="form-group">
+              <label class="control-label">Comunidades</label>
+              <span class="help-block">(Selecciona)</span> 
             </div>
-            <div class="col-md-3 col-ms-12">
-                <div class="form-group">           
-                  <select class="select2me form-control"name="itemsNotario" id="itemsNotario" onchange="changeNotario()">
-                    <option value="0">------</option>
-                     @foreach( $notary as $sd)
-                        <option value="{{$sd['id']}}">{{$sd["notary_number"]}}</option>
-                      @endforeach     
-                  </select>            
-                </div>
-            </div>
-            <div class="col-md-5 col-ms-12">
-              <div class="form-group">
-                  <label class="col-md-4 control-label">Comunidades</label>
-                    <div class="col-md-6 col-ms-12">
-                      <select id="itemsConfigUser" class="select2me form-control" >
-                        <option value="0">-------</option>
-                      </select> 
-                  </div>
-                </div>
-              </div>          
           </div>
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">
+                <select id="itemsConfigUser" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>
+              </div>
+            </div>            
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">
+                <label >Notarios Registrados </label>  
+                <span class="help-block">(Selecciona para ver los Perfiles)</span> 
+            </div>
+          </div>
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">           
+              <select class="select2me form-control"name="itemsNotario" id="itemsNotario" onchange="changeNotario()">
+                <option value="0">------</option>
+                 @foreach( $notary as $sd)
+                  <option value="{{$sd['id']}}">{{$sd["notary_number"]}}</option>
+                @endforeach     
+                </select>            
+            </div>
+          </div>    
         </div>
+      </div>
     </div>
 </div>
 <div class="row">
@@ -784,16 +787,25 @@ function getBase64Notario(file) {
   function changeNotario()
   {
     var id=$("#itemsNotario").val();
+    var com=$("#itemsConfigUser").val();
+    if(id=="0")
+    {
+      return;
+    }
+    if(com=="0")
+    {      
+      Command: toastr.warning("Selecciona una Comunidad, Requerido!", "Notifications") 
+      $("#itemsNotario").val(0).change();
+      return;
+    }
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
-        .done(function (response) {     
-        
+        .done(function (response) { 
           document.getElementById('jsonCode').value=response;            
           var Resp=response;
-          
-        addtable();
+          addtable();
         $.each(Resp, function(i, item) {   
              json=JSON.stringify(item);        
              status=item.status;    
@@ -812,8 +824,10 @@ function getBase64Notario(file) {
                 msgg="Sin estatus"; 
                 icon="green";
                 title="Activar";
-              }     
-            $('#sample_3 tbody').append("<tr>"
+              }
+              //console.log(item.config_id);
+            if(com==item.config_id){   
+              $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
                 +"<td>"+item.name+"</td>"
@@ -823,6 +837,7 @@ function getBase64Notario(file) {
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
+              }
             });
         TableManaged.init();
         })
