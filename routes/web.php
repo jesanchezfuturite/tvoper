@@ -367,7 +367,4 @@ Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketControll
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 
 
-
-
-
-
+Route::get('/reglas-operativas', 'PortalReglaOperativaController@getReglas');
