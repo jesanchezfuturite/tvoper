@@ -367,4 +367,8 @@ Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketControll
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 
 
-Route::get('/reglas-operativas', 'PortalReglaOperativaController@getReglas');
+Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
+Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
+Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampos');
+Route::get('/reglas-info', 'PortalReglaOperativaController@getReglas');
+Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
