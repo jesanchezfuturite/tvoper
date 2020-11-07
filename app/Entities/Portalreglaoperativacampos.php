@@ -23,7 +23,7 @@ class Portalreglaoperativacampos extends Model implements Transformable
 
     protected $connection = "mysql6";
 
-    protected $fillable = ['id_campo','constante', 'status'];
+    protected $fillable = ['id_regla_operativa','constante','id_campo', 'status'];
 
     protected $table = "regla_operativa_campos";
 

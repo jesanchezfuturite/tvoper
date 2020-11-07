@@ -21,7 +21,7 @@ class Portalreglaoperativa extends Model implements Transformable
      * @var array
      */
      protected $connection = "mysql6";
-    protected $fillable = ['nombre','definicion', 'status'];
+    protected $fillable = ['tramite_id','definicion', 'status'];
     protected $table = "regla_operativa";
 
 }
