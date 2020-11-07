@@ -93,7 +93,7 @@
 
 <input type="text" name="campos" id="campos" hidden="true">
 <input type="text" name="variables" id="variables" hidden="true" value="">
-<input type="text" name="" hidden="true">
+<input type="text" name="id_regla" id="id_regla" hidden="true">
 @endsection
 
 @section('scripts')
@@ -105,6 +105,11 @@
     { 
       var id_=$("#opTramite").val();
       $("#addCampos").empty();
+      if(id_=="0")
+      {
+        return;
+      }
+      findRegla();
       $.ajax({
            method: "POST", 
            url: "{{ url('/reglas-tmt-relationship') }}",
@@ -126,6 +131,7 @@
               "<div class=' col-md-10'></div>"+
               "<div class=' col-md-2'> <button type='submit' class='btn blue' onclick='saveReglas()'><i class='fa fa-check'></i> Guardar</button> </div> </div></div>");
           addselects();
+          findConstantes();
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -146,6 +152,55 @@
         });
 
 
+    }
+    function findRegla()
+    {
+       document.getElementById("id_regla").value='0';
+      var id_=$("#opTramite").val();
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-info') }}",
+           data:{tramite_id:id_, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response);
+          if(response=="[]")
+          {
+            return;
+          }
+           var Resp=$.parseJSON(response);
+          $.each(Resp, function(i, item) {
+            document.getElementById("id_regla").value=item.id;
+            });
+           
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function findConstantes()
+    {
+      var id_=$("#id_regla").val();
+      if(id_=="0")
+        {return;}
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-cmp') }}",
+           data:{regla_id:id_, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response);
+          if(response=="[]")
+          {
+            return;
+          }
+           var Resp=$.parseJSON(response);
+          $.each(Resp, function(i, item) {
+            $("#"+item.id_campo).val(item.constante).change();
+          });
+           
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
     }
     function saveReglas()
     {
