@@ -46,19 +46,28 @@ class PortalReglaOperativaController extends Controller
 
       public function getTramites(){
 
-        $tramits = $this->tiposer->where('id_gpm','>=', 1)->get();
+        $tramits = $this->camposrel->groupby('tramite_id')->get();
+        //dd($tramits);
         $tmts = array();
-        try{
-          foreach ($tramits as $t) {
-            $tmts []=array(
-              'id_tramite'=> $t->Tipo_Code,
-              'tramite' => $t->Tipo_Descripcion,
-            );
-          }
 
-        }catch(\Exception $e){
-          Log::info('Error Portal - ver Tramites: '.$e->getMessage());
+        foreach ($tramits as $t) {
+          $id_tramite = $t->tramite_id;
+          $created_at = $t->created_at;
+          $updated_at = $t->updated_at;
+
+          $serv = $this->tiposer->where('Tipo_Code', $id_tramite)->get();
+          foreach ($serv as $s) {
+            $name = $s->Tipo_Descripcion;
+
+            $tmts []=array(
+              'id_tramite' => $id_tramite,
+              'nombre' => $name
+            );
+
+          }
         }
+
+        //dd($tmts);
 
         return json_encode($tmts);
       }
