@@ -14,6 +14,7 @@ use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
+use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
@@ -32,6 +33,7 @@ class PortaltramitesauxController extends Controller
 	protected $subsidiotramitedb;
 	protected $umadb;
 	protected $partidas;
+	protected $reglas;
 
     public function __construct(
 
@@ -42,7 +44,8 @@ class PortaltramitesauxController extends Controller
     	PortalcostotramitesRepositoryEloquent $costotramitedb,
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
     	UmahistoryRepositoryEloquent $umadb,
-			EgobiernopartidasRepositoryEloquent $partidas
+			EgobiernopartidasRepositoryEloquent $partidas,
+			PortalreglaoperativaRepositoryEloquent $reglas
 
     )
     {
@@ -55,6 +58,7 @@ class PortaltramitesauxController extends Controller
     	$this->subsidiotramitedb = $subsidiotramitedb;
     	$this->umadb = $umadb;
 			$this->partidas = $partidas;
+			$this->reglas = $reglas;
     }
 
 
@@ -426,5 +430,9 @@ class PortaltramitesauxController extends Controller
 
 			return json_encode($response);
     }
+
+		public function getReglas(){
+			
+		}
 
 }
