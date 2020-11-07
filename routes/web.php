@@ -333,6 +333,7 @@ Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
 Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
+Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -367,7 +368,9 @@ Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketControll
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 
 
-
-
-
-
+Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
+Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
+Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampos');
+Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
+Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
+Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
