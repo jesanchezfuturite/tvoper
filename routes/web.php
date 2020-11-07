@@ -370,5 +370,6 @@ Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTram
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
 Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
 Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampos');
-Route::get('/reglas-info', 'PortalReglaOperativaController@getReglas');
+Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
+Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
 Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
