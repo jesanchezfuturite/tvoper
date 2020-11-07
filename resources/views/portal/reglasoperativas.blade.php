@@ -274,7 +274,7 @@
           }else{
              Command: toastr.warning(response.Message, "Notifications")
           }
-          deleteConstantes();
+          //deleteConstantes();
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
