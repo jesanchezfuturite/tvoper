@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-
+use DB;
 use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalreglaoperativacamposRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
@@ -143,17 +143,53 @@ class PortalReglaOperativaController extends Controller
       }
 
       public function saveRegla(Request $request){
-        $id_tramite = $request->id_tramite;
+
+        $id_tramite = $request->tramite_id;
         $definicion = $request->definicion;
 
-        $campo_id = $request->campo_id;
-        $cte = $request->constante;
+        $campos = $request->campos;
 
         try{
-          $save = $this->reglaoperativa->create(['id_tramite'=>$id_tramite, 'definicion'=>$definicion, 'status'=>1]);
+          //Validar si existe una regla para el tramite
+          $existe = $this->reglaoperativa->where('tramite_id', $id_tramite)->get();
+          foreach ($existe as $e) {
+            $id_reglae = $e->id;
+          }
 
+          if(!empty($id_reglae)){
 
+            $regla = $this->reglaoperativa->update(['status'=>0], $id_reglae);
 
+            $campos_rel = $this->ro_cmps->where('id_regla_operativa', $id_reglae)->get();
+            
+            foreach ($campos_rel as $cmprel) {
+              $id_cmp = $cmprel->id;
+
+              $estatus = $this->ro_cmps->update(['status'=>0], $id_cmp);
+            }
+
+            //Se agregan los nuevos registros
+            $id_regla = $this->reglaoperativa->create(['tramite_id'=>$id_tramite, 'definicion'=>$definicion, 'status'=>1])->id;
+
+            foreach ($campos as $cmps) {
+              $campo_id = $cmps['campo_id'];
+              $cte = $cmps['constante'];
+
+              $rel_cmps = $this->ro_cmps->create(['id_regla_operativa'=>$id_regla, 'constante'=>$cte, 'id_campo'=>$campo_id, 'status'=>1]);
+            }
+
+          }else{
+
+            $id_regla = $this->reglaoperativa->create(['tramite_id'=>$id_tramite, 'definicion'=>$definicion, 'status'=>1])->id;
+
+            foreach ($campos as $cmps) {
+
+              $campo_id = $cmps['campo_id'];
+              $cte = $cmps['constante'];
+
+              $rel_cmps = $this->ro_cmps->create(['id_regla_operativa'=>$id_regla, 'constante'=>$cte, 'id_campo'=>$campo_id, 'status'=>1]);
+            }
+          }
 
           return response()->json(["Code" => "200","Message" => "Success"]);
         }catch(\Exception $e){
