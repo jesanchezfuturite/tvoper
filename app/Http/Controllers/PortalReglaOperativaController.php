@@ -14,6 +14,7 @@ use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 
+
 class PortalReglaOperativaController extends Controller
 {
     //
@@ -77,12 +78,32 @@ class PortalReglaOperativaController extends Controller
         //$id_tmt = 100;
         try{
           $rel = $this->camposrel->where('tramite_id', $id_tmt)->get();
+          $data = array();
 
+          foreach ($rel as $r) {
+            $campo_id = $r->campo_id;
+
+            $data_campo = $this->campos->where('id', $campo_id)->get('descripcion');
+            foreach ($data_campo as $dc) {
+              $descripcion = $dc->descripcion;
+            }
+
+            $data [] = array(
+              'id' => $r->id,
+              'tramite_id' => $r->tramite_id,
+              'campo_id' => $campo_id,
+              'descripcion' => $descripcion,
+              'tipo_id' => $r->tipo_id,
+              'caracteristicas' =>$r->caracteristicas
+            );
+
+          }
+          //dd($data);
         }catch(\Exception $e){
           Log::info('Error Portal - relacion campos: '.$e->getMessage());
           return response()->json(["Code" => "400","Message" => "Error"]);
         }
-        return json_encode($rel);
+        return json_encode($data);
       }
 
      /**
