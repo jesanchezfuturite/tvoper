@@ -83,6 +83,11 @@
     </div>
   </div>
 </div>
+
+
+<input type="text" name="campos" id="campos" hidden="true">
+<input type="text" name="variables" id="variables" hidden="true" value="[]">
+<input type="text" name="" hidden="true">
 @endsection
 
 @section('scripts')
@@ -104,7 +109,7 @@
           console.log(response);
           var Resp=response;
           for (n in Resp.campos) {            
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
+              $("#addcampos").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
         })
         .fail(function( msg ) {
