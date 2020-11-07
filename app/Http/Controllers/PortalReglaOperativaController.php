@@ -144,10 +144,13 @@ class PortalReglaOperativaController extends Controller
       public function saveRegla(Request $request){
         $id_tramite = $request->id_tramite;
         $definicion = $request->definicion;
-        
+
+        $campo_id = $request->campo_id;
+        $cte = $request->constante;
 
         try{
           $save = $this->reglaoperativa->create(['id_tramite'=>$id_tramite, 'definicion'=>$definicion, 'status'=>1]);
+
 
 
 
@@ -161,5 +164,14 @@ class PortalReglaOperativaController extends Controller
 
       public function deleteRegla(Request $request){
         $id = $request->id;
+
+        try{
+
+          $up = $this->reglaoperativa->update(['status'=>0], $id);
+
+        }catch(\Exception $e){
+          Log::info('Error Reglas Operativas - borrar reglas: '.$e->getMessage());
+          return response()->json(["Code" => "400","Message" => "Error al borrar"]);
+        }
       }
 }
