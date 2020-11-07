@@ -116,9 +116,15 @@
           $.each(Resp, function(i, item) {           
             $("#addCampos").append("<div class='col-md-4'><div class='form-group'>"+
               "<div class=' col-md-4'><select class='select2me form-control' name='opTramite' id='"+item.campo_id+"'> <option value='0'>------</option></select></div>"+
-              " <label class='col-md-3'>"+item.campo_id+"</label><span class='help-block'>&nbsp;</span> </div></div>");
+              " <label class='col-md-6'>"+item.descripcion+"</label><span class='help-block'>&nbsp;</span><span class='help-block'>&nbsp;</span> </div></div>");
 
           });
+           $("#addCampos").append("<div class='col-md-12'><div class='form-group'>"+
+              "<label class=' col-md-1'>Formula</label>"+
+              "<div class='col-md-4'> <input type='text' class='form-control' name='formula' id='formula' placeholder='Ingrese la Formula...''><span class='help-block'>&nbsp;</span></div> </div></div>");
+           $("#addCampos").append("<div class='col-md-12'><div class='form-group'>"+
+              "<div class=' col-md-10'></div>"+
+              "<div class=' col-md-2'> <button type='submit' class='btn blue' onclick='saveReglas()'><i class='fa fa-check'></i> Guardar</button> </div> </div></div>");
           addselects();
         })
         .fail(function( msg ) {
@@ -138,7 +144,40 @@
                 $("#"+item.campo_id).append("<option value='"+ab+"'>"+ab+"</option>");
             });
         });
+
+
     }
+    function saveReglas()
+    {
+      const fdata = [];
+      var id_=$("#opTramite").val();
+      var definicion_=$("#formula").val();
+      var campos=$("#campos").val();
+      var Resp=$.parseJSON(campos);
+      $.each(Resp, function(i, item) {
+        var val=$("#"+item.campo_id).val();
+
+        if(val!="0"){
+          fdata.push({campo_id : item.campo_id,constante : val})
+        }
+      });
+          console.log(fdata);
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-save') }}",
+           data:{tramite_id:id_,definicion:definicion_,campos:fdata, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          if(response.Code=='200')
+          {
+            Command: toastr.success(response.Message, "Notifications")
+          }else{
+             Command: toastr.warning(response.Message, "Notifications")
+          }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+      }
 
   </script>
 @endsection
