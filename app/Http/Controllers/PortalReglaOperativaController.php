@@ -41,7 +41,8 @@ class PortalReglaOperativaController extends Controller
 
       public function index()
       {
-      	return view('');
+        $tramites=$this->getTramites();
+      	return view('portal/reglasoperativas',['tramites'=>json_decode($tramites,true)]);
       }
 
       public function getTramites(){
