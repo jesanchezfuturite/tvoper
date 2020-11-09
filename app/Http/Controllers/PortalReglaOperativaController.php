@@ -130,7 +130,7 @@ class PortalReglaOperativaController extends Controller
       }
 
       public function getReglasCampos(Request $request){
-        $id_regla = $reques->regla_id;
+        $id_regla = $request->regla_id;
 
         try {
           $reglas = $this->ro_cmps->where('id_regla_operativa', $id_regla)->get();

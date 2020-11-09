@@ -66,7 +66,20 @@
         <span class="help-block">&nbsp;</span>
     		  <div class="row" id="addCampos">
             
-          </div> 
+          </div>
+           <div id="id_button" style="display: none;">
+          <div class='col-md-12'>
+            <div class='form-group'>
+              <label class=' col-md-1'>Formula</label>
+              <div class='col-md-4'> 
+                <input type='text' class='form-control' name='formula' id='formula' placeholder='Ingrese la Formula...'><span class='help-block'>&nbsp;</span>
+              </div> 
+            </div>
+          </div>
+          <div class='col-md-12' ><div class='form-group'>
+            <div class=' col-md-10'></div>
+              <div class=' col-md-2'> <button type='submit' class='btn blue' onclick='saveReglas()'><i class='fa fa-check'></i> Guardar</button> </div> </div></div>
+          </div>
           <span class="help-block">&nbsp;</span>  
     	</div>
     </div>
@@ -93,7 +106,8 @@
 
 <input type="text" name="campos" id="campos" hidden="true">
 <input type="text" name="variables" id="variables" hidden="true" value="">
-<input type="text" name="" hidden="true">
+<input type="text" name="id_regla" id="id_regla" hidden="true">
+<input type="text" name="deleteCampos" id="deleteCampos" hidden="true">
 @endsection
 
 @section('scripts')
@@ -105,6 +119,12 @@
     { 
       var id_=$("#opTramite").val();
       $("#addCampos").empty();
+      document.getElementById("id_button").style.display = "none";
+      if(id_=="0")
+      {
+        return;
+      }
+      findRegla();
       $.ajax({
            method: "POST", 
            url: "{{ url('/reglas-tmt-relationship') }}",
@@ -119,13 +139,9 @@
               " <label class='col-md-6'>"+item.descripcion+"</label><span class='help-block'>&nbsp;</span><span class='help-block'>&nbsp;</span> </div></div>");
 
           });
-           $("#addCampos").append("<div class='col-md-12'><div class='form-group'>"+
-              "<label class=' col-md-1'>Formula</label>"+
-              "<div class='col-md-4'> <input type='text' class='form-control' name='formula' id='formula' placeholder='Ingrese la Formula...''><span class='help-block'>&nbsp;</span></div> </div></div>");
-           $("#addCampos").append("<div class='col-md-12'><div class='form-group'>"+
-              "<div class=' col-md-10'></div>"+
-              "<div class=' col-md-2'> <button type='submit' class='btn blue' onclick='saveReglas()'><i class='fa fa-check'></i> Guardar</button> </div> </div></div>");
+           document.getElementById("id_button").style.display = "block";
           addselects();
+          findConstantes();
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -147,9 +163,86 @@
 
 
     }
+    function findRegla()
+    {
+       document.getElementById("id_regla").value='0';
+        document.getElementById("formula").value="";
+      var id_=$("#opTramite").val();
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-info') }}",
+           data:{tramite_id:id_, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          //console.log(response);
+          if(response=="[]")
+          {
+            return;
+          }
+           var Resp=$.parseJSON(response);
+          $.each(Resp, function(i, item) {
+            document.getElementById("id_regla").value=item.id;
+            document.getElementById("formula").value=item.definicion;
+            });
+           
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function findConstantes()
+    {
+      var id_=$("#id_regla").val();
+      document.getElementById("deleteCampos").value="[]";
+      if(id_=="0")
+        {return;}
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-cmp') }}",
+           data:{regla_id:id_, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          
+          if(response=="[]")
+          {
+            return;
+          }
+          document.getElementById("deleteCampos").value=response;
+           var Resp=$.parseJSON(response);
+          $.each(Resp, function(i, item) {
+            $("#"+item.id_campo).val(item.constante).change();
+          });
+           
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function deleteConstantes()
+    {
+      var campos=$("#deleteCampos").val();
+      if(campos=="[]")
+        {return;}
+      var Resp=$.parseJSON(campos);
+      $.each(Resp, function(i, item) {
+        $.ajax({
+           method: "POST", 
+           url: "{{ url('/reglas-delete') }}",
+           data:{ id:item.id, _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          
+          if(response.Code=="400")  
+          {
+            Command: toastr.warning(response.Message, "Notifications")
+          }         
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+      });
+    }
     function saveReglas()
     {
       const fdata = [];
+      var repetidos=[];
       var id_=$("#opTramite").val();
       var definicion_=$("#formula").val();
       var campos=$("#campos").val();
@@ -159,9 +252,17 @@
 
         if(val!="0"){
           fdata.push({campo_id : item.campo_id,constante : val})
+          repetidos.push(val);
         }
       });
-          console.log(fdata);
+      for (var i = 0; i < repetidos.length; i++) {
+        for (var j = 0; j < repetidos.length; j++) {
+            if (repetidos[i] == repetidos[j] && i != j) { 
+              Command: toastr.warning("Constante repetido letra "+ repetidos[j], "Notifications") 
+                return;
+             }
+         }
+      }
         $.ajax({
            method: "POST", 
            url: "{{ url('/reglas-save') }}",
@@ -173,6 +274,7 @@
           }else{
              Command: toastr.warning(response.Message, "Notifications")
           }
+          //deleteConstantes();
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
