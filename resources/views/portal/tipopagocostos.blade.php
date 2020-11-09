@@ -510,10 +510,14 @@
     var cuotaMax=$("#cuotaMax").val();
     var valor= $("#valor").val();
     var fijo = $("#fijo").val();
-    var option = document.querySelector('input[name = radio2]:checked').value;
+    var option = document.querySelector('input[name = radio2]:checked');
     var regla=$("#itemsReglas").val();
     var vig=$("#vigencia").val();
-
+    if(option!=null)
+      {
+        option = document.querySelector('input[name = radio2]:checked').value;
+      }
+    console.log(option);
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
@@ -565,7 +569,8 @@
           {costo="Millar";
         }else if(item.costo=='N')
           {costo="No Aplica";
-          }else{ costo="Lote";}
+          }else if("L"){ costo="Lote";}
+          else(costo="")
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
@@ -573,7 +578,7 @@
                 +"<td>"+item.minimo+"</td>"
                 +"<td>"+item.maximo+"</td>"
                 +"<td>"+item.valor+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -606,7 +611,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor)
+  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,regla_id,vigencia)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
@@ -632,8 +637,11 @@
     var fijo = $("#fijo").val();
     var regla=$("#itemsReglas").val();
     var vig=$("#vigencia").val();
-    var option = document.querySelector('input[name = radio2]:checked').value;
-
+    var option = document.querySelector('input[name = radio2]:checked');
+    if(option!=null)
+      {
+        option = document.querySelector('input[name = radio2]:checked').value;
+      }
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
