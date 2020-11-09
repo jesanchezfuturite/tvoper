@@ -561,16 +561,18 @@
         var costo="";
         $.each(Resp, function(i, item) {
           if(item.tipo=='F')
-          {tipo="Fijo";}else if(tipo=='I'){tipo="Impuesto";}else{tipo="Variable";}
+          {tipo="Fijo";}else if(item.tipo=='I'){tipo="Impuesto";}else{tipo="Variable";}
 
           if(item.costo=='H')
           {costo="Hoja";
           }else if(item.costo=='M')
           {costo="Millar";
-        }else if(item.costo=='N')
+          }else if(item.costo=='N')
           {costo="No Aplica";
-          }else if("L"){ costo="Lote";}
-          else(costo="")
+          }else if(item.costo=="L"){ costo="Lote";}
+          else{
+            costo="";
+          }
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
