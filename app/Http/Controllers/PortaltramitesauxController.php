@@ -432,7 +432,9 @@ class PortaltramitesauxController extends Controller
     }
 
 		public function getReglas(){
-			
+			$data = $this->reglas->where('status',1)->get();
+
+			return json_encode($data);
 		}
 
 }
