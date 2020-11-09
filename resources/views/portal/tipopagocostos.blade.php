@@ -208,7 +208,7 @@
             <div class="col-md-9">
               <div class="form-group ">
                 <label >Regla operativa</label>
-                <select id="itemsReglas" class="select2me form-control" onchange="changeTipo()">
+                <select id="itemsReglas" class="select2me form-control" >
                   <option value="limpia">-------</option>
                 </select>
               </div>
