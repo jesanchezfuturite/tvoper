@@ -117,20 +117,21 @@
             <div class="col-md-9">
               <div class="form-group">
                 <label >Tipo</label>
-                <select id="itemsTipo" class="select2me form-control" >
+                <select id="itemsTipo" class="select2me form-control" onchange="changeTipo()">
                   <option value="limpia">-------</option>
                   <option value="F">Fijo</option>
                   <option value="V">Variable</option>
+                  <option value="I">Impuesto</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row  cuotas" >
           <div class="col-md-12">
             <div class="col-md-9">
               <div class="form-group">
-              <label >Costo</label>
+              <label >Tipo de Operación</label>
                 <span class="help-block">Selecciona una Opcion. </span>
                   <div class="md-radio-inline">
                     <div class="md-radio">
@@ -169,31 +170,32 @@
               </div>
             </div>
           </div>
+          <div class="col-md-12">
+            <div class="col-md-9">
+              <div class="form-group ">
+                <label >Cantidad mínima en cuotas</label>
+                <input type="text" class="valida-decimal form-control" name="cuotaMin" id="cuotaMin" placeholder="Ingrese Cuota Minima...">
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Cantidad máximo en cuotas</label>
+                <input type="text" class="valida-decimal form-control" name="cuotaMax" id="cuotaMax" placeholder="Ingrese la Cuota Máximo...">
+             </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Costo por Tipo de operación (MXN)</label>
+                <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
+             </div>
+            </div>
+          </div>
         </div>
-        <div class="row">
+        <div class="row costo-fijo">
           <div class="col-md-12">
             <div class="form-group">
-              <label>Este costo depende de un minimo de cuotas?</label>
-              <div class="md-radio-inline">
-                <div class="md-radio">
-                  <input type="radio" id="radio10" name="radio10" class="md-radiobtn" value="si">
-                  <label for="radio10">
-                    <span></span>
-                    <span class="check"></span>
-                    <span class="box"></span>
-                    Si.</label>
-                </div>
-                <div class="md-radio">
-                  <input type="radio" id="radio11" name="radio10" class="md-radiobtn" value="no">
-                  <label for="radio11">
-                    <span></span>
-                    <span class="check"></span>
-                    <span class="box"></span>
-                    No.</label>
-                </div>
-              </div>
               <div class="col-md-9">
-                <div class="form-group costo-fijo">
+                <div class="form-group">
                   <label >Costo Fijo</label>
                   <input type="text" class="valida-decimal form-control" name="fijo" id="fijo" placeholder="Ingrese el costo fijo del trámite">
                 </div>
@@ -201,24 +203,21 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-12 cuotas">
+        <div class="row regla-operativa">
+          <div class="col-md-12">
             <div class="col-md-9">
               <div class="form-group ">
-                <label >Cuota Minima</label>
-                <input type="text" class="valida-decimal form-control" name="cuotaMin" id="cuotaMin" placeholder="Ingrese Cuota Minima...">
+                <label >Regla operativa</label>
+                <select id="itemsReglas" class="select2me form-control" onchange="changeTipo()">
+                  <option value="limpia">-------</option>
+                </select>
               </div>
             </div>
             <div class="col-md-9">
               <div class="form-group">
-                <label >Cuota Máximo</label>
-                <input type="text" class="valida-decimal form-control" name="cuotaMax" id="cuotaMax" placeholder="Ingrese la Cuota Máximo...">
-             </div>
-            </div>
-            <div class="col-md-9">
-              <div class="form-group">
-                <label >Valor</label>
-                <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
+                <label >Establecer Días de vigencia</label>
+                <input type="text" class="valida-numeros form-control" name="vigencia" id="vigencia" placeholder="Ingrese el Días de vigencia...">
+                <span class="help-block">(Cero en caso de presentarse durante los primeros 17 días del mes)</span>
              </div>
             </div>
           </div>
@@ -324,20 +323,58 @@
       ItemsTramite();
       valorCuota();
       findPartidas();
-
-      $('.costo-fijo').css("display", "none");
-
-      $("#radio10").click(function(){
-        $(".costo-fijo").css("display","none");
+      findItemsReglas();
+      $(".costo-fijo").css("display","none");
+        $(".cuotas").css("display", "none");
+        $(".regla-operativa").css("display", "none");
+    });
+  function findItemsReglas()
+    {
+        $.ajax({
+        method: "get",
+        url: "{{ url('/traux-get-reglas') }}",
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            $("#itemsReglas option").remove();
+            var Resp=$.parseJSON(response);
+            $('#itemsReglas').append(
+                "<option value='limpia'>------</option>"
+            );
+            $.each(Resp, function(i, item) {
+                 $('#itemsReglas').append(
+                "<option value='"+item.id+"'>"+item.definicion+"</option>"
+                   );
+                });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select", "Notifications")   });
+  }
+  function changeTipo()
+  {
+    var tip=$("#itemsTipo").val();
+    if(tip=="V")
+    {
+       $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "block");
-
-      });
-      $("#radio11").click(function(){
+        $(".regla-operativa").css("display", "none");
+    }else if(tip=="F")
+    {
         $(".costo-fijo").css("display","block");
         $(".cuotas").css("display", "none");
-      });
-    });
-
+        $(".regla-operativa").css("display", "none");        
+    }else if(tip=="I")
+    {
+      $(".costo-fijo").css("display","none");
+        $(".cuotas").css("display","none");
+        $(".regla-operativa").css("display", "block");
+      
+    }else{
+        $(".costo-fijo").css("display","none");
+        $(".cuotas").css("display", "none");
+        $(".regla-operativa").css("display", "none");
+    }
+    limpiarchang();
+  }
   function ItemsTramite()
     {
         $.ajax({
@@ -396,34 +433,59 @@
   function saveUpdate()
   {
     var upd=$("#idcosto").val();
+
     var idTramites=$("#itemsTramites").val();
-    var tipoTramite=$("#itemsTipo").val();
-    var costoF = document.querySelector('input[name = radio10]:checked');
-    if(costoF == 'si'){
-      var cuotaMin=$("#cuotaMin").val();
-      var cuotaMax=$("#cuotaMax").val();
-    }else{
-      var fijo = $("#fijo").val();
-    }
+    var tipoTramite=$("#itemsTipo").val(); 
 
-
-    var valor = $("#valor").val();
+    var cuotaMin=$("#cuotaMin").val();
+    var cuotaMax=$("#cuotaMax").val();
+    var valor = $("#valor").val();  
     var option = document.querySelector('input[name = radio2]:checked');
 
-    if(option!=null)
-    {
-      option = document.querySelector('input[name = radio2]:checked').value;
-    }
+    var fijo = $("#fijo").val();
+
+    var regla = $("#itemsReglas").val();
+    var vigencia = $("#vigencia").val();
+    
+    
     if(idTramites=='limpia')
     {
       Command: toastr.warning("Selecciona un Tramite, Requerido!", "Notifications")
+      return;
     }else if(tipoTramite=='limpia')
     {
       Command: toastr.warning("Selecciona un Tipo, Requerido!", "Notifications")
-    }else if(option==null)
+      return;
+    }
+    if(tipoTramite=="V"){
+      if(option!=null)
+      {
+        option = document.querySelector('input[name = radio2]:checked').value;
+      }
+      if(option==null)
+      {
+        Command: toastr.warning("Selecciona el Tipo de Operación, Requerido!", "Notifications")
+        return;
+      }
+    }else if(tipoTramite=="F")
     {
-      Command: toastr.warning("Selecciona el Costo, Requerido!", "Notifications")
-    }else
+      if(fijo.length<1)
+      {
+        Command: toastr.warning("Campo Costo Fijo, Requerido!", "Notifications")
+        return;
+      }
+    }else if(tipoTramite=="I")
+    {
+        if(regla=="limpia")
+        {
+          Command: toastr.warning("Selecciona la Regla operativa, Requerido!", "Notifications")
+          return;
+        }
+        if(vigencia.length<1){
+          Command: toastr.warning("Campo Días de vigencia, Requerido!", "Notifications")
+        return;
+        }
+    }
     // else if(cuotaMin.length==0)
     // {
     //   Command: toastr.warning("Campo Couta Minimo, Requerido!", "Notifications")
@@ -431,14 +493,14 @@
     // {
     //   Command: toastr.warning("Campo Couta Maximo, Requerido!", "Notifications")
     // }
-    {
-    if(upd.length==0)
+    
+      if(upd.length==0)
       {
         insertCosto();
       }else{
          updateCosto();
       }
-    }
+    
   }
   function insertCosto()
   {
@@ -449,11 +511,13 @@
     var valor= $("#valor").val();
     var fijo = $("#fijo").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
+    var regla=$("#itemsReglas").val();
+    var vig=$("#vigencia").val();
 
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor,  _token:'{{ csrf_token() }}'}  })
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:regla,vigencia:vig,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -493,7 +557,7 @@
         var costo="";
         $.each(Resp, function(i, item) {
           if(item.tipo=='F')
-          {tipo="Fijo";}else{tipo="Variable";}
+          {tipo="Fijo";}else if(tipo=='I'){tipo="Impuesto";}else{tipo="Variable";}
 
           if(item.costo=='H')
           {costo="Hoja";
@@ -552,6 +616,9 @@
     $("input[name=radio2][value='"+costo+"']").prop("checked",true);
     document.getElementById('valor').value=valor;
     document.getElementById('fijo').value=costo_fijo;
+    document.getElementById('vigencia').value=vigencia;
+    $("#itemsReglas").val(regla_id).change();
+
   }
   function updateCosto()
   {
@@ -563,12 +630,14 @@
     var cuotaMax=$("#cuotaMax").val();
     var valor=$("#valor").val();
     var fijo = $("#fijo").val();
+    var regla=$("#itemsReglas").val();
+    var vig=$("#vigencia").val();
     var option = document.querySelector('input[name = radio2]:checked').value;
 
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,fijo:fijo, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,fijo:fijo,regla_id:regla,vigencia:vig, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -664,7 +733,22 @@
     document.getElementById('idcosto').value="";
     $("input:radio").attr("checked", false);
     document.getElementById('iddeleted').value="";
+    document.getElementById('valor').value="";
+    document.getElementById('vigencia').value="";
+    $("#itemsReglas").val("limpia").change();
 
+}
+function limpiarchang()
+  {
+    $("input:radio").attr("checked", false);
+    document.getElementById('cuotaMin').value="";
+    document.getElementById('cuotaMax').value="";
+    document.getElementById('valor').value="";
+    document.getElementById('fijo').value="";
+    
+    document.getElementById('vigencia').value="";
+    $("#itemsReglas").val("limpia").change();
+    
 }
 function GuardarExcel()
 {
@@ -678,6 +762,9 @@ $('.valida-formula').on('input', function () {
 });
 $('.valida-decimal').on('input', function () {
     this.value = this.value.replace(/[^0-9.]/g,'');
+});
+$('.valida-numeros').on('input', function () {
+    this.value = this.value.replace(/[^0-9]/g,'');
 });
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
