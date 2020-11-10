@@ -336,6 +336,7 @@ Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
 Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
+Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -344,6 +345,7 @@ Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUser
 Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status');
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
+Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
@@ -368,9 +370,12 @@ Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@elimi
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
+Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
 
 
-
-
-
-
+Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
+Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
+Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampos');
+Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
+Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
+Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');

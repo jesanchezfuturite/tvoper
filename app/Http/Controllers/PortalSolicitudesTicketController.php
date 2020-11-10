@@ -12,6 +12,7 @@ use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
+use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use DB;
 
 class PortalSolicitudesTicketController extends Controller
@@ -24,6 +25,9 @@ class PortalSolicitudesTicketController extends Controller
     protected $tramites;
     protected $tiposer;
     protected $campo;
+    protected $mensajes;
+
+
 
     public function __construct(
         PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
@@ -33,7 +37,8 @@ class PortalSolicitudesTicketController extends Controller
         EgobiernotiposerviciosRepositoryEloquent $tiposer,
         PortalNotaryOfficesRepositoryEloquent $notary,
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
-        PortalcampoRepositoryEloquent $campo
+        PortalcampoRepositoryEloquent $campo,
+        PortalSolicitudesMensajesRepositoryEloquent $mensajes
         
        )
        {
@@ -44,6 +49,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->tiposer = $tiposer;
          $this->configUserNotary = $configUserNotary;
          $this->campo = $campo;
+         $this->mensajes = $mensajes;
    
        }
     
@@ -75,8 +81,10 @@ class PortalSolicitudesTicketController extends Controller
         $clave = $request->clave;
         
         $user_id = $request->user_id;
+        // $solicitantes = json_decode($solicitantes);
         $solicitantes = to_object($solicitantes);
         $info = $request->info;
+        $id = [];
         try {    
           foreach($solicitantes as $key => $value){
             $info["solicitante"]=$value;
@@ -87,13 +95,23 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>99
       
-            ]);
-            
+            ]);        
+           array_push($id, $ticket->id);
           }
+          $first_id = reset($id);
+          if($request->has("file")){
+            $data =[
+              'ticket_id'=> $first_id,
+              'mensaje' => "",
+              'file'    =>  $request->file
+             ];
+            $this->saveFile($data);
+          }
+          
         } catch (\Exception $e) {
           $error = [
               "Code" => "400",
-              "Message" => "Error al guardar la solicitud",
+              "Message" => "Error al guardar la solicitud"
           ];
       
         }
@@ -277,6 +295,70 @@ class PortalSolicitudesTicketController extends Controller
         $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
 
         return json_encode($informacion); 
+    }
+
+    public function saveFile($data){ 
+      $mensaje = $data["mensaje"];
+      $ticket_id = $data["ticket_id"];
+
+    
+        $file = $data['file']; 
+        $extension = $file->getClientOriginalExtension();
+        $attach = "archivo_solicitud_".$data["ticket_id"].".".$extension;
+        \Storage::disk('local')->put($attach,  \File::get($file));
+     
+    
+      try {
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $ticket_id,
+          'mensaje' => $mensaje,
+          'attach'    =>  $attach
+        ]);
+  
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Archivo guardado con éxito",
+            "data"=>$mensajes
+            
+          ]
+        );
+  
+      }catch(\Exception $e) {
+  
+  
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo",
+          ]
+        );
+      }
+    }
+
+    public function filtrarSolicitudes(Request $request){
+   
+      $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
+      ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+      ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+      
+      if($request->has('tipo_solicitud')){
+          $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
+      }
+  
+      if($request->has('estatus')){
+        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      }
+  
+      if($request->has('id_solicitud')){
+        $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
+       
+      }
+      $solicitudes->where('solicitudes_ticket.status', '!=', 99)
+      ->orderBy('solicitudes_ticket.created_at', 'DESC');
+      $solicitudes = $solicitudes->get();
+      return $solicitudes;
     }
     
 }

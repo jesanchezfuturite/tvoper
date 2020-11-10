@@ -116,39 +116,41 @@
         <input type="text" name="idTicket" id="idTicket" hidden="true">
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-4">             
-              <div class="form-group">
-                <label><strong>Nombre Solicitante:</strong></label><br>                
-                <label id="nomsolic"></label>
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos del Generales</strong></h4>
               </div>
             </div>
-            <div class="col-md-4">             
-              <div class="form-group">
-                <label><strong>Apellido Paterno:</strong></label><br>                
-                <label id="apPat"></label>
-              </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="detalles">
+            <div id="addDetalles">
             </div>
-            <div class="col-md-4">             
-              <div class="form-group">
-                <label><strong>Apellido Materno:</strong></label><br>                
-                <label id="apMat"></label>
-              </div>
-            </div>
-            <div class="col-md-4">             
-              <div class="form-group">
-                <label><strong>RFC:</strong></label><br>                
-                <label id="rfc"></label>
-              </div>
-            </div>
-          </div>        
+          </div>    
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-12"> 
-              <hr>
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos del Solicitante</strong></h4>
+              </div>
             </div>
-          </div>        
-        </div>        
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="solicitante">
+            <div id="addSolicitante">
+            </div>
+          </div>    
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-12">
+            <hr>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-9">             
@@ -272,23 +274,39 @@
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       findMessage(id);
+      $("#detalles div").remove();
+      $("#detalles").append("<div id='addDetalles'></div>");
+      $("#solicitante div").remove();
+      $("#solicitante").append("<div id='addSolicitante'></div>");
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           console.log(response);
-          var Resp=$.parseJSON(response);
+          var Resp=response;
           var soli=Resp.solicitante;
-          document.getElementById("nomsolic").textContent=Resp.nombre;
-          document.getElementById("apMat").textContent=Resp.apellido_materno;
-          document.getElementById("apPat").textContent=Resp.apellido_paterno;
-          document.getElementById("rfc").textContent=Resp.rfc;
-          if(Resp.rfc==null || Resp.rfc ==""){
-            document.getElementById("rfc").textContent=soli.rfc;
+          var tipo="";
+          var obj="";
+          for (n in soli) {  
+            obj=n;
+            tipo=soli[n];    
+            if(tipo=="pm")
+            {tipo="Moral";}
+            if(tipo=="pf")
+            {tipo="Fisica";}
+            if(obj=="tipoPersona"){
+              obj="Tipo Persona";
+            }if(obj=="rfc"){
+              obj="RFC";
+            }if(obj=="razonSocial"){
+              obj="Razón Social";
+            }
+
+              $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
           }
-          if(Resp.nombre==null || Resp.nombre ==""){
-            document.getElementById("nomsolic").textContent=soli.nombreSolicitante;
+          for (n in Resp.campos) {            
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
           //TableManaged7.init7();   
         })
