@@ -204,17 +204,17 @@ class PortalNotaryOfficesController extends Controller
             "notary"=>$responseinfo,
             "roles"=>$roles, 
             "rolesPermission"=>$rolesPermission
-        ]);
+            ]);
     }
     public function listNotaryCommunity($id){
-        $link = "https://session-api-pr-19.herokuapp.com/notary-offices/getNotaryCommunity"."$id";
+        $link = "https://session-api-pr-19.herokuapp.com/notary-offices/notaryCommunity/"."$id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
-        $listNotary = curl_exec($ch);
+        $listNotaryCommunity = curl_exec($ch);
         curl_close($ch);
         
-        $jsonArrayResponse = json_decode($listNotary);
+        $jsonArrayResponse = json_decode($listNotaryCommunity);
         $data = $jsonArrayResponse->response->notary_offices;
         return $data; 
     }
