@@ -47,7 +47,7 @@
           </div>
           <div class="col-md-3 col-ms-12">
             <div class="form-group">
-                <select id="itemsConfigUser" class="select2me form-control" >
+                <select id="itemsConfigUser" class="select2me form-control" onchange="changeComunidad()" >
                   <option value="0">-------</option>
                 </select>
               </div>
@@ -61,10 +61,7 @@
           <div class="col-md-3 col-ms-12">
             <div class="form-group">           
               <select class="select2me form-control"name="itemsNotario" id="itemsNotario" onchange="changeNotario()">
-                <option value="0">------</option>
-                 @foreach( $notary as $sd)
-                  <option value="{{$sd['id']}}">{{$sd["notary_number"]}}</option>
-                @endforeach     
+                <option value="0">------</option>   
                 </select>            
             </div>
           </div>    
@@ -573,6 +570,30 @@
    };
    
 }
+function changeComunidad()
+{
+  var comunidad=$("#itemsConfigUser").val();
+  if(comunidad=="0")
+  {
+    $("#itemsNotario option").remove();
+    $('#itemsNotario').append("<option value='0'>------</option>");
+    return;
+  }
+   $.ajax({
+        method: "get",            
+        url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+            $("#itemsNotario option").remove();
+            $('#itemsNotario').append("<option value='0'>------</option>");
+            $.each(response, function(i, item) {                
+                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  
+}
 function getBase64Notario(file) {
    var reader = new FileReader();
    reader.readAsDataURL(file);
@@ -754,7 +775,7 @@ function getBase64Notario(file) {
       notary_constancy_file: base64Notario,
       titular: titular_
       }; 
-    console.log(notary_off);
+    //console.log(notary_off);
     $.ajax({
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
@@ -764,16 +785,7 @@ function getBase64Notario(file) {
           if(resp.error){
             Command: toastr.warning(resp.error.message, "Notifications");
           }else{
-            $("#itemsNotario option").remove();
-            $('#itemsNotario').append(
-                "<option value='0'>------</option>"
-            );
-            var listusers = resp.list_users;
-            $.each(listusers, function(i, item) {                
-                 $('#itemsNotario').append(
-                "<option value='"+item.id+"'>"+item.notary_number+"</option>"
-                   );
-                });
+            changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
           }
@@ -826,7 +838,7 @@ function getBase64Notario(file) {
                 title="Activar";
               }
               //console.log(item.config_id);
-            if(com==item.config_id){   
+            //if(com==item.config_id){   
               $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
@@ -837,7 +849,7 @@ function getBase64Notario(file) {
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
-              }
+              //}
             });
         TableManaged.init();
         })
