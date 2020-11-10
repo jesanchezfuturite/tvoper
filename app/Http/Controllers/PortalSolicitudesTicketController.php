@@ -339,7 +339,8 @@ class PortalSolicitudesTicketController extends Controller
     public function filtrarSolicitudes(Request $request){
    
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
+      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion",
+      "solicitudes_ticket.created_at", "solicitudes_ticket.user_id")
       ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
       
@@ -353,7 +354,10 @@ class PortalSolicitudesTicketController extends Controller
   
       if($request->has('id_solicitud')){
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
-       
+      }
+      if($request->has('notary_id')){
+        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
+        $solicitudes->whereIn('user_id', $users);
       }
       $solicitudes->where('solicitudes_ticket.status', '!=', 99)
       ->orderBy('solicitudes_ticket.created_at', 'DESC');
