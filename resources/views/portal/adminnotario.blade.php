@@ -587,7 +587,7 @@ function changeComunidad()
             $("#itemsNotario option").remove();
             $('#itemsNotario').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
-                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+"</option>");
             });
         })
         .fail(function( msg ) {
