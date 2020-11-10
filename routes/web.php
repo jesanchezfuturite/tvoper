@@ -342,6 +342,7 @@ Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUser
 Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status');
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
+Route::get('/notary-offices-community', 'PortalNotaryOfficesController@listNotaryCommunity');
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
