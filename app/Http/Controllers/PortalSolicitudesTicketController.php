@@ -340,7 +340,7 @@ class PortalSolicitudesTicketController extends Controller
    
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
       ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion",
-      "solicitudes_ticket.created_at", "solicitudes_ticket.user_id")
+      "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
       ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
       
