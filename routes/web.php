@@ -370,6 +370,7 @@ Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@elimi
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
+Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');

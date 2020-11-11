@@ -576,18 +576,18 @@
           else{
             costo="N/A";
           }
-          if(item.minimo==null)
-          {minimo="N/A";}else{minimo=item.minimo;}
-        if(item.maximo==null)
-          {maximo="N/A";}else{maximo=item.maximo;}
-        if(item.valor==null)
-          {valor="N/A";}else{valor=item.valor;}
-        if(item.definicion==null)
-          {definicion="N/A";}else{definicion=item.definicion;}
-        if(item.vigencia==null)
-          {vigencia="N/A";}else{vigencia=item.vigencia;}
-        if(item.costo_fijo==null)
-          {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo;}
+          if(item.minimo==null || item.minimo=="null")
+            {minimo="N/A";}else{minimo=item.minimo;}
+          if(item.maximo==null || item.maximo=="null")
+            {maximo="N/A";}else{maximo=item.maximo;}
+          if(item.valor==null || item.valor=="null")
+            {valor="N/A";}else{valor=item.valor;}
+          if(item.definicion==null || item.definicion=="null")
+            {definicion="N/A";}else{definicion=item.definicion;}
+          if(item.vigencia==null || item.vigencia =="null")
+            {vigencia="N/A";}else{vigencia=item.vigencia;}
+          if(item.costo_fijo==null || item.costo_fijo=="null")
+            {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo;}
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
@@ -661,7 +661,23 @@
     if(option!=null)
       {
         option = document.querySelector('input[name = radio2]:checked').value;
+      }else{
+        option=null;
       }
+      //console.log(option);
+   
+    if(cuotaMin==""  || cuotaMin==null || cuotaMin=="null")
+      {cuotaMin=null}
+    if(cuotaMax==""  || cuotaMax==null || cuotaMax=="null")
+      {cuotaMax=null}
+    if(valor=="" || valor==null || valor=="null")
+      {valor=null}
+    if(fijo=="" || fijo==null || fijo=="null")
+      {fijo=null}
+    if(regla=="" || regla==null || regla=="null" || regla=="0")
+      {regla=null}
+    if(vig=="" || vig==null || vig=="null" )
+      {vig=null}
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
