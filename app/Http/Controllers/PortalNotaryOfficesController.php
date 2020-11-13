@@ -207,7 +207,7 @@ class PortalNotaryOfficesController extends Controller
             ]);
     }
     public function listNotaryCommunity($id){
-        $link = "https://session-api-pr-19.herokuapp.com/notary-offices/notaryCommunity/"."$id";
+        $link = "http://10.153.144.218/session-api/notary-offices/notaryCommunity/"."$id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
