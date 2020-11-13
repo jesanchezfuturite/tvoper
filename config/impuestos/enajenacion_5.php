@@ -224,7 +224,7 @@ return
 
 		"Declaración complementaria" => array (
 
-		)
+		),
 
 		"Vigencia"	=>	15 /* valor dado en dias y se establece para la fecha despues de la escrituracion */
 
