@@ -345,7 +345,7 @@
             );
             $.each(Resp, function(i, item) {
                  $('#itemsReglas').append(
-                "<option value='"+item.id+"'>"+item.definicion+"</option>"
+                "<option value='"+item.name+"'>"+item.name+"</option>"
                    );
                 });
         })
@@ -582,8 +582,8 @@
             {maximo="N/A";}else{maximo=item.maximo;}
           if(item.valor==null || item.valor=="null")
             {valor="N/A";}else{valor=item.valor;}
-          if(item.definicion==null || item.definicion=="null")
-            {definicion="N/A";}else{definicion=item.definicion;}
+          if(item.reglaoperativa_id==null || item.reglaoperativa_id=="null" || item.reglaoperativa_id=="")
+            {reglaoperativa_id="N/A";}else{reglaoperativa_id=item.reglaoperativa_id;}
           if(item.vigencia==null || item.vigencia =="null")
             {vigencia="N/A";}else{vigencia=item.vigencia;}
           if(item.costo_fijo==null || item.costo_fijo=="null")
@@ -596,7 +596,7 @@
                 +"<td>"+maximo+"</td>"
                 +"<td>"+valor+"</td>"
                 +"<td>"+costo_fijo+"</td>"
-                +"<td>"+definicion+"</td>"
+                +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
