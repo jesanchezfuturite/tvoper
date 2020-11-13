@@ -14,6 +14,7 @@ use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
+use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
@@ -32,6 +33,7 @@ class PortaltramitesauxController extends Controller
 	protected $subsidiotramitedb;
 	protected $umadb;
 	protected $partidas;
+	protected $reglas;
 
     public function __construct(
 
@@ -42,7 +44,8 @@ class PortaltramitesauxController extends Controller
     	PortalcostotramitesRepositoryEloquent $costotramitedb,
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
     	UmahistoryRepositoryEloquent $umadb,
-			EgobiernopartidasRepositoryEloquent $partidas
+			EgobiernopartidasRepositoryEloquent $partidas,
+			PortalreglaoperativaRepositoryEloquent $reglas
 
     )
     {
@@ -55,6 +58,7 @@ class PortaltramitesauxController extends Controller
     	$this->subsidiotramitedb = $subsidiotramitedb;
     	$this->umadb = $umadb;
 			$this->partidas = $partidas;
+			$this->reglas = $reglas;
     }
 
 
@@ -282,7 +286,7 @@ class PortaltramitesauxController extends Controller
   {
   	try {
 
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'status'=>'1']);
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
@@ -294,7 +298,7 @@ class PortaltramitesauxController extends Controller
   {
   	try {
   		//log::info($request);
-  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor],$request->id);
+  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
   		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
 
@@ -426,5 +430,11 @@ class PortaltramitesauxController extends Controller
 
 			return json_encode($response);
     }
+
+		public function getReglas(){
+			$data = $this->reglas->where('status',1)->get();
+
+			return json_encode($data);
+		}
 
 }
