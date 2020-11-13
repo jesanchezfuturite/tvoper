@@ -1,21 +1,21 @@
 <?php
 
-return 
+return
 	array (
-		
+
 		"Tipo" => "Impuesto / Derecho",
 
 		"Datos del Inmueble" => array(
 				"Número de escritura o Minuta" => array(
 					"tipo" 		=> "int",
-					"length"	=> 10, 
+					"length"	=> 10,
 					"value"	=> false,
 					"formula"	=> false,
 					"index"		=> false,
 				),
 				"Fecha de escritura o Minuta" => array(
 					"tipo" 		=> "date",
-					"length"	=> 18, 
+					"length"	=> 18,
 					"index"		=> 'FE',
 					"formula"	=> false,
 					"value"	=> false,
@@ -23,7 +23,7 @@ return
 				"Municipio" => array(
 					"tipo"		=> "list",
 					"index"		=> false,
-					"formula"	=> false,	
+					"formula"	=> false,
 					"lenght"	=> false,
 					"value"	=> array(
 						"Abasolo", "Monterrey"
@@ -31,14 +31,14 @@ return
 				),
 				"Expediente Catastral" => array(
 					"tipo" 		=> "int",
-					"length"	=> 10, 
+					"length"	=> 10,
 					"index"		=> false,
 					"formula"	=> false,
 					"value"	=> false,
 				),
 				"Domicilio del inmueble" => array(
 					"tipo" 		=> "varchar",
-					"length"	=> 100, 
+					"length"	=> 100,
 					"value"	=> false,
 					"index"		=> false,
 					"formula"	=> false,
@@ -46,7 +46,7 @@ return
 				),
 				"% de la propiedad que enajena" => array(
 					"tipo" 		=> "int",
-					"length"	=> 10, 
+					"length"	=> 10,
 					"index"		=> false,
 					"formula"	=> false,
 					"value"		=> false,
@@ -54,13 +54,13 @@ return
 				),
 				"Monto de operación(reportado en el aviso de enajenación)" => array(
 					"tipo" 		=> "int",
-					"length"	=> 15, 
+					"length"	=> 15,
 					"index"		=> false,
 					"formula"	=> false,
 					"value"		=> false,
 				),
 		),
-		
+
 		"Datos del Enajenante" => array(
 			"Persona Física" => array(
 				"tipo"		=> "radio",
@@ -144,38 +144,38 @@ return
 			)
 		),
 		"Declaración normal" => array(
-			
+
 			"Ganancia obtenida"	=> array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"value"	=> false,
 				"index"		=> 'A',
 				"expreg"	=> false,
 				"formula"	=> false,
-			),			
+			),
 			"Pago provisional conforme al artículo 126 LISR" => array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"expreg"	=> false,
 				"index"		=> 'C',
 				"value"	=> false,
 				"formula"	=> false,
 			),
-			
+
 			"Multa por corrección fiscal" => array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"expreg"	=> false,
 				"index"		=> 'F',
 				"value"		=> false,
 				"formula"	=> false, // donde el | define las agrupaciones numericas
-				
+
 			),
 			/*
-			los siguientes 3 los regresa el sistema cuando ejecuten el ws 
+			los siguientes 3 los regresa el sistema cuando ejecuten el ws
 			"Impuesto correspondiente a la entidad" => array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"expreg"	=> false,
 				"index"		=> 'D',
 				"value"		=> false,
@@ -183,7 +183,7 @@ return
 			),
 			"Parte actualizada del impuesto" => array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"expreg"	=> false,
 				"index"		=> 'E',
 				"value"		=> false,
@@ -192,12 +192,12 @@ return
 			),
 			"Recargos" => array(
 				"tipo" 		=> "int",
-				"length"	=> 15, 
+				"length"	=> 15,
 				"expreg"	=> false,
 				"index"		=> 'F',
 				"value"		=> false,
 				"formula"	=> "|,D,+,E,|,*,RR", // donde el | define las agrupaciones numericas
-				
+
 			),
 			*/
 			"Monto obtenido conforme al artículo 127 LISR"	=> array(
@@ -224,7 +224,7 @@ return
 
 		"Declaración complementaria" => array (
 
-		)
+		),
 
 		"Vigencia"	=>	15 /* valor dado en dias y se establece para la fecha despues de la escrituracion */
 
