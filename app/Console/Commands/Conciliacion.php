@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\File;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\BancoRepositoryEloquent;
 use App\Repositories\CuentasbancoRepositoryEloquent;
+use App\Repositories\OperanomaliasestatusRepositoryEloquent;
+use App\Repositories\OperanomaliasRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
 
 
 class Conciliacion extends Command
@@ -59,6 +62,10 @@ class Conciliacion extends Command
 
     protected $info_cuenta;
 
+    protected $anomaliasbd;
+
+    protected $transaccionesdb;
+
     /**
      * Create a new command instance.
      *
@@ -67,7 +74,9 @@ class Conciliacion extends Command
     public function __construct(
         ProcessedregistersRepositoryEloquent $ps,
         BancoRepositoryEloquent $banco,
-        CuentasbancoRepositoryEloquent $cuentasbanco
+        CuentasbancoRepositoryEloquent $cuentasbanco,
+        OperanomaliasRepositoryEloquent $anomaliasbd,
+        TransaccionesRepositoryEloquent $transaccionesdb
     )
     {
         parent::__construct();
@@ -81,6 +90,10 @@ class Conciliacion extends Command
         $this->banco = $banco;
 
         $this->cuentasbanco = $cuentasbanco;
+
+        $this->anomaliasbd = $anomaliasbd;
+
+        $this->transaccionesdb = $transaccionesdb;
 
         $this->loadBankDetails();
     }
@@ -387,7 +400,10 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
+                                $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasMontoDif($data);
+                                
                             }
 
                         }catch( \Exception $e ){
@@ -796,15 +812,18 @@ class Conciliacion extends Command
             }
 
         }
-
+        //log::info($info);
         foreach($info as $i => $data)
         {   
-
-            foreach($data as $f){
-                $final []= array(
+            //log::info($data);
+            if($data<>null || $data<>"")
+            {
+                 foreach($data as $f){
+                    $final []= array(
                     "cuenta" => $f->cuenta,
                     "alias"  => $f->alias
-                );
+                    );
+                }
             }
             
         }
@@ -841,6 +860,77 @@ class Conciliacion extends Command
             Log::info("[Conciliacion:ProcessFiles] Error Method backupfilesprocessed => " . $e->getMessage());
             Log::info("[Conciliacion:ProcessFiles] path => " . $path);
             Log::info("[Conciliacion:ProcessFiles] backup => " . $destination);
+        }
+    }
+
+    private function anomaliasProceseed($data)
+    {
+        if($data["origen"]=="11"){
+            $findExist=$this->ps->findWhere(["referencia"=>$data["referencia"]]);
+            if($findExist->count()>0)
+            {
+                //log::info("1");
+                $result= $this->anomaliasbd->create([
+                    "referencia"=>$data["referencia"],
+                    "transaccion_id"=>$data["transaccion_id"],
+                    "monto"=>$data["monto"],
+                    "banco_id"=>$data["banco_id"],
+                    "cuenta_banco"=>$data["cuenta_banco"],
+                    "cuenta_alias"=>$data["cuenta_alias"],
+                    "fecha_ejecucion"=>$data["fecha_ejecucion"],
+                    "fecha_pago"=>$data["year"] . "-" . $data["month"] . "-" . $data["day"],
+                    "estatus_anomalia"=>"1"
+                ]);
+            }
+        }else{
+            $findExist=$this->ps->findWhere([ "transaccion_id"=>$data["transaccion_id"] ]);
+            if($findExist->count()>0)
+            {
+                $this->anomaliasbd->create([
+                "referencia"=>$data["referencia"],
+                "transaccion_id"=>$data["transaccion_id"],
+                "monto"=>$data["monto"],
+                "banco_id"=>$data["banco_id"],
+                "cuenta_banco"=>$data["cuenta_banco"],
+                "cuenta_alias"=>$data["cuenta_alias"],
+                "fecha_ejecucion"=>$data["fecha_ejecucion"],
+                "fecha_pago"=>$data["year"] . "-" . $data["month"] . "-" . $data["day"],
+                "estatus_anomalia"=>"1"
+                ]);                
+            }
+        }
+    }
+    private function anomaliasMontoDif($data)
+    {
+        if($data["origen"]=="11"){
+            $ex=false;
+            $findMonto=$this->transaccionesdb->findTransMonto($data["referencia"]);
+            if($findMonto->count()>0)
+            {
+                foreach ($findMonto as $k) {
+                    if((float)$data["monto"]<>(float)$k->monto_transaccion)
+                    {
+                       $ex=true;  
+                    }                  
+                }
+                if($ex)
+                {
+                    $this->anomaliasbd->create([
+                    "referencia"=>$data["referencia"],
+                    "transaccion_id"=>$data["transaccion_id"],
+                    "monto"=>$data["monto"],
+                    "banco_id"=>$data["banco_id"],
+                    "cuenta_banco"=>$data["cuenta_banco"],
+                    "cuenta_alias"=>$data["cuenta_alias"],
+                    "fecha_ejecucion"=>$data["fecha_ejecucion"],
+                    "fecha_pago"=>$data["year"] . "-" . $data["month"] . "-" . $data["day"],
+                    "estatus_anomalia"=>"2"
+                    ]);
+                }
+                
+            }else{
+                
+            }
         }
     }
 

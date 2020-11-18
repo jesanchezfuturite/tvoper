@@ -293,6 +293,22 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
        
     }
 
-    
+    public function findTransMonto($referencia)
+    {
+       try{        
+        $data = Transacciones::where('referencia',$referencia)
+        ->select('id_transaccion_motor',
+            'referencia',
+            'importe_transaccion as monto_transaccion')
+        ->groupBy('referencia')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@findTransMonto] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
     
 }
