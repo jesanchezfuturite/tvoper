@@ -34,6 +34,7 @@ class PortaltramitesauxController extends Controller
 	protected $umadb;
 	protected $partidas;
 	protected $reglas;
+	protected $files;
 
     public function __construct(
 
@@ -59,6 +60,7 @@ class PortaltramitesauxController extends Controller
     	$this->umadb = $umadb;
 			$this->partidas = $partidas;
 			$this->reglas = $reglas;
+			$this->files = config('impuestos');
     }
 
 
@@ -432,9 +434,20 @@ class PortaltramitesauxController extends Controller
     }
 
 		public function getReglas(){
-			$data = $this->reglas->where('status',1)->get();
 
-			return json_encode($data);
+			$data = $this->files;
+			$name = array();
+			foreach ($data as $key => $value) {
+				$file = $key;
+
+				$name [] = array(
+					'name' => $file,
+				);
+			}
+
+			//$data = $this->reglas->where('status',1)->get();
+
+			return json_encode($name);
 		}
 
 }

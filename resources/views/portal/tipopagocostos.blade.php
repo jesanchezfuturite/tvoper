@@ -345,7 +345,7 @@
             );
             $.each(Resp, function(i, item) {
                  $('#itemsReglas').append(
-                "<option value='"+item.id+"'>"+item.definicion+"</option>"
+                "<option value='"+item.name+"'>"+item.name+"</option>"
                    );
                 });
         })
@@ -576,18 +576,18 @@
           else{
             costo="N/A";
           }
-          if(item.minimo==null)
-          {minimo="N/A";}else{minimo=item.minimo;}
-        if(item.maximo==null)
-          {maximo="N/A";}else{maximo=item.maximo;}
-        if(item.valor==null)
-          {valor="N/A";}else{valor=item.valor;}
-        if(item.definicion==null)
-          {definicion="N/A";}else{definicion=item.definicion;}
-        if(item.vigencia==null)
-          {vigencia="N/A";}else{vigencia=item.vigencia;}
-        if(item.costo_fijo==null)
-          {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo;}
+          if(item.minimo==null || item.minimo=="null")
+            {minimo="N/A";}else{minimo=item.minimo;}
+          if(item.maximo==null || item.maximo=="null")
+            {maximo="N/A";}else{maximo=item.maximo;}
+          if(item.valor==null || item.valor=="null")
+            {valor="N/A";}else{valor=item.valor;}
+          if(item.reglaoperativa_id==null || item.reglaoperativa_id=="null" || item.reglaoperativa_id=="")
+            {reglaoperativa_id="N/A";}else{reglaoperativa_id=item.reglaoperativa_id;}
+          if(item.vigencia==null || item.vigencia =="null")
+            {vigencia="N/A";}else{vigencia=item.vigencia;}
+          if(item.costo_fijo==null || item.costo_fijo=="null")
+            {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo;}
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
@@ -596,7 +596,7 @@
                 +"<td>"+maximo+"</td>"
                 +"<td>"+valor+"</td>"
                 +"<td>"+costo_fijo+"</td>"
-                +"<td>"+definicion+"</td>"
+                +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
@@ -661,7 +661,23 @@
     if(option!=null)
       {
         option = document.querySelector('input[name = radio2]:checked').value;
+      }else{
+        option=null;
       }
+      //console.log(option);
+   
+    if(cuotaMin==""  || cuotaMin==null || cuotaMin=="null")
+      {cuotaMin=null}
+    if(cuotaMax==""  || cuotaMax==null || cuotaMax=="null")
+      {cuotaMax=null}
+    if(valor=="" || valor==null || valor=="null")
+      {valor=null}
+    if(fijo=="" || fijo==null || fijo=="null")
+      {fijo=null}
+    if(regla=="" || regla==null || regla=="null" || regla=="0")
+      {regla=null}
+    if(vig=="" || vig==null || vig=="null" )
+      {vig=null}
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
