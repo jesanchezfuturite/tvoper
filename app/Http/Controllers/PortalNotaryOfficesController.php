@@ -75,11 +75,11 @@ class PortalNotaryOfficesController extends Controller
 
     public function listNotary(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/notary-offices/");        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/notary-offices/"); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listNotary = curl_exec($ch);
-        curl_close($ch);
-        
+
+        curl_close($ch);        
         $jsonArrayResponse = json_decode($listNotary);
         $data = $jsonArrayResponse->response->notary_offices;
         return $data;
@@ -187,21 +187,11 @@ class PortalNotaryOfficesController extends Controller
 
     public function index()
     {
-        $notarys = $this->listNotary();
         $roles = $this->getRoles();
         $rolesPermission = $this->getRolesPermission();
-        $responseinfo = array();
-
-        foreach($notarys as $n)
-        {
-            $responseinfo []= array(
-                "id"=>$n->id,
-                "notary_number" => $n->notary_number  
-            );
-        }
+        $responseinfo = array();        
 
         return view('portal/adminnotario',[
-            "notary"=>$responseinfo,
             "roles"=>$roles, 
             "rolesPermission"=>$rolesPermission
             ]);
