@@ -783,13 +783,23 @@ function getBase64Notario(file) {
            url: "{{ url('/notary-offices') }}",
            data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
+          console.log(response);
           var resp=$.parseJSON(response);
+          //console.log(resp);
+          if(response==null || response=="null")
+          {
+            changeComunidad();
+            limpiarNot();
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
           if(resp.error){
             Command: toastr.warning(resp.error.message, "Notifications");
           }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
+            return;
           }
          
         })
