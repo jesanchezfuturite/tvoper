@@ -51,11 +51,7 @@ class PortalNotaryOfficesController extends Controller
         $remote_server_output = curl_exec($ch);
         curl_close ($ch);
         $response =json_decode($remote_server_output);
-       
-        if ($response->data=="error"){
-            return json_encode($response);
-        }
-       
+    
         return json_encode($response);
          
 
