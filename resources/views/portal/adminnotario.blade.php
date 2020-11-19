@@ -688,10 +688,12 @@ function getBase64Notario(file) {
        Command: toastr.warning("Campo Numero, longitud minima 3!", "Notifications") 
     }else if (codigopostNotario.length<5) {
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
+    }else if (distritoNotario.length<1) {
+       Command: toastr.warning("Campo Distrito, requerido!", "Notifications") 
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
-       Command: toastr.warning("Campo Usuario, formato incorrecto!", "Notifications") 
+       Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres,1 mayuscula, 1 numero! ", "Notifications") 
     }else if (!emailRegex.test(emailNotario2)) {
        Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if (telNotario2.length<10) {
@@ -781,13 +783,23 @@ function getBase64Notario(file) {
            url: "{{ url('/notary-offices') }}",
            data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
+          console.log(response);
           var resp=$.parseJSON(response);
+          //console.log(resp);
+          if(response==null || response=="null")
+          {
+            changeComunidad();
+            limpiarNot();
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
           if(resp.error){
             Command: toastr.warning(resp.error.message, "Notifications");
           }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
+            return;
           }
          
         })
@@ -902,7 +914,7 @@ function getBase64Notario(file) {
    //console.log(json);
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
-    $("#itemsConfigUser").val(json.config_id).change();
+    //$("#itemsConfigUser").val(json.config_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
