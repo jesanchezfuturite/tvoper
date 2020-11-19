@@ -914,7 +914,7 @@ function getBase64Notario(file) {
    //console.log(json);
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
-    $("#itemsConfigUser").val(json.config_id).change();
+    //$("#itemsConfigUser").val(json.config_id).change();
       document.getElementById('idperfil').value=json.id; 
       document.getElementById('users').value=json.username; 
       document.getElementById('emailUser').value=json.email; 
