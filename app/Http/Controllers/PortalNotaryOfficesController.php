@@ -56,18 +56,6 @@ class PortalNotaryOfficesController extends Controller
             return json_encode($response);
         }
        
-       
-        $notarys = $this->listNotary();
-        $responseinfo = array();
-
-        foreach($notarys as $n)
-        {
-            $responseinfo []= array(
-                "id"=>$n->id,
-                "notary_number" => $n->notary_number  
-            );
-        }
-        $response->list_users = $responseinfo;
         return json_encode($response);
          
 
