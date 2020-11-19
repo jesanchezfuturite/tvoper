@@ -42,7 +42,7 @@ class PortalNotaryOfficesController extends Controller
         $datos;
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/");
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/notary-offices/");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -56,18 +56,6 @@ class PortalNotaryOfficesController extends Controller
             return json_encode($response);
         }
        
-       
-        $notarys = $this->listNotary();
-        $responseinfo = array();
-
-        foreach($notarys as $n)
-        {
-            $responseinfo []= array(
-                "id"=>$n->id,
-                "notary_number" => $n->notary_number  
-            );
-        }
-        $response->list_users = $responseinfo;
         return json_encode($response);
          
 
@@ -75,11 +63,11 @@ class PortalNotaryOfficesController extends Controller
 
     public function listNotary(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/");        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/notary-offices/"); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listNotary = curl_exec($ch);
-        curl_close($ch);
-        
+
+        curl_close($ch);        
         $jsonArrayResponse = json_decode($listNotary);
         $data = $jsonArrayResponse->response->notary_offices;
         return $data;
@@ -87,7 +75,7 @@ class PortalNotaryOfficesController extends Controller
  
 
     public function getUsers($id){
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$id/users";
+        $link ="http://10.153.144.218/session-api/notary-offices/". "$id/users";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
@@ -105,7 +93,7 @@ class PortalNotaryOfficesController extends Controller
         $data = $request->user;
         $data["id"] = $user_id;
         $json=json_encode($data);
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
+        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');  
@@ -128,7 +116,7 @@ class PortalNotaryOfficesController extends Controller
             "status"=>$request->status
         );
         $json = json_encode($data);
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/". "$notary_id/users/$user_id";
+        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); 
@@ -146,7 +134,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
-        $link ="https://session-api-stage.herokuapp.com/notary-offices/"."$id/users";
+        $link ="http://10.153.144.218/session-api/notary-offices/"."$id/users";
         $users=$request->users;
    
         $json = array("users"=>$users);
@@ -166,7 +154,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function getRolesPermission(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-stage.herokuapp.com/notary-offices/roles");        
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/notary-offices/roles");        
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
         $listRoles = curl_exec($ch);
         curl_close($ch);
@@ -187,21 +175,11 @@ class PortalNotaryOfficesController extends Controller
 
     public function index()
     {
-        $notarys = $this->listNotary();
         $roles = $this->getRoles();
         $rolesPermission = $this->getRolesPermission();
-        $responseinfo = array();
-
-        foreach($notarys as $n)
-        {
-            $responseinfo []= array(
-                "id"=>$n->id,
-                "notary_number" => $n->notary_number  
-            );
-        }
+        $responseinfo = array();        
 
         return view('portal/adminnotario',[
-            "notary"=>$responseinfo,
             "roles"=>$roles, 
             "rolesPermission"=>$rolesPermission
             ]);
