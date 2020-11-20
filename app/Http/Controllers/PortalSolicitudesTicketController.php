@@ -341,8 +341,9 @@ class PortalSolicitudesTicketController extends Controller
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
       ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion",
       "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
-      ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+      ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+      // ->leftJoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id');
       
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
@@ -359,9 +360,24 @@ class PortalSolicitudesTicketController extends Controller
         $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
         $solicitudes->whereIn('user_id', $users);
       }
-      $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-      ->orderBy('solicitudes_ticket.created_at', 'DESC');
+      $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
+
+      $mensajes = $this->mensajes;
+
+      $datos=[];
+      foreach($solicitudes as $key => $value){
+        foreach ($mensajes->get() as $m => $msje){
+          if($value->id ==$msje->ticket_id){
+            array_push( $datos, $msje->toArray());
+          }
+        }
+
+        $value->mensajes= $datos;
+
+      }
+      
+      
       return $solicitudes;
     }
     
