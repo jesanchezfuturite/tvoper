@@ -337,6 +337,7 @@ Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCosto
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
 Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
+Route::get('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -386,4 +387,3 @@ Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
 Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
 Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
 Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
-
