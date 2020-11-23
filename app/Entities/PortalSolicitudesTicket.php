@@ -28,7 +28,10 @@ class PortalSolicitudesTicket extends Model implements Transformable
 
  
     public function catalogo(){
-		return $this->hasMany('App\Entities\Portalsolicitudescatalogo', 'id', 'catalogo_id');
-	}
+	  	return $this->hasMany('App\Entities\Portalsolicitudescatalogo', 'id', 'catalogo_id');
+    }
+    public function mensajes(){
+	  	return $this->hasMany('App\Entities\PortalsolicitudesMensajes', 'id', 'ticket_id');
+	  }
 
 }
