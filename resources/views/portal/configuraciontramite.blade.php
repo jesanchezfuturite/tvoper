@@ -47,15 +47,25 @@
                         <div class="form-group">
                             <select class="select2me form-control"name="itemsTramites" id="itemsTramites" onchange="changeTramites()">
                                 <option value="limpia">------</option>
-
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2 col-ms-12">
-                        <div class="form-group" id="addButton">
-
+                        <div class="form-group">
+                            <span class="help-block"></span>
+                            <label >Tipo Tramite (Selecciona)</label>
                         </div>
                     </div>
+                    <div class="col-md-3 col-ms-12">
+                        <div class="form-group">
+                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite" onchange="changeTramites()">
+                                <option value="0">------</option>
+                                <option value="imouesto">Impuesto</option>
+                                <option value="derecho">Derecho</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -74,7 +84,7 @@
             <div class="col-md-2 col-ms-12">
                 <div class="form-group">
                     <label class="sr-only" for="bancoNombre">Nueva Agrupacion</label>
-                    <input type="text" class="form-control" id="bancoNombre"name="bancoNombre" autocomplete="off"placeholder="Nueva Agrupacion">
+                    <input type="text" class="form-control" id="bancoNombre"name="bancoNombre" autocomplete="off"placeholder="Nueva Agrupación...">
                 </div>
             </div>
              <div class="col-md-1 col-ms-12">
@@ -84,12 +94,12 @@
             </div>
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">
-                    <label >Agrupación Registrados (Selecciona para ver los campos)</label>   
+                    <label >Agrupaciones Registrados (Selecciona)</label>   
                   </div>
             </div>
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
-                        <select class="select2me form-control"name="items" id="items" onchange="CuentasBanco()">
+                        <select class="select2me form-control"name="itemsAgrupaciones" id="itemsAgrupaciones" onchange="">
                            <option value="0">------</option>
                            
                         </select>            
@@ -122,13 +132,30 @@
             </div>
             <div class="portlet-body" id="Removetable">
                 <span class="help-block"> &nbsp;</span>
-                <div id="addtable">
-                    
+                <div id="addtable">                    
                     <ul id="sortable" class="sortable"style="cursor: -webkit-grab; cursor: grab;">
                             <li class="ui-state-default" >
                               <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
-                                <div class="col-md-8">Tramite1 ads d </div>
-                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()'><i class='fa fa-pencil'></i></a></div>
+                                <div class="col-md-8">Campo1 ads d </div>
+                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
+                             
+                            </li>
+                            <li class="ui-state-default" >
+                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
+                                <div class="col-md-8">Campo2 ads d </div>
+                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
+                             
+                            </li>
+                            <li class="ui-state-default" >
+                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
+                                <div class="col-md-8">Campo3 ads d </div>
+                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
+                             
+                            </li>
+                            <li class="ui-state-default" >
+                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
+                                <div class="col-md-8">Campo4 ads d </div>
+                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
                              
                             </li>
                         </ul>
@@ -288,6 +315,7 @@
         findTramites();
         findCampos();
         findTipos();
+        findAgrupaciones();
     });
      $( function() {
         $( "#sortable" ).sortable();
@@ -347,6 +375,23 @@
             $("#itemsTipos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
                 $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+     function findAgrupaciones()
+    {
+        $.ajax({
+           method: "get",
+           url: "{{ url('/traux-agrupacion') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+            $("#itemsAgrupaciones option").remove();
+            $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
+            $.each(Resp, function(i, item) {
+                $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {

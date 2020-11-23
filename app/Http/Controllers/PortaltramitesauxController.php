@@ -459,5 +459,7 @@ class PortaltramitesauxController extends Controller
 
 			return json_encode($data);
 		}
-
+		public function viewConfiguracion(){
+			return view("portal/configuraciontramite");
+		}
 }
