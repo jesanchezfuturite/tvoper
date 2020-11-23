@@ -3,7 +3,7 @@
 return
 	array (
 
-		"Tipo" => "Impuesto / Derecho",
+		"Tipo" => "Impuesto",
 
 		"Datos del Inmueble" => array(
 				"Número de escritura o Minuta" => array(

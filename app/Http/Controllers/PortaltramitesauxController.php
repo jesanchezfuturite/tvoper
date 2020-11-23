@@ -14,6 +14,7 @@ use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
+use App\Repositories\PortalcamposagrupacionesRepositoryEloquent;
 use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
@@ -35,6 +36,7 @@ class PortaltramitesauxController extends Controller
 	protected $partidas;
 	protected $reglas;
 	protected $files;
+	protected $agrupaciones;
 
     public function __construct(
 
@@ -46,7 +48,8 @@ class PortaltramitesauxController extends Controller
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
     	UmahistoryRepositoryEloquent $umadb,
 			EgobiernopartidasRepositoryEloquent $partidas,
-			PortalreglaoperativaRepositoryEloquent $reglas
+			PortalreglaoperativaRepositoryEloquent $reglas,
+			PortalcamposagrupacionesRepositoryEloquent $agrupaciones
 
     )
     {
@@ -61,6 +64,7 @@ class PortaltramitesauxController extends Controller
 			$this->partidas = $partidas;
 			$this->reglas = $reglas;
 			$this->files = config('impuestos');
+			$this->agrupaciones = $agrupaciones;
     }
 
 
@@ -450,4 +454,12 @@ class PortaltramitesauxController extends Controller
 			return json_encode($name);
 		}
 
+		public function listarAgrupacion(){
+			$data = $this->agrupaciones->all();
+
+			return json_encode($data);
+		}
+		public function viewConfiguracion(){
+			return view("portal/configuraciontramite");
+		}
 }
