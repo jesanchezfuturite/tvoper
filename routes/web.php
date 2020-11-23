@@ -379,3 +379,11 @@ Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampo
 Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
 Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
 Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
+
+
+Route::get('/avisos-internos', 'PortalAvisosInternosController@index');
+Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
+Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
+Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
+Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
+
