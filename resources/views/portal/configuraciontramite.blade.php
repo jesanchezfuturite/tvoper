@@ -404,7 +404,7 @@
                 $('#sortable').append( "<li class='ui-state-default'>"+
                     "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
-                   "<div class='col-md-8'>"+item.campo_nombre+" </div>  <div class='col-md-2'>"+
+                   "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
                    "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
