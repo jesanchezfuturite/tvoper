@@ -489,6 +489,13 @@
           }
 
         }
+        var contador=2;
+        $("input[type=checkbox]:unchecked").each(function(){
+            if($(this).val() !="on")
+            {               
+                contador=contador+1; 
+            }
+        });
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-add-serv') }}",
@@ -592,13 +599,19 @@
     function SaveGrupo()
     {
         var agrup=$("#agrupacionNombre").val();
-        console.log(fdata);
+        //console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/') }}",
-           data: {nombre: agrup,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/guardar-agrupacion') }}",
+           data: {descripcion: agrup,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-        
+            if(response.Code=="200"){          
+                document.getElementById('agrupacionNombre').value=""; 
+                Command: toastr.success(response.Message, "Notifications");
+                findAgrupaciones();
+            }else{            
+                Command: toastr.warning(response.Message, "Notifications");
+            }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
