@@ -384,8 +384,9 @@
             document.getElementById("nameTramite").textContent="Tramite";
             $('#Removetable div').remove();
         }else if(agrupacion=="limpia"){
-            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
             document.getElementById("nameTramite").textContent="Tramite";
+            $('#Removetable div').remove();
 
         }else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
