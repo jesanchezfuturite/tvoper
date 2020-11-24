@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" onchange="changeTramites()">
+                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" >
                                 <option value="limpia">------</option>
                             </select>
                         </div>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite" onchange="changeTramites()">
+                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite">
                                 <option value="0">------</option>
                                 <option value="imouesto">Impuesto</option>
                                 <option value="derecho">Derecho</option>
@@ -99,7 +99,7 @@
             </div>
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
-                        <select class="select2me form-control"name="itemsAgrupaciones" id="itemsAgrupaciones" onchange="">
+                        <select class="select2me form-control"name="itemsAgrupaciones" id="itemsAgrupaciones" onchange="changeTramites()">
                            <option value="0">------</option>
                            
                         </select>            
@@ -376,12 +376,17 @@
      function changeTramites()
     {
         var tramite=$("#itemsTramites").val();
+        var agrupacion=$("#itemsAgrupaciones").val();
         var tramiteMember=$("#itemsTramites option:selected").text();
         if(tramite=="limpia")
         {
-            //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
             document.getElementById("nameTramite").textContent="Tramite";
             $('#Removetable div').remove();
+        }else if(agrupacion=="limpia"){
+            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            document.getElementById("nameTramite").textContent="Tramite";
+
         }else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
            findRelationship();
@@ -390,10 +395,11 @@
     function findRelationship()
     {
         var items=$("#itemsTramites").val();
+        var agrupacion=$("#itemsAgrupaciones").val();
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-get-relcamp') }}",
-           data: {tramiteid:items,_token:'{{ csrf_token() }}'}  })
+           data: {tramiteid:items,id_agrupacion:agrupacion,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
 
