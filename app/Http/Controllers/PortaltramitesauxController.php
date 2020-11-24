@@ -253,7 +253,6 @@ class PortaltramitesauxController extends Controller
 
 	public function guardaTramite(Request $request)
 	{
-
 		try {
 
 			foreach ($request->campoid as $k => $v) {
@@ -267,6 +266,20 @@ class PortaltramitesauxController extends Controller
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
 
+	}
+
+	public function guardarOrden(Request $request){
+		dd($request);
+		try {
+
+				// foreach () {
+				//
+				//
+				// }
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+		}
 	}
 	/****************************** COSTOS / SUBSIDIOS *******************************/
 	public function Viewtipopagocosto()

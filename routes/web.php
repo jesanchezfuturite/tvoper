@@ -340,6 +340,7 @@ Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
 Route::get('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
 Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
 Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
+Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
