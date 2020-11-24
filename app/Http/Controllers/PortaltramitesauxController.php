@@ -459,7 +459,22 @@ class PortaltramitesauxController extends Controller
 
 			return json_encode($data);
 		}
+		public function guardarAgrupacion(Request $request){
+			$descripcion = $request->descripcion;
+
+			try{
+				$save = $this->agrupaciones->create(['descripcion'=>$descripcion]);
+
+				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
+
+			}catch(\Exception $e){
+				Log::info('Error Tramites - guardar Agrupacion: '.$e->getMessage());
+			}
+
+		}
+
 		public function viewConfiguracion(){
 			return view("portal/configuraciontramite");
 		}
+
 }
