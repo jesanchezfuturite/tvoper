@@ -258,7 +258,7 @@ class PortaltramitesauxController extends Controller
 
 			foreach ($request->campoid as $k => $v) {
 
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->insert($in);
