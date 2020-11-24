@@ -215,17 +215,17 @@
                                 </div>
                             </div>
                         </div>
-
-                    <div class="form-group">
-                        <div class="col-md-10">
-                            <button type="button" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <button type="button" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                </div> 
+                <div class="modal-footer">
                         <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
                     </div>
-
-                </div>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -265,15 +265,18 @@
                             </div>
                         </div>
                     </div>
-                  <div class="form-group">
-                      <div class="col-md-10">
-                          <button type="button" class="btn blue" onclick="saveCaracteristica()"><i class="fa fa-check"></i> Guardar</button>
-                      </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                            <button type="button" class="btn blue" onclick="saveCaracteristica()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
                   </div>
-                  <div class="modal-footer">
+                  
+                </div>
+                <div class="modal-footer">
                       <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
                   </div>
-                </div>
             </div>
         </div>
       <!-- /.modal-content -->
@@ -402,7 +405,7 @@
                     "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
                    "<div class='col-md-8'>"+item.campo_nombre+" </div>  <div class='col-md-2'>"+
-                   "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car.required+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
+                   "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
                    "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
                     "</li>"
@@ -424,7 +427,9 @@
         document.getElementById('idRelantion').value=id_;
         $("#itemsTipos").val(tipo).change();
         $("#itemsCampos").val(campo).change();
-        if(carac==true)
+        carac=$.parseJSON(carac);
+        console.log(carac.required);
+        if(carac.required=="true")
         {
             $("#checkbox30").prop("checked", true);
         }else{
@@ -587,7 +592,7 @@
         console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/') }}",
+           url: "{{ url('/guardar-orden') }}",
            data: {data: fdata,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         
