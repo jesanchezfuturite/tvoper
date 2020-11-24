@@ -83,8 +83,8 @@
         <div class="row">
             <div class="col-md-2 col-ms-12">
                 <div class="form-group">
-                    <label class="sr-only" for="bancoNombre">Nueva Agrupacion</label>
-                    <input type="text" class="form-control" id="bancoNombre"name="bancoNombre" autocomplete="off"placeholder="Nueva Agrupación...">
+                    <label class="sr-only" for="agrupacionNombre">Nueva Agrupacion</label>
+                    <input type="text" class="form-control" id="agrupacionNombre"name="agrupacionNombre" autocomplete="off"placeholder="Nueva Agrupación...">
                 </div>
             </div>
              <div class="col-md-1 col-ms-12">
@@ -126,7 +126,7 @@
                 <div class="tools" id="removeBanco">
                     <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Agregar Cuenta">
                     </a>
-                   <a id="Remov" href="javascript:;" data-original-title="" title="Desactivar Tramite" onclick="desactivaTramite()"><i class='fa fa-remove' style="color:white !important;"></i>
+                   <a id="Remov" href="javascript:;" data-original-title="" title="" ><i class='fa fa-remove' style="color:#d7eaf8 !important;"></i>
                     </a>
                 </div>
             </div>
@@ -134,30 +134,7 @@
                 <span class="help-block"> &nbsp;</span>
                 <div id="addtable">                    
                     <ul id="sortable" class="sortable"style="cursor: -webkit-grab; cursor: grab;">
-                            <li class="ui-state-default" >
-                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
-                                <div class="col-md-8">Campo1 ads d </div>
-                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
-                             
-                            </li>
-                            <li class="ui-state-default" >
-                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
-                                <div class="col-md-8">Campo2 ads d </div>
-                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
-                             
-                            </li>
-                            <li class="ui-state-default" >
-                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
-                                <div class="col-md-8">Campo3 ads d </div>
-                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
-                             
-                            </li>
-                            <li class="ui-state-default" >
-                              <div class="col-md-1"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span></div>
-                                <div class="col-md-8">Campo4 ads d </div>
-                                <div class="col-md-2"><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted()' style="color:#FFF !important;"><i class='fa fa-minus'></i></a><a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd()' style="color:#FFF !important;"><i class='fa fa-pencil'></i></a></div>
-                             
-                            </li>
+                           
                         </ul>
                 </div>
             </div>
@@ -317,16 +294,12 @@
         findTipos();
         findAgrupaciones();
     });
-     $( function() {
+     /*$( function() {
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
       
-    } );
-    $( ".sortable" ).sortable({
-        beforeStop: function( event, ui ) {
-           console.log("change"); 
-        }
-    });
+    } );*/
+    
     function findTramites()
     {
         $.ajax({
@@ -397,8 +370,251 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
     }
+     function changeTramites()
+    {
+        var tramite=$("#itemsTramites").val();
+        var tramiteMember=$("#itemsTramites option:selected").text();
+        if(tramite=="limpia")
+        {
+            //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            document.getElementById("nameTramite").textContent="Tramite";
+            $('#Removetable div').remove();
+        }else{
+           document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
+           findRelationship();
+        }
+    }
+    function findRelationship()
+    {
+        var items=$("#itemsTramites").val();
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-get-relcamp') }}",
+           data: {tramiteid:items,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
 
+            $('#Removetable div').remove();
+            $('#Removetable').append("<div id='addtable'><ul id='sortable' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
+            $.each(Resp, function(i, item) {
+                var car=JSON.stringify(item.caracteristicas);
+                $('#sortable').append( "<li class='ui-state-default'>"+
+                    "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
+                    " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
+                   "<div class='col-md-8'>"+item.campo_nombre+" </div>  <div class='col-md-2'>"+
+                   "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car.required+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
+                   "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
+                    "</li>"
+                );
+            });
+            $( "#sortable" ).sortable();
+             $( "#sortable" ).disableSelection();
+            $( ".sortable" ).sortable({
+                update: function( event, ui ) {
+                updatePositions();
+                }
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function relationshipUpdate(id_,campo,tipo,carac)
+    {
+        document.getElementById('idRelantion').value=id_;
+        $("#itemsTipos").val(tipo).change();
+        $("#itemsCampos").val(campo).change();
+        if(carac==true)
+        {
+            $("#checkbox30").prop("checked", true);
+        }else{
+            $("#checkbox30").prop("checked", false);
+        }
+    }
+    function relationshipDeleted(id_)
+    {
+        document.getElementById('iddeleted').value=id_;
+    }
+    function relationshipAdd(campo){
+      $("#idcampo").val(campo);
+    }
 
+     function metodoSaveUpdate()
+    {
+         var idRelantion=$("#idRelantion").val();
+        var itemsTramites=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampos").val();
+        var itemsTipos=$("#itemsTipos").val();
+
+        var itemsAgrupaciones=$("#itemsAgrupaciones").val();
+
+        if(itemsAgrupaciones=="limpia"){
+           Command: toastr.warning("Agrupación sin seleccionar, Requerido!", "Notifications")
+        }else if(itemsTramites=="limpia"){
+           Command: toastr.warning("Tramite sin seleccionar, Requerido!", "Notifications")
+        }else if(itemsCampo=="limpia"){
+           Command: toastr.warning("Campo sin seleccionar, Requerido!", "Notifications")
+        }else if(itemsTipos=="limpia"){
+           Command: toastr.warning("Tipo sin seleccionar, Requerido!", "Notifications")
+        }else{
+            if(idRelantion.length>0)
+                {
+                    update();
+                }else{
+                    insertTramiteCampos();
+            }
+        }
+    }
+     function insertTramiteCampos()
+    {
+        var itemTramite=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampos").val();
+        var itemsTipos=$("#itemsTipos").val();
+        var itemsAgrupaciones=$("#itemsAgrupaciones").val();
+        var check=$("#checkbox30").prop("checked");
+        var valCheck='[{"required":"false"}]';
+
+        if(check==true)
+        {
+          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
+            valCheck='{"required":"true", "opciones":[]}';
+          }else{
+            valCheck='{"required":"true"}';
+          }
+        }else{
+          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
+            valCheck='{"required":"false", "opciones":[]}';
+          }else{
+            valCheck='{"required":"false"}';
+          }
+
+        }
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-add-serv') }}",
+           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
+       })
+        .done(function (response) {
+            CleanInputs();
+            findRelationship();
+            Command: toastr.success("Success", "Notifications")
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+
+    }
+    function update()
+    {
+        var idRelantion=$("#idRelantion").val();
+        var itemTramite=$("#itemsTramites").val();
+        var itemsCampo=$("#itemsCampos").val();
+        var itemsTipos=$("#itemsTipos").val();
+        var check=$("#checkbox30").prop("checked");
+        var valCheck='[{"required":"false"}]';
+        if(check==true)
+        {
+            valCheck='{"required":"true"}';
+        }else{
+            valCheck='{"required":"false"}';
+        }
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-edit-relcamp') }}",
+           data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
+       })
+        .done(function (response) {
+            CleanInputs();
+            findRelationship();
+            if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+
+    }
+    function saveCaracteristica(){
+      var idCampo = $("#idcampo").val();
+      var nombre = $("#nombre").val();
+      var valor = $("#valor").val();
+      console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
+      $.ajax({
+        method : "POST",
+        url: "{{url('/traux-add-caract')}}",
+        data: { id:idCampo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
+
+        success: function(info){
+          if(info.Code != 200)
+          {
+            console.log(info.Message);
+            return false;
+          }else{
+            // cerramos el modal
+            console.log(info.Message);
+            $("#nombre").empty();
+            $("#valor").empty();
+          }
+        }
+      })
+      .done(function (response) {
+          CleanInputs();
+          findRelationship();
+          $("#modalCaracteristica .close").click();
+          Command: toastr.success("Success", "Notifications")
+
+      });
+
+    }
+    function updatePositions()
+    {
+        const fdata = [];
+        var contador=1;
+        $("input[type=checkbox]:unchecked").each(function(){
+            if($(this).val() !="on")
+            {
+                fdata.push({id : $(this).val(), orden: contador})  
+                contador=contador+1; 
+            }         
+            
+        });
+        console.log(fdata);
+         $.ajax({
+           method: "POST",
+           url: "{{ url('/') }}",
+           data: {data: fdata,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
+    function SaveGrupo()
+    {
+        var agrup=$("#agrupacionNombre").val();
+        console.log(fdata);
+         $.ajax({
+           method: "POST",
+           url: "{{ url('/') }}",
+           data: {nombre: agrup,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
+    function CleanInputs()
+    {
+         //document.getElementById('caracteristica').value="";
+         //document.getElementById('itemMetodopago').value="limpia";
+         $("#itemsTipos").val("limpia").change();
+         $("#itemsCampos").val("limpia").change();
+         document.getElementById('idRelantion').value="";
+         document.getElementById('iddeleted').value="";
+        $("#checkbox30").prop("checked", false);
+
+    }
 </script>
 
 @endsection
