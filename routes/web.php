@@ -389,3 +389,6 @@ Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
 Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
 Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
 Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
+
+
+Route::get('/divisas', 'DivisasController@index');
