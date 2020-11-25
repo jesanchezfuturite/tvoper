@@ -340,6 +340,10 @@ Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCosto
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
 Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
+Route::get('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
+Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
+Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
+Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -382,3 +386,12 @@ Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampo
 Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
 Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
 Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
+
+
+Route::get('/avisos-internos', 'PortalAvisosInternosController@index');
+Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
+Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
+Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
+Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
+
+Route::get('/obtener-divisas', 'DivisasController@getDivisas');
