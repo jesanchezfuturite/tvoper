@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
  */
 class PortalcamporelationshipRepositoryEloquent extends BaseRepository implements PortalcamporelationshipRepository
 {
-    
+
     protected $db='egobierno';
 
     /**
@@ -28,7 +28,7 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
         return Portalcamporelationship::class;
     }
 
-    
+
 
     /**
      * Boot up the repository, pushing criteria
@@ -41,24 +41,25 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
 
     public function searchRelation($idrel)
     {
-        try{        
+        try{
 
-            $data = Portalcamporelationship::where(['tramite_id'=>$idrel])       
-            ->leftjoin('campos_type','campos_type.id','=','campos_relationship.tipo_id')     
-            ->leftjoin('campos_catalogue','campos_catalogue.id','=','campos_relationship.campo_id')     
-            ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.caracteristicas')
+            $data = Portalcamporelationship::where(['tramite_id'=>$idrel])
+            ->leftjoin('campos_type','campos_type.id','=','campos_relationship.tipo_id')
+            ->leftjoin('campos_catalogue','campos_catalogue.id','=','campos_relationship.campo_id')
+            ->leftjoin('campos_agrupaciones','campos_relationship.agrupacion_id','=','campos_catalogue.id')
+            ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.orden as orden','campos_relationship.agrupacion_id as agrupacion_id','campos_agrupaciones.descripcion as agrupacion_nombre','campos_relationship.caracteristicas')
             ->get();
 
             return $data;
-       
+
        }catch( \Exception $e){
             Log::info('[PortalcamporelationshipRepositoryEloquent@searchRelation] Error ' . $e->getMessage());
-        } 
+        }
     }
     public function findTramite()
     {
         try{
-        $data = Portalcamporelationship::select('campos_relationship.tramite_id as id',$this->db  . '.tipo_servicios.Tipo_Descripcion as nombre')    
+        $data = Portalcamporelationship::select('campos_relationship.tramite_id as id',$this->db  . '.tipo_servicios.Tipo_Descripcion as nombre')
             ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','campos_relationship.tramite_id')
             ->groupBy('campos_relationship.tramite_id')
             ->get();
@@ -66,7 +67,7 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
             return $data;
         }catch( \Exception $e){
             Log::info('[PortalcamporelationshipRepositoryEloquent@findTramite] Error ' . $e->getMessage());
-        } 
+        }
     }
-    
+
 }

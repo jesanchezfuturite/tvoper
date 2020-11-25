@@ -14,6 +14,7 @@ use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
+use App\Repositories\PortalcamposagrupacionesRepositoryEloquent;
 use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
@@ -35,6 +36,7 @@ class PortaltramitesauxController extends Controller
 	protected $partidas;
 	protected $reglas;
 	protected $files;
+	protected $agrupaciones;
 
     public function __construct(
 
@@ -46,7 +48,8 @@ class PortaltramitesauxController extends Controller
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
     	UmahistoryRepositoryEloquent $umadb,
 			EgobiernopartidasRepositoryEloquent $partidas,
-			PortalreglaoperativaRepositoryEloquent $reglas
+			PortalreglaoperativaRepositoryEloquent $reglas,
+			PortalcamposagrupacionesRepositoryEloquent $agrupaciones
 
     )
     {
@@ -61,6 +64,7 @@ class PortaltramitesauxController extends Controller
 			$this->partidas = $partidas;
 			$this->reglas = $reglas;
 			$this->files = config('impuestos');
+			$this->agrupaciones = $agrupaciones;
     }
 
 
@@ -249,12 +253,11 @@ class PortaltramitesauxController extends Controller
 
 	public function guardaTramite(Request $request)
 	{
-
 		try {
 
 			foreach ($request->campoid as $k => $v) {
 
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->insert($in);
@@ -263,6 +266,20 @@ class PortaltramitesauxController extends Controller
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
 
+	}
+
+	public function guardarOrden(Request $request){
+		dd($request);
+		try {
+
+				// foreach () {
+				//
+				//
+				// }
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+		}
 	}
 	/****************************** COSTOS / SUBSIDIOS *******************************/
 	public function Viewtipopagocosto()
@@ -448,6 +465,29 @@ class PortaltramitesauxController extends Controller
 			//$data = $this->reglas->where('status',1)->get();
 
 			return json_encode($name);
+		}
+
+		public function listarAgrupacion(){
+			$data = $this->agrupaciones->all();
+
+			return json_encode($data);
+		}
+		public function guardarAgrupacion(Request $request){
+			$descripcion = $request->descripcion;
+
+			try{
+				$save = $this->agrupaciones->create(['descripcion'=>$descripcion]);
+
+				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
+
+			}catch(\Exception $e){
+				Log::info('Error Tramites - guardar Agrupacion: '.$e->getMessage());
+			}
+
+		}
+
+		public function viewConfiguracion(){
+			return view("portal/configuraciontramite");
 		}
 
 }
