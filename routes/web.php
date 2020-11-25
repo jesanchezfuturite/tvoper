@@ -379,3 +379,6 @@ Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampo
 Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
 Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
 Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
+
+Route::get('/obtener-divisas', 'DivisasController@getDivisas');
+

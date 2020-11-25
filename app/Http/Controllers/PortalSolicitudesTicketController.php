@@ -366,7 +366,9 @@ class PortalSolicitudesTicketController extends Controller
       $mensajes = $this->mensajes;
 
       $datos=[];
-      foreach($solicitudes as $key => $value){
+      foreach($solicitudes as $key => &$value){
+        $info = $this->asignarClavesCatalogo($value->info);
+        $value->info =$info;
         foreach ($mensajes->get() as $m => $msje){
           if($value->id ==$msje->ticket_id){
             array_push( $datos, $msje->toArray());
