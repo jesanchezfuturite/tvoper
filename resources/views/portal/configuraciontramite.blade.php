@@ -501,7 +501,7 @@
           }
 
         }
-        var contador=2;
+        var contador=1;
         $("input[type=checkbox]:unchecked").each(function(){
             if($(this).val() !="on")
             {               
