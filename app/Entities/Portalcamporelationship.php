@@ -22,7 +22,7 @@ class Portalcamporelationship extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['id','tramite_id','campo_id','tipo_id','caracteristicas'];
+    protected $fillable = ['id','tramite_id','campo_id','tipo_id','orden','agrupacion_id','caracteristicas'];
 
     protected $table = "campos_relationship";
 
