@@ -49,6 +49,7 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
             // ->join('campos_agrupaciones','campos_relationship.agrupacion_id','=','campos_catalogue.id')
             ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.orden as orden','campos_relationship.agrupacion_id as agrupacion_id','campos_relationship.caracteristicas')
             ->where('campos_relationship.agrupacion_id', $idgroup)
+            ->orderBy('campos_relationship.orden', 'ASC')
             ->get();
 
             return $data;
