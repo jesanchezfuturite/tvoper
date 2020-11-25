@@ -86,7 +86,34 @@
 @section('scripts')
 <script>
 
-
+    jQuery(document).ready(function() {
+        getDivisas();
+    });
+     /*$( function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+      
+    } );*/
+    
+    function getDivisas()
+    {
+        $.ajax({
+           method: "get",
+           url: "{{ url('/obtener-divisas') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            console.log( response )
+            /*
+            var Resp=$.parseJSON(response);
+            $("#itemsTramites option").remove();
+            $("#itemsTramites").append("<option value='limpia'>-------</option>");
+            $.each(Resp, function(i, item) {
+                $("#itemsTramites").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+            });*/
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
 </script>
 
 @endsection
