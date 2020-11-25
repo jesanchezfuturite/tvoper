@@ -179,7 +179,9 @@ class PortaltramitesauxController extends Controller
 		try {
 
 			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);
-			$rel = $this->camrel->searchRelation($request->tramiteid);
+			$rel = $this->camrel->searchRelation($request->tramiteid, $request->agrupacion_id);
+
+
 			Log::info($rel);
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
@@ -269,13 +271,19 @@ class PortaltramitesauxController extends Controller
 	}
 
 	public function guardarOrden(Request $request){
-		dd($request);
-		try {
 
-				// foreach () {
-				//
-				//
-				// }
+		try {
+				$data = $request->data;
+
+				foreach ($data as $d) {
+					$id = $d['id'];
+
+					$orden = $d['orden'];
+
+					$save = $this->camrel->update(['orden'=>$orden], $id);
+
+				}
+				return response()->json(["Code" => "200","Message" => "Registros Actualizados."]);
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
