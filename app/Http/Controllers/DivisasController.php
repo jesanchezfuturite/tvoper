@@ -21,7 +21,7 @@ class DivisasController extends Controller
        }
        public function getDivisas(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-21.herokuapp.com/divisas"); 
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/divisas"); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listDivisas = curl_exec($ch);
 
@@ -34,7 +34,7 @@ class DivisasController extends Controller
         $json=json_encode($data);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-21.herokuapp.com/divisas/saveDivisas");
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/divisas/saveDivisas");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -44,7 +44,7 @@ class DivisasController extends Controller
         curl_close ($ch);
         $response =$remote_server_output;
     
-        return json_encode($response);
+        return $response;
          
        }
 
@@ -54,7 +54,7 @@ class DivisasController extends Controller
         $json=json_encode($data);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,"https://session-api-pr-21.herokuapp.com/divisas/deleteDivisas");
+        curl_setopt($ch, CURLOPT_URL,"http://10.153.144.218/session-api/divisas/deleteDivisas");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -63,8 +63,7 @@ class DivisasController extends Controller
         $remote_server_output = curl_exec($ch);
         curl_close ($ch);
         $response =$remote_server_output;
-    
-        return json_encode($response);
+        return $response;
          
        }
        public function getDivisasSave(){

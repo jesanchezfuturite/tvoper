@@ -501,7 +501,7 @@
           }
 
         }
-        var contador=2;
+        var contador=1;
         $("input[type=checkbox]:unchecked").each(function(){
             if($(this).val() !="on")
             {               
@@ -638,6 +638,25 @@
          document.getElementById('idRelantion').value="";
          document.getElementById('iddeleted').value="";
         $("#checkbox30").prop("checked", false);
+
+    }
+    function deleted()
+    {
+        var idRelantion=$("#iddeleted").val();
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-del-relcamp') }}",
+           data: {id:idRelantion, _token:'{{ csrf_token() }}'}
+       })
+        .done(function (response) {
+            CleanInputs();
+            findRelationship();
+            if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
 
     }
 </script>
