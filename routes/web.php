@@ -394,6 +394,6 @@ Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotificatio
 Route::get('/obtener-divisas', 'DivisasController@getDivisas');
 Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
-Route::post('/get-divisas-save', 'DivisasController@getDivisasSave');
+Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 
 
