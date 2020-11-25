@@ -39,15 +39,16 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
     }
 
 
-    public function searchRelation($idrel)
+    public function searchRelation($idrel, $idgroup)
     {
         try{
 
             $data = Portalcamporelationship::where(['tramite_id'=>$idrel])
             ->leftjoin('campos_type','campos_type.id','=','campos_relationship.tipo_id')
             ->leftjoin('campos_catalogue','campos_catalogue.id','=','campos_relationship.campo_id')
-            ->leftjoin('campos_agrupaciones','campos_relationship.agrupacion_id','=','campos_catalogue.id')
-            ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.orden as orden','campos_relationship.agrupacion_id as agrupacion_id','campos_agrupaciones.descripcion as agrupacion_nombre','campos_relationship.caracteristicas')
+            // ->join('campos_agrupaciones','campos_relationship.agrupacion_id','=','campos_catalogue.id')
+            ->select('campos_relationship.id','campos_type.id as tipo_id','campos_type.descripcion as tipo_nombre','campos_catalogue.id as campo_id','campos_catalogue.descripcion as campo_nombre','campos_relationship.orden as orden','campos_relationship.agrupacion_id as agrupacion_id','campos_relationship.caracteristicas')
+            ->where('campos_relationship.agrupacion_id', $idgroup)
             ->get();
 
             return $data;
@@ -56,6 +57,14 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
             Log::info('[PortalcamporelationshipRepositoryEloquent@searchRelation] Error ' . $e->getMessage());
         }
     }
+
+    // public function searchGroup($idGroup){
+    //   try{
+    //
+    //   }catch( \Exception $e){
+    //        Log::info('[PortalcamporelationshipRepositoryEloquent@searchGroup] Error ' . $e->getMessage());
+    //   }
+    // }
     public function findTramite()
     {
         try{
