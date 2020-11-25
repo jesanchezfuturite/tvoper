@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" onchange="changeTramites()">
+                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" >
                                 <option value="limpia">------</option>
                             </select>
                         </div>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite" onchange="changeTramites()">
+                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite">
                                 <option value="0">------</option>
                                 <option value="imouesto">Impuesto</option>
                                 <option value="derecho">Derecho</option>
@@ -99,7 +99,7 @@
             </div>
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">           
-                        <select class="select2me form-control"name="itemsAgrupaciones" id="itemsAgrupaciones" onchange="">
+                        <select class="select2me form-control"name="itemsAgrupaciones" id="itemsAgrupaciones" onchange="changeTramites()">
                            <option value="0">------</option>
                            
                         </select>            
@@ -215,17 +215,17 @@
                                 </div>
                             </div>
                         </div>
-
-                    <div class="form-group">
-                        <div class="col-md-10">
-                            <button type="button" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <button type="button" class="btn blue" onclick="metodoSaveUpdate()"><i class="fa fa-check"></i> Guardar</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                </div> 
+                <div class="modal-footer">
                         <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
                     </div>
-
-                </div>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -265,15 +265,18 @@
                             </div>
                         </div>
                     </div>
-                  <div class="form-group">
-                      <div class="col-md-10">
-                          <button type="button" class="btn blue" onclick="saveCaracteristica()"><i class="fa fa-check"></i> Guardar</button>
-                      </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                            <button type="button" class="btn blue" onclick="saveCaracteristica()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
                   </div>
-                  <div class="modal-footer">
+                  
+                </div>
+                <div class="modal-footer">
                       <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
                   </div>
-                </div>
             </div>
         </div>
       <!-- /.modal-content -->
@@ -373,12 +376,18 @@
      function changeTramites()
     {
         var tramite=$("#itemsTramites").val();
+        var agrupacion=$("#itemsAgrupaciones").val();
         var tramiteMember=$("#itemsTramites option:selected").text();
         if(tramite=="limpia")
         {
+            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            document.getElementById("nameTramite").textContent="Tramite";
+            $('#Removetable div').remove();
+        }else if(agrupacion=="limpia"){
             //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
             document.getElementById("nameTramite").textContent="Tramite";
             $('#Removetable div').remove();
+
         }else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
            findRelationship();
@@ -387,10 +396,11 @@
     function findRelationship()
     {
         var items=$("#itemsTramites").val();
+        var agrupacion=$("#itemsAgrupaciones").val();
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-get-relcamp') }}",
-           data: {tramiteid:items,_token:'{{ csrf_token() }}'}  })
+           data: {tramiteid:items,agrupacion_id:agrupacion,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
 
@@ -401,8 +411,8 @@
                 $('#sortable').append( "<li class='ui-state-default'>"+
                     "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
-                   "<div class='col-md-8'>"+item.campo_nombre+" </div>  <div class='col-md-2'>"+
-                   "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car.required+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
+                   "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
+                   "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
                    "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
                     "</li>"
@@ -424,7 +434,9 @@
         document.getElementById('idRelantion').value=id_;
         $("#itemsTipos").val(tipo).change();
         $("#itemsCampos").val(campo).change();
-        if(carac==true)
+        carac=$.parseJSON(carac);
+        console.log(carac.required);
+        if(carac.required=="true")
         {
             $("#checkbox30").prop("checked", true);
         }else{
@@ -499,7 +511,7 @@
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-add-serv') }}",
-           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
+           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],agrupacion_id:itemsAgrupaciones,orden:contador, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
             CleanInputs();
@@ -587,7 +599,7 @@
         console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/') }}",
+           url: "{{ url('/guardar-orden') }}",
            data: {data: fdata,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         

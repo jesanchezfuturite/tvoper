@@ -179,7 +179,9 @@ class PortaltramitesauxController extends Controller
 		try {
 
 			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);
-			$rel = $this->camrel->searchRelation($request->tramiteid);
+			$rel = $this->camrel->searchRelation($request->tramiteid, $request->agrupacion_id);
+
+
 			Log::info($rel);
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
@@ -253,12 +255,11 @@ class PortaltramitesauxController extends Controller
 
 	public function guardaTramite(Request $request)
 	{
-
 		try {
 
 			foreach ($request->campoid as $k => $v) {
 
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$request->caracteristicas[$k]);
 			}
 
 			$this->camrel->insert($in);
@@ -267,6 +268,20 @@ class PortaltramitesauxController extends Controller
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 		}
 
+	}
+
+	public function guardarOrden(Request $request){
+		dd($request);
+		try {
+
+				// foreach () {
+				//
+				//
+				// }
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+		}
 	}
 	/****************************** COSTOS / SUBSIDIOS *******************************/
 	public function Viewtipopagocosto()
