@@ -400,7 +400,7 @@
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-get-relcamp') }}",
-           data: {tramiteid:items,id_agrupacion:agrupacion,_token:'{{ csrf_token() }}'}  })
+           data: {tramiteid:items,agrupacion_id:agrupacion,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
 
