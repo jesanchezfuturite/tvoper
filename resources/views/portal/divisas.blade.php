@@ -68,8 +68,7 @@
                     <div class="row">
                         <div class="col-md-4 col-ms-12">
                             <div class="form-group">
-                                <select class="select2me form-control" name="divisas" id="divisas">
-                                    <option value="limpia">------</option>
+                                <select class="form-control" name="divisasSelect" id="divisasSelect" multiple  size="8">
 
                                 </select>
                             </div>
@@ -103,13 +102,14 @@
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             console.log( response )
-            /*
+            //let divisas =  JSON.parse( response ).response;
+            
             var Resp=$.parseJSON(response);
-            $("#itemsTramites option").remove();
-            $("#itemsTramites").append("<option value='limpia'>-------</option>");
-            $.each(Resp, function(i, item) {
-                $("#itemsTramites").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-            });*/
+
+            $("#divisasSelect option").remove();
+            $.each(Resp.response, function(i, item) {
+                $("#divisasSelect").append("<option value='"+item.parametro+"'>"+item.descripcion+"</option>");
+            })
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
