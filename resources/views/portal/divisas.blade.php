@@ -75,19 +75,24 @@
 						</div>
 						<div class="col-md-4 text-center" style="margin-top: 5%;">
 							<div class="btn-group" role="group" aria-label="Basic example">
-								<button type="button" class="btn btn-secondary" onclick="quitar()">
+								<button type="button" class="btn btn-secondary" onclick="quitar()" id="btnEliminar">
 									<i class="fa fa-angle-double-left"></i>
 								</button>
-								<button type="button" class="btn btn-secondary" onclick="agregar()">
-									<i class="fa fa-angle-double-right"></i>
+								<button type="button" class="btn btn-secondary" onclick="agregar()" id="btnAgregar">
+									<i class="fa fa-angle-double-right" ></i>
 								</button>
 							</div>
 						</div>
 						<div class="col-md-4 col-ms-12">
+				
 							<div class="form-group">
+
 								<select class="form-control" name="divisasSelectAgregadas" id="divisasSelectAgregadas" multiple  size="8">
 
 								</select>
+							</div>
+							<div class="text-center">
+								<i class="fa fa-spin fa-spinner" id="iconAgregadas" style="display: none;"></i>
 							</div>
 						</div>
 					</div>
@@ -101,7 +106,7 @@
 
 @section('scripts')
 <script>
-	let divisas = [];
+	let divisas = []; 
 	let divisasAgregadas = [];
 
 	jQuery(document).ready(function() {
@@ -115,43 +120,64 @@
 	
 	function getDivisas()
 	{
-		$.ajax({
-		   method: "get",
-		   url: "{{ url('/obtener-divisas') }}",
-		   data: {_token:'{{ csrf_token() }}'}  })
-		.done(function (response) {
-			console.log( response )
-			//let divisas =  JSON.parse( response ).response;
-			
-			divisas=$.parseJSON(response).response;
+		
+
+		$("#iconAgregadas").fadeIn();
+		let ajaxDivisas = $.ajax({
+			dataType: "json",
+		   	method: "get",
+		   	url: "{{ url('/obtener-divisas') }}",
+		   	data: {_token:'{{ csrf_token() }}'}  })
+
+		let ajaxDivisasGuardadas = $.ajax({
+			dataType: "json",
+		   	method: "get",
+		   	url: "{{ url('/get-divisas-save') }}",
+		   	data: {_token:'{{ csrf_token() }}'}  });
+
+
+		$.when(ajaxDivisas, ajaxDivisasGuardadas).then( (respuesta1, respuesta2) => {
+			divisas =   respuesta1[0].response;
+			divisasAgregadas =   respuesta2[0].response.divisas;
+		 	divisas = divisas.filter(divisa => {  
+		 		return !divisasAgregadas.find( agregada => agregada.parametro == divisa.parametro );
+		 	});
+
+		}).always( () =>{
+			$("#iconAgregadas").fadeOut();
 			dibujarSelectDivisas(  );
 			dibujarSelectDivisasAgregadas();
-
-		})
-		.fail(function( msg ) {
-		 Command: toastr.warning("No Success", "Notifications")  });
+		});
 	}
 
 	function agregar(){
+		$("#btnAgregar").attr("disabled", true);
+		
+		
 		let divisasAgregadasValue = $("#divisasSelect").val();
 		
-		let indiceELIMINADOS = [];
+		let nuevasDivisas = [];
+
 
 		divisas.forEach( (divisa, index) => { 
 			if(divisasAgregadasValue.includes(divisa.parametro)){
-				divisasAgregadas.push(divisa);
-				indiceELIMINADOS.push(index);
+				nuevasDivisas.push(divisa);
 			} 
 		});
 
-		indiceELIMINADOS.forEach( indice =>{
-			divisas.splice(indice,1);
-		}); 
-		
-		http://10.153.144.228/save-divisas
+ 		$.ajax({
+           	method: "POST",
+           	url: "{{ url('/save-divisas') }}",
+           	data: {divisas:nuevasDivisas,_token:'{{ csrf_token() }}'}  })
+        	.done( (response) => {
+        		getDivisas();
+        	})
+        .fail(function( msg ) {
+        	 Command: toastr.warning("No Success", "Notifications")  
+     	}).always( () => {
+     		$("#btnAgregar").attr("disabled", false);
 
-		dibujarSelectDivisas(  );
-		dibujarSelectDivisasAgregadas();
+     	});
 
 	}
 
@@ -170,23 +196,30 @@
 	}
 
 	function quitar(){
+		$("#btnEliminar").attr("disabled", true);
+		
+		let divisasEliminadas= [];
 		let divisasEliminadasValue = $("#divisasSelectAgregadas").val();
 		
-		let indices = [];
 
 		divisasAgregadas.forEach( (divisa, index) => { 
 			if(divisasEliminadasValue.includes(divisa.parametro)){
-				divisas.push(divisa);
-				indices.push(index);
+				divisasEliminadas.push(divisa);
 			} 
 		});
 
-		indices.forEach( indice =>{
-			divisasAgregadas.splice(indice,1);
-		}); 
-		
-		dibujarSelectDivisas(  );
-		dibujarSelectDivisasAgregadas();
+ 		$.ajax({
+           	method: "POST",
+           	url: "{{ url('/delete-divisas') }}",
+           	data: {divisas:divisasEliminadas,_token:'{{ csrf_token() }}'}  })
+        	.done( (response) => {
+        		getDivisas();
+        	})
+        .fail(function( msg ) {
+        	 Command: toastr.warning("No Success", "Notifications")  
+     	}).always( () => {
+     		$("#btnEliminar").attr("disabled", false);
+     	});
 
 	}
 </script>
