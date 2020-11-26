@@ -29,6 +29,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\PortalNotaryRepository::class, \App\Repositories\PortalNotaryRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\ConfigUserNotaryOfficeRepository::class, \App\Repositories\ConfigUserNotaryOfficeRepositoryEloquent::class);
         $this->app->bind(\App\Repositories\PortalConfigUserNotaryOfficeRepository::class, \App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent::class);
+        $this->app->bind(\App\Repositories\PortalTramitesRepository::class, \App\Repositories\PortalTramitesRepositoryEloquent::class);
         //:end-bindings:
     }
 }
