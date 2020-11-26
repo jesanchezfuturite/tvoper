@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
+
 use App\Repositories\DivisasRepositoryEloquent;
 
 class DivisasController extends Controller
@@ -73,5 +75,11 @@ class DivisasController extends Controller
         curl_close($ch);  
         return $getDivisas; 
        }
+
+
+    public function index(Request $request)
+    {
+      return view('portal/divisas', []);
+    }
 
 }
