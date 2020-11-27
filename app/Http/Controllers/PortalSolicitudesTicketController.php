@@ -403,7 +403,7 @@ class PortalSolicitudesTicketController extends Controller
         [
           "Code" => "200",
           "Message" => "Solicitud transacción generada",
-          "data"=>$id_transaccion,
+          "id_transaccion"=>$id_transaccion,
         ]);
 
      
