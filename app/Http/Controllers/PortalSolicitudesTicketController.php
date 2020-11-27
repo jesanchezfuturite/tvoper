@@ -87,7 +87,7 @@ class PortalSolicitudesTicketController extends Controller
         
         $user_id = $request->user_id;
         // $solicitantes = json_decode($solicitantes);
-        $solicitantes = to_object($solicitantes);
+        $solicitantes = json_decode(json_encode($solicitantes));
         $info = $request->info;
         $id = [];
         try {    
