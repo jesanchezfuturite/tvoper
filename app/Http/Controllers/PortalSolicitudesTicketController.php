@@ -379,33 +379,36 @@ class PortalSolicitudesTicketController extends Controller
     public function saveTransaccion(Request $request){
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
-      try {
-        $solTramites = $this->solTramites->create([
-          "estatus" => $request->status    
-        ]); 
-        $id_transaccion=$solTramites->id;
-            
-          if($solTramites){
-            foreach ($ids_tramites as $key => $value) {      
-              dd($value->id);
+      $error=null;
+      $solTramites = $this->solTramites->create([
+        "estatus" => $request->status    
+      ]); 
+      $id_transaccion=$solTramites->id;
+      try {            
+        if($solTramites){
+          foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
-             
-
           }
         }        
 
       } catch (\Exception $e) {
           $error = $e;
-      }         
-       
-      return response()->json(
-        [
-          "Code" => "200",
-          "Message" => "Solicitud transacción generada",
-          "id_transaccion"=>$id_transaccion,
-        ]);
-
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar transacción"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud transacción generada",
+            "id_transaccion"=>$id_transaccion,
+          ]);
+      }    
      
     }
     public function saveTransaccionMotor(Request $request){      
