@@ -243,32 +243,31 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function updateTramite(Request $request){
-        $id_transaccion = $request->id_transaccion;
-        $id = $request->id;
-        
-      try{
+      $ids = json_decode(json_encode($request->ids_tickets));
+      $error=null;
+      try {            
+        foreach ($ids as $key => $value) {  
+            $solicitudTicket = $this->ticket->where('id' , $value->id)
+            ->update(['status'=> $request->status]);
+        }
+             
 
-          $solicitudTicket = $this->ticket->where('clave',$request->id)
-          ->update(['id_transaccion'=>$id_transaccion,'status'=> 1]);
-    
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
         return response()->json(
           [
             "Code" => "200",
-            "Message" => "Solicitud actualizada",
-          ]
-        );
-    
-        }catch(\Exception $e){
-    
-          Log::info('Error Editar solicitud '.$e->getMessage());
-    
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "Error al editar la solicitud",
-            ]
-          );
-        }
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
     
     }
 
