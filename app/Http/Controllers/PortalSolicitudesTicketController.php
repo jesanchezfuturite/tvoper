@@ -412,7 +412,11 @@ class PortalSolicitudesTicketController extends Controller
       $error=null;
       try {
         $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-        ->update(['id_transaccion_motor'=>$request->id_transaccion_motor,'estatus'=> $request->status]);
+        ->update([
+          'id_transaccion_motor'=>$request->id_transaccion_motor,
+          'json_envio'=>json_encode($request->json_envio),
+          'estatus'=> $request->status
+          ]);
          
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
