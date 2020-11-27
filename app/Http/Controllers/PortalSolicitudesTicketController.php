@@ -377,7 +377,7 @@ class PortalSolicitudesTicketController extends Controller
     }
 
     public function saveTransaccion(Request $request){
-      $ids_tramites = $request->ids_tramites;
+      $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
       try {
         $solTramites = $this->solTramites->create([
@@ -387,7 +387,7 @@ class PortalSolicitudesTicketController extends Controller
             
           if($solTramites){
             foreach ($ids_tramites as $key => $value) {      
-
+              dd($value->id);
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
              
