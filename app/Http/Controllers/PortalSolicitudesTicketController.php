@@ -13,6 +13,8 @@ use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
+use App\Repositories\PortalTramitesRepositoryEloquent;
+
 use DB;
 
 class PortalSolicitudesTicketController extends Controller
@@ -26,6 +28,7 @@ class PortalSolicitudesTicketController extends Controller
     protected $tiposer;
     protected $campo;
     protected $mensajes;
+    protected $solTramites;
 
 
 
@@ -38,7 +41,8 @@ class PortalSolicitudesTicketController extends Controller
         PortalNotaryOfficesRepositoryEloquent $notary,
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
         PortalcampoRepositoryEloquent $campo,
-        PortalSolicitudesMensajesRepositoryEloquent $mensajes
+        PortalSolicitudesMensajesRepositoryEloquent $mensajes,
+        PortalTramitesRepositoryEloquent $solTramites
         
        )
        {
@@ -50,6 +54,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->configUserNotary = $configUserNotary;
          $this->campo = $campo;
          $this->mensajes = $mensajes;
+         $this->solTramites = $solTramites;
    
        }
     
@@ -128,9 +133,9 @@ class PortalSolicitudesTicketController extends Controller
   
       try {
         if($valor=="u"){
-          $this->ticket->where('id',$id)->where('status', 99)->delete();
+          $this->ticket->where('id',$id)->where('status', 99)->update(["status"=>0]);
         }else{
-          $this->ticket->where('clave',$id)->where('status', 99)->delete();
+          $this->ticket->where('clave',$id)->where('status', 99)->update(["status"=>0]);
         }
         return response()->json(
           [
@@ -148,19 +153,7 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
     }
-    public function check_diff_multi($array1, $array2){
-      $result = array();
-      foreach($array1 as $key => $val) {
-            if(isset($array2[$key])){
-              if(is_array($val) && $array2[$key]){
-                  $result[$key] = $this->check_diff_multi($val, $array2[$key]);
-              }
-          } else {
-              $result[$key] = $val;
-          }
-      }   
-        return $result;
-    }
+    
     public function getInfo($user_id){
       try {
         
@@ -381,6 +374,72 @@ class PortalSolicitudesTicketController extends Controller
       
       
       return $solicitudes;
+    }
+
+    public function saveTransaccion(Request $request){
+      $ids_tramites = to_object($request->ids_tramites);
+      $id_transaccion=null;
+      try {
+        $solTramites = $this->solTramites->create([
+          "estatus" => $request->status    
+        ]); 
+        $id_transaccion=$solTramites->id;
+            
+          if($solTramites){
+            foreach ($ids_tramites as $key => $value) {      
+
+              $solicitudTicket = $this->ticket->where('id' , $value->id)
+              ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
+             
+
+          }
+        }        
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }         
+       
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud transacción generada",
+          "id_transaccion"=>$id_transaccion,
+        ]);
+
+     
+    }
+    public function saveTransaccionMotor(Request $request){      
+      $error=null;
+      try {
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update([
+          'id_transaccion_motor'=>$request->id_transaccion_motor,
+          'json_envio'=>json_encode($request->json_envio),
+          'estatus'=> $request->status
+          ]);
+         
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+          ->update(['status'=> $request->status]);
+        }      
+
+      } catch (\Exception $e) {
+        $error = $e;
+      }         
+      if($error){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar transaccion motor"
+          ]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción motor actualizado"
+          ]);
+      }    
+      
     }
     
 }
