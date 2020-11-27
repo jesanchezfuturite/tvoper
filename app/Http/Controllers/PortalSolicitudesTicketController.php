@@ -378,56 +378,50 @@ class PortalSolicitudesTicketController extends Controller
 
     public function saveTransaccion(Request $request){
       $ids_tramites = to_object($request->ids_tramites);
-      $datos =[];
-      foreach ($ids_tramites as $key => $value) {
-        try {
-          $solTramites = $this->solTramites->create([
-            "estatus" => $request->status    
-          ]); 
+      $id_transaccion=null;
+      try {
+        $solTramites = $this->solTramites->create([
+          "estatus" => $request->status    
+        ]); 
+        $id_transaccion=$solTramites->id;
             
           if($solTramites){
-            $solicitudTicket = $this->ticket->where('id' , $value->id)
-            ->update(['id_transaccion'=>$solTramites->id,'status'=> $request->status]);
-            $data=[
-              "id_tramite"=>$value->id,
-              "id_transaccion"=>$solTramites->id,
-            ];
+            foreach ($ids_tramites as $key => $value) {      
 
-            array_push($datos, $data);
+              $solicitudTicket = $this->ticket->where('id' , $value->id)
+              ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
+             
+
           }
-         
+        }        
 
-        } catch (\Exception $e) {
-            $error = $e;
-        }         
+      } catch (\Exception $e) {
+          $error = $e;
+      }         
        
-      }
       return response()->json(
         [
           "Code" => "200",
           "Message" => "Solicitud transacción generada",
-          "data"=>$datos,
+          "data"=>$id_transaccion,
         ]);
 
      
     }
     public function saveTransaccionMotor(Request $request){      
       $error=null;
-      $ids_transaccion = to_object($request->ids_transaccion);
-      foreach ($ids_transaccion as $key => $value) {
-        try {
-          $solicitudTicket = $this->ticket->where('id' , $value->id)
+      try {
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update(['id_transaccion_motor'=>$request->id_transaccion_motor,'estatus'=> $request->status]);
+         
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
           ->update(['status'=> $request->status]);
-          $transaccion = $this->ticket->where('id', $value->id)->first();
+        }      
 
-          if($solicitudTicket){
-            $solTramites = $this->solTramites->where('id' , $transaccion->id_transaccion)
-            ->update(['id_transaccion_motor'=>$value->id_transaccion_motor,'estatus'=> $request->status]);
-          }
-        } catch (\Exception $e) {
-          $error = $e;
-        }         
-      }
+      } catch (\Exception $e) {
+        $error = $e;
+      }         
       if($error){
         return response()->json(
           [
