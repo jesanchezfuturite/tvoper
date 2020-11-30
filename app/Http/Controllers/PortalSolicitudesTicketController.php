@@ -417,6 +417,7 @@ class PortalSolicitudesTicketController extends Controller
         ->update([
           'id_transaccion_motor'=>$request->id_transaccion_motor,
           'json_envio'=>json_encode($request->json_envio),
+          'json_recibo'=>json_encode($request->json_recibo),
           'estatus'=> $request->status
           ]);
          
