@@ -161,18 +161,17 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-12">
-            
-           <div class="col-md-2">
-              <div class="form-group">
-                <label >Número Interior</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
-             </div> 
-           </div>
+          <div class="col-md-12"> 
            <div class="col-md-2">
               <div class="form-group">
                 <label >Número Exterior</label>                                                       
                 <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior...">
+             </div> 
+           </div>
+           <div class="col-md-2">
+              <div class="form-group">
+                <label >Número Interior</label>                                                       
+                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
              </div> 
            </div> 
            <div class="col-md-3">
@@ -206,14 +205,14 @@
               <div class="form-group"> 
                    <div class="form-group">
                 <label >Fax</label>                                             
-                <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax...">
+                <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax..."  maxlength = "10">
               </div>                                
               </div>
             </div>            
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono...">
+                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono..."  maxlength = "10">
               </div>
             </div> 
           </div>
@@ -234,6 +233,7 @@
             <div class="portlet-body form">
               <div class="form-body">
                 <h4 class="form-section"><strong>Datos del notario titular</strong></h4>
+
               </div>
             </div>
           </div>
@@ -242,7 +242,7 @@
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Usuario</label>                                             
+                <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                            
                 <input type="text" class="form-control valida-user" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
               </div>
             </div>            
@@ -272,13 +272,13 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();" maxlength="13" >
              </div>
             </div>
           </div>
@@ -288,7 +288,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label >Numero de Teléfono</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
+                <input type="text" class="form-control valida-numeros"  maxlength = "10"name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
             </div>
             </div>
             <div class="col-md-4">
@@ -304,7 +304,6 @@
                 <select id="itemsTipoNotario" class="select2me form-control" >
                   <option value="0">-------</option>
                   <option value="fisica">Fisica</option>
-                  <option value="moral">Moral</option>
                 </select>            
               </div>
             </div>
@@ -401,7 +400,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <div class="form-group">
-                <label >Usuario</label>                                             
+                <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
                 <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
               </div>                                           
               </div>
@@ -456,13 +455,13 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13">
              </div>
             </div>
           </div>
@@ -682,14 +681,14 @@ function getBase64Notario(file) {
     
     if (numNotario.length<1) {
        Command: toastr.warning("Campo Numero Notario, requerido!", "Notifications") 
-    }else if (telNotario.length<10) {
-       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
     }else if (numeroNotario.length<3) {
-       Command: toastr.warning("Campo Numero, longitud minima 3!", "Notifications") 
+       Command: toastr.warning("Campo Numero Exterior, longitud minima 3!", "Notifications") 
     }else if (codigopostNotario.length<5) {
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
     }else if (distritoNotario.length<1) {
        Command: toastr.warning("Campo Distrito, requerido!", "Notifications") 
+    }else if (telNotario.length<10) {
+       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
