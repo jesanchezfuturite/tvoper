@@ -165,13 +165,13 @@
            <div class="col-md-2">
               <div class="form-group">
                 <label >Número Exterior</label>                                                       
-                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior...">
+                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior..."maxlength="10">
              </div> 
            </div>
-           <div class="col-md-2">
+           <div class="col-md-3">
               <div class="form-group">
                 <label >Número Interior</label>                                                       
-                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
+                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero..." >
              </div> 
            </div> 
            <div class="col-md-3">
@@ -272,13 +272,15 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18">
+                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpNot()">
+                 <span id="curpNot" class="help-block"></span>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();" maxlength="13" >
+                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCNot()">
+                 <span id="rfcNot" class="help-block"></span>
              </div>
             </div>
           </div>
@@ -298,19 +300,6 @@
                 <span id="emailNot2" class="help-block"></span>
              </div>
             </div>
-            <div class="col-md-3">
-              <div class="form-group">
-                <label >Tipo</label>                                                       
-                <select id="itemsTipoNotario" class="select2me form-control" >
-                  <option value="0">-------</option>
-                  <option value="fisica">Fisica</option>
-                </select>            
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
@@ -321,6 +310,19 @@
               </div>                                
               </div>
             </div>
+            <div class="col-md-3" hidden="true">
+              <div class="form-group">
+                <label >Tipo</label>                                                       
+                <select id="itemsTipoNotario" class="select2me form-control" >
+                  <option value="fisica">Fisica</option>
+                </select>            
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
@@ -333,7 +335,7 @@
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Contraseña</label>                                             
+                <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                             
                 <div class="input-icon right">
                     <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña..." value="">                   
@@ -455,13 +457,15 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18">
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                 <span id="curpUs" class="help-block"></span>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13">
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
+                 <span id="rfcUs" class="help-block"></span>
              </div>
             </div>
           </div>
@@ -480,7 +484,7 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <label >Contraseña</label> 
+                <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
                 <div class="input-icon right">
                     <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
@@ -681,8 +685,6 @@ function getBase64Notario(file) {
     
     if (numNotario.length<1) {
        Command: toastr.warning("Campo Numero Notario, requerido!", "Notifications") 
-    }else if (numeroNotario.length<3) {
-       Command: toastr.warning("Campo Numero Exterior, longitud minima 3!", "Notifications") 
     }else if (codigopostNotario.length<5) {
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
     }else if (distritoNotario.length<1) {
@@ -1230,6 +1232,78 @@ function gPasswordPerf()
   for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
   document.getElementById("password").value=pass;
 }
+function rfcValido(rfc, aceptarGenerico = true) {
+    const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+    var   validado = rfc.match(re);
+    if (!validado)
+        return false;
+    const digitoVerificador = validado.pop(),
+          rfcSinDigito      = validado.slice(1).join(''),
+          len               = rfcSinDigito.length,
+          diccionario       = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ",
+          indice            = len + 1;
+    var   suma,
+          digitoEsperado;
+    if (len == 12) suma = 0
+    else suma = 481; 
+    for(var i=0; i<len; i++)
+        suma += diccionario.indexOf(rfcSinDigito.charAt(i)) * (indice - i);
+    digitoEsperado = 11 - suma % 11;
+    if (digitoEsperado == 11) digitoEsperado = 0;
+    else if (digitoEsperado == 10) digitoEsperado = "A";
+    if ((digitoVerificador != digitoEsperado)
+     && (!aceptarGenerico || rfcSinDigito + digitoVerificador != "XAXX010101000"))
+        return false;
+    else if (!aceptarGenerico && rfcSinDigito + digitoVerificador == "XEXX010101000")
+        return false;
+    return rfcSinDigito + digitoVerificador;
+}
+function validarRFCNot() {
+    var rfc=$("#rfcNotario").val();
+    console.log(rfc);
+    rfcCorrecto=rfcValido(rfc.toUpperCase());
+    valido = document.getElementById('rfcNot'); 
+    if (rfcCorrecto) {
+     valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("rfcNot").style.color = "red";
+    }
+}
+function validarRFCUser() {
+    var rfc=$("#rfcUser").val();
+    rfcCorrecto=rfcValido(rfc.toUpperCase());
+    valido = document.getElementById('rfcUs'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("rfcUs").style.color = "red";
+    }
+}
+function validarCurpNot() {
+    var curp=$("#curpNotario").val();
+    rfcCorrecto=curpValida(curp.toUpperCase());
+    valido = document.getElementById('curpNot'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("curpNot").style.color = "red";
+    }
+}
+function validarCurpUser() {
+    var curp=$("#curpUser").val();
+    rfcCorrecto=curpValida(curp.toUpperCase());
+    valido = document.getElementById('curpUs'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("curpUs").style.color = "red";
+    }
+}
+
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
