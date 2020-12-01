@@ -392,11 +392,12 @@ Route::post('/create-avisos', 'PortalAvisosInternosController@createNotification
 Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
 Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
 
+
 Route::get('/obtener-divisas', 'DivisasController@getDivisas');
 Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 
 
-
+Route::get('/divisas', 'DivisasController@index');
 
