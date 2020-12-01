@@ -68,7 +68,7 @@ class DivisasController extends Controller
        }
        public function getDivisasSave(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL, "https://session-api-pr-22.herokuapp.com/divisas/getDivisasSave"); 
+        curl_setopt($ch, CURLOPT_URL, "http://10.153.144.218/session-api/divisas/getDivisasSave"); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $getDivisas = curl_exec($ch);
 
