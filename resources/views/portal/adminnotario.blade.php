@@ -423,7 +423,7 @@
              <div class="col-md-6"> 
               <div class="form-group">
                 <label >Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off">
+                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
               </div>
             </div>
              <div class="col-md-6"> 
@@ -820,7 +820,7 @@ function getBase64Notario(file) {
     if(com=="0")
     {      
       Command: toastr.warning("Selecciona una Comunidad, Requerido!", "Notifications") 
-      $("#itemsNotario").val(0).change();
+      //$("#itemsNotario").val(0).change();
       return;
     }
     $.ajax({
@@ -1050,6 +1050,8 @@ function getBase64Notario(file) {
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso
             };
+            console.log(id_notary);
+            console.log(user_);
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
@@ -1260,7 +1262,7 @@ function rfcValido(rfc, aceptarGenerico = true) {
 }
 function validarRFCNot() {
     var rfc=$("#rfcNotario").val();
-    console.log(rfc);
+    //console.log(rfc);
     rfcCorrecto=rfcValido(rfc.toUpperCase());
     valido = document.getElementById('rfcNot'); 
     if (rfcCorrecto) {
