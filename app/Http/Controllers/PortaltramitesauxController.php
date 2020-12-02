@@ -483,16 +483,19 @@ class PortaltramitesauxController extends Controller
 			return json_encode($name);
 		}
 
-		public function listarAgrupacion(){
-			$data = $this->agrupaciones->all();
+		public function listarAgrupacion(Request $request){
+			$tramite = $id_tramite;
+			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->get();
 
 			return json_encode($data);
 		}
 		public function guardarAgrupacion(Request $request){
 			$descripcion = $request->descripcion;
+			$tramite = $request->id_tramite;
+			$tipo = $request->id_categoria;
 
 			try{
-				$save = $this->agrupaciones->create(['descripcion'=>$descripcion]);
+				$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
 
 				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
 
