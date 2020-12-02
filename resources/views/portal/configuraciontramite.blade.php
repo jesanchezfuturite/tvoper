@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite">
+                            <select class="select2me form-control"name="itemsCategoria" id="itemsCategoria">
                                 <option value="0">------</option>
                             </select>
                         </div>
@@ -293,15 +293,15 @@
         findTramites();
         findCampos();
         findTipos();
-        findAgrupaciones();
-        findTipoTramites();
+        //findAgrupaciones();
+        findTipoCategoria();
     });
      /*$( function() {
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
       
     } );*/
-     function findTipoTramites()
+     function findTipoCategoria()
     {
         $.ajax({
            method: "get",
@@ -309,10 +309,10 @@
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
-            $("#itemsTipotramite option").remove();
-            $("#itemsTipotramite").append("<option value='limpia'>-------</option>");
+            $("#itemsCategoria option").remove();
+            $("#itemsCategoria").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                $("#itemsTipotramite").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                $("#itemsCategoria").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {
@@ -372,11 +372,18 @@
          Command: toastr.warning("No Success", "Notifications")  });
     }
      function findAgrupaciones()
-    {
+    {   id_=$("#itemsTramites").val();
+        if(id_=="limpia")
+        {
+            $("#itemsAgrupaciones option").remove();
+            $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
+            return;
+        }
+
         $.ajax({
-           method: "get",
+           method: "POST",
            url: "{{ url('/traux-agrupacion') }}",
-           data: {_token:'{{ csrf_token() }}'}  })
+           data: {is_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
             $("#itemsAgrupaciones option").remove();
@@ -626,11 +633,24 @@
     function SaveGrupo()
     {
         var agrup=$("#agrupacionNombre").val();
+        var tramite_id=$("#itemsTramites").val();
+        var categoria_id=$("#itemsCategoria").val();
+        if(agrup.length==0){
+            Command: toastr.warning("Campo agrupación, Requerido!", "Notifications");
+            return ;
+        }else if(tramite_id=="limpia")
+        {
+            Command: toastr.warning("Selecciona el Tramite, Requerido!", "Notifications");
+            return ;
+        }else if(categoria_id=="limpia"){
+            Command: toastr.warning("Selecciona Tipo Tramite, Requerido!", "Notifications");
+            return ;
+        }
         //console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-agrupacion') }}",
-           data: {descripcion: agrup,_token:'{{ csrf_token() }}'}  })
+           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
                 document.getElementById('agrupacionNombre').value=""; 
