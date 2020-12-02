@@ -484,7 +484,7 @@ class PortaltramitesauxController extends Controller
 		}
 
 		public function listarAgrupacion(Request $request){
-			$tramite = $id_tramite;
+			$tramite = $request->id_tramite;
 			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->get();
 
 			return json_encode($data);
