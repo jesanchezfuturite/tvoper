@@ -376,7 +376,8 @@ Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo'
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
-
+Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
+Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
 Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
@@ -392,7 +393,15 @@ Route::post('/create-avisos', 'PortalAvisosInternosController@createNotification
 Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
 Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
 
+
 Route::get('/obtener-divisas', 'DivisasController@getDivisas');
 Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
+<<<<<<< HEAD
+=======
+
+
+Route::get('/divisas', 'DivisasController@index');
+
+>>>>>>> d8283d177bd7bbe68cc3764f3e846a2a0e78fcb2

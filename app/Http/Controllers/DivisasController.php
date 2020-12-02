@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
+
 use App\Repositories\DivisasRepositoryEloquent;
 
 class DivisasController extends Controller
@@ -66,12 +68,18 @@ class DivisasController extends Controller
        }
        public function getDivisasSave(){
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL, "https://session-api-pr-22.herokuapp.com/divisas/getDivisasSave"); 
+        curl_setopt($ch, CURLOPT_URL, "http://10.153.144.218/session-api/divisas/getDivisasSave"); 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $getDivisas = curl_exec($ch);
 
         curl_close($ch);  
         return $getDivisas; 
        }
+
+
+    public function index(Request $request)
+    {
+      return view('portal/divisas', []);
+    }
 
 }
