@@ -373,11 +373,13 @@
     }
      function findAgrupaciones()
     {   id_=$("#itemsTramites").val();
+        $('#Removetable div').remove();             
+        $("#itemsAgrupaciones").val("limpia").change();
         if(id_=="limpia")
         {
             $("#itemsAgrupaciones option").remove();
-            $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
-            $('#Removetable div').remove();
+            $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
+             $("#itemsCategoria").val("limpia").change();
             return;
         }
 
@@ -404,17 +406,17 @@
         var tramite=$("#itemsTramites").val();
         var agrupacion=$("#itemsAgrupaciones").val();
         var tramiteMember=$("#itemsTramites option:selected").text();
-        if(tramite=="limpia")
-        {
-            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
-            document.getElementById("nameTramite").textContent="Tramite";
-            $('#Removetable div').remove();
-        }else if(agrupacion=="limpia"){
+        if(agrupacion=="limpia"){
             //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
             document.getElementById("nameTramite").textContent="Tramite";
             $('#Removetable div').remove();
 
-        }else{
+        }else if(tramite=="limpia")
+        {
+            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            document.getElementById("nameTramite").textContent="Tramite";
+            $('#Removetable div').remove();
+        } else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
            findRelationship();
         }
@@ -440,7 +442,7 @@
                    "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
-                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a></div>"+
                     "</li>"
                 );
             });
