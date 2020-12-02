@@ -60,8 +60,6 @@
                         <div class="form-group">
                             <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite">
                                 <option value="0">------</option>
-                                <option value="imouesto">Impuesto</option>
-                                <option value="derecho">Derecho</option>
                             </select>
                         </div>
                     </div>
@@ -296,13 +294,30 @@
         findCampos();
         findTipos();
         findAgrupaciones();
+        findTipoTramites();
     });
      /*$( function() {
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
       
     } );*/
-    
+     function findTipoTramites()
+    {
+        $.ajax({
+           method: "get",
+           url: "{{ url('/listarCategorias') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+            $("#itemsTipotramite option").remove();
+            $("#itemsTipotramite").append("<option value='limpia'>-------</option>");
+            $.each(Resp, function(i, item) {
+                $("#itemsTipotramite").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
     function findTramites()
     {
         $.ajax({
