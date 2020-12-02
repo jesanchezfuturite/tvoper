@@ -387,11 +387,14 @@
            data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
+        var categoria="limpia";
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                categoria=item.id_categoria;
             });
+            $("#itemsCategoria").val(categoria).change();
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
