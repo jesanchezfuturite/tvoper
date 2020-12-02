@@ -20,6 +20,10 @@ class Portaltramitecategoriarelacion extends Model implements Transformable
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['categorias_id','tramite_id'];
+
+    protected $connection = "mysql6";
+
+    protected $table = "tramites_categorias_relacion";
 
 }

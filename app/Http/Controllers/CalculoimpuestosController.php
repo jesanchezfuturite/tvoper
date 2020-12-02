@@ -20,7 +20,7 @@ use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 class CalculoimpuestosController extends Controller
 {
     //
-    
+
     protected $inpc;
     protected $inpc_values;
     protected $porcentaje;
@@ -76,20 +76,20 @@ class CalculoimpuestosController extends Controller
 
     	// mostrar la forma para ejemplo del calculo de declaracion normal
     	$fecha_escritura 			= '2020-11-1'; // sin ceros iniciales ej 2020-9-1 para primero de sept de 2020
-    	$monto_operacion 			= 900;
-    	$ganancia_obtenida 			= 1000; // puede ser mayor o igual al monto de operacion
-    	$pago_provisional_lisr		= 100;
-    	$multa_correccion_fiscal	= 2;
+    	$monto_operacion 			= 1500000;
+    	$ganancia_obtenida 			= 850000; // puede ser mayor o igual al monto de operacion
+    	$pago_provisional_lisr		= 40000;
+    	$multa_correccion_fiscal	= 0;
 
     	$this->a 					= $ganancia_obtenida;
     	$this->c 					= $pago_provisional_lisr;
     	$this->g 					= $multa_correccion_fiscal;
     	$this->fecha_escritura		= $fecha_escritura;
- 	
 
- 		$this->fecha_vencimiento	= $this->getVencimiento();	
+
+ 		$this->fecha_vencimiento	= $this->getVencimiento();
  		$this->inpc_periodo			= $this->getInpc($this->fecha_escritura); // getInpcperiodo en caso de que sea la fecha acumulada del año vigente
- 		$this->fecha_actual			= date("Y-m-d");	
+ 		$this->fecha_actual			= date("Y-m-d");
  		$this->inpc_reciente		= $this->getInpc($this->fecha_actual);
 
  		$this->factor_actualizacion = $this->getFA();
@@ -112,8 +112,8 @@ class CalculoimpuestosController extends Controller
     			"Fecha Actual"				=> $this->fecha_actual,
     			"Fecha vencimiento" 		=> $this->fecha_vencimiento,
     			"Factor de Actualizacion" 	=> $this->factor_actualizacion,
-    			"INPC Periodo reciente" 	=> $this->inpc_reciente, 
-    			"INPC Periodo" 				=> $this->inpc_periodo, 
+    			"INPC Periodo reciente" 	=> $this->inpc_reciente,
+    			"INPC Periodo" 				=> $this->inpc_periodo,
     			"Porcentaje de recargos"	=> $this->porcentaje_recargos,
 	    		"A*(Ganancia Obtenida)" => $this->a,
 	    		"B (Monto obtenido conforme al art 127 LISR)" => $this->b,
@@ -124,7 +124,7 @@ class CalculoimpuestosController extends Controller
 	    		"G*(Multa corrección fiscal)" => $this->g,
 	    		"H (Importe total)" => $this->h,
     			),
-    		
+
 
 
 
@@ -140,10 +140,10 @@ class CalculoimpuestosController extends Controller
     {
     	// obtener b monto obtenido conforme al articulo 127 LISR
     	$this->b = $this->a * .05;
-    	
+
     	// impuesto correspondiente a la entidad federativa
     	($this->b >= $this->c) ? $this->d = $this->c : $this->d = $this->b;
-    	
+
     	// parte actualizada del impuesto
     	$this->e = ($this->d * $this->factor_actualizacion) - $this->d;
 
@@ -152,7 +152,7 @@ class CalculoimpuestosController extends Controller
 
     	// importe total
     	$this->h =  $this->d + $this->e + $this->f + $this->g ;
-    	
+
 
     }
 
@@ -171,14 +171,14 @@ class CalculoimpuestosController extends Controller
 
     /**
      *
-     * 
-     * getVencimiento. utilizando la fecha de la escrituracion se obtiene la nueva 
+     *
+     * getVencimiento. utilizando la fecha de la escrituracion se obtiene la nueva
      * fecha, sumando 15 dias
      * en caso de ser festivo o sabado o domingo se determina el dia habil siguiente
      *
      *
-    */ 
-    
+    */
+
     private function getVencimiento()
     {
     	$vencimiento = date("Y-n-j", strtotime($this->fecha_escritura . "+ 15 days"));
@@ -221,7 +221,7 @@ class CalculoimpuestosController extends Controller
 	    	}
 
 	    	return $vencimiento;
-    			
+
     	}else{
     		return $vencimiento;
     	}
@@ -231,14 +231,14 @@ class CalculoimpuestosController extends Controller
     }
 
     /**
-     * getInhabiles. regresa los dias inhabiles del año 
-     * 
+     * getInhabiles. regresa los dias inhabiles del año
+     *
      * @param year - entero que representa el año corriente
      *
      * @return array - con las fechas en la tabla
      *
      *
-    */ 
+    */
     private function getInhabiles($year)
     {
     	try
@@ -251,12 +251,12 @@ class CalculoimpuestosController extends Controller
     			foreach($fechas as $f)
 	    		{
 	    			$dates []= $f->Ano."-".$f->Mes."-".$f->Dia;
-	    		}	
+	    		}
 
     		}else{
     			dd("CalculoimpuestosController::getInhabiles-No existen dias inhabiles en " . $year);
     		}
-    		
+
 
     		return $dates;
 
@@ -266,14 +266,14 @@ class CalculoimpuestosController extends Controller
     }
 
     /**
-     * getInpc. obtiene el inpc de una fecha 
-     * 
+     * getInpc. obtiene el inpc de una fecha
+     *
      * @param fecha yyyy-m-d
      *
      * @return float
      *
      *
-    */ 
+    */
 
     private function getInpc($fecha)
     {
@@ -285,26 +285,26 @@ class CalculoimpuestosController extends Controller
 
     	// buscar en la tabla todos los factores que correspondan al año
     	try{
-    		
+
     		return $this->inpc_values[$year][$month];
 
 
     	}catch( \Exception $e ){
     		dd("CalculoimpuestosController::getInpc " . $e->getMessage());
     	}
-    	
+
 
     }
 
     /**
-     * getInpcPeriodo. obtiene el inpc de una fecha 
-     * 
+     * getInpcPeriodo. obtiene el inpc de una fecha
+     *
      * @param fecha solo el año yyyy
      *
      * @return float
      *
      *
-    */ 
+    */
 
     private function getInpcPeriodo($fecha)
     {
@@ -316,25 +316,25 @@ class CalculoimpuestosController extends Controller
 
     	// buscar en la tabla todos los factores que correspondan al año
     	try{
-    		
+
     		return $this->inpc_values[$year][$month];
 
 
     	}catch( \Exception $e ){
     		dd("CalculoimpuestosController::getInpc " . $e->getMessage());
     	}
-    	
+
 
     }
     /**
-     * getInpcValues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor 
-     * 
+     * getInpcValues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor
+     *
      * @param fecha yyyy-m-d
      *
      * @return float
      *
      *
-    */ 
+    */
     private function getInpcValues()
     {
     	// obtener todos los valores de la tabla en orden descendiente
@@ -348,7 +348,7 @@ class CalculoimpuestosController extends Controller
 
     		$years 	= array();
 
-    		$months = array( 1,2,3,4,5,6,7,8,9,10,11,12 );	
+    		$months = array( 1,2,3,4,5,6,7,8,9,10,11,12 );
 
     		$years[]= (integer)date("Y");
 
@@ -356,7 +356,7 @@ class CalculoimpuestosController extends Controller
 
     		foreach($list as $l)
     		{
-    			
+
     			if(!in_array((integer)$l->anio,$years))
     			{
     				$years[]= (integer)$l->anio;
@@ -365,9 +365,9 @@ class CalculoimpuestosController extends Controller
 
     		foreach($years as $y)
     		{
-    			
+
     			$valores = array();
-    		
+
     			foreach($months as $m)
     			{
     				// buscar el valor en list
@@ -384,7 +384,7 @@ class CalculoimpuestosController extends Controller
     					$valores[$m] = (isset($valores[$m-1])) ? $valores[$m-1] : 0 ;
 
     				}
-    				
+
     			}
     			$final[$y]= $valores;
     		}
@@ -396,14 +396,14 @@ class CalculoimpuestosController extends Controller
     	}
     }
     /**
-     * getPorcentejesvalues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor 
-     * 
+     * getPorcentejesvalues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor
+     *
      * @param null
      *
-     * @return array 
+     * @return array
      *
      *
-    */ 
+    */
     private function getPorcentejesvalues()
     {
     	// obtener todos los valores de la tabla en orden descendiente
@@ -416,7 +416,7 @@ class CalculoimpuestosController extends Controller
 
     		$years 	= array();
 
-    		$months = array( 1,2,3,4,5,6,7,8,9,10,11,12 );	
+    		$months = array( 1,2,3,4,5,6,7,8,9,10,11,12 );
 
     		$years[]= (integer)date("Y");
 
@@ -424,7 +424,7 @@ class CalculoimpuestosController extends Controller
 
     		foreach($list as $l)
     		{
-    			
+
     			if(!in_array((integer)$l->anio,$years))
     			{
     				$years[]= (integer)$l->anio;
@@ -433,9 +433,9 @@ class CalculoimpuestosController extends Controller
 
     		foreach($years as $y)
     		{
-    			
+
     			$valores = array();
-    		
+
     			foreach($months as $m)
     			{
     				// buscar el valor en list
@@ -447,14 +447,14 @@ class CalculoimpuestosController extends Controller
     							"vencido" 	=> $l->vencido,
     							"requerido"	=> $l->requerido
     						);*/
-    						
+
     						if(strlen((string)$m) == 1)
     						{
-    							$index = $y."0".$m;	
+    							$index = $y."0".$m;
     						}else{
-    							$index = $y.$m;	
+    							$index = $y.$m;
     						}
-    						
+
     						$final[(integer)$index]= array(
     							"year"		=> $y,
     							"month"		=> $m,
@@ -471,11 +471,11 @@ class CalculoimpuestosController extends Controller
     					$final[]= (isset($valores[$m-1])) ? $valores[$m-1] : 0 ;
 
     				}*/
-    				
+
     			}
     			//$final[$y]= $valores;
     		}
-    		
+
     		return($final);
 
     	}catch( \Exception $e ){
@@ -483,14 +483,14 @@ class CalculoimpuestosController extends Controller
     	}
     }
     /**
-     * getPorcentejesvalues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor 
-     * 
+     * getPorcentejesvalues. esta funcion regresa un arreglo por año y dentro un asociativo por mes y valor
+     *
      * @param null
      *
-     * @return array 
+     * @return array
      *
      *
-    */ 
+    */
     private function getPorcentajeregargos()
     {
     	/*
@@ -502,7 +502,7 @@ class CalculoimpuestosController extends Controller
 
 		$fa = strtotime($this->fecha_actual . " 00:00:00");
 		$fv = strtotime($this->fecha_vencimiento . " 00:00:00");
-		
+
 		if($fa <= $fv){
 			return $total;
 		}else{
@@ -514,26 +514,26 @@ class CalculoimpuestosController extends Controller
  			$yf = $fe[0];  // año de inicio
 			$mf = $fe[1];  // mes de inicio
 
-			
+
 			if(strlen((string)$mi) == 1){
 				$i = $yi."0".$mi;
 			}else{
-				$i = $yi.$mi;	
+				$i = $yi.$mi;
 			}
-			
+
 			$i = (integer)$i;
 
 			if(strlen((string)$mf) == 1){
 				$f = $yf."0".$mf;
 			}else{
-				$f = $yf.$mf;	
+				$f = $yf.$mf;
 			}
 			$f = (integer)$f;
 			//$count = 0;
 			foreach($this->porcentajes_values as $p => $data)
-			{	
+			{
 				if($p >= $i && $p <= $f)
-				{	
+				{
 					$total += $data["vencido"];
 				}
 /*

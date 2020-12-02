@@ -19,6 +19,8 @@ use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
+use App\Repositories\PortaltramitecategoriaRepositoryEloquent;
+use App\Repositories\PortaltramitecategoriarelacionRepositoryEloquent;
 
 class PortaltramitesauxController extends Controller
 {
@@ -37,6 +39,8 @@ class PortaltramitesauxController extends Controller
 	protected $reglas;
 	protected $files;
 	protected $agrupaciones;
+	protected $category;
+	protected $relcat;
 
     public function __construct(
 
@@ -49,7 +53,9 @@ class PortaltramitesauxController extends Controller
     	UmahistoryRepositoryEloquent $umadb,
 			EgobiernopartidasRepositoryEloquent $partidas,
 			PortalreglaoperativaRepositoryEloquent $reglas,
-			PortalcamposagrupacionesRepositoryEloquent $agrupaciones
+			PortalcamposagrupacionesRepositoryEloquent $agrupaciones,
+			PortaltramitecategoriaRepositoryEloquent $category,
+			PortaltramitecategoriarelacionRepositoryEloquent $relcat
 
     )
     {
@@ -65,6 +71,8 @@ class PortaltramitesauxController extends Controller
 			$this->reglas = $reglas;
 			$this->files = config('impuestos');
 			$this->agrupaciones = $agrupaciones;
+			$this->category  = $category;
+			$this->relcat = $relcat;
     }
 
 
@@ -496,6 +504,17 @@ class PortaltramitesauxController extends Controller
 
 		public function viewConfiguracion(){
 			return view("portal/configuraciontramite");
+		}
+
+		public function listCategory(){
+			try{
+				$categories = $this->category->all();
+
+				return json_encode($categories);
+
+			}catch(\Exception $e){
+				Log::info('Error Tramites - listar categorias: '.$e->getMessage());
+			}
 		}
 
 }
