@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" >
+                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" onchange="findAgrupaciones()">
                                 <option value="limpia">------</option>
                             </select>
                         </div>
@@ -377,13 +377,14 @@
         {
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
+            $('#Removetable div').remove();
             return;
         }
 
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-agrupacion') }}",
-           data: {is_tramite:id_,_token:'{{ csrf_token() }}'}  })
+           data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
             $("#itemsAgrupaciones option").remove();
