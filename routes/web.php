@@ -398,10 +398,6 @@ Route::get('/obtener-divisas', 'DivisasController@getDivisas');
 Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
-<<<<<<< HEAD
-=======
 
 
 Route::get('/divisas', 'DivisasController@index');
-
->>>>>>> d8283d177bd7bbe68cc3764f3e846a2a0e78fcb2
