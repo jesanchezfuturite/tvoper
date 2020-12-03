@@ -337,7 +337,7 @@ Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCosto
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
 Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
-Route::get('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
+Route::post('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
 Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
 Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
 Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
