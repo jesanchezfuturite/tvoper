@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" >
+                            <select class="select2me form-control"name="itemsTramites" id="itemsTramites" onchange="findAgrupaciones()">
                                 <option value="limpia">------</option>
                             </select>
                         </div>
@@ -58,10 +58,8 @@
                     </div>
                     <div class="col-md-3 col-ms-12">
                         <div class="form-group">
-                            <select class="select2me form-control"name="itemsTipotramite" id="itemsTipotramite">
+                            <select class="select2me form-control"name="itemsCategoria" id="itemsCategoria">
                                 <option value="0">------</option>
-                                <option value="imouesto">Impuesto</option>
-                                <option value="derecho">Derecho</option>
                             </select>
                         </div>
                     </div>
@@ -295,14 +293,31 @@
         findTramites();
         findCampos();
         findTipos();
-        findAgrupaciones();
+        //findAgrupaciones();
+        findTipoCategoria();
     });
      /*$( function() {
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
       
     } );*/
-    
+     function findTipoCategoria()
+    {
+        $.ajax({
+           method: "get",
+           url: "{{ url('/listarCategorias') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+            $("#itemsCategoria option").remove();
+            $("#itemsCategoria").append("<option value='limpia'>-------</option>");
+            $.each(Resp, function(i, item) {
+                $("#itemsCategoria").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
     function findTramites()
     {
         $.ajax({
@@ -357,18 +372,31 @@
          Command: toastr.warning("No Success", "Notifications")  });
     }
      function findAgrupaciones()
-    {
+    {   id_=$("#itemsTramites").val();
+        $('#Removetable div').remove();             
+        $("#itemsAgrupaciones").val("limpia").change();
+        if(id_=="limpia")
+        {
+            $("#itemsAgrupaciones option").remove();
+            $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
+             $("#itemsCategoria").val("limpia").change();
+            return;
+        }
+
         $.ajax({
-           method: "get",
+           method: "POST",
            url: "{{ url('/traux-agrupacion') }}",
-           data: {_token:'{{ csrf_token() }}'}  })
+           data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
+        var categoria="limpia";
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                categoria=item.id_categoria;
             });
+            $("#itemsCategoria").val(categoria).change();
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -378,17 +406,17 @@
         var tramite=$("#itemsTramites").val();
         var agrupacion=$("#itemsAgrupaciones").val();
         var tramiteMember=$("#itemsTramites option:selected").text();
-        if(tramite=="limpia")
-        {
-            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
-            document.getElementById("nameTramite").textContent="Tramite";
-            $('#Removetable div').remove();
-        }else if(agrupacion=="limpia"){
+        if(agrupacion=="limpia"){
             //Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
             document.getElementById("nameTramite").textContent="Tramite";
             $('#Removetable div').remove();
 
-        }else{
+        }else if(tramite=="limpia")
+        {
+            Command: toastr.warning("Tramite Sin Seleccionar, Requeridoo!", "Notifications")
+            document.getElementById("nameTramite").textContent="Tramite";
+            $('#Removetable div').remove();
+        } else{
            document.getElementById("nameTramite").textContent="Tramite "+tramiteMember;
            findRelationship();
         }
@@ -414,7 +442,7 @@
                    "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
-                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a></div>"+
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a></div>"+
                     "</li>"
                 );
             });
@@ -611,11 +639,24 @@
     function SaveGrupo()
     {
         var agrup=$("#agrupacionNombre").val();
+        var tramite_id=$("#itemsTramites").val();
+        var categoria_id=$("#itemsCategoria").val();
+        if(agrup.length==0){
+            Command: toastr.warning("Campo agrupación, Requerido!", "Notifications");
+            return ;
+        }else if(tramite_id=="limpia")
+        {
+            Command: toastr.warning("Selecciona el Tramite, Requerido!", "Notifications");
+            return ;
+        }else if(categoria_id=="limpia"){
+            Command: toastr.warning("Selecciona Tipo Tramite, Requerido!", "Notifications");
+            return ;
+        }
         //console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-agrupacion') }}",
-           data: {descripcion: agrup,_token:'{{ csrf_token() }}'}  })
+           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
                 document.getElementById('agrupacionNombre').value=""; 

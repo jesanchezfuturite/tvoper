@@ -340,10 +340,11 @@ Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCosto
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
 Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
-Route::get('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
+Route::post('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
 Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
 Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
 Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
+Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -400,7 +401,4 @@ Route::get('/obtener-divisas', 'DivisasController@getDivisas');
 Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
-
-
 Route::get('/divisas', 'DivisasController@index');
-
