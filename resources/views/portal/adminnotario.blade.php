@@ -329,6 +329,7 @@
                 <label >Permiso</label> 
                    <select id="itemsPermisoNotario" class="select2me form-control" >
                   <option value="0">-------</option>
+                  <option value="16">Notario</option>
                 </select>
               </div>                                
               </div>
@@ -786,7 +787,13 @@ function getBase64Notario(file) {
         .done(function (response) {
           console.log(response);
           var resp=$.parseJSON(response);
-          //console.log(resp);
+          console.log(resp);
+          if(resp.data=="response"){
+            changeComunidad();
+            limpiarNot();
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
           if(response==null || response=="null")
           {
             changeComunidad();
