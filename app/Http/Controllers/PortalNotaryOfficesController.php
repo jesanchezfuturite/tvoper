@@ -100,9 +100,9 @@ class PortalNotaryOfficesController extends Controller
         $jsonArrayResponse = curl_exec($ch);
         curl_close($ch);
         
-        $response = $jsonArrayResponse;
+        $response = json_decode($jsonArrayResponse);
         
-        return $response;
+        return json_encode($response);
     }
    public function status(Request $request){
         $notary_id = $request->notary_id;
