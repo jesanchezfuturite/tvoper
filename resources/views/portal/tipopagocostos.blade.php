@@ -516,6 +516,8 @@
     var option = document.querySelector('input[name = radio2]:checked');
     var regla=$("#itemsReglas").val();
     var vig=$("#vigencia").val();
+    if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
+      {regla=null}
     if(option!=null)
       {
         option = document.querySelector('input[name = radio2]:checked').value;
@@ -598,7 +600,7 @@
                 +"<td>"+costo_fijo+"</td>"
                 +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+",\""+item.valor+"\",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -674,7 +676,7 @@
       {valor=null}
     if(fijo=="" || fijo==null || fijo=="null")
       {fijo=null}
-    if(regla=="" || regla==null || regla=="null" || regla=="0")
+    if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
       {regla=null}
     if(vig=="" || vig==null || vig=="null" )
       {vig=null}
