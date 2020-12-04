@@ -138,7 +138,7 @@
                 <span class="help-block">Selecciona una Opcion. </span>
                   <div class="md-radio-inline">
                     <div class="md-radio">
-                      <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="H">
+                      <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="H" onclick="radiobuttons()">
                       <label for="radio6">
                         <span></span>
                         <span class="check"></span>
@@ -146,7 +146,7 @@
                         Hoja.</label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="M" >
+                      <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="M" onclick="radiobuttons()">
                         <label for="radio7">
                         <span></span>
                         <span class="check"></span>
@@ -154,20 +154,12 @@
                           Millar.</label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="L" >
+                      <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="L" onclick="radiobuttons()">
                       <label for="radio8">
                       <span></span>
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
-                    </div>
-                    <div class="md-radio">
-                      <input type="radio" id="radio9" name="radio2" class="md-radiobtn" value="N">
-                      <label for="radio9">
-                        <span></span>
-                        <span class="check"></span>
-                        <span class="box"></span>
-                        No Aplica.</label>
                     </div>
                   </div>
               </div>
@@ -186,7 +178,7 @@
                 <input type="text" class="valida-decimal form-control" name="cuotaMax" id="cuotaMax" placeholder="Ingrese la Cuota Máximo...">
              </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-9 tipoOperacion">
               <div class="form-group">
                 <label >Costo por Tipo de operación (MXN)</label>
                 <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
@@ -331,8 +323,20 @@
         $(".cuotas").css("display", "none");
         $(".regla-operativa").css("display", "none");
     });
-  function findItemsReglas()
+  function radiobuttons()
+  {
+    var option = document.querySelector('input[name = radio2]:checked').value;        
+    if(option=="H" || option=="L")
     {
+      document.getElementById('valor').value='1';
+       $(".tipoOperacion").css("display","none");       
+    }else{
+      document.getElementById('valor').value=''; 
+      $(".tipoOperacion").css("display", "block");
+    }
+  }
+  function findItemsReglas()
+  {
         $.ajax({
         method: "get",
         url: "{{ url('/traux-get-reglas') }}",
@@ -645,7 +649,7 @@
     document.getElementById('fijo').value=costo_fijo;
     document.getElementById('vigencia').value=vigencia;
     $("#itemsReglas").val(regla_id).change();
-
+    radiobuttons();
   }
   function updateCosto()
   {
