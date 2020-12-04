@@ -63,6 +63,16 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-2 col-ms-12">
+                        <span class="help-block"></span>
+                       <div class='md-checkbox'>
+                            <input type='checkbox' id='checkbox30' class='md-check'>
+                                <label for='checkbox30'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                            </span>  Requiere Archivo. </label>
+                        </div>
+                    </div>
                     
                 </div>
             </div>
@@ -202,7 +212,7 @@
                                     <div class='form-group'>
                                         <label >Caracteristicas</label>
                                         <div class='md-checkbox'>
-                                            <input type='checkbox' id='checkbox30' class='md-check'>
+                                            <input type='checkbox' id='checkbox30' class='md-check' onclick="insertCampoFile()">
                                             <label for='checkbox30'>
                                                 <span></span>
                                                 <span class='check'></span> <span class='box'>
@@ -301,6 +311,31 @@
         $( "#sortable" ).disableSelection();
       
     } );*/
+    function insertCampoFile()
+    {
+        var itemTramite=$("#itemsTramites").val();
+        var check=$("#checkbox30").prop("checked");
+        var option_="";
+        if(check==true)
+        {
+            option_="1";
+        }else{
+            option_="2";
+        }
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/') }}",
+           data: {id_tramite:itemTramite,option:option_, _token:'{{ csrf_token() }}'}
+       })
+        .done(function (response) {
+            CleanInputs();
+            findRelationship();
+            Command: toastr.success("Success", "Notifications")
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+
+    }
      function findTipoCategoria()
     {
         $.ajax({
@@ -365,7 +400,10 @@
             $("#itemsTipos option").remove();
             $("#itemsTipos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+                if(item.id!=7)
+                {
+                    $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+                }
             });
         })
         .fail(function( msg ) {
@@ -390,13 +428,25 @@
         .done(function (response) {
         var Resp=$.parseJSON(response);
         var categoria="limpia";
+        var iCheck="0";
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
+                if(item.descripcion=="documento"){
+                    iCheck="1";
+                }else{
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
-                categoria=item.id_categoria;
+                    categoria=item.id_categoria;
+                }
             });
+
             $("#itemsCategoria").val(categoria).change();
+            if(iCheck=="1")
+            {
+                $("input[name=radio2][value='"+costo+"']").prop("checked",true);
+            }else{
+                $("input[name=radio2][value='"+costo+"']").prop("checked",false);
+            }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
