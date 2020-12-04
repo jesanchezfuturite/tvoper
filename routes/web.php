@@ -342,6 +342,7 @@ Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfigura
 Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
 Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
 Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
+Route::post('/addFile', 'PortaltramitesauxController@addFile');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
