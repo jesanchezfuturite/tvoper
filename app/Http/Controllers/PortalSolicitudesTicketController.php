@@ -86,13 +86,12 @@ class PortalSolicitudesTicketController extends Controller
         $clave = $request->clave;
         
         $user_id = $request->user_id;
-        // $solicitantes = json_decode($solicitantes);
-        $solicitantes = json_decode(json_encode($solicitantes));
-        $info = $request->info;
+        $solicitantes = json_decode($solicitantes);
+        $info = json_decode($request->info);
         $id = [];
         try {    
           foreach($solicitantes as $key => $value){
-            $info["solicitante"]=$value;
+            $info->solicitante=$value;
             $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
