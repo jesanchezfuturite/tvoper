@@ -63,11 +63,11 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 col-ms-12">
+                    <div class="col-md-2 col-ms-12 checkfile">
                         <span class="help-block"></span>
                        <div class='md-checkbox'>
-                            <input type='checkbox' id='checkbox30' class='md-check'>
-                                <label for='checkbox30'>
+                            <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '  onclick="insertCampoFile()">
+                                <label for='checkbox1'>
                                 <span></span>
                                 <span class='check'></span> <span class='box'>
                             </span>  Requiere Archivo. </label>
@@ -212,7 +212,7 @@
                                     <div class='form-group'>
                                         <label >Caracteristicas</label>
                                         <div class='md-checkbox'>
-                                            <input type='checkbox' id='checkbox30' class='md-check' onclick="insertCampoFile()">
+                                            <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
                                             <label for='checkbox30'>
                                                 <span></span>
                                                 <span class='check'></span> <span class='box'>
@@ -303,7 +303,7 @@
         findTramites();
         findCampos();
         findTipos();
-        //findAgrupaciones();
+        $(".checkfile").css("display", "none");
         findTipoCategoria();
     });
      /*$( function() {
@@ -314,7 +314,7 @@
     function insertCampoFile()
     {
         var itemTramite=$("#itemsTramites").val();
-        var check=$("#checkbox30").prop("checked");
+        var check=$("#checkbox1").prop("checked");
         var option_="";
         if(check==true)
         {
@@ -324,7 +324,7 @@
         }
         $.ajax({
            method: "POST",
-           url: "{{ url('/') }}",
+           url: "{{ url('/addFile') }}",
            data: {id_tramite:itemTramite,option:option_, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -418,7 +418,10 @@
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
              $("#itemsCategoria").val("limpia").change();
+             $(".checkfile").css("display", "none");
             return;
+        }else{
+            $(".checkfile").css("display", "block");
         }
 
         $.ajax({
@@ -432,7 +435,7 @@
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                if(item.descripcion=="documento"){
+                if(item.descripcion=="Documentos"){
                     iCheck="1";
                 }else{
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
@@ -443,9 +446,9 @@
             $("#itemsCategoria").val(categoria).change();
             if(iCheck=="1")
             {
-                $("input[name=radio2][value='"+costo+"']").prop("checked",true);
-            }else{
-                $("input[name=radio2][value='"+costo+"']").prop("checked",false);
+                $("#checkbox1").prop("checked", true);
+            }else{  
+                $("#checkbox1").prop("checked", false);
             }
         })
         .fail(function( msg ) {
