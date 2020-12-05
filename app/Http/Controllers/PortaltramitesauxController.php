@@ -531,7 +531,7 @@ class PortaltramitesauxController extends Controller
 		$tramite = $request->id_tramite;
 		try{
 			if($option == 1){ //si el valor de option es 1, se inserta el campo
-					$grupo_id = $this->group->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
+					$grupo_id = $this->agrupaciones->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
 
 					$save = $this->camrel->create(['tramite_id'=>$tramite, 'campo_id'=>0, 'tipo_id'=>7,'caracteristicas'=>'{"required":"true"}', 'orden'=>1, 'agrupacion_id'=>$grupo_id]);
 
