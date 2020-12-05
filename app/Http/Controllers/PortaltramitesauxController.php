@@ -355,31 +355,31 @@ class PortaltramitesauxController extends Controller
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
   }
-    public function findValorcuota()
-    {
+  public function findValorcuota()
+  {
     	try
     	{
     		$response=array();
     		$date = Carbon::now();
-        	$date = $date->format('Y');
+        $date = $date->format('Y');
     		$findUMA=$this->umadb->findWhere(['year'=>$date]);
-        	if($findUMA->count()==0)
-        	{
-            	$date=$date-1;
-           	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);
-        	}
-        	//log::info($findUMA);
-        	foreach ($findUMA as $u) {
-            	$response=array('cuota_costo' =>$u->daily);
-        	}
-        	return json_encode($response);
-        } catch (\Exception $e) {
-			Log::info('Error PortaltramitesauxController - findValorcuota: '.$e->getMessage());
-			return response()->json(["Code" => "400","Message" => "Error al consultar"]);
-		}
-    }
-     public function updateSubsidio(Request $request)
-    {
+      	if($findUMA->count()==0)
+      	{
+          	$date=$date-1;
+         	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);
+      	}
+      	//log::info($findUMA);
+      	foreach ($findUMA as $u) {
+          	$response=array('cuota_costo' =>$u->daily);
+      	}
+      	return json_encode($response);
+      } catch (\Exception $e) {
+				Log::info('Error PortaltramitesauxController - findValorcuota: '.$e->getMessage());
+				return response()->json(["Code" => "400","Message" => "Error al consultar"]);
+			}
+  }
+  public function updateSubsidio(Request $request)
+  {
     	try {
     		if($request->id==''){
     			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida,'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas]);
@@ -395,9 +395,9 @@ class PortaltramitesauxController extends Controller
 			Log::info('Error PortaltramitesauxController - updateSubsidio: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
-    }
+  }
 
-		public function addCaracteristics(Request $request){
+ public function addCaracteristics(Request $request){
 			try{
 				$id = $request->id;
 				$nombre = $request->nombre;
@@ -444,8 +444,7 @@ class PortaltramitesauxController extends Controller
 			}
 		}
 
-		public function listarPartidas()
-    {
+ public function listarPartidas(){
 			$sr = $this->partidas->get();
 
 			$response = array();
@@ -520,4 +519,41 @@ class PortaltramitesauxController extends Controller
 			}
 		}
 
+	/**
+ 	* 	Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
+ 	*		portal.campos_type con el id #7 y su descripcion es File
+ 	*	@param Request POST
+ 	*
+ 	*	@return estatus de guradado o eliminado
+ 	*/
+ public function addFile(Request $request){
+		$option = $request->option;
+		$tramite = $reques->id_tramite;
+		try{
+			if($option == 1){ //si el valor de option es 1, se inserta el campo
+					$grupo_id = $this->group->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
+
+					$save = $this->camrel->create(['tramite_id'=>$tramite, 'campo_id'=>0, 'tipo_id'=>7,'caracteristicas'=>'{"required":"true"}', 'orden'=>1, 'agrupacion_id'=>$grupo_id]);
+
+					return response()->json([
+						"Code" => "200",
+						"Message"=> "Opcion de archivo agregada"
+					]);
+			}else{ //si el valor de option es 2, se elimina el campo de Archivos
+				$exist = $this->camrel->where('id_tramite',$tramite)->where('tipo_id',7)->delete();
+
+				return response()->json([
+					"Code" => "200",
+					"Message"=> "Opcion de archivo eliminada"
+				]);
+			}
+
+		}catch(\Exception $e){
+			Log::info('Error Tramites - check para Archivos: '.$e->getMessage());
+			return response()->json([
+				"Code" => "400",
+				"Message" => "Error al agregar campo archivo"
+			]);
+		}
+ }
 }
