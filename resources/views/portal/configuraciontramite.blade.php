@@ -328,9 +328,11 @@
            data: {id_tramite:itemTramite,option:option_, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
-            CleanInputs();
-            findRelationship();
-            Command: toastr.success("Success", "Notifications")
+           if(response.Code=="200"){    
+                Command: toastr.success(response.Message, "Notifications");
+            }else{            
+                Command: toastr.warning(response.Message, "Notifications");
+            }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
