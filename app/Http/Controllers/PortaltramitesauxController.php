@@ -540,7 +540,7 @@ class PortaltramitesauxController extends Controller
 						"Message"=> "Opcion de archivo agregada"
 					]);
 			}else{ //si el valor de option es 2, se elimina el campo de Archivos
-				$exist = $this->camrel->where('id_tramite',$tramite)->where('tipo_id',7)->delete();
+				$exist = $this->camrel->where('tramite_id',$tramite)->where('tipo_id',7)->delete();
 
 				return response()->json([
 					"Code" => "200",
