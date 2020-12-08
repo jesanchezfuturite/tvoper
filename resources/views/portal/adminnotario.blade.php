@@ -2,7 +2,7 @@
 
 
 @section('content')
-
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
 <h3 class="page-title">Portal <small> Asignación de usuarios por Notaria </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -271,7 +271,7 @@
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Curp</label>                                             
+                <label >CURP</label>                                             
                 <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpNot()">
                  <span id="curpNot" class="help-block"></span>
               </div>
@@ -349,29 +349,42 @@
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-4"> 
-             
-            </div>
-            <div class="col-md-4"> 
               <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia SAT</span>
-                  <input type="file" name="fileSAT" id="fileSAT">
-                </span>
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia SAT </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia SAT </span>
+                        <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 215px;top: 4px" id="delFileSAT">
+                        </a></div>
+                        
+                </div>
               </div>
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia Notario</span>
-                  <input type="file" name="fileNotario" id="fileNotario">
-                </span>
+               
+               <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia Notario </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia Notario </span>
+                        <input type="file" name="fileNotario" accept="application/pdf"  id="fileNotario">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span><a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput" style="position: absolute;left: 215px;top: 4px" id="delFileNotario">
+                        </a></div>
+                        
+                </div>
               </div>
             </div>
           </div>
+          
         </div>
         <div class="row">
           <div class="col-md-12">             
@@ -457,7 +470,7 @@
           <div class="col-md-12">
             <div class="col-md-6"> 
               <div class="form-group">
-                <label >Curp</label>                                             
+                <label >CURP</label>                                             
                 <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
                  <span id="curpUs" class="help-block"></span>
               </div>
@@ -558,7 +571,7 @@
 
 @section('scripts')
 <script src="assets/global/scripts/validar_pdf.js" type="text/javascript"></script>
-
+<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
     TableManaged.init();
@@ -1124,8 +1137,8 @@ function getBase64Notario(file) {
     //$("input:radio").attr("checked", false);
     document.getElementById('base64pdf1').value="";
     document.getElementById('base64pdf2').value="";
-    document.getElementById('fileSAT').value="";
-    document.getElementById('fileNotario').value="";
+    document.getElementById('delFileNotario').click();
+    document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
 
 }
