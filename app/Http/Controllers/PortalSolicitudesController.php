@@ -592,8 +592,8 @@ class PortalSolicitudesController extends Controller
     
           $attach_notary = "notary_file.pdf";
     
-          $path = storage_path('app/'.$attach_sat);
-          \Storage::disk('local')->put($attach_sat,  $notary_file);
+          $path = storage_path('app/'.$attach_notary);
+          \Storage::disk('local')->put($attach_notary,  $notary_file);
           return response()->download($path)->deleteFileAfterSend(true);
         }
        
