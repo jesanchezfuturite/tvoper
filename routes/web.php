@@ -370,6 +370,8 @@ Route::post('/guardar-solicitudes', 'PortalSolicitudesController@guardarSolicitu
 Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
+Route::get('/get-route/{id}' , 'PortalSolicitudesController@getRouteFiles');
+
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
