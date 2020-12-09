@@ -528,19 +528,19 @@ class PortaltramitesauxController extends Controller
  	*/
  public function addFile(Request $request){
 		$option = $request->option;
-		$tramite = $reques->id_tramite;
+		$tramite = $request->id_tramite;
 		try{
 			if($option == 1){ //si el valor de option es 1, se inserta el campo
-					$grupo_id = $this->group->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
+					$grupo_id = $this->agrupaciones->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
 
-					$save = $this->camrel->create(['tramite_id'=>$tramite, 'campo_id'=>0, 'tipo_id'=>7,'caracteristicas'=>'{"required":"true"}', 'orden'=>1, 'agrupacion_id'=>$grupo_id]);
+					$save = $this->camrel->create(['tramite_id'=>$tramite, 'campo_id'=>82, 'tipo_id'=>7,'caracteristicas'=>'{"required":"true"}', 'orden'=>1, 'agrupacion_id'=>$grupo_id]);
 
 					return response()->json([
 						"Code" => "200",
 						"Message"=> "Opcion de archivo agregada"
 					]);
 			}else{ //si el valor de option es 2, se elimina el campo de Archivos
-				$exist = $this->camrel->where('id_tramite',$tramite)->where('tipo_id',7)->delete();
+				$exist = $this->camrel->where('tramite_id',$tramite)->where('tipo_id',7)->delete();
 
 				return response()->json([
 					"Code" => "200",
