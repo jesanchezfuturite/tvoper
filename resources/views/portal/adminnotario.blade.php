@@ -70,6 +70,41 @@
     </div>
 </div>
 <div class="row">
+    <div class="portlet box blue iDocument">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-file-pdf-o"></i>&nbsp;Documentos
+            </div>            
+        </div>
+        <div class="portlet-body">
+        <div class="row">
+          <div class="col-md-6 col-ms-12">
+            <div class="form-group">
+               <a id="downloadSAT" href="#" class="icon-btn" data-original-title="" title="Descargar Archivo">
+                <i class="fa fa-file-pdf-o"></i>
+                <div>
+                 &nbsp;Descargar Constancia SAT&nbsp;
+                </div>
+              </a>&nbsp;&nbsp;
+              <a id="downloadNotary" href="#" class="icon-btn" data-original-title="" title="Descargar Archivo">
+                <i class="fa fa-file-pdf-o"></i>
+                <div>
+                  &nbsp;Descargar Constancia Notario&nbsp;
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">
+              
+            </div>
+          </div>          
+
+        </div>
+      </div>
+    </div>
+</div>
+<div class="row">
  <!-- BEGIN SAMPLE TABLE PORTLET-->
   <div class="portlet box blue">
     <div class="portlet-title" >
@@ -577,6 +612,7 @@
     TableManaged.init();
     ItemsTramite();
     ItemsPermisos();
+    $(".iDocument").css("display","none");
   });
   function getBase64SAT(file) {
    var reader = new FileReader();
@@ -587,13 +623,44 @@
    };
    
 }
+function getBase64Notario(file) {
+   var reader = new FileReader();
+   reader.readAsDataURL(file);
+   reader.onload = function () {
+    document.getElementById("base64pdf2").value=reader.result;
+     //return reader.result;
+   };
+   
+}
+$('#downloadSAT').click(function(){ downloadPdf("sat"); return false; });
+$('#downloadNotary').click(function(){ downloadPdf("notary"); return false; });
+function downloadPdf(file)
+{
+  var id_notary=$("#itemsNotario").val();
+  if(id_notary=="0")
+  {
+    return;
+  }
+   $.ajax({
+        method: "get",            
+        url: "{{ url('/get-route') }}"+"/"+id_notary+"/"+file,
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+           
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al descargar", "Notifications")   });
+  
+}
 function changeComunidad()
 {
   var comunidad=$("#itemsConfigUser").val();
+  $("#itemsNotario").val("0").change();
   if(comunidad=="0")
   {
     $("#itemsNotario option").remove();
     $('#itemsNotario').append("<option value='0'>------</option>");
+
     return;
   }
    $.ajax({
@@ -611,15 +678,7 @@ function changeComunidad()
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   
 }
-function getBase64Notario(file) {
-   var reader = new FileReader();
-   reader.readAsDataURL(file);
-   reader.onload = function () {
-    document.getElementById("base64pdf2").value=reader.result;
-     //return reader.result;
-   };
-   
-}
+
   function ItemsPermisos()
   {
     $.ajax({
@@ -835,6 +894,7 @@ function getBase64Notario(file) {
     var com=$("#itemsConfigUser").val();
     if(id=="0")
     {
+      $(".iDocument").css("display","none");
       return;
     }
     if(com=="0")
@@ -843,6 +903,7 @@ function getBase64Notario(file) {
       //$("#itemsNotario").val(0).change();
       return;
     }
+    $(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
