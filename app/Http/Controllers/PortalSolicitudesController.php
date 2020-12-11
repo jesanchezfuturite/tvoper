@@ -53,7 +53,7 @@ class PortalSolicitudesController extends Controller
      
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -561,43 +561,17 @@ class PortalSolicitudesController extends Controller
       }
     }
     public function getFileRoute($id, $type){
-        $link = "http://10.153.144.218/session-api/notary-offices/file/"."$id";
+        $url="http://10.153.144.218/session-api/";
+        $link = "http://10.153.144.218/session-api/notary-offices/file/"."$id/$type";
         $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL, $link);        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        curl_setopt($ch, CURLOPT_URL, $link);                
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
         $route = curl_exec($ch);
+        $error =curl_error($ch);
         curl_close($ch);
+        $route=json_decode($route);
+        return $url."/".$route->response;
         
-        $route = json_decode($route);
-
-        if($type=="sat"){
-          $sat_file = $route->sat_file;
- 
-          $sat_file = str_replace('data:application/pdf;base64,', '', $sat_file);
-          $sat_file = str_replace(' ', '+', $sat_file);
-          $sat_file = base64_decode($sat_file);
-    
-          $attach_sat = "sat_file.pdf";
-    
-          $path = storage_path('app/'.$attach_sat);
-          \Storage::disk('local')->put($attach_sat,  $sat_file);
-          return response()->download($path)->deleteFileAfterSend(true);
-        }else{
-          $notary_file = $route->notary_file;
-          $notary_file = $route->notary_file;
-   
-          $notary_file = str_replace('data:application/pdf;base64,', '', $notary_file);
-          $notary_file = str_replace(' ', '+', $notary_file);
-          $notary_file = base64_decode($notary_file);
-    
-          $attach_notary = "notary_file.pdf";
-    
-          $path = storage_path('app/'.$attach_notary);
-          \Storage::disk('local')->put($attach_notary,  $notary_file);
-          return response()->download($path)->deleteFileAfterSend(true);
-        }
-       
-      
   
     }
  
