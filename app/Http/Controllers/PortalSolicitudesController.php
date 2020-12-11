@@ -53,7 +53,7 @@ class PortalSolicitudesController extends Controller
      
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -559,6 +559,20 @@ class PortalSolicitudesController extends Controller
       }catch(\Exception $e){
         log::info("error PortalSolicitudesController@downloadFile");
       }
+    }
+    public function getFileRoute($id, $type){
+        $url="http://10.153.144.218/session-api/";
+        $link = "http://10.153.144.218/session-api/notary-offices/file/"."$id/$type";
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);                
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+        $route = curl_exec($ch);
+        $error =curl_error($ch);
+        curl_close($ch);
+        $route=json_decode($route);
+        return $url."/".$route->response;
+        
+  
     }
  
 }
