@@ -422,7 +422,7 @@ class PortaltramitesauxController extends Controller
 		}
   }
 
- public function addCaracteristics(Request $request){
+  public function addCaracteristics(Request $request){
 			try{
 				$id = $request->id;
 				$nombre = $request->nombre;
@@ -467,9 +467,9 @@ class PortaltramitesauxController extends Controller
 					"Message" => "Error al agregar"
 				]);
 			}
-		}
+	}
 
- public function listarPartidas(){
+ 	public function listarPartidas(){
 			$sr = $this->partidas->get();
 
 			$response = array();
@@ -488,7 +488,7 @@ class PortaltramitesauxController extends Controller
 			}
 
 			return json_encode($response);
-    }
+  }
 
 		public function getReglas(){
 
@@ -520,6 +520,12 @@ class PortaltramitesauxController extends Controller
 
 			try{
 				$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+
+				$existe = $this->relcat->where('tramite_id', $tramite)->where('categorias_id', $tipo)->get();
+				if ($existe->count() == 0){
+					$guardar = $this->relcat->create(['categorias_id'=>$tipo, 'tramite_id'=>$tramite]);
+				}
+
 
 				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
 
