@@ -1172,7 +1172,7 @@
             +"<td>"+item.descripcion_gpm+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a>&nbsp;<a class='btn btn-icon-only green' href='#large' data-toggle='modal' data-original-title='' title='Calculo de Conseptos' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-cogs'></i></a>&nbsp;<a class='btn btn-icon-only grey' href='#modalSubsidio' data-toggle='modal' data-original-title='' title='Subsidio' onclick=\"CalculoSubsidio(\'"+item.id+"\')\"><i class='fa fa-eye'></i></a></td>"
+            +"<td class='text-center'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a></td>"
             +"</tr>");
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
