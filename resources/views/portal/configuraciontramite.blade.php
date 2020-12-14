@@ -597,9 +597,13 @@
            data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],agrupacion_id:itemsAgrupaciones,orden:contador, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
-            CleanInputs();
-            findRelationship();
-            Command: toastr.success("Success", "Notifications")
+             if(response.Code =="200"){
+                Command: toastr.success(response.Message, "Notifications")
+                CleanInputs();
+                findRelationship();
+            }else{
+                Command: toastr.warning(response.Message, "Notifications")
+            }
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -625,10 +629,13 @@
            data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
-            CleanInputs();
-            findRelationship();
+            
             if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications")
+                Command: toastr.success(response.Message, "Notifications")
+                CleanInputs();
+                findRelationship();
+            }else{
+                 Command: toastr.warning(response.Message, "Notifications")
             }
         })
         .fail(function( msg ) {
