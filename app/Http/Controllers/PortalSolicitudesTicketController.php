@@ -449,10 +449,10 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-          ->update(['status'=> $request->status]);
+          ->update(['estatus'=> $request->status]);
         }else{
           $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
-          ->update(['status'=> $request->status]);
+          ->update(['estatus'=> $request->status]);
         }          
         
 
