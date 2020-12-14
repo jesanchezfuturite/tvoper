@@ -609,10 +609,11 @@
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
+    $(".iDocument").css("display","none");
     TableManaged.init();
     ItemsTramite();
     ItemsPermisos();
-    $(".iDocument").css("display","none");
+    
   });
   function getBase64SAT(file) {
    var reader = new FileReader();
@@ -646,7 +647,7 @@ function downloadPdf(file)
         url: "{{ url('/get-route') }}"+"/"+id_notary+"/"+file,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-           
+           window.open(response, '_blank');
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al descargar", "Notifications")   });
@@ -895,6 +896,8 @@ function changeComunidad()
     if(id=="0")
     {
       $(".iDocument").css("display","none");
+      addtable();
+      TableManaged.init();
       return;
     }
     if(com=="0")
