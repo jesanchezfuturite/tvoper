@@ -63,8 +63,8 @@ class PortaltramitesController extends Controller
 
 
 		try{
-			$cmp = $this->campos->findWhere(['descripcion'=> $desc]);
-
+			$cmp = $this->campos->findWhere(['descripcion'=> $desc, 'status'=>'1']);
+			log::info($cmp);
 			if($cmp->count() > 0){
 
 				Log::info($cmp->count());
