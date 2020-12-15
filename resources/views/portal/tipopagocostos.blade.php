@@ -196,7 +196,7 @@
                   <div class="md-radio-inline">
                     <div class="md-radio">
                       <input type="radio" id="radio4" name="radio3" class="md-radiobtn" value="C" >
-                      <label for="radio6">
+                      <label for="radio4">
                         <span></span>
                         <span class="check"></span>
                         <span class="box"></span>
@@ -204,7 +204,7 @@
                     </div>|
                     <div class="md-radio">
                       <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="P" >
-                        <label for="radio7">
+                        <label for="radio5">
                         <span></span>
                         <span class="check"></span>
                         <span class="box"></span>
@@ -506,7 +506,7 @@
     {
       if(optionMoneda!=null)
       {
-        optionMoneda = document.querySelector('input[name = radio2]:checked').value;
+        optionMoneda = document.querySelector('input[name = radio3]:checked').value;
       }
       if(optionMoneda==null)
       {
@@ -575,7 +575,7 @@
       {regla=null}
       if(optionMoneda!=null)
       {
-        optionMoneda = document.querySelector('input[name = radio2]:checked').value;
+        optionMoneda = document.querySelector('input[name = radio3]:checked').value;
       }
     //console.log(option);
       $.ajax({
@@ -704,7 +704,7 @@
     document.getElementById('cuotaMin').value=minimo;
     document.getElementById('cuotaMax').value=maximo;
     $("input[name=radio2][value='"+costo+"']").prop("checked",true);
-    $("input[name=radio2][value='"+tipoCostoFijo+"']").prop("checked",true);
+    $("input[name=radio3][value='"+tipoCostoFijo+"']").prop("checked",true);
     document.getElementById('valor').value=valor;
     document.getElementById('fijo').value=costo_fijo;
     document.getElementById('vigencia').value=vigencia;
@@ -733,7 +733,7 @@
       }
       if(optionMoneda!=null)
       {
-        optionMoneda = document.querySelector('input[name = radio2]:checked').value;
+        optionMoneda = document.querySelector('input[name = radio3]:checked').value;
       }else{
         optionMoneda=null;
       }
