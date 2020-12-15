@@ -443,5 +443,36 @@ class PortalSolicitudesTicketController extends Controller
       }    
       
     }
+    public function updateStatusTramite(Request $request){
+      $error=null;
+     
+      try { 
+        if($request->id_transaccion){
+          $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+          ->update(['estatus'=> $request->status]);
+        }else{
+          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
+          ->update(['estatus'=> $request->status]);
+        }          
+        
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
+    
+    }
     
 }

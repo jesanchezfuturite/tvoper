@@ -121,7 +121,7 @@ class PortaltramitesauxController extends Controller
 
 	public function listarCampos()
 	{
-		$cp = $this->campos->all();
+		$cp = $this->campos->findWhere(["status"=>"1"]);
 
 		$response = array();
 
@@ -210,15 +210,33 @@ class PortaltramitesauxController extends Controller
 	{
 
 		try {
-
+			$campoUp;
+			$id_campo;
 			foreach ($request->campoid as $k => $v) {
 
 				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
 			}
+			foreach ($campoUp as $i) {
+				$id_campo=$i->id;
+			}
+			if($id_campo==$request->id)
+			{
+				$this->camrel->where('id',$request->id)->update($in);
+				return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
+			}else{
+				if($campoUp->count()>0)
+					{
+						
+						return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
+					}else{
+						$this->camrel->where('id',$request->id)->update($in);
+						return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
+					}
+			}
+			
 
-			$this->camrel->where('id',$request->id)->update($in);
-
-			return response()->json(["Code" => "200","Message" => "campo actualizado"]);
+			
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
@@ -264,16 +282,23 @@ class PortaltramitesauxController extends Controller
 	public function guardaTramite(Request $request)
 	{
 		try {
-
+			$findCampo;
 			foreach ($request->campoid as $k => $v) {
 
 				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$request->caracteristicas[$k]);
+				$findCampo=$this->camrel->findWhere(["tramite_id"=>$request->tramiteid,'campo_id'=>$v]);
 			}
-
-			$this->camrel->insert($in);
-
+			if($findCampo->count()>0)
+			{
+				return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
+			}else{
+				$this->camrel->insert($in);
+				return response()->json(["Code" => "200","Message" => "Registros Guardado."]);
+			}
+			
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error al guardar el campo."]);
 		}
 
 	}
