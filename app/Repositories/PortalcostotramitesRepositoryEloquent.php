@@ -46,7 +46,11 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             'portal_costo_tramites.costo',
             'portal_costo_tramites.minimo',
             'portal_costo_tramites.maximo',
+            'portal_costo_tramites.costo_fijo',
             'portal_costo_tramites.valor',
+            'portal_costo_tramites.reglaoperativa_id',
+            'regla_operativa.definicion',
+            'portal_costo_tramites.vigencia',
             'portal_sub_tramites.id as subsidio_id',
             'portal_sub_tramites.cuotas',
             'portal_sub_tramites.id_partida',
@@ -54,6 +58,7 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             'portal_sub_tramites.limite_cuotas')
             ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','portal_costo_tramites.tramite_id')
             ->leftjoin('portal_sub_tramites','portal_sub_tramites.costo_id','=','portal_costo_tramites.id')
+            ->leftjoin('portal.regla_operativa', 'portal.regla_operativa.id','=', 'portal_costo_tramites.reglaoperativa_id')
             ->where('portal_costo_tramites.status','=','1')
             ->groupBy('portal_costo_tramites.id')
             ->get();
