@@ -479,5 +479,16 @@ class PortalSolicitudesTicketController extends Controller
       }    
     
     }
+    public function getStatus(Request $request){
+      if($request->id_transaccion){
+        $status = $this->solTramites->where('id' , $request->id_transaccion)->get();
+      }else if($request->id_transaccion_motor){
+        $status = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)->get();
+      }else{
+        $status = $this->solTramites->get();
+      }
+
+      return $status;
+    }
     
 }
