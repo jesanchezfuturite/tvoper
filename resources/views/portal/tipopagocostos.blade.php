@@ -586,9 +586,11 @@
 
          if(response.Code =="200"){
             Command: toastr.success(response.Message, "Notifications")
-            }
              findCostos();
              limpiar();
+            }else{
+              Command: toastr.warning(response.Message, "Notifications")
+            }
 
         })
         .fail(function( msg ) {
@@ -765,10 +767,12 @@
         .done(function (response) {
 
          if(response.Code =="200"){
-            Command: toastr.success(response.Message, "Notifications")
-            }
-             findCostos();
-
+              Command: toastr.success(response.Message, "Notifications") 
+              findCostos();
+            }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+            }         
+            
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
