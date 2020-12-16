@@ -107,8 +107,8 @@ class PortalSolicitudesTicketController extends Controller
             foreach ($request->file as $key => $value) {
               $data =[
                 'ticket_id'=> $first_id,
-                'mensaje' => "",
-                'file'    =>  $value
+                'mensaje' => $value->descripcion,
+                'file'    =>  $value->archivo
                ];
                $this->saveFile($data);
             }
