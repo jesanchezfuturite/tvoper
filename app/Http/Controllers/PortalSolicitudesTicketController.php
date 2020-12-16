@@ -105,12 +105,15 @@ class PortalSolicitudesTicketController extends Controller
           $first_id = reset($id);
           if($request->has("file")){
             foreach ($request->file as $key => $value) {
-              $data =[
-                'ticket_id'=> $first_id,
-                'mensaje' => $value->descripcion,
-                'file'    =>  $value->archivo
-               ];
-               $this->saveFile($data);
+              foreach ($request->descripciones as $d => $des) {
+                $data =[
+                  'ticket_id'=> $first_id,
+                  'mensaje' => $des->descripcion,
+                  'file'    =>  $value
+                 ];
+                 $this->saveFile($data);
+              }
+             
             }
           }
           
