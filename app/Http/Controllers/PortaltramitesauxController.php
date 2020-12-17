@@ -227,16 +227,16 @@ class PortaltramitesauxController extends Controller
 			}else{
 				if($campoUp->count()>0)
 					{
-						
+
 						return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
 					}else{
 						$this->camrel->where('id',$request->id)->update($in);
 						return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
 					}
 			}
-			
 
-			
+
+
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
@@ -295,7 +295,7 @@ class PortaltramitesauxController extends Controller
 				$this->camrel->insert($in);
 				return response()->json(["Code" => "200","Message" => "Registros Guardado."]);
 			}
-			
+
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al guardar el campo."]);
@@ -345,8 +345,12 @@ class PortaltramitesauxController extends Controller
   public function insertCostos(Request $request)
   {
   	try {
-
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
+  		$findCosto=$this->costotramitedb->findWhere(["tramite_id"=>$request->tramite,'status'=>'1']);
+			if($findCosto->count()>0)
+			{
+				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
+			}
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'tipo_costo_fijo'=>$request->tipo_costo_fijo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
@@ -358,14 +362,31 @@ class PortaltramitesauxController extends Controller
   {
   	try {
   		//log::info($request);
-  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  		$id_find="";
+  		$findCosto=$this->costotramitedb->findWhere(["id"=>$request->id]);
+  		foreach ($findCosto as $e) {
+  			$id_find=$e->tramite_id;
+  		}
+  		if($id_find==$request->tramite)
+  		{
+  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
-  		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  		}else{
+  			$findTramite=$this->costotramitedb->findWhere(['tramite_id'=>$request->tramite,'status'=>'1']);
+  			if($findTramite->count()>0)
+  			{
+				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
+  			}else{
+  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
-		} catch (\Exception $e) {
-			Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
-			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
-		}
+  				return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  			}
+  		}
+	} catch (\Exception $e) {
+		Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
+		return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
+	}
   }
   public function updateStatusCostos(Request $request)
   {
