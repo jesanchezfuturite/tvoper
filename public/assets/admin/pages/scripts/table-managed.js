@@ -291,7 +291,7 @@ var TableManaged2 = function () {
                 'orderable': true,
                 'targets': [0]
             }, {
-                "searchable": false,
+                "searchable": true,
                 "targets": [0]
             }],
             "order": [
@@ -373,7 +373,7 @@ var TableManaged3 = function () {
                 'orderable': true,
                 'targets': [0]
             }, {
-                "searchable": false,
+                "searchable": true,
                 "targets": [0]
             }],
             "order": [

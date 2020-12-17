@@ -63,7 +63,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 col-ms-12 checkfile">
+                    <!-----<div class="col-md-2 col-ms-12 checkfile">
                         <span class="help-block"></span>
                        <div class='md-checkbox'>
                             <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '  onclick="insertCampoFile()">
@@ -73,7 +73,7 @@
                             </span>  Requiere Archivo. </label>
                         </div>
                     </div>
-                    
+                    -->
                 </div>
             </div>
         </div>
@@ -292,6 +292,58 @@
     <!-- /.modal-dialog -->
   </div>
 </div>
+
+
+<!-----------------------------------------MODAL DETALLES--------------------------->
+<div class="modal fade" id="portlet-detalles" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog" style="width: 80%;">
+    <div class="modal-content" >
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" ></button>
+        <h4 class="modal-title">Detalles </h4>
+      </div>
+      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
+        <input type="text" name="idTicket" id="idTicket" hidden="true">
+       
+        <div class="row">
+          <div class="col-md-12" id="detalles">
+            <div class='col-md-4'>
+                <div class='form-group'>
+                    <label><strong>Nombre del Campo:</strong></label>
+                    <br><label id="campoName"></label>
+                </div>
+            </div>
+            <div class='col-md-4'>
+                <div class='form-group'>
+                    <label><strong>Tipo Campo:</strong></label>
+                    <br><label id="tipoCampo"></label>
+                </div>
+            </div>
+          </div>    
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="addTable2">
+           <div id="removeTable2">                 
+                <table class="table table-hover" id="sample_2">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+          </div>    
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn default" onclick="CleanInputs()">Cerrar</button>
+        </div>  
+    </div>
+  </div>
+</div>
  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -402,10 +454,9 @@
             $("#itemsTipos option").remove();
             $("#itemsTipos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                if(item.id!=7)
-                {
-                    $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-                }
+                
+                $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+                
             });
         })
         .fail(function( msg ) {
@@ -446,12 +497,12 @@
             });
 
             $("#itemsCategoria").val(categoria).change();
-            if(iCheck=="1")
+            /*if(iCheck=="1")
             {
                 $("#checkbox1").prop("checked", true);
             }else{  
                 $("#checkbox1").prop("checked", false);
-            }
+            }*/
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -491,14 +542,17 @@
             $('#Removetable').append("<div id='addtable'><ul id='sortable' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
             $.each(Resp, function(i, item) {
                 var car=JSON.stringify(item.caracteristicas);
+                var data=JSON.stringify(item);
                 $('#sortable').append( "<li class='ui-state-default'>"+
                     "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
                    "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
-                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a></div>"+
-                    "</li>"
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a>"+
+
+                   "<a class='btn btn-icon-only blue' href='#portlet-detalles' data-toggle='modal' data-original-title='' title='Detalles' onclick='detalles("+data+")' style='color:#FFF !important;'><i class='fa fa-list'></i></a>"+
+                    "</div></li>"
                 );
             });
             $( "#sortable" ).sortable();
@@ -512,6 +566,34 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
     }
+    function detalles(data)
+    {
+        console.log(data);
+        addtable();
+        document.getElementById("campoName").textContent=data.campo_nombre;
+        document.getElementById("tipoCampo").textContent=data.tipo_nombre;
+        var soli=$.parseJSON(data.caracteristicas);
+        for (n in soli) {  
+            obj=n;
+            tipo=soli[n]; 
+            if(tipo!="true" || tipo!="false")
+            {
+                tipo=JSON.stringify(tipo);
+            }
+              $('#sample_2 tbody').append("<tr>"
+                +"<td>"+obj+"</td>"
+                +"<td>"+tipo+"</td>"
+                +"</tr>"
+                );           
+          }
+    }
+    function addtable()
+  {
+    $("#addTable2 div").remove();
+    $("#addTable2").append("<div id='removeTable2'><table class='table table-hover' id='sample_2'> <thead><tr><th>Nombre Caracteristica<th>Value</th></tr> </thead> <tbody></tbody> </table></div>");
+     //TableManaged3.init3();
+
+  }
     function relationshipUpdate(id_,campo,tipo,carac)
     {
         document.getElementById('idRelantion').value=id_;
@@ -619,9 +701,18 @@
         var valCheck='[{"required":"false"}]';
         if(check==true)
         {
+          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
+            valCheck='{"required":"true", "opciones":[]}';
+          }else{
             valCheck='{"required":"true"}';
+          }
         }else{
+          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
+            valCheck='{"required":"false", "opciones":[]}';
+          }else{
             valCheck='{"required":"false"}';
+          }
+
         }
         $.ajax({
            method: "POST",
@@ -656,18 +747,21 @@
           if(info.Code != 200)
           {
             console.log(info.Message);
+
             return false;
           }else{
             // cerramos el modal
             console.log(info.Message);
             $("#nombre").empty();
             $("#valor").empty();
+
           }
         }
       })
       .done(function (response) {
           CleanInputs();
-          findRelationship();
+          //findRelationship();
+          changeTramites();
           $("#modalCaracteristica .close").click();
           Command: toastr.success("Success", "Notifications")
 
