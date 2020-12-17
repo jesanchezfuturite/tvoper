@@ -454,10 +454,9 @@
             $("#itemsTipos option").remove();
             $("#itemsTipos").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                if(item.id!=7)
-                {
-                    $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
-                }
+                
+                $("#itemsTipos").append("<option value='"+item.id+"'>"+item.desc+"</option>");
+                
             });
         })
         .fail(function( msg ) {
