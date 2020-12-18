@@ -209,7 +209,7 @@ class PortaltramitesauxController extends Controller
 	public function editarTramite(Request $request)
 	{
 
-		//try {
+		try {
 			$campoUp;
 			$id_campo;
 
@@ -224,7 +224,7 @@ class PortaltramitesauxController extends Controller
 
 				$caracteristicas=json_decode($request->caracteristicas[$k],true);				
 			}
-			log::info($caracteristicas);
+			//log::info($caracteristicas);
 			$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
 			foreach ($campoUp as $i) {
 				$id_campo=$i->id;
@@ -281,11 +281,11 @@ class PortaltramitesauxController extends Controller
 					}
 			}
 
-		/*} catch (\Exception $e) {
+		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
 
 			return response()->json(["Code" => "400","Message" => "Error al editar el campo"]);
-		}*/
+		}
 
 	}
 
