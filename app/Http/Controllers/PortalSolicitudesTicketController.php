@@ -105,15 +105,12 @@ class PortalSolicitudesTicketController extends Controller
           $first_id = reset($id);
           if($request->has("file")){
             foreach ($request->file as $key => $value) {
-              foreach ($request->descripciones as $d => $descripcion) {
-                $data =[
-                  'ticket_id'=> $first_id,
-                  'mensaje' => $descripcion,
-                  'file'    =>  $value
-                 ];
-                 $this->saveFile($data);
-              }
-             
+              $data =[
+                'ticket_id'=> $first_id,
+                'mensaje' => $request->descripcion[$key],
+                'file'    =>  $value
+                ];
+                $this->saveFile($data);             
             }
           }
           
@@ -478,6 +475,17 @@ class PortalSolicitudesTicketController extends Controller
           ]);
       }    
     
+    }
+    public function getStatus(Request $request){
+      if($request->id_transaccion){
+        $status = $this->solTramites->where('id' , $request->id_transaccion)->get();
+      }else if($request->id_transaccion_motor){
+        $status = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)->get();
+      }else{
+        $status = $this->solTramites->get();
+      }
+
+      return $status;
     }
     
 }

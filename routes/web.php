@@ -385,6 +385,8 @@ Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSo
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
+
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
 Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');

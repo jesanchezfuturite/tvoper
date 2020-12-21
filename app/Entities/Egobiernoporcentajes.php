@@ -21,9 +21,9 @@ class Egobiernoporcentajes extends Model implements Transformable
      * @var array
      */
     protected $connection = "mysql3";
-	
+
 	protected $table = "porcentajes";
-	
+
 	public $timestamps = false;
 
 }
