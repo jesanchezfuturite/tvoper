@@ -294,17 +294,22 @@ class PortalSolicitudesTicketController extends Controller
     public function asignarClavesCatalogo($info){
         $informacion = json_decode($info);
         $informacion = json_decode(json_encode($informacion), true);
+    
+  
+        if(array_key_exists("campos", $informacion)){
+          $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+          $campos = $informacion["campos"]; 
+          $keys = array_column($catalogo, 'id');
+          $values = array_column($catalogo, 'descripcion');
+          $combine = array_combine($keys, $values);
+          $catalogue = array_intersect_key($combine, $campos);
+          
+          $camposnuevos = array_combine($catalogue, $campos);
+          unset($informacion["campos"]);
+          $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+        }
 
-        $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
-        $campos = $informacion["campos"]; 
-        $keys = array_column($catalogo, 'id');
-        $values = array_column($catalogo, 'descripcion');
-        $combine = array_combine($keys, $values);
-        $catalogue = array_intersect_key($combine, $campos);
-        
-        $camposnuevos = array_combine($catalogue, $campos);
-        unset($informacion["campos"]);
-        $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+       
 
         return json_encode($informacion); 
     }
