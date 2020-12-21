@@ -502,7 +502,7 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function getRegistroTramite($id){
       try {
-        $solicitud =  $this->ticket->where('id' , $id)->get();
+        $solicitud =  $this->ticket->where('clave' , $id)->get();
         return $solicitud;
       
       } catch (\Exception $e) {
