@@ -13,6 +13,8 @@ use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
+use App\Repositories\PortalTramitesRepositoryEloquent;
+
 use DB;
 
 class PortalSolicitudesTicketController extends Controller
@@ -26,6 +28,7 @@ class PortalSolicitudesTicketController extends Controller
     protected $tiposer;
     protected $campo;
     protected $mensajes;
+    protected $solTramites;
 
 
 
@@ -38,7 +41,8 @@ class PortalSolicitudesTicketController extends Controller
         PortalNotaryOfficesRepositoryEloquent $notary,
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
         PortalcampoRepositoryEloquent $campo,
-        PortalSolicitudesMensajesRepositoryEloquent $mensajes
+        PortalSolicitudesMensajesRepositoryEloquent $mensajes,
+        PortalTramitesRepositoryEloquent $solTramites
         
        )
        {
@@ -50,6 +54,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->configUserNotary = $configUserNotary;
          $this->campo = $campo;
          $this->mensajes = $mensajes;
+         $this->solTramites = $solTramites;
    
        }
     
@@ -81,13 +86,12 @@ class PortalSolicitudesTicketController extends Controller
         $clave = $request->clave;
         
         $user_id = $request->user_id;
-        // $solicitantes = json_decode($solicitantes);
-        $solicitantes = to_object($solicitantes);
-        $info = $request->info;
+        $solicitantes = json_decode($solicitantes);
+        $info = json_decode($request->info);
         $id = [];
         try {    
           foreach($solicitantes as $key => $value){
-            $info["solicitante"]=$value;
+            $info->solicitante=$value;
             $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
@@ -100,12 +104,14 @@ class PortalSolicitudesTicketController extends Controller
           }
           $first_id = reset($id);
           if($request->has("file")){
-            $data =[
-              'ticket_id'=> $first_id,
-              'mensaje' => "",
-              'file'    =>  $request->file
-             ];
-            $this->saveFile($data);
+            foreach ($request->file as $key => $value) {
+              $data =[
+                'ticket_id'=> $first_id,
+                'mensaje' => $request->descripcion[$key],
+                'file'    =>  $value
+                ];
+                $this->saveFile($data);             
+            }
           }
           
         } catch (\Exception $e) {
@@ -128,9 +134,9 @@ class PortalSolicitudesTicketController extends Controller
   
       try {
         if($valor=="u"){
-          $this->ticket->where('id',$id)->where('status', 99)->delete();
+          $this->ticket->where('id',$id)->where('status', 99)->update(["status"=>0]);
         }else{
-          $this->ticket->where('clave',$id)->where('status', 99)->delete();
+          $this->ticket->where('clave',$id)->where('status', 99)->update(["status"=>0]);
         }
         return response()->json(
           [
@@ -148,19 +154,7 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
     }
-    public function check_diff_multi($array1, $array2){
-      $result = array();
-      foreach($array1 as $key => $val) {
-            if(isset($array2[$key])){
-              if(is_array($val) && $array2[$key]){
-                  $result[$key] = $this->check_diff_multi($val, $array2[$key]);
-              }
-          } else {
-              $result[$key] = $val;
-          }
-      }   
-        return $result;
-    }
+    
     public function getInfo($user_id){
       try {
         
@@ -250,32 +244,31 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function updateTramite(Request $request){
-        $id_transaccion = $request->id_transaccion;
-        $id = $request->id;
-        
-      try{
+      $ids = json_decode(json_encode($request->ids_tickets));
+      $error=null;
+      try {            
+        foreach ($ids as $key => $value) {  
+            $solicitudTicket = $this->ticket->where('id' , $value->id)
+            ->update(['status'=> $request->status]);
+        }
+             
 
-          $solicitudTicket = $this->ticket->where('clave',$request->id)
-          ->update(['id_transaccion'=>$id_transaccion,'status'=> 1]);
-    
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
         return response()->json(
           [
             "Code" => "200",
-            "Message" => "Solicitud actualizada",
-          ]
-        );
-    
-        }catch(\Exception $e){
-    
-          Log::info('Error Editar solicitud '.$e->getMessage());
-    
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "Error al editar la solicitud",
-            ]
-          );
-        }
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
     
     }
 
@@ -341,8 +334,9 @@ class PortalSolicitudesTicketController extends Controller
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
       ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion",
       "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
-      ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+      ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+      // ->leftJoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id');
       
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
@@ -359,10 +353,139 @@ class PortalSolicitudesTicketController extends Controller
         $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
         $solicitudes->whereIn('user_id', $users);
       }
-      $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-      ->orderBy('solicitudes_ticket.created_at', 'DESC');
+      $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
+
+      $mensajes = $this->mensajes;
+
+      $datos=[];
+      foreach($solicitudes as $key => &$value){
+        $info = $this->asignarClavesCatalogo($value->info);
+        $value->info =$info;
+        foreach ($mensajes->get() as $m => $msje){
+          if($value->id ==$msje->ticket_id){
+            array_push( $datos, $msje->toArray());
+          }
+        }
+
+        $value->mensajes= $datos;
+
+      }
+      
+      
       return $solicitudes;
+    }
+
+    public function saveTransaccion(Request $request){
+      $ids_tramites = json_decode(json_encode($request->ids_tramites));
+      $id_transaccion=null;
+      $error=null;
+      $solTramites = $this->solTramites->create([
+        "estatus" => $request->status    
+      ]); 
+      $id_transaccion=$solTramites->id;
+      try {            
+        if($solTramites){
+          foreach ($ids_tramites as $key => $value) {  
+              $solicitudTicket = $this->ticket->where('id' , $value->id)
+              ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
+          }
+        }        
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar transacción"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud transacción generada",
+            "id_transaccion"=>$id_transaccion,
+          ]);
+      }    
+     
+    }
+    public function saveTransaccionMotor(Request $request){      
+      $error=null;
+      try {
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update([
+          'id_transaccion_motor'=>$request->id_transaccion_motor,
+          'json_envio'=>json_encode($request->json_envio),
+          'json_recibo'=>json_encode($request->json_recibo),
+          'estatus'=> $request->status
+          ]);
+         
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+          ->update(['status'=> $request->status]);
+        }      
+
+      } catch (\Exception $e) {
+        $error = $e;
+      }         
+      if($error){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar transaccion motor"
+          ]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción motor actualizado"
+          ]);
+      }    
+      
+    }
+    public function updateStatusTramite(Request $request){
+      $error=null;
+     
+      try { 
+        if($request->id_transaccion){
+          $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+          ->update(['estatus'=> $request->status]);
+        }else{
+          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
+          ->update(['estatus'=> $request->status]);
+        }          
+        
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
+    
+    }
+    public function getStatus(Request $request){
+      if($request->id_transaccion){
+        $status = $this->solTramites->where('id' , $request->id_transaccion)->get();
+      }else if($request->id_transaccion_motor){
+        $status = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)->get();
+      }else{
+        $status = $this->solTramites->get();
+      }
+
+      return $status;
     }
     
 }

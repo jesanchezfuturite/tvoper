@@ -340,6 +340,12 @@ Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCosto
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
 Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
+Route::post('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
+Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
+Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
+Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
+Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
+Route::post('/addFile', 'PortaltramitesauxController@addFile');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -367,6 +373,8 @@ Route::post('/guardar-solicitudes', 'PortalSolicitudesController@guardarSolicitu
 Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
+Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
+
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
@@ -374,6 +382,10 @@ Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo'
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
+Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
+Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
+Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -382,3 +394,17 @@ Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampo
 Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
 Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
 Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
+
+
+Route::get('/avisos-internos', 'PortalAvisosInternosController@index');
+Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
+Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
+Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
+Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
+
+
+Route::get('/obtener-divisas', 'DivisasController@getDivisas');
+Route::post('/save-divisas', 'DivisasController@saveDivisas');
+Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
+Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
+Route::get('/divisas', 'DivisasController@index');

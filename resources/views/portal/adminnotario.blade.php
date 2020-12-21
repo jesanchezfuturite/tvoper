@@ -2,7 +2,7 @@
 
 
 @section('content')
-
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
 <h3 class="page-title">Portal <small> Asignación de usuarios por Notaria </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -65,6 +65,41 @@
                 </select>            
             </div>
           </div>    
+        </div>
+      </div>
+    </div>
+</div>
+<div class="row">
+    <div class="portlet box blue iDocument">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-file-pdf-o"></i>&nbsp;Documentos
+            </div>            
+        </div>
+        <div class="portlet-body">
+        <div class="row">
+          <div class="col-md-6 col-ms-12">
+            <div class="form-group">
+               <a id="downloadSAT" href="#" class="icon-btn" data-original-title="" title="Descargar Archivo">
+                <i class="fa fa-file-pdf-o"></i>
+                <div>
+                 &nbsp;Descargar Constancia SAT&nbsp;
+                </div>
+              </a>&nbsp;&nbsp;
+              <a id="downloadNotary" href="#" class="icon-btn" data-original-title="" title="Descargar Archivo">
+                <i class="fa fa-file-pdf-o"></i>
+                <div>
+                  &nbsp;Descargar Constancia Notario&nbsp;
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3 col-ms-12">
+            <div class="form-group">
+              
+            </div>
+          </div>          
+
         </div>
       </div>
     </div>
@@ -161,18 +196,17 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-12">
-            
-           <div class="col-md-2">
-              <div class="form-group">
-                <label >Número Interior</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero...">
-             </div> 
-           </div>
+          <div class="col-md-12"> 
            <div class="col-md-2">
               <div class="form-group">
                 <label >Número Exterior</label>                                                       
-                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior...">
+                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior..."maxlength="10">
+             </div> 
+           </div>
+           <div class="col-md-3">
+              <div class="form-group">
+                <label >Número Interior</label>                                                       
+                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero..." >
              </div> 
            </div> 
            <div class="col-md-3">
@@ -206,14 +240,14 @@
               <div class="form-group"> 
                    <div class="form-group">
                 <label >Fax</label>                                             
-                <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax...">
+                <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax..."  maxlength = "10">
               </div>                                
               </div>
             </div>            
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono...">
+                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono..."  maxlength = "10">
               </div>
             </div> 
           </div>
@@ -234,6 +268,7 @@
             <div class="portlet-body form">
               <div class="form-body">
                 <h4 class="form-section"><strong>Datos del notario titular</strong></h4>
+
               </div>
             </div>
           </div>
@@ -242,7 +277,7 @@
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Usuario</label>                                             
+                <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                            
                 <input type="text" class="form-control valida-user" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
               </div>
             </div>            
@@ -271,14 +306,16 @@
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();">
+                <label >CURP</label>                                             
+                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpNot()">
+                 <span id="curpNot" class="help-block"></span>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCNot()">
+                 <span id="rfcNot" class="help-block"></span>
              </div>
             </div>
           </div>
@@ -288,7 +325,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label >Numero de Teléfono</label>                                                       
-                <input type="text" class="form-control valida-numeros" name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
+                <input type="text" class="form-control valida-numeros"  maxlength = "10"name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
             </div>
             </div>
             <div class="col-md-4">
@@ -298,20 +335,6 @@
                 <span id="emailNot2" class="help-block"></span>
              </div>
             </div>
-            <div class="col-md-3">
-              <div class="form-group">
-                <label >Tipo</label>                                                       
-                <select id="itemsTipoNotario" class="select2me form-control" >
-                  <option value="0">-------</option>
-                  <option value="fisica">Fisica</option>
-                  <option value="moral">Moral</option>
-                </select>            
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
@@ -322,19 +345,33 @@
               </div>                                
               </div>
             </div>
+            <div class="col-md-3" hidden="true">
+              <div class="form-group">
+                <label >Tipo</label>                                                       
+                <select id="itemsTipoNotario" class="select2me form-control" >
+                  <option value="fisica">Fisica</option>
+                </select>            
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            
             <div class="col-md-4"> 
               <div class="form-group"> 
                    <div class="form-group">
                 <label >Permiso</label> 
                    <select id="itemsPermisoNotario" class="select2me form-control" >
                   <option value="0">-------</option>
+                  <option value="16">Notario</option>
                 </select>
               </div>                                
               </div>
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <label >Contraseña</label>                                             
+                <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                             
                 <div class="input-icon right">
                     <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña..." value="">                   
@@ -347,29 +384,42 @@
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-4"> 
-             
-            </div>
-            <div class="col-md-4"> 
               <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia SAT</span>
-                  <input type="file" name="fileSAT" id="fileSAT">
-                </span>
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia SAT </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia SAT </span>
+                        <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 215px;top: 4px" id="delFileSAT">
+                        </a></div>
+                        
+                </div>
               </div>
             </div>
             <div class="col-md-4"> 
               <div class="form-group">
-                <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar Constancia Notario</span>
-                  <input type="file" name="fileNotario" id="fileNotario">
-                </span>
+               
+               <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia Notario </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia Notario </span>
+                        <input type="file" name="fileNotario" accept="application/pdf"  id="fileNotario">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span><a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput" style="position: absolute;left: 215px;top: 4px" id="delFileNotario">
+                        </a></div>
+                        
+                </div>
               </div>
             </div>
           </div>
+          
         </div>
         <div class="row">
           <div class="col-md-12">             
@@ -401,7 +451,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <div class="form-group">
-                <label >Usuario</label>                                             
+                <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
                 <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
               </div>                                           
               </div>
@@ -422,7 +472,7 @@
              <div class="col-md-6"> 
               <div class="form-group">
                 <label >Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off">
+                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
               </div>
             </div>
              <div class="col-md-6"> 
@@ -455,14 +505,16 @@
           <div class="col-md-12">
             <div class="col-md-6"> 
               <div class="form-group">
-                <label >Curp</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
+                <label >CURP</label>                                             
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                 <span id="curpUs" class="help-block"></span>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();">
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
+                 <span id="rfcUs" class="help-block"></span>
              </div>
             </div>
           </div>
@@ -481,7 +533,7 @@
             </div>
             <div class="col-md-6"> 
               <div class="form-group"> 
-                <label >Contraseña</label> 
+                <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
                 <div class="input-icon right">
                     <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
                     <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
@@ -554,12 +606,14 @@
 
 @section('scripts')
 <script src="assets/global/scripts/validar_pdf.js" type="text/javascript"></script>
-
+<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
+    $(".iDocument").css("display","none");
     TableManaged.init();
     ItemsTramite();
     ItemsPermisos();
+    
   });
   function getBase64SAT(file) {
    var reader = new FileReader();
@@ -570,13 +624,44 @@
    };
    
 }
+function getBase64Notario(file) {
+   var reader = new FileReader();
+   reader.readAsDataURL(file);
+   reader.onload = function () {
+    document.getElementById("base64pdf2").value=reader.result;
+     //return reader.result;
+   };
+   
+}
+$('#downloadSAT').click(function(){ downloadPdf("sat"); return false; });
+$('#downloadNotary').click(function(){ downloadPdf("notary"); return false; });
+function downloadPdf(file)
+{
+  var id_notary=$("#itemsNotario").val();
+  if(id_notary=="0")
+  {
+    return;
+  }
+   $.ajax({
+        method: "get",            
+        url: "{{ url('/get-route') }}"+"/"+id_notary+"/"+file,
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+           window.open(response, '_blank');
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error al descargar", "Notifications")   });
+  
+}
 function changeComunidad()
 {
   var comunidad=$("#itemsConfigUser").val();
+  $("#itemsNotario").val("0").change();
   if(comunidad=="0")
   {
     $("#itemsNotario option").remove();
     $('#itemsNotario').append("<option value='0'>------</option>");
+
     return;
   }
    $.ajax({
@@ -594,15 +679,7 @@ function changeComunidad()
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   
 }
-function getBase64Notario(file) {
-   var reader = new FileReader();
-   reader.readAsDataURL(file);
-   reader.onload = function () {
-    document.getElementById("base64pdf2").value=reader.result;
-     //return reader.result;
-   };
-   
-}
+
   function ItemsPermisos()
   {
     $.ajax({
@@ -682,14 +759,12 @@ function getBase64Notario(file) {
     
     if (numNotario.length<1) {
        Command: toastr.warning("Campo Numero Notario, requerido!", "Notifications") 
-    }else if (telNotario.length<10) {
-       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-    }else if (numeroNotario.length<3) {
-       Command: toastr.warning("Campo Numero, longitud minima 3!", "Notifications") 
     }else if (codigopostNotario.length<5) {
        Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
     }else if (distritoNotario.length<1) {
        Command: toastr.warning("Campo Distrito, requerido!", "Notifications") 
+    }else if (telNotario.length<10) {
+       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
@@ -785,7 +860,13 @@ function getBase64Notario(file) {
         .done(function (response) {
           console.log(response);
           var resp=$.parseJSON(response);
-          //console.log(resp);
+          console.log(resp);
+          if(resp.data=="response"){
+            changeComunidad();
+            limpiarNot();
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
           if(response==null || response=="null")
           {
             changeComunidad();
@@ -814,14 +895,18 @@ function getBase64Notario(file) {
     var com=$("#itemsConfigUser").val();
     if(id=="0")
     {
+      $(".iDocument").css("display","none");
+      addtable();
+      TableManaged.init();
       return;
     }
     if(com=="0")
     {      
       Command: toastr.warning("Selecciona una Comunidad, Requerido!", "Notifications") 
-      $("#itemsNotario").val(0).change();
+      //$("#itemsNotario").val(0).change();
       return;
     }
+    $(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
@@ -1049,6 +1134,8 @@ function getBase64Notario(file) {
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso
             };
+            console.log(id_notary);
+            console.log(user_);
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
@@ -1114,8 +1201,8 @@ function getBase64Notario(file) {
     //$("input:radio").attr("checked", false);
     document.getElementById('base64pdf1').value="";
     document.getElementById('base64pdf2').value="";
-    document.getElementById('fileSAT').value="";
-    document.getElementById('fileNotario').value="";
+    document.getElementById('delFileNotario').click();
+    document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
 
 }
@@ -1231,6 +1318,78 @@ function gPasswordPerf()
   for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
   document.getElementById("password").value=pass;
 }
+function rfcValido(rfc, aceptarGenerico = true) {
+    const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+    var   validado = rfc.match(re);
+    if (!validado)
+        return false;
+    const digitoVerificador = validado.pop(),
+          rfcSinDigito      = validado.slice(1).join(''),
+          len               = rfcSinDigito.length,
+          diccionario       = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ",
+          indice            = len + 1;
+    var   suma,
+          digitoEsperado;
+    if (len == 12) suma = 0
+    else suma = 481; 
+    for(var i=0; i<len; i++)
+        suma += diccionario.indexOf(rfcSinDigito.charAt(i)) * (indice - i);
+    digitoEsperado = 11 - suma % 11;
+    if (digitoEsperado == 11) digitoEsperado = 0;
+    else if (digitoEsperado == 10) digitoEsperado = "A";
+    if ((digitoVerificador != digitoEsperado)
+     && (!aceptarGenerico || rfcSinDigito + digitoVerificador != "XAXX010101000"))
+        return false;
+    else if (!aceptarGenerico && rfcSinDigito + digitoVerificador == "XEXX010101000")
+        return false;
+    return rfcSinDigito + digitoVerificador;
+}
+function validarRFCNot() {
+    var rfc=$("#rfcNotario").val();
+    //console.log(rfc);
+    rfcCorrecto=rfcValido(rfc.toUpperCase());
+    valido = document.getElementById('rfcNot'); 
+    if (rfcCorrecto) {
+     valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("rfcNot").style.color = "red";
+    }
+}
+function validarRFCUser() {
+    var rfc=$("#rfcUser").val();
+    rfcCorrecto=rfcValido(rfc.toUpperCase());
+    valido = document.getElementById('rfcUs'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("rfcUs").style.color = "red";
+    }
+}
+function validarCurpNot() {
+    var curp=$("#curpNotario").val();
+    rfcCorrecto=curpValida(curp.toUpperCase());
+    valido = document.getElementById('curpNot'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("curpNot").style.color = "red";
+    }
+}
+function validarCurpUser() {
+    var curp=$("#curpUser").val();
+    rfcCorrecto=curpValida(curp.toUpperCase());
+    valido = document.getElementById('curpUs'); 
+    if (rfcCorrecto) {
+      valido.innerText = "";
+    } else {
+      valido.innerText = "Incorrecto";
+      document.getElementById("curpUs").style.color = "red";
+    }
+}
+
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";

@@ -14,10 +14,13 @@ use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 // add
+use App\Repositories\PortalcamposagrupacionesRepositoryEloquent;
 use App\Repositories\PortalreglaoperativaRepositoryEloquent;
 use App\Repositories\PortalcostotramitesRepositoryEloquent;
 use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
+use App\Repositories\PortaltramitecategoriaRepositoryEloquent;
+use App\Repositories\PortaltramitecategoriarelacionRepositoryEloquent;
 
 class PortaltramitesauxController extends Controller
 {
@@ -35,6 +38,9 @@ class PortaltramitesauxController extends Controller
 	protected $partidas;
 	protected $reglas;
 	protected $files;
+	protected $agrupaciones;
+	protected $category;
+	protected $relcat;
 
     public function __construct(
 
@@ -46,7 +52,10 @@ class PortaltramitesauxController extends Controller
     	PortalsubsidiotramitesRepositoryEloquent $subsidiotramitedb,
     	UmahistoryRepositoryEloquent $umadb,
 			EgobiernopartidasRepositoryEloquent $partidas,
-			PortalreglaoperativaRepositoryEloquent $reglas
+			PortalreglaoperativaRepositoryEloquent $reglas,
+			PortalcamposagrupacionesRepositoryEloquent $agrupaciones,
+			PortaltramitecategoriaRepositoryEloquent $category,
+			PortaltramitecategoriarelacionRepositoryEloquent $relcat
 
     )
     {
@@ -61,6 +70,9 @@ class PortaltramitesauxController extends Controller
 			$this->partidas = $partidas;
 			$this->reglas = $reglas;
 			$this->files = config('impuestos');
+			$this->agrupaciones = $agrupaciones;
+			$this->category  = $category;
+			$this->relcat = $relcat;
     }
 
 
@@ -109,7 +121,7 @@ class PortaltramitesauxController extends Controller
 
 	public function listarCampos()
 	{
-		$cp = $this->campos->all();
+		$cp = $this->campos->findWhere(["status"=>"1"]);
 
 		$response = array();
 
@@ -175,7 +187,9 @@ class PortaltramitesauxController extends Controller
 		try {
 
 			// $rel = $this->camrel->findWhere(['tramite_id' => $request->tramiteid]);
-			$rel = $this->camrel->searchRelation($request->tramiteid);
+			$rel = $this->camrel->searchRelation($request->tramiteid, $request->agrupacion_id);
+
+
 			Log::info($rel);
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
@@ -196,15 +210,33 @@ class PortaltramitesauxController extends Controller
 	{
 
 		try {
-
+			$campoUp;
+			$id_campo;
 			foreach ($request->campoid as $k => $v) {
 
 				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
+			}
+			foreach ($campoUp as $i) {
+				$id_campo=$i->id;
+			}
+			if($id_campo==$request->id)
+			{
+				$this->camrel->where('id',$request->id)->update($in);
+				return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
+			}else{
+				if($campoUp->count()>0)
+					{
+
+						return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
+					}else{
+						$this->camrel->where('id',$request->id)->update($in);
+						return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
+					}
 			}
 
-			$this->camrel->where('id',$request->id)->update($in);
 
-			return response()->json(["Code" => "200","Message" => "campo actualizado"]);
+
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
@@ -249,20 +281,46 @@ class PortaltramitesauxController extends Controller
 
 	public function guardaTramite(Request $request)
 	{
-
 		try {
-
+			$findCampo;
 			foreach ($request->campoid as $k => $v) {
 
-				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
+				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$request->caracteristicas[$k]);
+				$findCampo=$this->camrel->findWhere(["tramite_id"=>$request->tramiteid,'campo_id'=>$v]);
 			}
-
-			$this->camrel->insert($in);
+			if($findCampo->count()>0)
+			{
+				return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
+			}else{
+				$this->camrel->insert($in);
+				return response()->json(["Code" => "200","Message" => "Registros Guardado."]);
+			}
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error al guardar el campo."]);
 		}
 
+	}
+
+	public function guardarOrden(Request $request){
+
+		try {
+				$data = $request->data;
+
+				foreach ($data as $d) {
+					$id = $d['id'];
+
+					$orden = $d['orden'];
+
+					$save = $this->camrel->update(['orden'=>$orden], $id);
+
+				}
+				return response()->json(["Code" => "200","Message" => "Registros Actualizados."]);
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+		}
 	}
 	/****************************** COSTOS / SUBSIDIOS *******************************/
 	public function Viewtipopagocosto()
@@ -287,8 +345,12 @@ class PortaltramitesauxController extends Controller
   public function insertCostos(Request $request)
   {
   	try {
-
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
+  		$findCosto=$this->costotramitedb->findWhere(["tramite_id"=>$request->tramite,'status'=>'1']);
+			if($findCosto->count()>0)
+			{
+				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
+			}
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'tipo_costo_fijo'=>$request->tipo_costo_fijo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
@@ -300,14 +362,31 @@ class PortaltramitesauxController extends Controller
   {
   	try {
   		//log::info($request);
-  		$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  		$id_find="";
+  		$findCosto=$this->costotramitedb->findWhere(["id"=>$request->id]);
+  		foreach ($findCosto as $e) {
+  			$id_find=$e->tramite_id;
+  		}
+  		if($id_find==$request->tramite)
+  		{
+  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
-  		return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  		}else{
+  			$findTramite=$this->costotramitedb->findWhere(['tramite_id'=>$request->tramite,'status'=>'1']);
+  			if($findTramite->count()>0)
+  			{
+				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
+  			}else{
+  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
-		} catch (\Exception $e) {
-			Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
-			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
-		}
+  				return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
+  			}
+  		}
+	} catch (\Exception $e) {
+		Log::info('Error PortaltramitesauxController - updateCostos: '.$e->getMessage());
+		return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
+	}
   }
   public function updateStatusCostos(Request $request)
   {
@@ -322,31 +401,31 @@ class PortaltramitesauxController extends Controller
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
   }
-    public function findValorcuota()
-    {
+  public function findValorcuota()
+  {
     	try
     	{
     		$response=array();
     		$date = Carbon::now();
-        	$date = $date->format('Y');
+        $date = $date->format('Y');
     		$findUMA=$this->umadb->findWhere(['year'=>$date]);
-        	if($findUMA->count()==0)
-        	{
-            	$date=$date-1;
-           	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);
-        	}
-        	//log::info($findUMA);
-        	foreach ($findUMA as $u) {
-            	$response=array('cuota_costo' =>$u->daily);
-        	}
-        	return json_encode($response);
-        } catch (\Exception $e) {
-			Log::info('Error PortaltramitesauxController - findValorcuota: '.$e->getMessage());
-			return response()->json(["Code" => "400","Message" => "Error al consultar"]);
-		}
-    }
-     public function updateSubsidio(Request $request)
-    {
+      	if($findUMA->count()==0)
+      	{
+          	$date=$date-1;
+         	 	$findUMA=$this->umadb->findWhere(['year'=>$date]);
+      	}
+      	//log::info($findUMA);
+      	foreach ($findUMA as $u) {
+          	$response=array('cuota_costo' =>$u->daily);
+      	}
+      	return json_encode($response);
+      } catch (\Exception $e) {
+				Log::info('Error PortaltramitesauxController - findValorcuota: '.$e->getMessage());
+				return response()->json(["Code" => "400","Message" => "Error al consultar"]);
+			}
+  }
+  public function updateSubsidio(Request $request)
+  {
     	try {
     		if($request->id==''){
     			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida,'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas]);
@@ -362,9 +441,9 @@ class PortaltramitesauxController extends Controller
 			Log::info('Error PortaltramitesauxController - updateSubsidio: '.$e->getMessage());
 			return response()->json(["Code" => "400","Message" => "Error al actualizar"]);
 		}
-    }
+  }
 
-		public function addCaracteristics(Request $request){
+  public function addCaracteristics(Request $request){
 			try{
 				$id = $request->id;
 				$nombre = $request->nombre;
@@ -409,10 +488,9 @@ class PortaltramitesauxController extends Controller
 					"Message" => "Error al agregar"
 				]);
 			}
-		}
+	}
 
-		public function listarPartidas()
-    {
+ 	public function listarPartidas(){
 			$sr = $this->partidas->get();
 
 			$response = array();
@@ -431,7 +509,7 @@ class PortaltramitesauxController extends Controller
 			}
 
 			return json_encode($response);
-    }
+  }
 
 		public function getReglas(){
 
@@ -450,4 +528,84 @@ class PortaltramitesauxController extends Controller
 			return json_encode($name);
 		}
 
+		public function listarAgrupacion(Request $request){
+			$tramite = $request->id_tramite;
+			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->get();
+
+			return json_encode($data);
+		}
+		public function guardarAgrupacion(Request $request){
+			$descripcion = $request->descripcion;
+			$tramite = $request->id_tramite;
+			$tipo = $request->id_categoria;
+
+			try{
+				$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+
+				$existe = $this->relcat->where('tramite_id', $tramite)->where('categorias_id', $tipo)->get();
+				if ($existe->count() == 0){
+					$guardar = $this->relcat->create(['categorias_id'=>$tipo, 'tramite_id'=>$tramite]);
+				}
+
+
+				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
+
+			}catch(\Exception $e){
+				Log::info('Error Tramites - guardar Agrupacion: '.$e->getMessage());
+			}
+
+		}
+
+		public function viewConfiguracion(){
+			return view("portal/configuraciontramite");
+		}
+
+		public function listCategory(){
+			try{
+				$categories = $this->category->all();
+
+				return json_encode($categories);
+
+			}catch(\Exception $e){
+				Log::info('Error Tramites - listar categorias: '.$e->getMessage());
+			}
+		}
+
+	/**
+ 	* 	Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
+ 	*		portal.campos_type con el id #7 y su descripcion es File
+ 	*	@param Request POST
+ 	*
+ 	*	@return estatus de guradado o eliminado
+ 	*/
+ public function addFile(Request $request){
+		$option = $request->option;
+		$tramite = $request->id_tramite;
+		try{
+			if($option == 1){ //si el valor de option es 1, se inserta el campo
+					$grupo_id = $this->agrupaciones->create(['descripcion'=>'Documentos', 'id_tramite'=>$tramite, 'id_categoria'=>1])->id;
+
+					$save = $this->camrel->create(['tramite_id'=>$tramite, 'campo_id'=>82, 'tipo_id'=>7,'caracteristicas'=>'{"required":"true"}', 'orden'=>1, 'agrupacion_id'=>$grupo_id]);
+
+					return response()->json([
+						"Code" => "200",
+						"Message"=> "Opcion de archivo agregada"
+					]);
+			}else{ //si el valor de option es 2, se elimina el campo de Archivos
+				$exist = $this->camrel->where('tramite_id',$tramite)->where('tipo_id',7)->delete();
+
+				return response()->json([
+					"Code" => "200",
+					"Message"=> "Opcion de archivo eliminada"
+				]);
+			}
+
+		}catch(\Exception $e){
+			Log::info('Error Tramites - check para Archivos: '.$e->getMessage());
+			return response()->json([
+				"Code" => "400",
+				"Message" => "Error al agregar campo archivo"
+			]);
+		}
+ }
 }
