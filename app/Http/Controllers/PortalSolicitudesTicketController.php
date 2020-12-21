@@ -122,9 +122,13 @@ class PortalSolicitudesTicketController extends Controller
         }
         }else{
           $ticket = $this->ticket->create([
+            "clave" => $clave,
+            "catalogo_id" => $catalogo_id,
+            "info"=> json_encode($info),              
+            "user_id"=>$user_id,
             "status"=>$status
     
-          ]);      
+          ]);        
         }   
       
         
