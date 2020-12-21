@@ -251,6 +251,7 @@
         <div class="modal-body">
             <div class="form-body">
                 <input type="hidden" id="idcampo" >
+                <input type="hidden" id="idTipo" >
                 <div class="modal-body">
                   <input hidden="true" type="text"  id="idAdd">
                   <div class="row">
@@ -549,7 +550,7 @@
                    "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
-                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a>"+
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+","+item.tipo_id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a>"+
 
                    "<a class='btn btn-icon-only blue' href='#portlet-detalles' data-toggle='modal' data-original-title='' title='Detalles' onclick='detalles("+data+")' style='color:#FFF !important;'><i class='fa fa-list'></i></a>"+
                     "</div></li>"
@@ -568,24 +569,47 @@
     }
     function detalles(data)
     {
-        console.log(data);
+        //console.log(data);
         addtable();
         document.getElementById("campoName").textContent=data.campo_nombre;
         document.getElementById("tipoCampo").textContent=data.tipo_nombre;
         var soli=$.parseJSON(data.caracteristicas);
+        var ops;
         for (n in soli) {  
             obj=n;
             tipo=soli[n]; 
-            if(tipo!="true" || tipo!="false")
+            if(obj!="opciones")
             {
                 tipo=JSON.stringify(tipo);
-            }
-              $('#sample_2 tbody').append("<tr>"
+                $('#sample_2 tbody').append("<tr>"
                 +"<td>"+obj+"</td>"
                 +"<td>"+tipo+"</td>"
                 +"</tr>"
-                );           
-          }
+                );
+            }else{
+                ops=JSON.stringify(tipo);
+            }                         
+        }
+        if(ops!=null)
+        {
+            
+            $('#sample_2 tbody').append("<tr><td>opciones</td><td>&nbsp;</td></tr>");
+            ops=$.parseJSON(ops);
+            console.log(ops);
+            $.each(ops, function(i, item) {
+                var v=item;
+                console.log(v);
+                for (n in v) {
+                    $('#sample_2 tbody').append("<tr>"
+                        +"<td>"+n+"</td>"
+                        +"<td>"+v[n]+"</td>"
+                        +"</tr>"
+                    );
+                }
+        }   );
+        }
+       
+
     }
     function addtable()
   {
@@ -600,7 +624,7 @@
         $("#itemsTipos").val(tipo).change();
         $("#itemsCampos").val(campo).change();
         carac=$.parseJSON(carac);
-        console.log(carac.required);
+        //console.log(carac.required);
         if(carac.required=="true")
         {
             $("#checkbox30").prop("checked", true);
@@ -612,8 +636,9 @@
     {
         document.getElementById('iddeleted').value=id_;
     }
-    function relationshipAdd(campo){
+    function relationshipAdd(campo,idtipo){
       $("#idcampo").val(campo);
+      $("#idTipo").val(idtipo);
     }
 
      function metodoSaveUpdate()
@@ -701,18 +726,9 @@
         var valCheck='[{"required":"false"}]';
         if(check==true)
         {
-          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
-            valCheck='{"required":"true", "opciones":[]}';
-          }else{
             valCheck='{"required":"true"}';
-          }
-        }else{
-          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
-            valCheck='{"required":"false", "opciones":[]}';
-          }else{
+        }else{          
             valCheck='{"required":"false"}';
-          }
-
         }
         $.ajax({
            method: "POST",
@@ -735,36 +751,38 @@
     }
     function saveCaracteristica(){
       var idCampo = $("#idcampo").val();
+      var idTipo = $("#idTipo").val();
       var nombre = $("#nombre").val();
       var valor = $("#valor").val();
-      console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
+      //console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
       $.ajax({
         method : "POST",
         url: "{{url('/traux-add-caract')}}",
-        data: { id:idCampo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
+        data: { id:idCampo,tipo:idTipo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
 
         success: function(info){
           if(info.Code != 200)
           {
             console.log(info.Message);
-
             return false;
           }else{
             // cerramos el modal
-            console.log(info.Message);
-            $("#nombre").empty();
-            $("#valor").empty();
-
+            console.log(info.Message);   
           }
         }
       })
       .done(function (response) {
-          CleanInputs();
+        if(response.Code=="200")
+          {CleanInputs();
           //findRelationship();
           changeTramites();
-          $("#modalCaracteristica .close").click();
-          Command: toastr.success("Success", "Notifications")
-
+         document.getElementById('nombre').value="";
+         document.getElementById('valor').value="";
+          //$("#modalCaracteristica .close").click();
+          Command: toastr.success(response.Message, "Notifications")
+        }else{
+            Command: toastr.warning(response.Message, "Notifications")
+        }
       });
 
     }
@@ -780,7 +798,7 @@
             }         
             
         });
-        console.log(fdata);
+        ///console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-orden') }}",
