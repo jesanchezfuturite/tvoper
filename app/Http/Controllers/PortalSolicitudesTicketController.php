@@ -110,7 +110,6 @@ class PortalSolicitudesTicketController extends Controller
            array_push($id, $ticket->id);
           }
           $first_id = reset($id);
-<<<<<<< HEAD
           if($request->has("file")){
             foreach ($request->file as $key => $value) {
               $data =[
@@ -120,18 +119,7 @@ class PortalSolicitudesTicketController extends Controller
                 ];
                 $this->saveFile($data);             
             }
-=======
-        if($request->has("file")){
-          foreach ($request->file as $key => $value) {
-            $data =[
-              'ticket_id'=> $first_id,
-              'mensaje' => $request->descripcion[$key],
-              'file'    =>  $value
-              ];
-              $this->saveFile($data);             
->>>>>>> origin/portal
           }
-        }
         }else{
           $ticket = $this->ticket->create([
             "status"=>$status
