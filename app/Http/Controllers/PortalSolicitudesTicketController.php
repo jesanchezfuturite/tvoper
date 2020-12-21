@@ -511,5 +511,19 @@ class PortalSolicitudesTicketController extends Controller
 
       return $status;
     }
+    public function getRegistroTramite($id){
+      try {
+        $solicitud =  $this->ticket->where('id' , $id)->get();
+        return $solicitud;
+      
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener registro"
+          ]);
+      }
+     
+    }
     
 }
