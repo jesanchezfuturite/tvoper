@@ -99,7 +99,7 @@ class PortalSolicitudesTicketController extends Controller
         if(!empty($solicitantes)){
           foreach($solicitantes as $key => $value){
             $info->solicitante=$value;
-            $ticket = $this->ticket->create([
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
@@ -356,11 +356,10 @@ class PortalSolicitudesTicketController extends Controller
     public function filtrarSolicitudes(Request $request){
    
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion",
+      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
       "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
       ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
-      // ->leftJoin('solicitudes_mensajes', 'solicitudes_ticket.id', '=', 'solicitudes_mensajes.ticket_id');
       
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
@@ -378,9 +377,21 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->whereIn('user_id', $users);
       }
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
+    
       $solicitudes = $solicitudes->get();
 
       $mensajes = $this->mensajes;
+      $tramites = $this->solTramites;
+      $trmts=[];
+      foreach ($solicitudes as $key => $value) {
+        foreach ($tramites->get() as $t => $tmt){
+          if($value->id_transaccion ==$tmt->id){
+            array_push( $trmts, $tmt->toArray());
+          }
+        }
+
+        $value->tramites= $trmts;
+      }
 
       $datos=[];
       foreach($solicitudes as $key => &$value){
@@ -395,6 +406,7 @@ class PortalSolicitudesTicketController extends Controller
         $value->mensajes= $datos;
 
       }
+
       
       
       return $solicitudes;
