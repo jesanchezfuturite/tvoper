@@ -110,16 +110,16 @@ class PortalSolicitudesTicketController extends Controller
            array_push($id, $ticket->id);
           }
           $first_id = reset($id);
-        if($request->has("file")){
-          foreach ($request->file as $key => $value) {
-            $data =[
-              'ticket_id'=> $first_id,
-              'mensaje' => $request->descripcion[$key],
-              'file'    =>  $value
-              ];
-              $this->saveFile($data);             
+          if($request->has("file")){
+            foreach ($request->file as $key => $value) {
+              $data =[
+                'ticket_id'=> $first_id,
+                'mensaje' => $request->descripcion[$key],
+                'file'    =>  $value
+                ];
+                $this->saveFile($data);             
+            }
           }
-        }
         }else{
           $ticket = $this->ticket->create([
             "clave" => $clave,
@@ -456,6 +456,7 @@ class PortalSolicitudesTicketController extends Controller
           'json_envio'=>json_encode($request->json_envio),
           'json_recibo'=>json_encode($request->json_recibo),
           'estatus'=> $request->status
+
           ]);
          
         if($solTramites){
@@ -512,6 +513,17 @@ class PortalSolicitudesTicketController extends Controller
       }    
     
     }
+    public function getStatus(Request $request){
+      if($request->id_transaccion){
+        $status = $this->solTramites->where('id' , $request->id_transaccion)->get();
+      }else if($request->id_transaccion_motor){
+        $status = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)->get();
+      }else{
+        $status = $this->solTramites->get();
+      }
+
+      return $status;
+    }
     public function getRegistroTramite($id){
       try {
         $solicitud =  $this->ticket->where('clave' , $id)->get();
@@ -525,6 +537,33 @@ class PortalSolicitudesTicketController extends Controller
           ]);
       }
      
+    }
+    public function updateSolTramites(Request $request){      
+      $error=null;
+      try {
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update([          
+          'url_recibo'=> $request->url_recibo,
+          ]);
+          
+
+      } catch (\Exception $e) {
+        $error = $e;
+      }         
+      if($error){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar"
+          ]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Tramite actualizado"
+          ]);
+      }    
+      
     }
     
 }
