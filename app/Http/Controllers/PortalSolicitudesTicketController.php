@@ -456,6 +456,7 @@ class PortalSolicitudesTicketController extends Controller
           'json_envio'=>json_encode($request->json_envio),
           'json_recibo'=>json_encode($request->json_recibo),
           'estatus'=> $request->status
+
           ]);
          
         if($solTramites){
@@ -536,6 +537,33 @@ class PortalSolicitudesTicketController extends Controller
           ]);
       }
      
+    }
+    public function updateSolTramites(Request $request){      
+      $error=null;
+      try {
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update([          
+          'url_recibo'=> $request->url_recibo,
+          ]);
+          
+
+      } catch (\Exception $e) {
+        $error = $e;
+      }         
+      if($error){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar"
+          ]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Tramite actualizado"
+          ]);
+      }    
+      
     }
     
 }
