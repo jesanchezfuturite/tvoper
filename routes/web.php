@@ -411,3 +411,5 @@ Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 Route::get('/divisas', 'DivisasController@index');
+Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
+
