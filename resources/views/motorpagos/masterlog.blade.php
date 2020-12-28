@@ -126,6 +126,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
+                                                <td></td>
                                             </tr>                                   
                                         </tbody>                                    
                                     </table>                          
@@ -278,14 +279,18 @@
             var color   = '';
             var label = '';
         
-            $.each(response, function(i, item) { 
+            $.each(response, function(i, item) {
+
+                var iext = (typeof item.extra === 'string' && item.extra !== null) ? $.parseJSON(item.extra) : { id_tramite:0, des_tramite:'ND' };
+                var dext = iext.des_tramite === null ? 'ND' : iext.des_tramite.toUpperCase();
 
                 $('#sample_3 tbody')
                     .append($('<tr>')
                         .append($('<td>').html(item.fecha_pago))
                         .append($('<td>').html(item.referencia))
                         .append($('<td>').html(item.id_transaccion))
-                        .append($('<td>').html(item.extra))
+                        .append($('<td>').html(dext))
+                        // .append($('<td>').html(item.extra))
                         .append($('<td>').html(item.banco_desc))
                         .append($('<td>').html(item.plataforma))
                         .append($('<td>').html(item.monto))

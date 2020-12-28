@@ -376,7 +376,7 @@ Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFil
 Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
 
 
-Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
+Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
@@ -386,6 +386,9 @@ Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransacc
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
 Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
+Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
+Route::get('/solicitudes-get-tramite/{id}', 'PortalSolicitudesTicketController@getRegistroTramite');
+Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -408,3 +411,5 @@ Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 Route::get('/divisas', 'DivisasController@index');
+Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
+

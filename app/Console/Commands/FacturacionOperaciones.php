@@ -353,7 +353,7 @@ class FacturacionOperaciones extends Command
                         // $o = $this->detalle->insert( $i_detalles );
 
                         $has = $this->detalle->findWhere(["id_mov" => $d["id_tramite_motor"], "id_oper" => $d["id_transaccion_motor"]]);
-
+                        Log::info("id_mov => ".$d['id_tramite_motor'] ." "."id_oper => ".$d['id_transaccion_motor']." count => ".$has->count());
                         if ($has->count() == 0) {
                             /* no existe */
                             $this->detalle->create(
