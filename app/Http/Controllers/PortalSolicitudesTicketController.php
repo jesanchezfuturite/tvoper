@@ -121,14 +121,24 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }else{
-          $ticket = $this->ticket->create([
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),              
             "user_id"=>$user_id,
             "status"=>$status
     
-          ]);        
+          ]);
+          if($request->has("file")){
+            foreach ($request->file as $key => $value) {
+              $data =[
+                'ticket_id'=> $ticket->id,
+                'mensaje' => $request->descripcion[$key],
+                'file'    =>  $value
+                ];
+                $this->saveFile($data);             
+            }
+          }        
         }   
       
         
