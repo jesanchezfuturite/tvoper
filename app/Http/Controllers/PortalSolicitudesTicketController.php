@@ -117,7 +117,12 @@ class PortalSolicitudesTicketController extends Controller
                 'mensaje' => $request->descripcion[$key],
                 'file'    =>  $value
                 ];
-                $this->saveFile($data);             
+                if($request->id){
+                  $this->editFile($data, $request->id);
+                }else{
+                  $this->saveFile($data);             
+
+                }
             }
           }
         }else{
@@ -136,7 +141,12 @@ class PortalSolicitudesTicketController extends Controller
                 'mensaje' => $request->descripcion[$key],
                 'file'    =>  $value
                 ];
-                $this->saveFile($data);             
+                if($request->id){
+                  $this->editFile($request->id);
+                }else{
+                  $this->saveFile($data);             
+
+                }         
             }
           }        
         }   
@@ -327,12 +337,11 @@ class PortalSolicitudesTicketController extends Controller
     public function saveFile($data){ 
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];
-
     
-        $file = $data['file']; 
-        $extension = $file->getClientOriginalExtension();
-        $attach = "archivo_solicitud_".$data["ticket_id"].".".$extension;
-        \Storage::disk('local')->put($attach,  \File::get($file));
+      $file = $data['file']; 
+      $extension = $file->getClientOriginalExtension();
+      $attach = "archivo_solicitud_".$data["ticket_id"].".".$extension;
+      \Storage::disk('local')->put($attach,  \File::get($file));
      
     
       try {
@@ -537,13 +546,18 @@ class PortalSolicitudesTicketController extends Controller
     public function getRegistroTramite($id){
       try {
         $solicitud =  $this->ticket->where('clave' , $id)->get();
+        $solicitud = json_decode($solicitud);
+        $archivos = $this->mensajes->where('ticket_id', $solicitud[0]->id)->get();
+       
+        $solicitud[0]->archivos = $archivos;
+        
         return $solicitud;
       
       } catch (\Exception $e) {
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener registro"
+            "Message" => "Error al obtener registro",
           ]);
       }
      
@@ -575,5 +589,49 @@ class PortalSolicitudesTicketController extends Controller
       }    
       
     }
+    public function editFile($data, $id){ 
+      $mensaje = $data["mensaje"];
+      $ticket_id = $id;
+      $file = $data['file']; 
+
+
+      $archivo = $this->mensajes->where("ticket_id", $id)->get();
+
+      $pathtoFile = storage_path('app/'.$archivo->attach);
+      unlink($pathtoFile);
+    
+      $extension = $file->getClientOriginalExtension();
+      $attach = "archivo_solicitud_".$ticket_id.".".$extension;
+      \Storage::disk('local')->put($attach,  \File::get($file));
+     
+    
+      try {
+        $mensajes =$this->mensajes->where("ticket_id", $id)->update([
+          'ticket_id'=> $ticket_id,
+          'mensaje' => $mensaje,
+          'attach'    =>  $attach
+        ]);
+  
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Archivo guardado con éxito",
+            "data"=>$mensajes
+            
+          ]
+        );
+  
+      }catch(\Exception $e) {
+  
+  
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo",
+          ]
+        );
+      }
+    }
+
     
 }
