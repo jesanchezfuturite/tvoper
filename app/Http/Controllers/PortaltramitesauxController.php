@@ -572,7 +572,8 @@ class PortaltramitesauxController extends Controller
 		}
 
 	/**
- 	* 	Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
+ 	* 	Esta funcion ya no se utiliza
+	*   Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
  	*		portal.campos_type con el id #7 y su descripcion es File
  	*	@param Request POST
  	*
