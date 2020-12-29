@@ -401,7 +401,7 @@
                   <div class="row">
                         <div class="form-group">
                             <div class="col-md-10">
-                            <button type="button" class="btn blue" onclick="updateAgrupacion()"><i class="fa fa-check"></i> Guardar</button>
+                            <button type="button" class="btn blue" onclick="updateGrupo()"><i class="fa fa-check"></i> Guardar</button>
                         </div>
                     </div>
                   </div>
@@ -481,7 +481,8 @@
              $( "#sortableOrden" ).disableSelection();
             $( "#sortableOrden" ).sortable({
                 update: function( event, ui ) {
-                updatePositions();
+                findAgrupaciones();
+                updatePositionsAgr();
                 }
             });
         })
@@ -495,9 +496,11 @@
     }
     function cleanAgr()
     {
-         document.getElementById('editnombre').value="";
-         document.getElementById('id_agr').value="";
-         document.getElementById('iddeletedAgr').value="";
+        document.getElementById('editnombre').value="";
+        document.getElementById('id_agr').value="";
+        document.getElementById('iddeletedAgr').value="";
+        $('#AgrOrden div').remove();
+        $('#AgrOrden').append("<div id='addOrden'><ul id='sortableOrden' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
     }
     function agrupacionDeleted(id)
     {
@@ -956,7 +959,7 @@
             }         
             
         });
-        console.log(fdata);
+        //console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-orden-agrupacion') }}",
@@ -985,10 +988,17 @@
             return ;
         }
         //console.log(fdata);
+        var contador=1;
+        $("input:checkbox[name=iAgrupacion]:unchecked").each(function(){
+            if($(this).val() !="on")
+            {               
+                contador=contador+1; 
+            }
+        });
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-agrupacion') }}",
-           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
+           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,orden:contador,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
                 document.getElementById('agrupacionNombre').value=""; 
@@ -1006,15 +1016,24 @@
     {
         var agrup=$("#editnombre").val();
         var id_agr=$("#id_agr").val();
+        var tramite_id=$("#itemsTramites").val();
+        var categoria_id=$("#itemsCategoria").val();
         if(agrup.length==0){
             Command: toastr.warning("Campo agrupación, Requerido!", "Notifications");
+            return ;
+        }else if(tramite_id=="limpia")
+        {
+            Command: toastr.warning("Selecciona el Tramite, Requerido!", "Notifications");
+            return ;
+        }else if(categoria_id=="limpia"){
+            Command: toastr.warning("Selecciona Tipo Tramite, Requerido!", "Notifications");
             return ;
         }
         //console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/edit-agrupacion') }}",
-           data: {id:id_agr,descripcion: agrup,_token:'{{ csrf_token() }}'}  })
+           data: {id:id_agr,descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
                 cleanAgr(); 
