@@ -94,12 +94,21 @@ class PortalSolicitudesTicketController extends Controller
       $user_id = $request->user_id;
       $solicitantes = json_decode($solicitantes);
       $info = json_decode($request->info);
-      $id = [];
-      try { 
-        if(!empty($solicitantes)){
+      // $info = $request->info;
+
+      $ids = [];
+      // try { 
+        if(!empty($solicitantes)){        
+          $solicitantes = array_replace_recursive(
+            $solicitantes,
+            $request->ids,
+          );
           foreach($solicitantes as $key => $value){
+            
             $info->solicitante=$value;
-            $ticket = $this->ticket->updateOrCreate(["clave" =>$request->clave], [
+            // $info["solicitante"]=$value;
+
+            $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
@@ -107,9 +116,9 @@ class PortalSolicitudesTicketController extends Controller
               "status"=>$status
       
             ]);        
-           array_push($id, $ticket->id);
+           array_push($ids, $ticket->id);
           }
-          $first_id = reset($id);
+          $first_id = reset($ids);
           if($request->has("file")){
             foreach ($request->file as $key => $value) {
               $data =[
@@ -126,7 +135,7 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }else{
-          $ticket = $this->ticket->updateOrCreate(["clave" =>$request->clave], [
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),              
@@ -153,13 +162,13 @@ class PortalSolicitudesTicketController extends Controller
       
         
         
-      } catch (\Exception $e) {
-        $error = [
-            "Code" => "400",
-            "Message" => "Error al guardar la solicitud"
-        ];
+      // } catch (\Exception $e) {
+      //   $error = [
+      //       "Code" => "400",
+      //       "Message" => "Error al guardar la solicitud"
+      //   ];
     
-      }
+      // }
       if($error) return response()->json($error);
       return response()->json(
           [
