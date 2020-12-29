@@ -99,7 +99,7 @@ class PortalSolicitudesTicketController extends Controller
         if(!empty($solicitantes)){
           foreach($solicitantes as $key => $value){
             $info->solicitante=$value;
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            $ticket = $this->ticket->updateOrCreate(["clave" =>$request->clave], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
@@ -126,7 +126,7 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }else{
-          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+          $ticket = $this->ticket->updateOrCreate(["clave" =>$request->clave], [
             "clave" => $clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),              
@@ -632,6 +632,8 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
     }
+
+    
 
     
 }
