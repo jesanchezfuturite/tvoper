@@ -633,6 +633,76 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
 
+    public function getDataTramite($id){
+        
+      try {
+        $solicitudes = PortalSolicitudesTicket::where('id', $id)
+        ->with(['catalogo' => function ($query) {
+          $query->select('id', 'tramite_id');
+        }])->get()->toArray();
+
+    
+        $ids_tramites=[];
+        foreach ($solicitudes as &$sol){
+          foreach($sol["catalogo"]  as $s){
+            $sol["tramite_id"]=$s["tramite_id"];            
+          }
+        }
+
+        $ids_tramites= array_column($solicitudes, 'tramite_id');
+        
+        $idstmts = array_unique($ids_tramites);
+      
+        
+        $tramites = $this->getTramites($idstmts);
+    
+        $tmts=[];
+        $response =[];
+        foreach($tramites as $t => $tramite){
+          $datos=[];
+          foreach ($solicitudes as $d => $dato) { 
+            if($dato["tramite_id"]== $tramite["tramite_id"]){
+              $info = $this->asignarClavesCatalogo($dato["info"]);
+              $data=array(
+                "id"=>$dato["id"],
+                "clave"=>$dato["clave"],
+                "catalogo_id"=>$dato["catalogo_id"],
+                "user_id"=>$dato["user_id"],
+                "info"=>json_decode($info),
+                "status"=>$dato["status"]
+              );
+
+              array_push($datos, $data);
+              $tramite["solicitudes"]= $datos;
+              
+            }
+          
+          }
+            array_push($tmts, $tramite);
+  
+        }
+        unset($tmts[0]["tramite_id"]);
+
+
+        $response["tramite"] =$tmts;
+
+  
+        return $response;
+       
+  
+      }catch(\Exception $e) {
+  
+  
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener tramite",
+          ]
+        );
+      }
+    
+    }
+
     
 
     
