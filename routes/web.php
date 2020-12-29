@@ -343,6 +343,8 @@ Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacio
 Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
 Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
 Route::post('/addFile', 'PortaltramitesauxController@addFile');
+Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenAgrupacion');
+Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -352,6 +354,7 @@ Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
 Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
+Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
@@ -373,7 +376,7 @@ Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFil
 Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
 
 
-Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud');
+Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
 Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
@@ -382,6 +385,12 @@ Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSo
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
+Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
+Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
+Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
+
+
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
 Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
@@ -403,3 +412,5 @@ Route::post('/save-divisas', 'DivisasController@saveDivisas');
 Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 Route::get('/divisas', 'DivisasController@index');
+Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
+

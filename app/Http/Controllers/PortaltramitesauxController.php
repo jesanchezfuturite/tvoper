@@ -190,7 +190,7 @@ class PortaltramitesauxController extends Controller
 			$rel = $this->camrel->searchRelation($request->tramiteid, $request->agrupacion_id);
 
 
-			Log::info($rel);
+			//Log::info($rel);
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar campos relacion: '.$e->getMessage());
 		}
@@ -212,14 +212,61 @@ class PortaltramitesauxController extends Controller
 		try {
 			$campoUp;
 			$id_campo;
-			foreach ($request->campoid as $k => $v) {
 
-				$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'caracteristicas'=>$request->caracteristicas[$k]);
-				$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
+			$caract;
+			$tipoCamp;
+
+			$campo_id; $tipoid; $caracteristicas; $igual1; $igual2; $car;
+
+			foreach ($request->campoid as $k => $v) {
+				$tipoid=$request->tipoid[$k];
+				$campo_id=$v;
+
+				$caracteristicas=json_decode($request->caracteristicas[$k],true);				
 			}
+			//log::info($caracteristicas);
+			$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
 			foreach ($campoUp as $i) {
 				$id_campo=$i->id;
+				$caract= $i['caracteristicas'];
+				$car= json_decode($caract,true);
+				$tipoCamp=$i->tipo_id;
 			}
+			//log::info($caracteristicas);
+			//log::info($car);
+			//***************************//
+			if($tipoCamp>=3 && $tipoCamp<=6)
+			{
+				$igual1=1;
+			}else if($tipoCamp==1)
+			{
+				$igual1=2;
+			}
+			else{
+				$igual1=3;
+			}
+			if($tipoid>=3 && $tipoid<=6)
+			{
+				$igual2=1;
+			}else if($tipoid==1)
+			{
+				$igual2=2;
+			}
+			else{
+				$igual2=3;
+			}
+			if($igual1==$igual2)
+			{
+				$caracteristicas=array_merge($car,$caracteristicas);
+			}else if($tipoid>=3 && $tipoid<=6){
+				$option=array('opciones' => []);
+				$caracteristicas=array_merge($caracteristicas,$option);
+
+			}else{
+				$caracteristicas= $caracteristicas;
+			}
+			$caracteristicas= json_encode($caracteristicas);
+			$in = array('tramite_id'=>$request->tramiteid,'campo_id'=>$campo_id,'tipo_id'=>$tipoid,'caracteristicas'=>$caracteristicas);
 			if($id_campo==$request->id)
 			{
 				$this->camrel->where('id',$request->id)->update($in);
@@ -227,16 +274,12 @@ class PortaltramitesauxController extends Controller
 			}else{
 				if($campoUp->count()>0)
 					{
-
 						return response()->json(["Code" => "400","Message" => "El Campo ya existe."]);
 					}else{
 						$this->camrel->where('id',$request->id)->update($in);
 						return response()->json(["Code" => "200","Message" => "Campo actualizado"]);
 					}
 			}
-
-
-
 
 		} catch (\Exception $e) {
 			Log::info('Error Tramites - listar tipo campos: '.$e->getMessage());
@@ -444,17 +487,17 @@ class PortaltramitesauxController extends Controller
   }
 
   public function addCaracteristics(Request $request){
-			try{
+		try{
 				$id = $request->id;
 				$nombre = $request->nombre;
 				$valor = $request->valor;
+				$tipo = $request->tipo;
 				// $nombre = 'Adriana';
 				// $valor = 'ad';
-
-
+			if($tipo==3 || $tipo==4 || $tipo==5 || $tipo==6)
+			{
 				$registro = $this->camrel->findWhere(['id' => $id]);
 				// $registro = $this->camrel->findWhere(['id' =>17]);
-
 				foreach ($registro as $reg) {
 					$caract = $reg['caracteristicas'];
 					$car = json_decode($caract);
@@ -464,30 +507,44 @@ class PortaltramitesauxController extends Controller
 					$c[] = array(
 						$valor => $nombre
 					);
-
 					$caracteristicas = array(
 						'required' => $req,
 						'opciones'	=> $c
 					);
-
 				}
-
 				$res = json_encode($caracteristicas);
-
 				$update = $this->camrel->update(['caracteristicas'=>$res], $id);
-
+			}else if($tipo==1)
+			{
+				$registro = $this->camrel->findWhere(['id' => $id]);
+				// $registro = $this->camrel->findWhere(['id' =>17]);
+				foreach ($registro as $reg) {
+					$caract = $reg['caracteristicas'];
+					$car = json_decode($caract,true);
+					$merg= array($nombre=>$valor);
+					$car=array_merge($car,$merg);
+				}
+				$res =json_encode($car);
+				//log::info($res);
+				$update = $this->camrel->update(['caracteristicas'=>$res], $id);
+			}else{
 				return response()->json([
 					"Code" => "200",
-					"Message" => "Se agrego correctamente"
-				]);
-
-			}catch(\Exception $e){
-				Log::info('Error PortaltramitesauxController - addCaracteristics: '.$e->getMessage());
-				return response()->json([
-					"Code" => "400",
-					"Message" => "Error al agregar"
+					"Message" => "No se puede agregar una caracteristica al tipo de campo"
 				]);
 			}
+			return response()->json([
+				"Code" => "200",
+				"Message" => "Se agrego correctamente"
+			]);
+
+		}catch(\Exception $e){
+			Log::info('Error PortaltramitesauxController - addCaracteristics: '.$e->getMessage());
+			return response()->json([
+					"Code" => "400",
+					"Message" => "Error al agregar"
+			]);
+		}
 	}
 
  	public function listarPartidas(){
@@ -530,7 +587,7 @@ class PortaltramitesauxController extends Controller
 
 		public function listarAgrupacion(Request $request){
 			$tramite = $request->id_tramite;
-			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->get();
+			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->orderBy('orden', 'ASC')->get();
 
 			return json_encode($data);
 		}
@@ -538,9 +595,17 @@ class PortaltramitesauxController extends Controller
 			$descripcion = $request->descripcion;
 			$tramite = $request->id_tramite;
 			$tipo = $request->id_categoria;
+			$orden = $request->orden;
 
 			try{
-				$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				$existeAgrupacion = $this->agrupaciones->findWhere(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				if ($existeAgrupacion->count() == 0){
+					$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo, 'orden'=>$orden]);
+					return response()->json(["Code" => "200","Message" => "Registro Editado."]);
+				}
+				if($existeAgrupacion->count()>0){
+					return response()->json(["Code" => "400","Message" => "Existe una Agrupacion con ese nombre."]);
+				}				
 
 				$existe = $this->relcat->where('tramite_id', $tramite)->where('categorias_id', $tipo)->get();
 				if ($existe->count() == 0){
@@ -609,4 +674,42 @@ class PortaltramitesauxController extends Controller
 			]);
 		}
  }
+ 	public function editAgrupacion(Request $request){
+			$descripcion = $request->descripcion;
+			$tramite = $request->id_tramite;
+			$tipo = $request->id_categoria;
+			$id = $request->id;
+
+		try{
+				$existe = $this->agrupaciones->findWhere(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				if ($existe->count() == 0){
+					$guardar = $this->agrupaciones->update(['descripcion'=>$descripcion],$id);
+					return response()->json(["Code" => "200","Message" => "Registro Editado."]);
+				}else{
+					return response()->json(["Code" => "400","Message" => "Existe una Agrupacion con ese nombre."]);
+				}
+
+		}catch(\Exception $e){
+			Log::info('Error Tramites - guardar Agrupacion: '.$e->getMessage());
+		}
+
+	}
+	public function saveOrdenAgrupacion(Request $request )
+	{
+		try {
+				$data = $request->data;
+				foreach ($data as $d) {
+					$id = $d['id'];
+
+					$orden = $d['orden'];
+
+					$save = $this->agrupaciones->update(['orden'=>$orden], $id);
+
+				}
+				return response()->json(["Code" => "200","Message" => "Registros Actualizados."]);
+
+		} catch (\Exception $e) {
+			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+		}
+	}
 }

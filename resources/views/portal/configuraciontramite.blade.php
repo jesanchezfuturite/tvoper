@@ -2,9 +2,9 @@
 
 @section('content')
 <style>
-  #sortable { list-style-type: none; margin: 0; padding: 0;  }
+  .sortable { list-style-type: none; margin: 0; padding: 0;  }
  
-  #sortable li { margin: 0 3px 3px 3px; padding: 0.5em; padding-left: 1.5em; font-size: 16px; height: 3em !important; background: #fff;}
+  .sortable li { margin: 0 3px 3px 3px; padding: 0.5em; padding-left: 1.5em; font-size: 16px; height: 3em !important; background: #fff;}
   </style>
 <h3 class="page-title">Portal <small>Asignación de campos por trámite</small></h3>
 <div class="page-bar">
@@ -84,6 +84,10 @@
         <div class="portlet-title">
             <div class="caption">
                 <i class="fa fa-bank"></i>Agregar Agrupacion
+            </div>
+            <div class="tools" id="removeBanco">
+                    <a href="#portlet-orden" data-toggle="modal" class="config" data-original-title="" title="Orden" onclick="findAgrupacionesOrden()">
+                    </a>
             </div>
         </div>
         <div class="portlet-body">
@@ -251,6 +255,7 @@
         <div class="modal-body">
             <div class="form-body">
                 <input type="hidden" id="idcampo" >
+                <input type="hidden" id="idTipo" >
                 <div class="modal-body">
                   <input hidden="true" type="text"  id="idAdd">
                   <div class="row">
@@ -344,6 +349,93 @@
     </div>
   </div>
 </div>
+<!-----------------------------------------MODAL ORDEN GRUPOS--------------------------->
+<div class="modal fade" id="portlet-orden" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog" style="width: 70%;">
+    <div class="modal-content" >
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" ></button>
+        <h4 class="modal-title">Agrupación Orden </h4>
+      </div>
+      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">  
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-12" id="AgrOrden">
+                    <div id="addOrden">                    
+                        <ul id="sortableOrden" class="sortable"style="cursor: -webkit-grab; cursor: grab;">
+                           
+                        </ul>
+                    </div>
+                </div>
+            </div>    
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" data-dismiss="modal" class="btn default" >Cerrar</button>
+        </div>  
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="portlet-edit-agr" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgrEdit()"></button>
+            <h4 class="modal-title">Editar Agrupación</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-body">
+                <div class="modal-body">
+                  <input hidden="true" type="text"  id="id_agr">
+                  <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label >Nombre</label>
+                                    <input type="text" name="editnombre" id="editnombre" class="form-control" placeholder="Nombre Agrupación">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                            <button type="button" class="btn blue" onclick="updateGrupo()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                      <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgrEdit()">Cerrar</button>
+                  </div>
+            </div>
+        </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+</div>
+<div id="modaldeleteAgr" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgrEdit()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+             ¿Eliminar Registro?
+                </p>
+                 <input hidden="true" type="text" name="iddeletedAgr" id="iddeletedAgr" class="iddeletedAgr">
+            </div>
+            <div class="modal-footer">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgrEdit()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="deletedAgr()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -363,6 +455,62 @@
         $( "#sortable" ).disableSelection();
       
     } );*/
+    function findAgrupacionesOrden()
+    {   id_=$("#itemsTramites").val();
+    
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-agrupacion') }}",
+           data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+        var categoria="limpia";
+             $('#AgrOrden div').remove();
+            $('#AgrOrden').append("<div id='addOrden'><ul id='sortableOrden' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
+            $.each(Resp, function(i, item) {
+                $('#sortableOrden').append( "<li class='ui-state-default'>"+
+                    "<div class='col-md-1' hidden='true'> <input type='checkbox' name='iAgrupacion' value='"+item.id+"' > </div>"+
+                    " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
+                   "<div class='col-md-8'>"+item.descripcion+" </div>  <div class='col-md-3'>"+
+                   "<a class='btn btn-icon-only blue' href='#portlet-edit-agr' data-toggle='modal' data-original-title='' title='Editar' onclick='agrupacionUpdate("+item.id+",\""+item.descripcion+"\")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
+                   /*"<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldeleteAgr' onclick='agrupacionDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+*/
+                    "</div></li>"
+                );
+            });
+            $( "#sortableOrden" ).sortable();
+             $( "#sortableOrden" ).disableSelection();
+            $( "#sortableOrden" ).sortable({
+                update: function( event, ui ) {
+                findAgrupaciones();
+                updatePositionsAgr();
+                }
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function agrupacionUpdate(id,desc)
+    {
+        document.getElementById('editnombre').value=desc;
+        document.getElementById('id_agr').value=id;
+    }
+    function cleanAgrEdit()
+    {
+        document.getElementById('editnombre').value="";
+        document.getElementById('iddeletedAgr').value="";
+    }
+    function cleanAgr()
+    {
+        
+        document.getElementById('id_agr').value="";
+        
+        $('#AgrOrden div').remove();
+        $('#AgrOrden').append("<div id='addOrden'><ul id='sortableOrden' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
+    }
+    function agrupacionDeleted(id)
+    {
+        document.getElementById('iddeletedAgr').value=id;
+    }
     function insertCampoFile()
     {
         var itemTramite=$("#itemsTramites").val();
@@ -484,16 +632,11 @@
         .done(function (response) {
         var Resp=$.parseJSON(response);
         var categoria="limpia";
-        var iCheck="0";
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
-                if(item.descripcion=="Documentos"){
-                    iCheck="1";
-                }else{
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
                     categoria=item.id_categoria;
-                }
             });
 
             $("#itemsCategoria").val(categoria).change();
@@ -544,12 +687,12 @@
                 var car=JSON.stringify(item.caracteristicas);
                 var data=JSON.stringify(item);
                 $('#sortable').append( "<li class='ui-state-default'>"+
-                    "<div class='col-md-1' hidden='true'> <input type='checkbox' name='check_"+item.id+"' value='"+item.id+"' > </div>"+
+                    "<div class='col-md-1' hidden='true'> <input type='checkbox' name='iCampos' value='"+item.id+"' > </div>"+
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
                    "<div class='col-md-7'>"+item.campo_nombre+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='relationshipUpdate("+item.id+","+item.campo_id+","+item.tipo_id+","+car+")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
                    "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldelete' onclick='relationshipDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
-                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a>"+
+                   "<a class='btn btn-icon-only blue' href='#modalCaracteristica' data-toggle='modal' data-original-title='' title='Agregar Caracteristicas' onclick='relationshipAdd("+item.id+","+item.tipo_id+")' style='color:#FFF !important;'><i class='fa fa-plus'></i></a>"+
 
                    "<a class='btn btn-icon-only blue' href='#portlet-detalles' data-toggle='modal' data-original-title='' title='Detalles' onclick='detalles("+data+")' style='color:#FFF !important;'><i class='fa fa-list'></i></a>"+
                     "</div></li>"
@@ -568,24 +711,47 @@
     }
     function detalles(data)
     {
-        console.log(data);
+        //console.log(data);
         addtable();
         document.getElementById("campoName").textContent=data.campo_nombre;
         document.getElementById("tipoCampo").textContent=data.tipo_nombre;
         var soli=$.parseJSON(data.caracteristicas);
+        var ops;
         for (n in soli) {  
             obj=n;
             tipo=soli[n]; 
-            if(tipo!="true" || tipo!="false")
+            if(obj!="opciones")
             {
                 tipo=JSON.stringify(tipo);
-            }
-              $('#sample_2 tbody').append("<tr>"
+                $('#sample_2 tbody').append("<tr>"
                 +"<td>"+obj+"</td>"
                 +"<td>"+tipo+"</td>"
                 +"</tr>"
-                );           
-          }
+                );
+            }else{
+                ops=JSON.stringify(tipo);
+            }                         
+        }
+        if(ops!=null)
+        {
+            
+            $('#sample_2 tbody').append("<tr><td>opciones</td><td>&nbsp;</td></tr>");
+            ops=$.parseJSON(ops);
+            console.log(ops);
+            $.each(ops, function(i, item) {
+                var v=item;
+                console.log(v);
+                for (n in v) {
+                    $('#sample_2 tbody').append("<tr>"
+                        +"<td>"+n+"</td>"
+                        +"<td>"+v[n]+"</td>"
+                        +"</tr>"
+                    );
+                }
+        }   );
+        }
+       
+
     }
     function addtable()
   {
@@ -600,7 +766,7 @@
         $("#itemsTipos").val(tipo).change();
         $("#itemsCampos").val(campo).change();
         carac=$.parseJSON(carac);
-        console.log(carac.required);
+        //console.log(carac.required);
         if(carac.required=="true")
         {
             $("#checkbox30").prop("checked", true);
@@ -612,8 +778,9 @@
     {
         document.getElementById('iddeleted').value=id_;
     }
-    function relationshipAdd(campo){
+    function relationshipAdd(campo,idtipo){
       $("#idcampo").val(campo);
+      $("#idTipo").val(idtipo);
     }
 
      function metodoSaveUpdate()
@@ -667,7 +834,7 @@
 
         }
         var contador=1;
-        $("input[type=checkbox]:unchecked").each(function(){
+        $("input:checkbox[name=iCampos]:unchecked").each(function(){
             if($(this).val() !="on")
             {               
                 contador=contador+1; 
@@ -701,18 +868,9 @@
         var valCheck='[{"required":"false"}]';
         if(check==true)
         {
-          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
-            valCheck='{"required":"true", "opciones":[]}';
-          }else{
             valCheck='{"required":"true"}';
-          }
-        }else{
-          if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
-            valCheck='{"required":"false", "opciones":[]}';
-          }else{
+        }else{          
             valCheck='{"required":"false"}';
-          }
-
         }
         $.ajax({
            method: "POST",
@@ -735,36 +893,38 @@
     }
     function saveCaracteristica(){
       var idCampo = $("#idcampo").val();
+      var idTipo = $("#idTipo").val();
       var nombre = $("#nombre").val();
       var valor = $("#valor").val();
-      console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
+      //console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
       $.ajax({
         method : "POST",
         url: "{{url('/traux-add-caract')}}",
-        data: { id:idCampo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
+        data: { id:idCampo,tipo:idTipo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
 
         success: function(info){
           if(info.Code != 200)
           {
             console.log(info.Message);
-
             return false;
           }else{
             // cerramos el modal
-            console.log(info.Message);
-            $("#nombre").empty();
-            $("#valor").empty();
-
+            console.log(info.Message);   
           }
         }
       })
       .done(function (response) {
-          CleanInputs();
+        if(response.Code=="200")
+          {CleanInputs();
           //findRelationship();
           changeTramites();
-          $("#modalCaracteristica .close").click();
-          Command: toastr.success("Success", "Notifications")
-
+         document.getElementById('nombre').value="";
+         document.getElementById('valor').value="";
+          //$("#modalCaracteristica .close").click();
+          Command: toastr.success(response.Message, "Notifications")
+        }else{
+            Command: toastr.warning(response.Message, "Notifications")
+        }
       });
 
     }
@@ -772,7 +932,7 @@
     {
         const fdata = [];
         var contador=1;
-        $("input[type=checkbox]:unchecked").each(function(){
+        $("input:checkbox[name=iCampos]:unchecked").each(function(){
             if($(this).val() !="on")
             {
                 fdata.push({id : $(this).val(), orden: contador})  
@@ -780,10 +940,34 @@
             }         
             
         });
-        console.log(fdata);
+        //console.log(fdata);
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-orden') }}",
+           data: {data: fdata,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
+    function updatePositionsAgr()
+    {
+        const fdata = [];
+        var contador=1;
+        $("input:checkbox[name=iAgrupacion]:unchecked").each(function(){
+            if($(this).val() !="on")
+            {
+                fdata.push({id : $(this).val(), orden: contador})  
+                contador=contador+1; 
+            }         
+            
+        });
+        //console.log(fdata);
+         $.ajax({
+           method: "POST",
+           url: "{{ url('/guardar-orden-agrupacion') }}",
            data: {data: fdata,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         
@@ -809,15 +993,57 @@
             return ;
         }
         //console.log(fdata);
+        var contador=1;
+        $("input:checkbox[name=iAgrupacion]:unchecked").each(function(){
+            if($(this).val() !="on")
+            {               
+                contador=contador+1; 
+            }
+        });
          $.ajax({
            method: "POST",
            url: "{{ url('/guardar-agrupacion') }}",
-           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
+           data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,orden:contador,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
                 document.getElementById('agrupacionNombre').value=""; 
                 Command: toastr.success(response.Message, "Notifications");
                 findAgrupaciones();
+            }else{            
+                Command: toastr.warning(response.Message, "Notifications");
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
+    function updateGrupo()
+    {
+        var agrup=$("#editnombre").val();
+        var id_agr=$("#id_agr").val();
+        var tramite_id=$("#itemsTramites").val();
+        var categoria_id=$("#itemsCategoria").val();
+        if(agrup.length==0){
+            Command: toastr.warning("Campo agrupación, Requerido!", "Notifications");
+            return ;
+        }else if(tramite_id=="limpia")
+        {
+            Command: toastr.warning("Selecciona el Tramite, Requerido!", "Notifications");
+            return ;
+        }else if(categoria_id=="limpia"){
+            Command: toastr.warning("Selecciona Tipo Tramite, Requerido!", "Notifications");
+            return ;
+        }
+        //console.log(fdata);
+         $.ajax({
+           method: "POST",
+           url: "{{ url('/edit-agrupacion') }}",
+           data: {id:id_agr,descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+            if(response.Code=="200"){          
+                cleanAgr(); 
+                Command: toastr.success(response.Message, "Notifications");
+                findAgrupacionesOrden();
             }else{            
                 Command: toastr.warning(response.Message, "Notifications");
             }
