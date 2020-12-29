@@ -343,6 +343,8 @@ Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacio
 Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
 Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
 Route::post('/addFile', 'PortaltramitesauxController@addFile');
+Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenAgrupacion');
+Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -352,6 +354,7 @@ Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
 Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
+Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
