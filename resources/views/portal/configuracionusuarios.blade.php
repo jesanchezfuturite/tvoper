@@ -26,11 +26,6 @@
             <div class="caption">
                 <i class="fa fa-bank"></i>Comunidad
             </div>
-            <div class="tools"> 
-              <a id="Remov" href="javascript:;" data-original-title="" title="">
-                <i class='fa fa-remove' style="color:#d7eaf8 !important;"></i>
-              </a>
-            </div>
         </div>
         <div class="portlet-body">
         <div class="row">
@@ -267,9 +262,7 @@
   jQuery(document).ready(function() {
     $(".iDocument").css("display","none");
     TableManaged.init();
-    ItemsTramite();
-    ItemsPermisos();
-    
+    ItemsTramite();    
   });
   function getBase64SAT(file) {
    var reader = new FileReader();
@@ -312,52 +305,19 @@ function downloadPdf(file)
 function changeComunidad()
 {
   var comunidad=$("#itemsConfigUser").val();
-  $("#itemsNotario").val("0").change();
-  if(comunidad=="0")
-  {
-    $("#itemsNotario option").remove();
-    $('#itemsNotario').append("<option value='0'>------</option>");
-
-    return;
-  }
+  
    $.ajax({
         method: "get",            
         url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-            $("#itemsNotario option").remove();
-            $('#itemsNotario').append("<option value='0'>------</option>");
-            $.each(response, function(i, item) {                
-                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+"</option>");
-            });
+           
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   
 }
 
-  function ItemsPermisos()
-  {
-    $.ajax({
-      method: "get",            
-      url: "{{ url('/notary-offices-roles') }}",
-      data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {     
-        //console.log(response);
-        var resp=$.parseJSON(response);
-        $("#itemsPermiso option").remove();
-        $('#itemsPermiso').append("<option value='0'>------</option>");
-        $("#itemsPermisoNotario option").remove();
-        $('#itemsPermisoNotario').append("<option value='0'>------</option>");
-          $.each(resp.response, function(i, item) {
-            $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
-            $('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
-                //console.log(item.id);
-          });
-        })
-      .fail(function( msg ) {
-         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
-  }
   function ItemsTramite()
     {
         $.ajax({
@@ -365,250 +325,18 @@ function changeComunidad()
         url: "{{ url('/operacion-roles-get-rol') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
-            $("#itemsCofigNotario option").remove();
             $("#itemsConfigUser option").remove();
-            $('#itemsCofigNotario').append("<option value='0'>------</option>");
             $('#itemsConfigUser').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
-                $('#itemsCofigNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                
                 $('#itemsConfigUser').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  async function saveNotario()
-  {
-    var numNotario=$("#numNotario").val();
-    var telNotario=$("#telNotario").val();
-    var faxNotario=$("#faxNotario").val();
-    var emailNotario=$("#emailNotario").val();
-    var calleNotario=$("#calleNotario").val();
-    var numeroNotario=$("#numeroNotario").val();
-    var distritoNotario=$("#distritoNotario").val();
-    var itemsCiudadNot=$("#itemsCiudadNot").val();
-    var itemsEntidadNot=$("#itemsEntidadNot").val();
-    var codigopostNotario=$("#codigopostNotario").val();
-    var userNotario=$("#userNotario").val();
-    var emailNotario2=$("#emailNotario2").val();
-    var nameNotario=$("#nameNotario").val();
-    var apPatNotario=$("#apPatNotario").val();
-    var apMatNotario=$("#apMatNotario").val();
-    var telNotario2=$("#telNotario2").val();
-    var curpNotario=$("#curpNotario").val();
-    var rfcNotario=$("#rfcNotario").val();
-    var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var passNotario=$("#passNotario").val();
+  
 
-    var itemsCofigNotario=$("#itemsCofigNotario").val();
-    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
-    var pdf = $("#fileSAT")[0].files[0]; 
-    var pdf2 = $("#fileNotario")[0].files[0];
-     var pdfSAT = $("#fileSAT").val(); 
-    var pdfNotario = $("#fileNotario").val();
-    if(pdfSAT.length>0 && pdfNotario.length>0){ 
-      getBase64SAT(pdf);
-      getBase64Notario(pdf2);
-    }
-      
-    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-    
-    if (numNotario.length<1) {
-       Command: toastr.warning("Campo Numero Notario, requerido!", "Notifications") 
-    }else if (codigopostNotario.length<5) {
-       Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications") 
-    }else if (distritoNotario.length<1) {
-       Command: toastr.warning("Campo Distrito, requerido!", "Notifications") 
-    }else if (telNotario.length<10) {
-       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-    }else if (!emailRegex.test(emailNotario)) {
-       Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
-    }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
-       Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres,1 mayuscula, 1 numero! ", "Notifications") 
-    }else if (!emailRegex.test(emailNotario2)) {
-       Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
-    }else if (telNotario2.length<10) {
-       Command: toastr.warning("Segundo Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-    }else if (!curpValida(curpNotario)) {
-       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-    }else if (rfcNotario.length<12) {
-       Command: toastr.warning("Campo RFC, longitud minima 12!", "Notifications") 
-    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
-      Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
-    }else if(itemsCofigNotario =='0'){
-      Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
-    }else if(itemsPermisoNotario =='0'){
-      Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
-    }else if(pdfSAT.length==0){ 
-         Command: toastr.warning("Archivo Constancia SAT, Requerido!", "Notifications")
-    }else if(pdfNotario.length==0){ 
-         Command: toastr.warning("Archivo Constancia Notario, Requerido!", "Notifications")
-    }else{
-     await sleep(1000);
-      insertNotario();
-    }
-  }
-
-   function insertNotario()
-  {
-   var numNotario='';
-   numNotario=$("#numNotario").val();
-    var telNotario=$("#telNotario").val();
-    var faxNotario=$("#faxNotario").val();
-    var emailNotario=$("#emailNotario").val();
-    var calleNotario=$("#calleNotario").val();
-    var numeroNotario=$("#numeroNotario").val();
-    var numeroExtNotario=$("#numeroExtNotario").val();
-    var distritoNotario=$("#distritoNotario").val();
-    var itemsCiudadNot=$("#itemsCiudadNot").val();
-    var itemsEntidadNot=$("#itemsEntidadNot").val();
-    var codigopostNotario=$("#codigopostNotario").val();
-    var userNotario=$("#userNotario").val();
-    var emailNotario2=$("#emailNotario2").val();
-    var nameNotario=$("#nameNotario").val();
-    var apPatNotario=$("#apPatNotario").val();
-    var apMatNotario=$("#apMatNotario").val();
-    var telNotario2=$("#telNotario2").val();
-    var curpNotario=$("#curpNotario").val();
-    var rfcNotario=$("#rfcNotario").val();
-    var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var itemsCofigNotario=$("#itemsCofigNotario").val();
-    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
-    var passNotario=$("#passNotario").val();
-
-    var base64SAT=$("#base64pdf1").val();
-    var base64Notario=$("#base64pdf2").val();
-
-   
-    var titular_={username: userNotario,
-    email: emailNotario2,
-    password: passNotario,
-    name: nameNotario,
-    mothers_surname:apMatNotario ,
-    fathers_surname:apPatNotario,
-    curp: curpNotario,
-    rfc: rfcNotario,
-    phone:telNotario2,
-    person_type:itemsTipoNotario,
-    config_id: itemsCofigNotario,
-    role_id: itemsPermisoNotario };
-
-    var notary_off= {notary_number: numNotario,
-      phone: telNotario,
-      fax: faxNotario,
-      email: emailNotario,
-      street: calleNotario,
-      number: numeroNotario,
-      "outdoor-number": numeroExtNotario,
-      district: distritoNotario,
-      federal_entity_id: itemsEntidadNot,
-      city_id: itemsCiudadNot,
-      zip: codigopostNotario,
-      sat_constancy_file: base64SAT,
-      notary_constancy_file: base64Notario,
-      titular: titular_
-      }; 
-    //console.log(notary_off);
-    $.ajax({
-           method: "POST", 
-           url: "{{ url('/notary-offices') }}",
-           data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {
-          console.log(response);
-          var resp=$.parseJSON(response);
-          console.log(resp);
-          if(resp.data=="response"){
-            changeComunidad();
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
-            return;
-          }
-          if(response==null || response=="null")
-          {
-            changeComunidad();
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
-            return;
-          }
-          if(resp.error){
-            Command: toastr.warning(resp.error.message, "Notifications");
-          }else{
-            changeComunidad();
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
-            return;
-          }
-         
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("Error", "Notifications");
-        });
-    
-  }
-  function changeNotario()
-  {
-    var id=$("#itemsNotario").val();
-    var com=$("#itemsConfigUser").val();
-    if(id=="0")
-    {
-      $(".iDocument").css("display","none");
-      addtable();
-      TableManaged.init();
-      return;
-    }
-    if(com=="0")
-    {      
-      Command: toastr.warning("Selecciona una Comunidad, Requerido!", "Notifications") 
-      //$("#itemsNotario").val(0).change();
-      return;
-    }
-    $(".iDocument").css("display","block");
-    $.ajax({
-           method: "get",            
-           url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
-           data: {_token:'{{ csrf_token() }}'}   })
-        .done(function (response) { 
-          document.getElementById('jsonCode').value=response;            
-          var Resp=response;
-          addtable();
-        $.each(Resp, function(i, item) {   
-             json=JSON.stringify(item);        
-             status=item.status;    
-            if (status=='1') 
-              { label="success";
-                msgg="Activa";
-                icon="red"; 
-                title="Desactivar";
-              }else if(status=='0'){ 
-                label="danger";
-                msgg="Inactiva"; 
-                icon="green";  
-                title="Activar";
-              }else{
-                label="warning";
-                msgg="Sin estatus"; 
-                icon="green";
-                title="Activar";
-              }
-              //console.log(item.config_id);
-            //if(com==item.config_id){   
-              $('#sample_3 tbody').append("<tr>"
-                +"<td>"+item.username+"</td>"
-                +"<td>"+item.email+"</td>"
-                +"<td>"+item.name+"</td>"
-                +"<td>"+item.rfc+"</td>"
-                +"<td>"+item.curp+"</td>"
-                +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
-                +"</tr>"
-                );
-              //}
-            });
-        TableManaged.init();
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
-  }
   function addtable()
   {
     $("#addtables div").remove();
@@ -747,8 +475,6 @@ function changeComunidad()
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
-      }else if(itemsPermiso =='0'){
-        Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
         if(id.length>0)
           {
@@ -795,7 +521,7 @@ function changeComunidad()
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
-           data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
+           data: {users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           response=$.parseJSON(response);
              var error=response.error;
@@ -830,50 +556,7 @@ function changeComunidad()
       document.getElementById('rfcUser').value=""; 
       document.getElementById('password').value=""; 
   }
-  function limpiarNot()
-  {
-    document.getElementById('numNotario').value="";
-    document.getElementById('telNotario').value="";
-    document.getElementById('faxNotario').value="";
-    document.getElementById('emailNotario').value="";
-    document.getElementById('numeroNotario').value="";
-    document.getElementById('calleNotario').value="";
-    document.getElementById('distritoNotario').value="";
-    $("#itemsCiudadNot").val("0").change();
-    $("#itemsCofigNotario").val("0").change();
-    $("#itemsEntidadNot").val("0").change();
-    document.getElementById('codigopostNotario').value="";
-    document.getElementById('userNotario').value="";
-    document.getElementById('emailNotario2').value="";
-    document.getElementById('nameNotario').value="";
-    document.getElementById('apPatNotario').value="";
-    document.getElementById('apMatNotario').value="";
-    document.getElementById('telNotario2').value="";
-    document.getElementById('curpNotario').value="";
-    document.getElementById('rfcNotario').value="";
-    $("#itemsTipoNotario").val("0").change();
-    document.getElementById('passNotario').value=""; 
-    $("#itemsPermisoNotario").val("0").change();
-    //$("input:radio").attr("checked", false);
-    document.getElementById('base64pdf1').value="";
-    document.getElementById('base64pdf2').value="";
-    document.getElementById('delFileNotario').click();
-    document.getElementById('delFileSAT').click();
-    document.getElementById('numeroExtNotario').value="";
 
-}
-function onechange2()
-{
-    var nombre=$("#pass2").attr("class");
-    if(nombre=="fa fa-eye-slash")
-    {
-      $("#pass2").removeClass("fa-eye-slash").addClass("fa-eye");
-      $('#passNotario').attr('type', 'text');
-    }else{
-      $("#pass2").removeClass("fa-eye").addClass("fa-eye-slash");
-      $('#passNotario').attr('type', 'password');
-    }
-}
 function onechange1()
 {
   var nombre=$("#pass1").attr("class");
@@ -910,28 +593,7 @@ document.getElementById('emailUser').addEventListener('input', function() {
       document.getElementById("emailOK").style.color = "red";
     }
 });
-document.getElementById('emailNotario').addEventListener('input', function() {
-    campo = event.target;
-    valido = document.getElementById('emailNot');        
-    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-    if (emailRegex.test(campo.value)) {
-        valido.innerText = "";
-    } else {
-      valido.innerText = "Incorrecto";
-      document.getElementById("emailNot").style.color = "red";
-    }
-});
-document.getElementById('emailNotario2').addEventListener('input', function() {
-    campo = event.target;
-    valido = document.getElementById('emailNot2');        
-    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-    if (emailRegex.test(campo.value)) {
-        valido.innerText = "";
-    } else {
-      valido.innerText = "Incorrecto";
-      document.getElementById("emailNot2").style.color = "red";
-    }
-});
+
 function curpValida(curp) {
     var re = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/,
         validado = curp.match(re);
