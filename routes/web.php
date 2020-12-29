@@ -387,8 +387,10 @@ Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTr
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
 Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
 Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
-Route::get('/solicitudes-get-tramite/{id}', 'PortalSolicitudesTicketController@getRegistroTramite');
+Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
+Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
+
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
