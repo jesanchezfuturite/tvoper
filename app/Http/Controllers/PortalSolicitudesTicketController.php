@@ -98,26 +98,43 @@ class PortalSolicitudesTicketController extends Controller
 
       $ids = [];
       // try { 
-        if(!empty($solicitantes)){        
-          $solicitantes = array_replace_recursive(
-            $solicitantes,
-            $request->ids,
-          );
-          foreach($solicitantes as $key => $value){
-            
-            $info->solicitante=$value;
-            // $info["solicitante"]=$value;
+        if(!empty($solicitantes)){
+          if($request->has("ids")){
+            $solicitantes = array_replace_recursive(
+              $solicitantes,
+              $request->ids,
+            );
+            foreach($solicitantes as $key => $value){
+              
+              $info->solicitante=$value;
+              // $info["solicitante"]=$value;
+  
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
+                "clave" => $clave,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),              
+                "user_id"=>$user_id,
+                "status"=>$status
+        
+              ]);        
+             array_push($ids, $ticket->id);
+            }
+          }else{
+            foreach($solicitantes as $key => $value){              
+              $info->solicitante=$value;  
+              $ticket = $this->ticket->create([
+                "clave" => $clave,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),              
+                "user_id"=>$user_id,
+                "status"=>$status
+        
+              ]);        
+             array_push($ids, $ticket->id);
+            }
 
-            $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
-              "clave" => $clave,
-              "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),              
-              "user_id"=>$user_id,
-              "status"=>$status
-      
-            ]);        
-           array_push($ids, $ticket->id);
           }
+       
           $first_id = reset($ids);
           if($request->has("file")){
             foreach ($request->file as $key => $value) {
