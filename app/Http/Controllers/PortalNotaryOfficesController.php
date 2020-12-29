@@ -193,6 +193,9 @@ class PortalNotaryOfficesController extends Controller
         return $data; 
     }
     
- 
+    public function viewUsers()
+    {
+        return view('portal/configuracionusuarios');
+    }
 
 }

@@ -22,7 +22,7 @@ class Portalcamposagrupaciones extends Model implements Transformable
      */
      protected $connection = "mysql6";
 
-     protected $fillable = ['descripcion','id_tramite', 'id_categoria'];
+     protected $fillable = ['id','descripcion','id_tramite', 'id_categoria','orden'];
 
      protected $table = "campos_agrupaciones";
 
