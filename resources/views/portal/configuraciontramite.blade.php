@@ -381,7 +381,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgr()"></button>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgrEdit()"></button>
             <h4 class="modal-title">Editar Agrupación</h4>
         </div>
         <div class="modal-body">
@@ -407,7 +407,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                      <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgr()">Cerrar</button>
+                      <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgrEdit()">Cerrar</button>
                   </div>
             </div>
         </div>
@@ -420,7 +420,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgr()"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cleanAgrEdit()"></button>
                 <h4 class="modal-title">Confirmation</h4>
             </div>
             <div class="modal-body">
@@ -430,7 +430,7 @@
                  <input hidden="true" type="text" name="iddeletedAgr" id="iddeletedAgr" class="iddeletedAgr">
             </div>
             <div class="modal-footer">
-         <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgr()">Cancelar</button>
+         <button type="button" data-dismiss="modal" class="btn default" onclick="cleanAgrEdit()">Cancelar</button>
             <button type="button" data-dismiss="modal" class="btn green" onclick="deletedAgr()">Confirmar</button>
             </div>
         </div>
@@ -473,7 +473,7 @@
                     " <div class='col-md-1'><span class='ui-icon ui-icon-arrowthick-2-n-s'></span></div>"+
                    "<div class='col-md-8'>"+item.descripcion+" </div>  <div class='col-md-3'>"+
                    "<a class='btn btn-icon-only blue' href='#portlet-edit-agr' data-toggle='modal' data-original-title='' title='Editar' onclick='agrupacionUpdate("+item.id+",\""+item.descripcion+"\")' style='color:#FFF !important;'><i class='fa fa-pencil'></i></a>"+
-                   "<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldeleteAgr' onclick='agrupacionDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+
+                   /*"<a class='btn btn-icon-only red' data-toggle='modal'data-original-title='' title='Eliminar' href='#modaldeleteAgr' onclick='agrupacionDeleted("+item.id+")' style='color:#FFF !important;'><i class='fa fa-minus'></i></a>"+*/
                     "</div></li>"
                 );
             });
@@ -494,11 +494,16 @@
         document.getElementById('editnombre').value=desc;
         document.getElementById('id_agr').value=id;
     }
-    function cleanAgr()
+    function cleanAgrEdit()
     {
         document.getElementById('editnombre').value="";
-        document.getElementById('id_agr').value="";
         document.getElementById('iddeletedAgr').value="";
+    }
+    function cleanAgr()
+    {
+        
+        document.getElementById('id_agr').value="";
+        
         $('#AgrOrden div').remove();
         $('#AgrOrden').append("<div id='addOrden'><ul id='sortableOrden' class='sortable'style='cursor: -webkit-grab; cursor: grab;'></ul></div>");
     }
