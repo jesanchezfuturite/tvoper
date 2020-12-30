@@ -334,6 +334,47 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="portlet-porcentaje"  tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiarPorcentaje()"></button>
+            <h4 class="modal-title">Editar Procentaje</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-body">
+                <div class="modal-body">
+                  <input hidden="true" type="text"  id="id_c">
+                  <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label >Porcentaje</label>
+                                    <input type="text" name="porcentaje" id="porcentaje" class="form-control valida-decimal" placeholder="Nuevo Porcentaje..."
+                                    oninput="limitN(this);">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="help-block">&nbsp;</span>
+                  <div class="row">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                            <button type="button" class="btn blue" onclick="savePorcentaje()"><i class="fa fa-check"></i> Guardar</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                      <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarPorcentaje()">Cerrar</button>
+                  </div>
+            </div>
+        </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 
@@ -665,7 +706,8 @@
                 +"<td>"+costo_fijo+"</td>"
                 +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a></td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a>"+
+                  "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -674,6 +716,42 @@
     })
     .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
+  }
+  function updatePorcentaje(id,porcentaje)
+  {
+    document.getElementById('id_c').value=id;
+    if(porcentaje==null || porcentaje=="null")
+    {
+      porcentaje="";
+    }
+    document.getElementById('porcentaje').value=porcentaje;
+  }
+  function savePorcentaje()
+  {
+    var id_=$("#id_c").val();
+    var porcentaje_=$("#porcentaje").val();
+    if(porcentaje_.length==0)
+    {
+      Command: toastr.warning("Campo Porcentaje, Requerido!", "Notifications")
+      return;
+    }
+    $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-edit-porcentaje') }}",
+           data: {id:id_,porcentaje:porcentaje_, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+
+         if(response.Code =="200"){
+              Command: toastr.success(response.Message, "Notifications") 
+              findCostos();
+            }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+            }         
+            
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+
   }
   function costoDelete(id)
   {
@@ -901,6 +979,11 @@ function limpiarchang()
     $("#itemsReglas").val("limpia").change();
     
 }
+function limpiarPorcentaje()
+{
+  document.getElementById("id_c").value="";
+  document.getElementById("porcentaje").value="";
+}
 function GuardarExcel()
 {
   var JSONData=$("#jsonCode").val();
@@ -917,6 +1000,17 @@ $('.valida-decimal').on('input', function () {
 $('.valida-numeros').on('input', function () {
     this.value = this.value.replace(/[^0-9]/g,'');
 });
+function limitN(n)
+{
+  var num = n.value;
+    var date = new Date();
+    if (parseFloat(num) >= 1&& parseFloat(num) <= 100) {
+         
+    } else {      
+      document.getElementById('porcentaje').value='';
+ 
+  }
+}
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
   fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
