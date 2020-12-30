@@ -92,9 +92,9 @@ class PortalSolicitudesTicketController extends Controller
       $clave = $request->clave;
       
       $user_id = $request->user_id;
-      // $solicitantes = json_decode($solicitantes);
-      // $info = json_decode($request->info);
-      $info = $request->info;
+      $solicitantes = json_decode($solicitantes);
+      $info = json_decode($request->info);
+      // $info = $request->info;
 
       $ids = [];
       try { 
@@ -108,10 +108,8 @@ class PortalSolicitudesTicketController extends Controller
             $eliminar_solicitantes = $this->ticket->whereIn('id', $ids_eliminar)->delete();
 
             foreach($solicitantes as $key => $value){
-
-              // $info->solicitante=$value;
-              $info["solicitante"]=$value;  
-
+              $info->solicitante=$value;
+              // $info["solicitante"]=$value;  
               $ticket = $this->ticket->updateOrCreate(["id" =>$value["id"]], [
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
