@@ -350,7 +350,7 @@
                             <div class="col-md-8">
                                 <div class="form-group">
                                     <label >Porcentaje</label>
-                                    <input type="text" name="porcentaje" id="porcentaje" class="form-control valida-decimal" placeholder="Nuevo Porcentaje..."
+                                    <input type="text" name="porcentaje" id="porcentaje" class="form-control valida-numeros" placeholder="Nuevo Porcentaje..."
                                     oninput="limitN(this);">
                                 </div>
                             </div>
@@ -646,7 +646,7 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Tipo de Operación</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Costo Tipo Operación</th><th>Costo Fijo</th><th>Regla</th><th>Vigencia</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Tipo Operación</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Costo Operación</th><th>Costo Fijo</th><th>Regla</th><th>Vigencia</th><th>Porcentaje</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
   }
   function findCostos()
   {
@@ -696,6 +696,8 @@
             {vigencia="N/A";}else{vigencia=item.vigencia;}
           if(item.costo_fijo==null || item.costo_fijo=="null")
             {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo +" " + costoFijo;}
+          if(item.porcentaje==null || item.porcentaje=="null")
+            {porcentaje="N/A";}else{porcentaje=item.porcentaje;}
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.tramite+"</td>"
                 +"<td>"+tipo+"</td>"
@@ -706,6 +708,7 @@
                 +"<td>"+costo_fijo+"</td>"
                 +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
+                +"<td>"+porcentaje+"</td>"
                 + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a>"+
                   "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
@@ -720,7 +723,7 @@
   function updatePorcentaje(id,porcentaje)
   {
     document.getElementById('id_c').value=id;
-    if(porcentaje==null || porcentaje=="null")
+    if(porcentaje==null || porcentaje=="null" || porcentaje=="undefined")
     {
       porcentaje="";
     }
