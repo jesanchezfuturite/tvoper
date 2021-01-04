@@ -587,7 +587,7 @@ class PortaltramitesauxController extends Controller
 
 		public function listarAgrupacion(Request $request){
 			$tramite = $request->id_tramite;
-			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->get();
+			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->orderBy('orden', 'ASC')->get();
 
 			return json_encode($data);
 		}
@@ -595,9 +595,17 @@ class PortaltramitesauxController extends Controller
 			$descripcion = $request->descripcion;
 			$tramite = $request->id_tramite;
 			$tipo = $request->id_categoria;
+			$orden = $request->orden;
 
 			try{
-				$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				$existeAgrupacion = $this->agrupaciones->findWhere(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				if ($existeAgrupacion->count() == 0){
+					$save = $this->agrupaciones->create(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo, 'orden'=>$orden]);
+					return response()->json(["Code" => "200","Message" => "Registro Editado."]);
+				}
+				if($existeAgrupacion->count()>0){
+					return response()->json(["Code" => "400","Message" => "Existe una Agrupacion con ese nombre."]);
+				}				
 
 				$existe = $this->relcat->where('tramite_id', $tramite)->where('categorias_id', $tipo)->get();
 				if ($existe->count() == 0){
@@ -629,7 +637,8 @@ class PortaltramitesauxController extends Controller
 		}
 
 	/**
- 	* 	Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
+ 	* 	Esta funcion ya no se utiliza
+	*   Guarda el campo del tramite que indica si requiere un archivo, este campo esta identificado en la tabla
  	*		portal.campos_type con el id #7 y su descripcion es File
  	*	@param Request POST
  	*
@@ -665,4 +674,56 @@ class PortaltramitesauxController extends Controller
 			]);
 		}
  }
+ 	public function editAgrupacion(Request $request){
+			$descripcion = $request->descripcion;
+			$tramite = $request->id_tramite;
+			$tipo = $request->id_categoria;
+			$id = $request->id;
+
+		try{
+				$existe = $this->agrupaciones->findWhere(['descripcion'=>$descripcion,'id_tramite'=>$tramite, 'id_categoria'=>$tipo]);
+				if ($existe->count() == 0){
+					$guardar = $this->agrupaciones->update(['descripcion'=>$descripcion],$id);
+					return response()->json(["Code" => "200","Message" => "Registro Editado."]);
+				}else{
+					return response()->json(["Code" => "400","Message" => "Existe una Agrupacion con ese nombre."]);
+				}
+
+		}catch(\Exception $e){
+			Log::info('Error editAgrupacion: '.$e->getMessage());
+		}
+
+	}
+	public function saveOrdenAgrupacion(Request $request )
+	{
+		try {
+				$data = $request->data;
+				foreach ($data as $d) {
+					$id = $d['id'];
+
+					$orden = $d['orden'];
+
+					$save = $this->agrupaciones->update(['orden'=>$orden], $id);
+
+				}
+				return response()->json(["Code" => "200","Message" => "Registros Actualizados."]);
+
+		} catch (\Exception $e) {
+			Log::info('Error saveOrdenAgrupacion: '.$e->getMessage());
+		}
+	}
+	public function savePorcentaje(Request $request)
+	{
+		try {
+			$id=$request->id;
+			$porcentaje=$request->porcentaje;
+
+			$upd=$this->costotramitedb->update(["porcentaje"=>$porcentaje],$id);		
+			return response()->json(["Code" => "200","Message" => "Porcentaje Actualizado."]);
+
+		} catch (\Exception $e) {
+			Log::info('Error savePorcentaje: '.$e->getMessage());
+			return response()->json(["Code" => "200","Message" => "Error Actualizar."]);
+		}
+	}
 }
