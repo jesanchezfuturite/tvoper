@@ -419,3 +419,8 @@ Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 Route::get('/divisas', 'DivisasController@index');
 Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
 
+/***************************apis webservice*************************************/
+Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
+Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
+
+
