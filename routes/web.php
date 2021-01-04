@@ -348,6 +348,7 @@ Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
 Route::post('/addFile', 'PortaltramitesauxController@addFile');
 Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenAgrupacion');
 Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
+Route::post('/traux-edit-porcentaje','PortaltramitesauxController@savePorcentaje');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');

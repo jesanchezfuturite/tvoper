@@ -690,7 +690,7 @@ class PortaltramitesauxController extends Controller
 				}
 
 		}catch(\Exception $e){
-			Log::info('Error Tramites - guardar Agrupacion: '.$e->getMessage());
+			Log::info('Error editAgrupacion: '.$e->getMessage());
 		}
 
 	}
@@ -709,7 +709,21 @@ class PortaltramitesauxController extends Controller
 				return response()->json(["Code" => "200","Message" => "Registros Actualizados."]);
 
 		} catch (\Exception $e) {
-			Log::info('Error Tramites - Guardar orden de campos: '.$e->getMessage());
+			Log::info('Error saveOrdenAgrupacion: '.$e->getMessage());
+		}
+	}
+	public function savePorcentaje(Request $request)
+	{
+		try {
+			$id=$request->id;
+			$porcentaje=$request->porcentaje;
+
+			$upd=$this->costotramitedb->update(["porcentaje"=>$porcentaje],$id);		
+			return response()->json(["Code" => "200","Message" => "Porcentaje Actualizado."]);
+
+		} catch (\Exception $e) {
+			Log::info('Error savePorcentaje: '.$e->getMessage());
+			return response()->json(["Code" => "200","Message" => "Error Actualizar."]);
 		}
 	}
 }

@@ -110,7 +110,7 @@ class PortalSolicitudesTicketController extends Controller
             foreach($solicitantes as $key => $value){
               $info->solicitante=$value;
               // $info["solicitante"]=$value;  
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value["id"]], [
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
