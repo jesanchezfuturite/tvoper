@@ -97,7 +97,7 @@ class PortalSolicitudesTicketController extends Controller
       // $info = $request->info;
 
       $ids = [];
-      try { 
+      // try { 
 
         if($request->has("status")){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
@@ -164,13 +164,13 @@ class PortalSolicitudesTicketController extends Controller
         }   
         
         
-      } catch (\Exception $e) {
-        $error = [
-            "Code" => "400",
-            "Message" => "Error al guardar la solicitud"
-        ];
+      // } catch (\Exception $e) {
+      //   $error = [
+      //       "Code" => "400",
+      //       "Message" => "Error al guardar la solicitud"
+      //   ];
     
-      }
+      // }
       if($error) return response()->json($error);
       return response()->json(
           [
