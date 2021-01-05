@@ -390,7 +390,7 @@ class PortalSolicitudesTicketController extends Controller
         return json_encode($informacion); 
     }
 
-    public function saveFile(Request $r){
+    public function saveFile($data){
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
