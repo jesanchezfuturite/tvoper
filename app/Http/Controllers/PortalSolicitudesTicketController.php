@@ -132,7 +132,7 @@ class PortalSolicitudesTicketController extends Controller
                     'file'    =>  $value,
                     'id'      => $request->id_file[$key]
                     ];
-                  $this->saveFile($data);       
+                  $this->editFile($data);       
                 
   
               }
@@ -154,7 +154,7 @@ class PortalSolicitudesTicketController extends Controller
                     'file'    =>  $value,
                     'id'      => $request->id_file[$key]
                     ];
-                  $this->saveFile($data);       
+                  $this->editFile($data);       
                 }
           
              
@@ -371,7 +371,38 @@ class PortalSolicitudesTicketController extends Controller
         return json_encode($informacion); 
     }
 
-    public function saveFile($data){ 
+    public function saveFile($data){
+      $mensaje = $data["mensaje"];
+      $ticket_id = $data["ticket_id"];    
+      $file = $data['file']; 
+
+      $extension = $file->getClientOriginalExtension();
+
+      try {
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $ticket_id,
+          'mensaje' => $mensaje,
+        ]);
+
+        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+        'attach' => $attach,
+        ]);
+
+        \Storage::disk('local')->put($attach,  \File::get($file));
+
+      } catch(\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo",
+          ]
+        ); 
+      }
+
+    }
+
+    public function editFile($data){ 
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
@@ -380,6 +411,7 @@ class PortalSolicitudesTicketController extends Controller
       $extension = $file->getClientOriginalExtension();
 
       try {
+        
         if($id<>0){
           $file =$this->mensajes->where("id", $id)->first()->toArray();
           $mensajes =$this->mensajes->where('id', $id)->update([
@@ -413,11 +445,7 @@ class PortalSolicitudesTicketController extends Controller
         \Storage::disk('local')->put($attach,  \File::get($file));
 
         }
-       
-  
-         
 
-     
        
       } catch(\Exception $e) {
         return response()->json(
@@ -769,7 +797,15 @@ class PortalSolicitudesTicketController extends Controller
         ); 
       }
     }
-    
+    public function downloadFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->download($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesTicketController@downloadFile");
+      }
+    }
 
     
 }

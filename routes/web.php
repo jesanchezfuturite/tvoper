@@ -390,7 +390,7 @@ Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController
 Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
-
+Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
