@@ -99,7 +99,7 @@ class PortalSolicitudesTicketController extends Controller
       $ids = [];
       // try { 
 
-        if($request->has("status")){
+        if($status==80){
           if($request->id_file_delete){
             $this->deleteFiles($request->id_file_delete);
           }
