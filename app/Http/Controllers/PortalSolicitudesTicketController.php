@@ -162,31 +162,57 @@ class PortalSolicitudesTicketController extends Controller
           }
 
         }else{
-          foreach($solicitantes as $key => $value){              
-            $info->solicitante=$value;  
-            $ticket = $this->ticket->create([
+          if(!empty($solicitantes)){
+            foreach($solicitantes as $key => $value){              
+              $info->solicitante=$value;  
+              $ticket = $this->ticket->create([
+                "clave" => $clave,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),              
+                "user_id"=>$user_id,
+                "status"=>$status
+        
+              ]);        
+             array_push($ids, $ticket->id);
+            }
+            $first_id = reset($ids);
+            if($request->has("file")){
+              foreach ($request->file as $key => $value) {
+                $data =[
+                  'ticket_id'=> $first_id,
+                  'mensaje' => $request->descripcion[$key],
+                  'file'    =>  $value
+                  ];
+                 
+                  $this->saveFile($data);             
+  
+              }
+            }
+          }else{
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status
-      
-            ]);        
-           array_push($ids, $ticket->id);
-          }
-          $first_id = reset($ids);
-          if($request->has("file")){
-            foreach ($request->file as $key => $value) {
-              $data =[
-                'ticket_id'=> $first_id,
-                'mensaje' => $request->descripcion[$key],
-                'file'    =>  $value
-                ];
-               
-                $this->saveFile($data);             
-
+              "status"=>$status      
+            ]); 
+            
+            if($request->has("file")){
+               foreach ($request->file as $key => $value) {   
+                  $data =[
+                    'ticket_id'=> $ticket->id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value,
+                    'id'      => $request->id_file[$key]
+                    ];
+                  $this->editFile($data);       
+                }
+          
+             
             }
           }
+
+      
         }   
         
         
