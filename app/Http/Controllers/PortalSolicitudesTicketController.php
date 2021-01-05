@@ -97,12 +97,9 @@ class PortalSolicitudesTicketController extends Controller
       // $info = $request->info;
 
       $ids = [];
-      // try { 
-
+      try { 
         if($status==80){
-          if($request->id_file_delete){
-            $this->deleteFiles($request->id_file_delete);
-          }
+        
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($solicitantes)){
             $ids_entrada = array_column($solicitantes, 'id');
@@ -125,14 +122,14 @@ class PortalSolicitudesTicketController extends Controller
             }
             $first_id = reset($ids);
             if($request->has("file")){
+              $this->deleteFiles($clave);
               foreach ($request->file as $key => $value) {
                   $data =[
                     'ticket_id'=> $first_id,
                     'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    'id'      => $request->id_file[$key]
+                    'file'    =>  $value
                     ];
-                  $this->editFile($data);       
+                  $this->saveFile($data);       
                 
   
               }
@@ -147,14 +144,14 @@ class PortalSolicitudesTicketController extends Controller
             ]); 
             
             if($request->has("file")){
+              $this->deleteFiles($clave);
                foreach ($request->file as $key => $value) {   
                   $data =[
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    'id'      => $request->id_file[$key]
+                    'file'    =>  $value
                     ];
-                  $this->editFile($data);       
+                  $this->saveFile($data);       
                 }
           
              
@@ -203,26 +200,22 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    'id'      => $request->id_file[$key]
                     ];
-                  $this->editFile($data);       
+                  $this->saveFile($data);       
                 }
           
              
             }
           }
-
-      
-        }   
+        }  
         
-        
-      // } catch (\Exception $e) {
-      //   $error = [
-      //       "Code" => "400",
-      //       "Message" => "Error al guardar la solicitud"
-      //   ];
+      } catch (\Exception $e) {
+        $error = [
+            "Code" => "400",
+            "Message" => "Error al guardar la solicitud"
+        ];
     
-      // }
+      }
       if($error) return response()->json($error);
       return response()->json(
           [
@@ -397,7 +390,7 @@ class PortalSolicitudesTicketController extends Controller
         return json_encode($informacion); 
     }
 
-    public function saveFile($data){
+    public function saveFile(Request $r){
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
@@ -405,6 +398,7 @@ class PortalSolicitudesTicketController extends Controller
       $extension = $file->getClientOriginalExtension();
 
       try {
+     
         $mensajes =$this->mensajes->create([
           'ticket_id'=> $ticket_id,
           'mensaje' => $mensaje,
@@ -772,17 +766,32 @@ class PortalSolicitudesTicketController extends Controller
       }
     
     }
-    public function deleteFiles($id){
+    public function deleteFiles($id, $clave=""){
       $id = json_decode($id);
-      
-      foreach ($id as $key => $value) {
-        $file =$this->mensajes->where("id", $value->id)->first()->toArray();
+      if($r->clave){
+        $solicitudes= $this->ticket->where("clave", $r->clave)->get(["id"])->toArray();
+        $first_id = reset($solicitudes);
 
-        $pathtoFile = storage_path('app/'.$file->attach);
-        unlink($pathtoFile);
+        $file =$this->mensajes->where("ticket_id", $first_id)->get(["id", "attach"])->toArray();
         
-        $mensajes =$this->mensajes->where("id", $value->id)->delete();
+        foreach ($file as $key => $value) {
+          $pathtoFile = storage_path('app/'.$value->attach);
+          unlink($pathtoFile);
+
+          $archivos =$this->mensajes->where("id", $value->id)->delete();
+        }
+
+      }else{
+        foreach ($id as $key => $value) {
+          $file =$this->mensajes->where("id", $value->id)->first()->toArray();
+  
+          $pathtoFile = storage_path('app/'.$file->attach);
+          unlink($pathtoFile);
+          
+          $archivos =$this->mensajes->where("id", $value->id)->delete();
+        }
       }
+      
     }
 
     public function editFiles($data){
