@@ -85,6 +85,7 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $status=80;
       }
+    
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
@@ -99,7 +100,6 @@ class PortalSolicitudesTicketController extends Controller
       $ids = [];
       try { 
         if($status==80){
-        
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($solicitantes)){
             $ids_entrada = array_column($solicitantes, 'id');
@@ -422,61 +422,7 @@ class PortalSolicitudesTicketController extends Controller
 
     }
 
-    public function editFile($data){ 
-      $mensaje = $data["mensaje"];
-      $ticket_id = $data["ticket_id"];    
-      $file = $data['file']; 
-      $id = $data['id'];
-
-      $extension = $file->getClientOriginalExtension();
-
-      try {
-        
-        if($id<>0){
-          $file =$this->mensajes->where("id", $id)->first()->toArray();
-          $mensajes =$this->mensajes->where('id', $id)->update([
-            'ticket_id'=> $ticket_id,
-            'mensaje' => $mensaje,
-          ]);
-  
-          $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
-          $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-            'attach' => $attach,
-          ]);
-  
-          
-          $pathtoFile = storage_path('app/'.$file->attach);
-          unlink($pathtoFile);
-  
-          \Storage::disk('local')->put($attach,  \File::get($file));
-  
-
-        }else{
-          $mensajes =$this->mensajes->create([
-            'ticket_id'=> $ticket_id,
-            'mensaje' => $mensaje,
-          ]);
-
-         $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
-         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-          'attach' => $attach,
-        ]);
-
-        \Storage::disk('local')->put($attach,  \File::get($file));
-
-        }
-
-       
-      } catch(\Exception $e) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al guardar archivo",
-          ]
-        ); 
-      }
-
-    }
+ 
 
     public function filtrarSolicitudes(Request $request){
    
@@ -766,8 +712,7 @@ class PortalSolicitudesTicketController extends Controller
       }
     
     }
-    public function deleteFiles($id="", $clave=""){
-      if($clave){
+    public function deleteFiles($clave){
         $solicitudes= $this->ticket->where("clave", $clave)->get(["id"])->toArray();
         $first_id = reset($solicitudes);
 
@@ -780,18 +725,7 @@ class PortalSolicitudesTicketController extends Controller
           $archivos =$this->mensajes->where("id", $value->id)->delete();
         }
 
-      }else{
-        $id = json_decode($id);
-        foreach ($id as $key => $value) {
-          $file =$this->mensajes->where("id", $value->id)->first()->toArray();
-  
-          $pathtoFile = storage_path('app/'.$file->attach);
-          unlink($pathtoFile);
-          
-          $archivos =$this->mensajes->where("id", $value->id)->delete();
-        }
-      }
-      
+     
     }
 
     public function editFiles($data){
