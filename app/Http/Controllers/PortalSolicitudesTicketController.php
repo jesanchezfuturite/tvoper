@@ -555,16 +555,31 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function updateStatusTramite(Request $request){
       $error=null;
+      switch ($request->status) {
+        case "60":
+          $statusTicket = 5;
+          break;
+        case "65":
+          $statusTicket = 99;
+          break;
+        default:
+          echo "";
+      }
      
       try { 
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-          ->update(['estatus'=> $request->status]);
+          ->update(['estatus'=> $request->status]);        
+
+          $id = $solTramites->id;
         }else{
           $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
           ->update(['estatus'=> $request->status]);
+
+          $id = $solTramites->id;
         }          
-        
+        $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
+        ->update(['status'=> $statusTicket]);
 
       } catch (\Exception $e) {
           $error = $e;
@@ -719,10 +734,10 @@ class PortalSolicitudesTicketController extends Controller
         $file =$this->mensajes->where("ticket_id", $first_id)->get(["id", "attach"])->toArray();
         
         foreach ($file as $key => $value) {
-          $pathtoFile = storage_path('app/'.$value->attach);
+          $pathtoFile = storage_path('app/'.$value["attach"]);
           unlink($pathtoFile);
 
-          $archivos =$this->mensajes->where("id", $value->id)->delete();
+          $archivos =$this->mensajes->where("id", $value["id"])->delete();
         }
 
      
