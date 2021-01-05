@@ -766,10 +766,9 @@ class PortalSolicitudesTicketController extends Controller
       }
     
     }
-    public function deleteFiles($id, $clave=""){
-      $id = json_decode($id);
-      if($r->clave){
-        $solicitudes= $this->ticket->where("clave", $r->clave)->get(["id"])->toArray();
+    public function deleteFiles($id="", $clave=""){
+      if($clave){
+        $solicitudes= $this->ticket->where("clave", $clave)->get(["id"])->toArray();
         $first_id = reset($solicitudes);
 
         $file =$this->mensajes->where("ticket_id", $first_id)->get(["id", "attach"])->toArray();
@@ -782,6 +781,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
       }else{
+        $id = json_decode($id);
         foreach ($id as $key => $value) {
           $file =$this->mensajes->where("id", $value->id)->first()->toArray();
   
