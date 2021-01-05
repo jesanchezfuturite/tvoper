@@ -279,9 +279,8 @@ class CalculoimpuestosController extends Controller
     {
     	$d = explode("-",$fecha);
 
-    	$year 	= $d[0];
-    	$month 	= $d[1];
-
+    	$year 	= (integer)$d[0];
+    	$month 	= (integer)$d[1];
 
     	// buscar en la tabla todos los factores que correspondan al año
     	try{
@@ -290,7 +289,7 @@ class CalculoimpuestosController extends Controller
 
 
     	}catch( \Exception $e ){
-    		dd("CalculoimpuestosController::getInpc " . $e->getMessage());
+    		dd($this->inpc_values,"CalculoimpuestosController::getInpc " . $e->getMessage());
     	}
 
 
@@ -502,10 +501,11 @@ class CalculoimpuestosController extends Controller
 
 		$fa = strtotime($this->fecha_actual . " 00:00:00");
 		$fv = strtotime($this->fecha_vencimiento . " 00:00:00");
-
+        
 		if($fa <= $fv){
 			return $total;
 		}else{
+            
 			// esta vencido por lo tanto corre recargos
 			$fa = explode("-",$this->fecha_actual);
 			$yi = $fa[0];  // año de inicio
@@ -529,11 +529,13 @@ class CalculoimpuestosController extends Controller
 				$f = $yf.$mf;
 			}
 			$f = (integer)$f;
-			//$count = 0;
+
 			foreach($this->porcentajes_values as $p => $data)
 			{
-				if($p >= $i && $p <= $f)
+                
+				if($p <= $i && $p >= $f)
 				{
+
 					$total += $data["vencido"];
 				}
 /*
@@ -556,6 +558,7 @@ class CalculoimpuestosController extends Controller
 						exit();
 
 				}*/
+                           
 			}
 
 			return $total / 100;
