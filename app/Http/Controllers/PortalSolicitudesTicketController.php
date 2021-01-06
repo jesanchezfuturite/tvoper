@@ -261,8 +261,6 @@ class PortalSolicitudesTicketController extends Controller
         ->with(['catalogo' => function ($query) {
           $query->select('id', 'tramite_id');
         }])->get()->toArray();
-
-    
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -283,7 +281,11 @@ class PortalSolicitudesTicketController extends Controller
           $datos=[];
           foreach ($solicitudes as $d => $dato) { 
             if($dato["tramite_id"]== $tramite["tramite_id"]){
-              $info = $this->asignarClavesCatalogo($dato["info"]);
+              if(!empty($info)){
+                $info=$data["info"];
+              }else{
+                $info = $this->asignarClavesCatalogo($dato["info"]);
+              }              
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
@@ -495,7 +497,7 @@ class PortalSolicitudesTicketController extends Controller
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
-              ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
+              ->update(['id_transaccion'=>$id_transaccion]);
           }
         }        
 
@@ -532,7 +534,7 @@ class PortalSolicitudesTicketController extends Controller
          
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-          ->update(['status'=> $request->status]);
+          ->update(['status'=> 3]);
         }      
 
       } catch (\Exception $e) {
@@ -658,9 +660,9 @@ class PortalSolicitudesTicketController extends Controller
     }
 
 
-    public function getDataTramite($id){
-        
+    public function getDataTramite($id){        
       try {
+      
         $solicitudes = PortalSolicitudesTicket::where('id', $id)
         ->with(['catalogo' => function ($query) {
           $query->select('id', 'tramite_id');

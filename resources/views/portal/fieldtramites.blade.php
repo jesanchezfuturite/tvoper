@@ -1,7 +1,6 @@
 @extends('layout.app')
 @section('content')
-<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
-<link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
+
 <h3 class="page-title">Portal <small>Configuración de campos para trámites </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -33,12 +32,14 @@
             </div>
         </div>
         <div class="portlet-body" id="Removetable">           
+            
             <div class="form-group"> 
-                <div class="col-md-6">              
+                <div class="col-md-12">              
                 <button class="btn green" href='#portlet-config' data-toggle='modal' >Agregar</button>
+                <span class="help-block">&nbsp; </span>
                 </div>
             </div>
-            <span class="help-block">&nbsp; </span>
+            
             
             <table class="table table-hover" id="sample_2">
                 <thead>
@@ -62,10 +63,10 @@
                                 @endif
                             </td>
                             <td class='text-center' width='20%'>
-                                <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
+                                @if( $tramite["estatus"] == 1   )
+                                    <a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='update( {{ json_encode($tramite) }} )'>
                                     <i class='fa fa-pencil'></i>
-                                </a>
-                                @if( $tramite["estatus"] == 1 )
+                                    </a>                              
                                     <a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='deleted( {{ json_encode($tramite) }} )'>
                                         <i class='fa fa-minus'></i>
                                     </a>
@@ -143,18 +144,47 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="portlet-tramites" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
+                <h4 class="modal-title">Campos en uso por Tramites</h4>
+            </div>
+            <div class="modal-body" style="height:360px  !important;overflow-y:scroll;overflow-y:auto;">                 
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-12">                      
+                           <table id="tblTramites" class="table table-hover" >
+                            <thead>
+                                <tr>
+                                    <th>Tramites</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                    <br>                
+            </div>
+            <div class="modal-footer">
+                <button class="btn blue" onclick="GuardarExcel()"><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
+                 <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 @section('scripts')
 
-<script src="assets/global/dataTable/dataTables.min.js"></script>
-<script src="assets/global/dataTable/jszip.min.js"></script>
-<script src="assets/global/dataTable/vfs_fonts.js"></script>
-<script src="assets/global/dataTable/buttons.html5.min.js"></script>
 <script type="text/javascript">
 
     jQuery(document).ready(function() {
-        $('#sample_2').DataTable( );
+        TableAdvanced.init();
     });
 
     function limpiar()
@@ -248,12 +278,66 @@
             limpiar();
             location.reload();
           }else{
+            console.log(campo);
+            document.getElementById("jsonCode").value=response.response;
+            var n=$.parseJSON(response.response);
+            $("#tblTramites tbody").empty();
+            $.each(n, function(i, item) {
+                $("#tblTramites tbody").append("<tr>"
+                    +"<td>"+item.nombre+"</td>"
+                    +"</tr>");
+            });
             Command: toastr.warning(response.Message, "Notifications")
+            $('#portlet-tramites').modal('show');
           }
         })
         .fail(function( msg ) {
             console.log("Error al Cargar Tabla");  
         }); 
     }
+    function GuardarExcel()
+    {
+        var campo =$("#nombre").val();
+        var JSONData=$("#jsonCode").val();
+        JSONToCSVConvertor(JSONData, "Campo "+campo, true)
+    }
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+      var f = new Date();
+      fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+        var CSV = '';    
+        //CSV += ReportTitle + '\r\n\n';
+        if (ShowLabel) {
+            var row = ""; 
+            for (var index in arrData[0]) { 
+                row += index + ',';
+            }
+            row = row.slice(0, -1);
+            CSV += row + '\r\n';
+        } 
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+            row.slice(0, row.length - 1); 
+            CSV += row + '\r\n';
+        }
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
+        }
+        var fileName = fecha;
+        fileName += ReportTitle.replace(/ /g,"_");
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        var link = document.createElement("a");    
+        link.href = uri;
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+         Command: toastr.success("Success", "Notifications")
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+}
 </script>
 @endsection
