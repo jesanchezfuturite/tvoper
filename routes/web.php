@@ -153,6 +153,9 @@ Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransac
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
 
+Route::get('/reporte-actualizaciones','MasterlogController@index');
+Route::post('/report-paid-operation','MasterlogController@consultamasterlog');
+
 /************************ FAMILIA ***********************/
 Route::get('/familia','MotorpagosController@familia');
 Route::post('/familia-insert','MotorpagosController@familiaInsert');
@@ -386,6 +389,7 @@ Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSo
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
 Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
 Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');

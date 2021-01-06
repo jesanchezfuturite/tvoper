@@ -168,27 +168,29 @@ class ApiController extends Controller
     public function registro_publico(Request $request)
     {
      	try
-		{
+		  {
 	        $origen = $request->origen;
 
 	        $url = $this->ws_rp[$origen];
 
 	        $this->client = new \GuzzleHttp\Client();
 
-	        $response = $this->client->post(
-	                $url
-	        );
+
+	    	$response = $this->client->post(
+	    		$url	
+	    	);
 
 	        $results = $response->getBody();
 
-	        $r = json_decode($results);
 
-	        return response()->json($r);
+		    $r = json_decode($results);
 
-        }catch (\Exception $e){
+		    return response()->json($r);
+
+       }catch (\Exception $e){
                 dd($e->getMessage());
 
-        }
+       }
     }
 
     /**
