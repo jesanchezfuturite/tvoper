@@ -668,60 +668,90 @@ class PortalSolicitudesTicketController extends Controller
 
     public function getDataTramite($id){        
       try {
-        
-        $solicitudes = PortalSolicitudesTicket::where('id', $id)
-        ->with(['catalogo' => function ($query) {
-          $query->select('id', 'tramite_id');
-        }])->get()->toArray();
+        $solicitudes = $this->ticket->where('id', $id)->first();
+        $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
+        if($tramite->estatus==0){
+          if($solicitudes->catalogo_id ==10){
+            $solicitudes = PortalSolicitudesTicket::where('id', $id)
+            ->with(['catalogo' => function ($query) {
+              $query->select('id', 'tramite_id');
+            }])->get()->toArray();
+            
 
-    
-        $ids_tramites=[];
-        foreach ($solicitudes as &$sol){
-          foreach($sol["catalogo"]  as $s){
-            $sol["tramite_id"]=$s["tramite_id"];            
-          }
-        }
-
-        $ids_tramites= array_column($solicitudes, 'tramite_id');
-        
-        $idstmts = array_unique($ids_tramites);
-      
-        
-        $tramites = $this->getTramites($idstmts);
-    
-        $tmts=[];
-        $response =[];
-        foreach($tramites as $t => $tramite){
-          $datos=[];
-          foreach ($solicitudes as $d => $dato) { 
-            if($dato["tramite_id"]== $tramite["tramite_id"]){
-              $info = $this->asignarClavesCatalogo($dato["info"]);
-              $data=array(
-                "id"=>$dato["id"],
-                "clave"=>$dato["clave"],
-                "catalogo_id"=>$dato["catalogo_id"],
-                "user_id"=>$dato["user_id"],
-                "info"=>json_decode($info),
-                "status"=>$dato["status"]
-              );
-
-              array_push($datos, $data);
-              $tramite["solicitudes"]= $datos;
-              
+            $ids_tramites=[];
+            foreach ($solicitudes as &$sol){
+              foreach($sol["catalogo"]  as $s){
+                $sol["tramite_id"]=$s["tramite_id"];            
+              }
             }
-          
+
+            $ids_tramites= array_column($solicitudes, 'tramite_id');            
+            $idstmts = array_unique($ids_tramites);           
+            $tramites = $this->getTramites($idstmts);
+            $tmts=[];
+            $response =[];
+            foreach($tramites as $t => $tramite){
+              $datos=[];
+              foreach ($solicitudes as $d => $dato) { 
+                if($dato["tramite_id"]== $tramite["tramite_id"]){
+                  $info = $this->asignarClavesCatalogo($dato["info"]);
+                  $data=array(
+                    "id"=>$dato["id"],
+                    "clave"=>$dato["clave"],
+                    "catalogo_id"=>$dato["catalogo_id"],
+                    "user_id"=>$dato["user_id"],
+                    "info"=>json_decode($info),
+                    "status"=>$dato["status"]
+                  );
+                  array_push($datos, $data);
+                  $tramite["solicitudes"]= $datos;
+                }
+              }
+              array_push($tmts, $tramite);
+            }
+            unset($tmts[0]["tramite_id"]);
+
+            $response["tramite"] =$tmts[0];
+
+            return $response;     
+          }else{
+            $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
+            $solicitudes = PortalSolicitudesTicket::where('id', $id)
+            ->with(['catalogo' => function ($query) {
+              $query->select('id', 'tramite_id');
+            }])->get()->toArray();
+            
+            $ids_tramites=[];
+            foreach ($solicitudes as &$sol){
+              foreach($sol["catalogo"]  as $s){
+                $sol["tramite_id"]=$s["tramite_id"];            
+              }
+            }
+
+            $ids_tramites= array_column($solicitudes, 'tramite_id');            
+            $idstmts = array_unique($ids_tramites);           
+            $tramites = $this->getTramites($idstmts);
+            $tmts=[];
+            $response=[];
+
+            unset($tramites[0]["tramite_id"]);
+
+            $json_envio = ($tramite->json_envio);
+            $tramites[0]["json_envio"]=json_decode($json_envio);
+  
+            $response["tramite"] =$tramites[0];
+            return $response;
           }
-            array_push($tmts, $tramite);
-  
+        }else{
+          return response()->json(
+            [
+              "Code" => "200",
+              "Message" => "Este tramite no es un Tramite Completo",
+            ]
+          );
         }
-        unset($tmts[0]["tramite_id"]);
+      
 
-
-        $response["tramite"] =$tmts;
-
-  
-        return $response;
-       
   
       }catch(\Exception $e) {
   
@@ -751,44 +781,7 @@ class PortalSolicitudesTicketController extends Controller
      
     }
 
-    public function editFiles($data){
-      $mensaje = $data["mensaje"];
-      $ticket_id = $data["ticket_id"];    
-      $file = $data['file'];
-      $id = $data['id']; 
 
-      $extension = $file->getClientOriginalExtension();
-
-      try {
-        $file =$this->mensajes->where("id", $id)->first()->toArray();
-        $mensajes =$this->mensajes->where('id', $id)->update([
-          'ticket_id'=> $ticket_id,
-          'mensaje' => $mensaje,
-        ]);
-
-        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
-        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-          'attach' => $attach,
-        ]);
-
-        
-        $pathtoFile = storage_path('app/'.$file->attach);
-        unlink($pathtoFile);
-
-        \Storage::disk('local')->put($attach,  \File::get($file));
-
-
-     
-       
-      } catch(\Exception $e) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al guardar archivo",
-          ]
-        ); 
-      }
-    }
     public function downloadFile($file)
     {
       try{
@@ -798,6 +791,5 @@ class PortalSolicitudesTicketController extends Controller
         log::info("error PortalSolicitudesTicketController@downloadFile");
       }
     }
-
     
 }
