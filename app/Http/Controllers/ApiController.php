@@ -175,21 +175,15 @@ class ApiController extends Controller
        
 	        $this->client = new \GuzzleHttp\Client();
 
-	    	$response = $this->client->get(
-	    		$url,
-	    		[
-	    			"query" => 
-		    			[
-		    				
-		    			]
-	    		]	
+	    	$response = $this->client->post(
+	    		$url	
 	    	);
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+		$r = json_decode($results);
 
-			return json_encode($results->data[0]);
+		return response()->json($r);
 
         }catch (\Exception $e){
         	dd($e->getMessage());
