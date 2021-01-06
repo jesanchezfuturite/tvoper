@@ -160,9 +160,15 @@ class PortalSolicitudesTicketController extends Controller
 
         }else{
           if(!empty($solicitantes)){
+            $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
+            $ids_entrada = array_column($solicitantes, 'id');
+            $ids_eliminar = array_diff($ids_originales, $ids_entrada);
+            $ids_agregar = array_diff($ids_entrada, $ids_originales);
+            $eliminar_solicitantes = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($solicitantes as $key => $value){              
-              $info->solicitante=$value;  
-              $ticket = $this->ticket->create([
+              $info->solicitante=$value;
+              // $info["solicitantes"]=$value;  
+              $ticket = $this->ticket->updateOrCreate(["id" =>$request->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
@@ -662,7 +668,7 @@ class PortalSolicitudesTicketController extends Controller
 
     public function getDataTramite($id){        
       try {
-      
+        
         $solicitudes = PortalSolicitudesTicket::where('id', $id)
         ->with(['catalogo' => function ($query) {
           $query->select('id', 'tramite_id');
