@@ -158,7 +158,7 @@ class ApiController extends Controller
 
     /**
      * Consultar boleta de registro publico de la propiedad
-     * 
+     *
      * @param clave de acceso
      *
      *
@@ -167,28 +167,30 @@ class ApiController extends Controller
 
     public function registro_publico(Request $request)
     {
-        try
-        {
-        	$origen = $request->origen;
+     	try
+		  {
+	        $origen = $request->origen;
 
-        	$url = $this->ws_rp[$origen];
-       
+	        $url = $this->ws_rp[$origen];
+
 	        $this->client = new \GuzzleHttp\Client();
+
 
 	    	$response = $this->client->post(
 	    		$url	
 	    	);
 
-	    	$results = $response->getBody();
+	        $results = $response->getBody();
 
-		$r = json_decode($results);
 
-		return response()->json($r);
+		    $r = json_decode($results);
 
-        }catch (\Exception $e){
-        	dd($e->getMessage());
-        	
-        }
+		    return response()->json($r);
+
+       }catch (\Exception $e){
+                dd($e->getMessage());
+
+       }
     }
 
     /**
