@@ -251,7 +251,7 @@ class PortalSolicitudesTicketController extends Controller
     }
       
     public function getInfo($user_id){
-      // try {
+      try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         $notary_id = $relation->notary_office_id;
@@ -311,14 +311,14 @@ class PortalSolicitudesTicketController extends Controller
         return $response;
         
   
-      // } catch (\Exception $e) {
-      //   return response()->json(
-      //     [
-      //       "Code" => "400",
-      //       "Message" => "Error al obtener información",
-      //     ]
-      //   );
-      // }
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener información",
+          ]
+        );
+      }
     }
   
     public function detalleTramite($clave){
