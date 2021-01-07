@@ -375,6 +375,8 @@ Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
 Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
+Route::post('/solicitudes-update-status' , 'PortalSolicitudesController@updateStatus');
+
 
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
