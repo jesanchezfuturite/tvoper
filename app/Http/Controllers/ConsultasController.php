@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Validator;
 /**** Repository ****/
 use App\Repositories\ConceptsCalculationRepositoryEloquent;
 use App\Repositories\ConceptsubsidiesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
 use App\Repositories\CurrenciesRepositoryEloquent;
 use App\Repositories\ApplicableSubjectRepositoryEloquent;
+use App\Repositories\UsuariodbentidadRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\PagossolicitudRepositoryEloquent;
 /***/
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
@@ -31,7 +34,9 @@ class ConsultasController extends Controller
     protected $umahistorydb;
     protected $currenciesdb;
     protected $applicablesubjectdb;
-
+    protected $usuarioentidaddb;
+    protected $oper_transaccionesdb;
+    protected $pagossolicituddb;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -43,7 +48,10 @@ class ConsultasController extends Controller
         ConceptsubsidiesRepositoryEloquent $conceptsubsidiesdb,
         UmahistoryRepositoryEloquent $umahistorydb,
         CurrenciesRepositoryEloquent $currenciesdb,
-        ApplicableSubjectRepositoryEloquent $applicablesubjectdb
+        ApplicableSubjectRepositoryEloquent $applicablesubjectdb,
+        UsuariodbentidadRepositoryEloquent $usuarioentidaddb,
+        TransaccionesRepositoryEloquent $oper_transaccionesdb,
+        PagossolicitudRepositoryEloquent $pagossolicituddb
 
     )
     {
@@ -54,6 +62,9 @@ class ConsultasController extends Controller
         $this->umahistorydb=$umahistorydb;
         $this->currenciesdb=$currenciesdb;
         $this->applicablesubjectdb=$applicablesubjectdb;
+        $this->usuarioentidaddb=$usuarioentidaddb;
+        $this->oper_transaccionesdb=$oper_transaccionesdb;
+        $this->pagossolicituddb=$pagossolicituddb;
     }
 
     public function calculoconceptos(Request $request)
@@ -330,5 +341,153 @@ class ConsultasController extends Controller
         return response()->json($responseJson);
         
        
+    }
+
+    public function consultaPagos(Request $request)
+    { 
+        //log::info($request);
+        $responseJson=array();
+        $response=array();
+        try{
+        $user=$request->user;
+        //$entidad=$request->entidad;
+       /*$validator = Validator::make($request->all(), [
+            'user' => 'required',
+            'entidad' => 'required',
+        ]);
+       if ($validator->fails()) {
+            log::info($validator->fails());
+        }else{*/
+            if($user==null)
+            {
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
+                return response()->json($responseJson);
+            }
+            $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
+            if($userExist->count()>0)
+            {
+                $response=$this->oper_transaccionesdb->findTransaccionesPagado($user);
+               //log::info('registros: ' . $response->count());
+                if($response<>null)
+                {
+                    $responseJson= $this->reponseVerf('202','',$response);
+                }else{
+                    $responseJson= $this->reponseVerf('202','Sin registros',$response);
+                }
+                
+            }else{
+                $responseJson= $this->reponseVerf('400','usuario no existe',[]);
+            }
+        }catch (\Exception $e) {
+            log::info('consultaPagos ' . $e->getMessage());
+            $responseJson= $this->reponseVerf('400','ocurrio un error',[]);     
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
+    }
+    public function PagosVerificados(Request $request)
+    { 
+        $fecha=Carbon::now()->format('Y-m-d H:m:s');
+        $responseJson=array();
+        $noInsert=array();
+        //log::info($request->request);
+        try{            
+            $insolicitud=array();            
+            $folios=$request->id_transaccion_motor;
+            $user=$request->user;
+            if($user==null)
+            {
+                $responseJson= $this->reponseVerf('400','user requerido',$noInsert);
+                return response()->json($responseJson);
+            }
+            //(log::info(is_array($folios));
+            if(empty($folios))
+            {
+                $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
+                return response()->json($responseJson);
+            }
+            foreach ($folios as $f) {
+                $findEntTra=$this->oper_transaccionesdb->verifTransaccionesPagado($user,$f);                
+                if($findEntTra->count()>0)
+                {
+                    foreach ($findEntTra as $e) {                        
+                        if($e->existe<>null)
+                        {
+                            $noInsert []=array(
+                                "estatus"=>"Ya se encuentra registrado",
+                                "id_transaccion_motor"=>$f
+                            );
+                        }else{
+                            $insolicitud []=array(
+                            'id_transaccion_motor'=>$f,
+                            'created_at'=>$fecha,
+                            'updated_at'=>$fecha,
+                            );
+                        }
+                        
+                    }
+                }else{
+                     $noInsert []=array(
+                        "estatus"=>"No pertenece a una entidad y/o no existe el folio",
+                        "id_transaccion_motor"=>$f
+                    );
+                }                       
+            }
+                //log::info($insolicitud);               
+            
+            $inserts=$this->pagossolicituddb->insert($insolicitud);              
+            $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);  
+         }catch (\Exception $e) {
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
+    }
+    public function consultaEntidadFolios(Request $request)
+    { 
+        $responseJson=array();
+        $select=array();
+        try{            
+            $insolicitud=array();            
+            $folios=$request->id_transaccion_motor;
+            $entidad=$request->entidad;
+            $user=$request->user;
+            if($user==null){
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null && $folios==null){
+                $responseJson= $this->reponseVerf('400','entidad / id_transaccion_motor requerido',[]);
+                return response()->json($responseJson);
+            }
+            if($entidad==null)
+            {
+                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
+            }else{
+                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.entidad',$entidad);
+            }           
+                   
+            $responseJson= $this->reponseVerf('202','',$select);  
+         }catch (\Exception $e) {
+            $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
+            log::info('PagosVerificados insert' . $e->getMessage());
+          return  response()->json($responseJson);            
+        }
+        return response()->json($responseJson);
+
+    }
+    private function reponseVerf($status,$error,$responseJ)
+    {
+        $response=array();
+
+        $response= array(
+                    'code' => $status,
+                    'status' => $error,
+                    'response' => $responseJ,
+                );
+        return $response;
     }
 }

@@ -79,5 +79,19 @@ class PortalcamporelationshipRepositoryEloquent extends BaseRepository implement
             Log::info('[PortalcamporelationshipRepositoryEloquent@findTramite] Error ' . $e->getMessage());
         }
     }
+    public function findCamposTramites($idcampo)
+    {
+        try{
+        $data = Portalcamporelationship::select('campos_relationship.tramite_id as id',$this->db  . '.tipo_servicios.Tipo_Descripcion as nombre')
+            ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','campos_relationship.tramite_id')
+            ->where('campos_relationship.campo_id', $idcampo)
+            ->groupBy('campos_relationship.tramite_id')
+            ->get();
+
+            return $data;
+        }catch( \Exception $e){
+            Log::info('[PortalcamporelationshipRepositoryEloquent@findTramite] Error ' . $e->getMessage());
+        }
+    }
 
 }

@@ -288,7 +288,15 @@ class Conciliacion extends Command
 
                             
                         }
-
+                         if($this->bankName=='netPay')
+                        {
+                             if(strlen(substr($line, $idStart, $idLength)) == 8)
+                             {
+                                $origen='01';
+                             }else{
+                                $origen     = substr($line, $origenStart, $origenLength);
+                             }                          
+                        }
                         if($haltV == 1) // esto se agrego para validar los cargos de comision en los archivos
                         {
                             $data =
@@ -324,12 +332,26 @@ class Conciliacion extends Command
                     $line   = fgets($fo);
                     $bScotia=false;
                     if($this->bankName=='scotiabank')
+                    {
+                        if(strcmp(substr($line, 1,1), "2") == 0)
                         {
-                             if(strcmp(substr($line, 1,1), "2") == 0)
-                             {
-                                 $bScotia=true;
-                             }                           
+                            $bScotia=true;
+                        }                           
+                    }
+                    if($this->bankName=="banamexV")
+                    {   
+                         $transaccion_id=substr($line, 57, 10);
+                         $referencia=substr($line, $referenciaStart, $referenciaLength);
+                        log::info($transaccion_id);
+                        if(strcmp(substr($transaccion_id, 0,1), "2") == 0 && strcmp(substr($referencia, 0,2), "11") == 0)
+                        {
+                            $transaccion_id= substr($line, 57, 10);
+                        }else{
+                            $transaccion_id=substr($line, $idStart, $idLength);
                         }
+                    }else{
+                            $transaccion_id=substr($line, $idStart, $idLength);
+                    }
                     if(
                         strcmp(substr($line, 0,1), "D") == 0 || // condicion afirmeVentanilla
                         $bScotia == true                     || // condicion scotiabank  
@@ -349,7 +371,7 @@ class Conciliacion extends Command
                                 "month"          => substr($line, $monthStart, $monthLength),
                                 "year"           => substr($line, $yearStart, $yearLength),
                                 "monto"          => $monto,
-                                "transaccion_id" => substr($line, $idStart, $idLength),
+                                "transaccion_id" => $transaccion_id,
                                 "status"         => "np",
                                 "filename"       => $filename,
                                 "origen"         => substr($line, $origenStart, $origenLength),

@@ -153,6 +153,9 @@ Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransac
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
 
+Route::get('/reporte-actualizaciones','MasterlogController@index');
+Route::post('/report-paid-operation','MasterlogController@consultamasterlog');
+
 /************************ FAMILIA ***********************/
 Route::get('/familia','MotorpagosController@familia');
 Route::post('/familia-insert','MotorpagosController@familiaInsert');
@@ -375,6 +378,8 @@ Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
 Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
+Route::post('/solicitudes-update-status' , 'PortalSolicitudesController@updateStatus');
+
 
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
@@ -386,6 +391,7 @@ Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSo
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
 Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
 Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
@@ -418,5 +424,6 @@ Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
 /***************************apis webservice*************************************/
 Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
 Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
+Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
 
 

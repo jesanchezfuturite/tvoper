@@ -29,6 +29,14 @@ class ApiController extends Controller
 	protected $insumos_user = "fun1";
 	protected $insumos_pass = "prueba123";
 
+	// registro publico
+	protected $ws_rp = array(
+		"qa" 	=> "http://10.1.0.130:240/wsfolrpp/NR173",
+		"prod" 	=> "http://10.1.0.130:240/wsfolrpp/MARISOLGZZ",
+	);
+
+
+
 	// repos
 	protected $solicitudes_tramite;
 
@@ -146,6 +154,43 @@ class ApiController extends Controller
 
 
 
+    }
+
+    /**
+     * Consultar boleta de registro publico de la propiedad
+     *
+     * @param clave de acceso
+     *
+     *
+     * @return void
+     */
+
+    public function registro_publico(Request $request)
+    {
+     	try
+		  {
+	        $origen = $request->origen;
+
+	        $url = $this->ws_rp[$origen];
+
+	        $this->client = new \GuzzleHttp\Client();
+
+
+	    	$response = $this->client->post(
+	    		$url	
+	    	);
+
+	        $results = $response->getBody();
+
+
+		    $r = json_decode($results);
+
+		    return response()->json($r);
+
+       }catch (\Exception $e){
+                dd($e->getMessage());
+
+       }
     }
 
     /**

@@ -20,5 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/ws','ConsultasController@calculoconceptos');
 Route::get('/uma','ConsultasController@valorUma');
 Route::get('/subsidies/{id_tramite?}','ConsultasController@consultaSubsidio');
-
+/****/
+Route::post('/consulta-pagos','ConsultasController@consultaPagos');
+Route::post('/verifica-pagos','ConsultasController@PagosVerificados');
+Route::post('/consulta-folios','ConsultasController@consultaEntidadFolios');
 

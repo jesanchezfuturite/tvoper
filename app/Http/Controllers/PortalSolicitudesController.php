@@ -574,6 +574,30 @@ class PortalSolicitudesController extends Controller
         
   
     }
+
+    public function updateStatus(Request $request){
+      try { 
+           
+        $solicitudTicket = $this->ticket->where('id' , $request->id)
+        ->update(['status'=> $request->status]);
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
+    }
  
 }
 
