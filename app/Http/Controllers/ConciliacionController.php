@@ -508,7 +508,38 @@ class ConciliacionController extends Controller
                                 }
                                 break;
                             case 2:
+                             if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_as400 ++;
+                                    $monto_conciliado_as400 += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_as400 ++;
+                                    $monto_no_conciliado_as400 += $t["amount"];
+                                }
+                                break;
                             case 5:
+                                // son los de AS400
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_as400 ++;
+                                    $monto_conciliado_as400 += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_as400 ++;
+                                    $monto_no_conciliado_as400 += $t["amount"];
+                                }
+                                break;
+                            case 7:
+                                // son los de AS400
+                                if(strcmp($t["status"],"p") == 0)
+                                {
+                                    $total_conciliados_as400 ++;
+                                    $monto_conciliado_as400 += $t["amount"];
+                                }else{
+                                    $total_no_conciliados_as400 ++;
+                                    $monto_no_conciliado_as400 += $t["amount"];
+                                }
+                                break;
+                            case 20:
                                 // son los de AS400
                                 if(strcmp($t["status"],"p") == 0)
                                 {
@@ -769,10 +800,19 @@ class ConciliacionController extends Controller
     public function getAnomalia(Request $request)
     {
         // get parameters
-
+        $option='<>';
         $date = explode("/",$request->f);
 
         $f = $date[2] . "-" . $date[0] . "-" . $date[1];
+        $internet= array("idTrans" => "N / A",
+                            "TotalTramite" => "N / A",
+                            "CostoMensajeria" => "N / A" );
+        if($request->opcion==1)
+        {
+            $option='=';
+        }else{
+            $option='<>';
+        }
 
        // $date_from = $date[2] . "-" . $date[0] . "-" . $date[1] . " 00:00:00"; commented to use fecha_ejecucion
 
@@ -792,13 +832,7 @@ class ConciliacionController extends Controller
         {
             try{
 
-                $data = $this->pr
-                            ->where('cuenta_banco',$cuenta)
-                            ->where('cuenta_alias',$alias)
-                            ->where('fecha_ejecucion',$f)
-                            ->where('status','<>','p')
-                            ->where('origen',1 )
-                            ->groupBy('transaccion_id')->get();
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(1),'p',$option);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -808,8 +842,8 @@ class ConciliacionController extends Controller
             {
                 foreach($data as $d)
                 {
-                    try
-                    {
+                    /*try
+                    {*/
                         
                         $info = $this->egobTrans->findWhere( ["idTrans" => $d->transaccion_id] );
 
@@ -817,17 +851,16 @@ class ConciliacionController extends Controller
                         {                      
                             foreach($info as $i)
                             {
-                                $folio_id []= array(
-                                    "internet"      => $i, 
-                                    "repositorio"  => $d
-                                );
+                                $folio_id []= array_merge((array) json_decode($i),(array)  json_decode($d) );
                             }
+                        }else{
+                             $folio_id []= array_merge((array) $internet,(array) json_decode($d) );
                         }
-                    }catch( \Exception $e ){
+                   /* }catch( \Exception $e ){
                     Log::info('[Conciliacion:getAnomalia] ERROR buscando informacion en transacciones de internet ... ' . $e->getMessage());     
                     Log::info('... Transaccion ID >' . $d->transaccion_id);
                     Log::info('... ID' . $d->id);
-                    }
+                    }*/
                 }    
                 $results = array(
                     "response"  => 1,
@@ -839,33 +872,48 @@ class ConciliacionController extends Controller
                     "data"      => "No existen errores"
                 );  
             }
-        }elseif($fuente == 3){
+        }elseif($fuente == 2){
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr
-                            ->where('cuenta_banco',$cuenta)
-                            ->where('cuenta_alias',$alias)
-                            ->where('fecha_ejecucion',$f)
-                            ->where('status','<>','p')
-                            ->whereIn('origen', array(2,5) )
-                            ->groupBy('referencia')->get();
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(11) ,'p',$option);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
             }
+            
             if($data->count() > 0)
             {
                 foreach($data as $d)
                 {
-                    $folio_id []= array(
-                        "internet"      => array(
-                            "idTrans" => "N / A",
-                            "TotalTramite" => "N / A",
-                            "CostoMensajeria" => "N / A",
-                        ), 
-                        "repositorio"  => $d
-                    );
+                    $folio_id []= array_merge((array) $internet,(array) json_decode($d) );
+                }    
+                $results = array(
+                    "response"  => 1,
+                    "data"      => $folio_id
+                );    
+            }else{
+                $results = array(
+                    "response"  => 0,
+                    "data"      => "No existen errores"
+                );
+            }
+            
+        }elseif($fuente == 3){
+            // son todos los movimientos en el repositorio
+            try{
+
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(2,5,7,20) ,'p',$option);
+
+            }catch( \Exception $e){
+               Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
+            }
+            
+            if($data->count() > 0)
+            {
+                foreach($data as $d)
+                {
+                    $folio_id []= array_merge((array) json_decode($d), (array) $internet);
                 }    
                 $results = array(
                     "response"  => 1,
@@ -882,29 +930,17 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr
-                            ->where('cuenta_banco',$cuenta)
-                            ->where('cuenta_alias',$alias)
-                            ->where('fecha_ejecucion',$f)
-                            ->where('status','<>','p')
-                            ->whereNotIn('origen', array(1,11,2,5) )
-                            ->groupBy('referencia')->get();
-
+                $data = $this->pr->findnoconcNotIn($cuenta,$alias,$f,array(1,2,5,7,11,20) ,'p',$option);
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
             }
+            
             if($data->count() > 0)
             {
                 foreach($data as $d)
-                {
-                    $folio_id []= array(
-                        "internet"      => array(
-                            "idTrans" => "N / A",
-                            "TotalTramite" => "N / A",
-                            "CostoMensajeria" => "N / A",
-                        ), 
-                        "repositorio"  => $d
-                    );
+                {   
+                    $folio_id []= array_merge((array) json_decode($d), (array) $internet);
+                   
                 }    
                 $results = array(
                     "response"  => 1,
@@ -917,6 +953,7 @@ class ConciliacionController extends Controller
                 );
             }
         }
+        //log::info($results);
         return $results;
     }
 

@@ -419,4 +419,74 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }    
     }
+     public function findnoconc($cuenta,$alias,$f,$origen,$status,$opcion)
+    {
+       try{        
+        $data = Processedregisters::where('fecha_ejecucion','=',$f)
+        ->select('origen as origen',
+            'referencia as referencia',
+            'transaccion_id as transaccion_id',
+            'day as day',
+            'month as month',
+            'year as year',
+            'monto as monto',
+            'status as status',
+            'filename as filename',
+            'mensaje as mensaje',
+            'banco_id as banco_id',
+            'cuenta_banco as cuenta_banco',
+            'cuenta_alias as cuenta_alias',
+            'fecha_ejecucion as fecha_conciliacion',
+            'created_at as created_at',
+            'facturado as facturado'
+            )
+        ->where('cuenta_banco',$cuenta)
+        ->where('cuenta_alias',$alias)
+        ->where('status',$opcion,$status)
+        ->whereIn('origen',$origen)
+        ->groupBy('referencia')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@findnoconc] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
+    public function findnoconcNotIn($cuenta,$alias,$f,$origen,$status,$opcion)
+    {
+       try{        
+        $data = Processedregisters::where('fecha_ejecucion','=',$f)
+        ->select('origen as origen',
+            'referencia as referencia',
+            'transaccion_id as transaccion_id',
+            'day as day',
+            'month as month',
+            'year as year',
+            'monto as monto',
+            'status as status',
+            'filename as filename',
+            'mensaje as mensaje',
+            'banco_id as banco_id',
+            'cuenta_banco as cuenta_banco',
+            'cuenta_alias as cuenta_alias',
+            'fecha_ejecucion as fecha_ejecucion',
+             'created_at as created_at',
+            'facturado as facturado'
+            )
+        ->where('cuenta_banco',$cuenta)
+        ->where('cuenta_alias',$alias)
+        ->where('status',$opcion,$status)
+        ->whereNotIn('origen',$origen)
+        ->groupBy('referencia')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[ProcessedregistersRepositoryEloquent@findnoconc] Error ' . $e->getMessage());
+            return null;
+        }        
+    }
 }
