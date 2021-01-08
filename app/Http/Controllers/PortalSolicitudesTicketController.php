@@ -85,6 +85,7 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $status=80;
       }
+    
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
@@ -98,8 +99,7 @@ class PortalSolicitudesTicketController extends Controller
 
       $ids = [];
       try { 
-
-        if($request->has("status")){
+        if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($solicitantes)){
             $ids_entrada = array_column($solicitantes, 'id');
@@ -122,6 +122,64 @@ class PortalSolicitudesTicketController extends Controller
             }
             $first_id = reset($ids);
             if($request->has("file")){
+              $this->deleteFiles($clave);
+              foreach ($request->file as $key => $value) {
+                  $data =[
+                    'ticket_id'=> $first_id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value
+                    ];
+                  $this->saveFile($data);       
+                
+  
+              }
+            }
+          }else{
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+              "clave" => $clave,
+              "catalogo_id" => $catalogo_id,
+              "info"=> json_encode($info),              
+              "user_id"=>$user_id,
+              "status"=>$status      
+            ]); 
+            
+            if($request->has("file")){
+              $this->deleteFiles($clave);
+               foreach ($request->file as $key => $value) {   
+                  $data =[
+                    'ticket_id'=> $ticket->id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value
+                    ];
+                  $this->saveFile($data);       
+                }
+          
+             
+            }
+          }
+
+        }else{
+          if(!empty($solicitantes)){
+            $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
+            $ids_entrada = array_column($solicitantes, 'id');
+            $ids_eliminar = array_diff($ids_originales, $ids_entrada);
+            $ids_agregar = array_diff($ids_entrada, $ids_originales);
+            $eliminar_solicitantes = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+            foreach($solicitantes as $key => $value){              
+              $info->solicitante=$value;
+              // $info["solicitantes"]=$value;  
+              $ticket = $this->ticket->updateOrCreate(["id" =>$request->id],[
+                "clave" => $clave,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),              
+                "user_id"=>$user_id,
+                "status"=>$status
+        
+              ]);        
+             array_push($ids, $ticket->id);
+            }
+            $first_id = reset($ids);
+            if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
                   'ticket_id'=> $first_id,
@@ -133,36 +191,29 @@ class PortalSolicitudesTicketController extends Controller
   
               }
             }
-          }
-
-        }else{
-          foreach($solicitantes as $key => $value){              
-            $info->solicitante=$value;  
-            $ticket = $this->ticket->create([
+          }else{
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status
-      
-            ]);        
-           array_push($ids, $ticket->id);
-          }
-          $first_id = reset($ids);
-          if($request->has("file")){
-            foreach ($request->file as $key => $value) {
-              $data =[
-                'ticket_id'=> $first_id,
-                'mensaje' => $request->descripcion[$key],
-                'file'    =>  $value
-                ];
-               
-                $this->saveFile($data);             
-
+              "status"=>$status      
+            ]); 
+            
+            if($request->has("file")){
+               foreach ($request->file as $key => $value) {   
+                  $data =[
+                    'ticket_id'=> $ticket->id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value,
+                    ];
+                  $this->saveFile($data);       
+                }
+          
+             
             }
           }
-        }   
-        
+        }  
         
       } catch (\Exception $e) {
         $error = [
@@ -216,8 +267,6 @@ class PortalSolicitudesTicketController extends Controller
         ->with(['catalogo' => function ($query) {
           $query->select('id', 'tramite_id');
         }])->get()->toArray();
-
-    
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -238,7 +287,11 @@ class PortalSolicitudesTicketController extends Controller
           $datos=[];
           foreach ($solicitudes as $d => $dato) { 
             if($dato["tramite_id"]== $tramite["tramite_id"]){
-              $info = $this->asignarClavesCatalogo($dato["info"]);
+              if(!empty($info)){
+                $info=$data["info"];
+              }else{
+                $info = $this->asignarClavesCatalogo($dato["info"]);
+              }              
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
@@ -345,39 +398,27 @@ class PortalSolicitudesTicketController extends Controller
         return json_encode($informacion); 
     }
 
-    public function saveFile($data){ 
+    public function saveFile($data){
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
 
       $extension = $file->getClientOriginalExtension();
-      $attach = "archivo_solicitud_".$data["ticket_id"].".".$extension;
 
       try {
-        $archivo = $this->mensajes->where("ticket_id", $id_ticket)->first();
-        if($archivo){
-          $pathtoFile = storage_path('app/'.$archivo->attach);
-          unlink($pathtoFile);
-         
-          \Storage::disk('local')->put($attach,  \File::get($file));
-          $mensajes =$this->mensajes->where("ticket_id", $ticket_id)->update([
-            'ticket_id'=> $ticket_id,
-            'mensaje' => $mensaje,
-            'attach'    =>  $attach
-          ]);
-        
-        }else{
-          \Storage::disk('local')->put($attach,  \File::get($file));
-  
-          $mensajes =$this->mensajes->create([
-            'ticket_id'=> $ticket_id,
-            'mensaje' => $mensaje,
-            'attach'    =>  $attach
-          ]);
-  
-        }
      
-       
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $ticket_id,
+          'mensaje' => $mensaje,
+        ]);
+
+        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+        'attach' => $attach,
+        ]);
+
+        \Storage::disk('local')->put($attach,  \File::get($file));
+
       } catch(\Exception $e) {
         return response()->json(
           [
@@ -388,6 +429,8 @@ class PortalSolicitudesTicketController extends Controller
       }
 
     }
+
+ 
 
     public function filtrarSolicitudes(Request $request){
    
@@ -460,7 +503,7 @@ class PortalSolicitudesTicketController extends Controller
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
-              ->update(['id_transaccion'=>$id_transaccion,'status'=> $request->status]);
+              ->update(['id_transaccion'=>$id_transaccion]);
           }
         }        
 
@@ -497,7 +540,7 @@ class PortalSolicitudesTicketController extends Controller
          
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-          ->update(['status'=> $request->status]);
+          ->update(['status'=> 3]);
         }      
 
       } catch (\Exception $e) {
@@ -520,16 +563,31 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function updateStatusTramite(Request $request){
       $error=null;
+      switch ($request->status) {
+        case "60":
+          $statusTicket = 5;
+          break;
+        case "65":
+          $statusTicket = 99;
+          break;
+        default:
+          echo "";
+      }
      
       try { 
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-          ->update(['estatus'=> $request->status]);
+          ->update(['estatus'=> $request->status]);        
+
+          $id = $solTramites->id;
         }else{
           $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
           ->update(['estatus'=> $request->status]);
+
+          $id = $solTramites->id;
         }          
-        
+        $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
+        ->update(['status'=> $statusTicket]);
 
       } catch (\Exception $e) {
           $error = $e;
@@ -606,106 +664,94 @@ class PortalSolicitudesTicketController extends Controller
       }    
       
     }
-    public function editFile($data, $id){ 
-      $mensaje = $data["mensaje"];
-      $ticket_id = $id;
-      $file = $data['file']; 
 
 
-      $archivo = $this->mensajes->where("ticket_id", $id)->get();
-
-      $pathtoFile = storage_path('app/'.$archivo->attach);
-      unlink($pathtoFile);
-    
-      $extension = $file->getClientOriginalExtension();
-      $attach = "archivo_solicitud_".$ticket_id.".".$extension;
-      \Storage::disk('local')->put($attach,  \File::get($file));
-     
-    
+    public function getDataTramite($id){        
       try {
-        $mensajes =$this->mensajes->where("ticket_id", $id)->update([
-          'ticket_id'=> $ticket_id,
-          'mensaje' => $mensaje,
-          'attach'    =>  $attach
-        ]);
-  
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Archivo guardado con éxito",
-            "data"=>$mensajes
+        $solicitudes = $this->ticket->where('id', $id)->first();
+        $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
+        if($tramite->estatus==0){
+          if($solicitudes->catalogo_id ==10){
+            $solicitudes = PortalSolicitudesTicket::where('id', $id)
+            ->with(['catalogo' => function ($query) {
+              $query->select('id', 'tramite_id');
+            }])->get()->toArray();
             
-          ]
-        );
-  
-      }catch(\Exception $e) {
-  
-  
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al guardar archivo",
-          ]
-        );
-      }
-    }
 
-    public function getDataTramite($id){
-        
-      try {
-        $solicitudes = PortalSolicitudesTicket::where('id', $id)
-        ->with(['catalogo' => function ($query) {
-          $query->select('id', 'tramite_id');
-        }])->get()->toArray();
-
-    
-        $ids_tramites=[];
-        foreach ($solicitudes as &$sol){
-          foreach($sol["catalogo"]  as $s){
-            $sol["tramite_id"]=$s["tramite_id"];            
-          }
-        }
-
-        $ids_tramites= array_column($solicitudes, 'tramite_id');
-        
-        $idstmts = array_unique($ids_tramites);
-      
-        
-        $tramites = $this->getTramites($idstmts);
-    
-        $tmts=[];
-        $response =[];
-        foreach($tramites as $t => $tramite){
-          $datos=[];
-          foreach ($solicitudes as $d => $dato) { 
-            if($dato["tramite_id"]== $tramite["tramite_id"]){
-              $info = $this->asignarClavesCatalogo($dato["info"]);
-              $data=array(
-                "id"=>$dato["id"],
-                "clave"=>$dato["clave"],
-                "catalogo_id"=>$dato["catalogo_id"],
-                "user_id"=>$dato["user_id"],
-                "info"=>json_decode($info),
-                "status"=>$dato["status"]
-              );
-
-              array_push($datos, $data);
-              $tramite["solicitudes"]= $datos;
-              
+            $ids_tramites=[];
+            foreach ($solicitudes as &$sol){
+              foreach($sol["catalogo"]  as $s){
+                $sol["tramite_id"]=$s["tramite_id"];            
+              }
             }
-          
+
+            $ids_tramites= array_column($solicitudes, 'tramite_id');            
+            $idstmts = array_unique($ids_tramites);           
+            $tramites = $this->getTramites($idstmts);
+            $tmts=[];
+            $response =[];
+            foreach($tramites as $t => $tramite){
+              $datos=[];
+              foreach ($solicitudes as $d => $dato) { 
+                if($dato["tramite_id"]== $tramite["tramite_id"]){
+                  $info = $this->asignarClavesCatalogo($dato["info"]);
+                  $data=array(
+                    "id"=>$dato["id"],
+                    "clave"=>$dato["clave"],
+                    "catalogo_id"=>$dato["catalogo_id"],
+                    "user_id"=>$dato["user_id"],
+                    "info"=>json_decode($info),
+                    "status"=>$dato["status"]
+                  );
+                  array_push($datos, $data);
+                  $tramite["solicitudes"]= $datos;
+                }
+              }
+              array_push($tmts, $tramite);
+            }
+            unset($tmts[0]["tramite_id"]);
+
+            $response["tramite"] =$tmts[0];
+
+            return $response;     
+          }else{
+            $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
+            $solicitudes = PortalSolicitudesTicket::where('id', $id)
+            ->with(['catalogo' => function ($query) {
+              $query->select('id', 'tramite_id');
+            }])->get()->toArray();
+            
+            $ids_tramites=[];
+            foreach ($solicitudes as &$sol){
+              foreach($sol["catalogo"]  as $s){
+                $sol["tramite_id"]=$s["tramite_id"];            
+              }
+            }
+
+            $ids_tramites= array_column($solicitudes, 'tramite_id');            
+            $idstmts = array_unique($ids_tramites);           
+            $tramites = $this->getTramites($idstmts);
+            $tmts=[];
+            $response=[];
+
+            unset($tramites[0]["tramite_id"]);
+
+            $json_envio = ($tramite->json_envio);
+            $tramites[0]["json_envio"]=json_decode($json_envio);
+  
+            $response["tramite"] =$tramites[0];
+            return $response;
           }
-            array_push($tmts, $tramite);
-  
+        }else{
+          return response()->json(
+            [
+              "Code" => "200",
+              "Message" => "Este tramite no es un Tramite Completo",
+            ]
+          );
         }
-        unset($tmts[0]["tramite_id"]);
+      
 
-
-        $response["tramite"] =$tmts;
-
-  
-        return $response;
-       
   
       }catch(\Exception $e) {
   
@@ -719,8 +765,31 @@ class PortalSolicitudesTicketController extends Controller
       }
     
     }
+    public function deleteFiles($clave){
+        $solicitudes= $this->ticket->where("clave", $clave)->get(["id"])->toArray();
+        $first_id = reset($solicitudes);
 
-    
+        $file =$this->mensajes->where("ticket_id", $first_id)->get(["id", "attach"])->toArray();
+        
+        foreach ($file as $key => $value) {
+          $pathtoFile = storage_path('app/'.$value["attach"]);
+          unlink($pathtoFile);
 
+          $archivos =$this->mensajes->where("id", $value["id"])->delete();
+        }
+
+     
+    }
+
+
+    public function downloadFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->download($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesTicketController@downloadFile");
+      }
+    }
     
 }

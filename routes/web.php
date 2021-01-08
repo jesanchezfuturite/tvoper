@@ -378,6 +378,8 @@ Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
 Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
 Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
 Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
+Route::post('/solicitudes-update-status' , 'PortalSolicitudesController@updateStatus');
+
 
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
@@ -394,7 +396,7 @@ Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController
 Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
-
+Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -418,4 +420,10 @@ Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
 Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
 Route::get('/divisas', 'DivisasController@index');
 Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
+
+/***************************apis webservice*************************************/
+Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
+Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
+Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
+
 

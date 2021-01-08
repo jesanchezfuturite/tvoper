@@ -13,18 +13,22 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 use App\Repositories\PortalcampoRepositoryEloquent;
+use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 
 class PortaltramitesController extends Controller
 {
     //
 
 	protected $campos;
+	protected $camposreldb;
 
     public function __construct(
-    	PortalcampoRepositoryEloquent $campos
+    	PortalcampoRepositoryEloquent $campos,
+    	PortalcamporelationshipRepositoryEloquent $camposreldb
     )
     {
     	$this->campos = $campos;
+    	$this->camposreldb = $camposreldb;
     }
 
 
@@ -35,7 +39,7 @@ class PortaltramitesController extends Controller
 
 	public function listFields()
 	{
-		$cmp = $this->campos->all()->where('status', 1);
+		$cmp = $this->campos->all();
 
 		$response = array();
 
@@ -142,14 +146,27 @@ class PortaltramitesController extends Controller
 		$id = $request->id_campo;
 
 		try{
-			$campo = $this->campos->update(["status" => $status], $id);
+			$findrel=$this->camposreldb->findCamposTramites($id);
+			if($findrel->count()==0)
+			{
+				$campo = $this->campos->update(["status" => $status], $id);
+				return response()->json(
+					[
+						"Code" => "200",
+						"Message" => "Estatus Actualizado",
+					]
+				);
+			}else{
 
-			return response()->json(
-				[
-					"Code" => "200",
-					"Message" => "Estatus Actualizado",
-				]
-			);
+				return response()->json(
+					[
+						"Code" => "400",
+						"Message" => "Campo en uso en otros Tramites",
+						"response"=>json_encode($findrel)
+					]
+				);
+			}
+			
 		}
 		catch(\Exception $e){
 			Log::info('Error Edit Field '.$e->getMessage());
