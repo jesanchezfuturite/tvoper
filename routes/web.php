@@ -425,5 +425,9 @@ Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
 Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
 Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
 Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
+Route::get('/wsent/{origen}', 'ApiController@entidades');
+Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios');
+Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
+
 
 

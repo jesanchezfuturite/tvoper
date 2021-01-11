@@ -35,6 +35,30 @@ class ApiController extends Controller
 		"prod" 	=> "http://10.1.0.130:240/wsfolrpp/MARISOLGZZ",
 	);
 
+	//entidades
+
+	protected $ws_ent = array(
+		"qa" => "http://10.1.0.130:10021/web/services/WSCATEFService/WSCATEF?wsdl",
+		"prod"=> "",
+
+	);
+
+	//municipios
+
+	protected $ws_mun = array(
+		"qa" => "http://10.1.0.130:10021/web/services/WSCATMUNSService/WSCATMUNS?wsdl",
+		"prod"=> "",
+
+	);
+
+	
+	//distritos esta pendiente
+
+	protected $ws_dis = array(
+		"qa" => "",
+		"prod"=> "",
+
+	);
 
 
 	// repos
@@ -236,9 +260,119 @@ class ApiController extends Controller
         	
         }
     }
+ /**
+     * Consultar entidad
+     *
+     * @param clave de acceso
+     *
+     *
+     * @return void
+     */
+
+    public function entidades(Request $request)
+    {
+     	try
+		  {
+			$origen = $request->origen;
+			
+	        $url = $this->ws_ent[$origen];
+
+	        $this->client = new \GuzzleHttp\Client();
 
 
+	    	$response = $this->client->post(
+	    		$url	
+	    	);
 
+	        $results = $response->getBody();
+
+
+		    $r = json_decode($results);
+
+		    return response()->json($r);
+
+       }catch (\Exception $e){
+                dd($e->getMessage());
+
+       }
+	}
+	 /**
+     * Consultar municipio
+     *
+     * @param clave de acceso
+     *
+     *
+     * @return void
+     */
+
+	public function municipios(Request $request)
+    {
+     	try
+		  {
+			$origen = $request->origen;
+
+			$EntidadFed =$request->clave_entidad;
+			
+			$url = $this->ws_mun[$origen].'/'.$EntidadFed;
+			
+
+	        $this->client = new \GuzzleHttp\Client();
+
+
+	    	$response = $this->client->post(
+	    		$url	
+	    	);
+
+	        $results = $response->getBody();
+
+
+		    $r = json_decode($results);
+
+		    return response()->json($r);
+
+       }catch (\Exception $e){
+                dd($e->getMessage());
+
+       }
+    }
+	 /**
+     * Consultar distritos
+     *
+     * @param clave de acceso
+     *
+     *
+     * @return void
+     */
+
+	public function distritos(Request $request)
+    {
+     	try
+		  {
+			$origen = $request->origen;
+
+			$Mun =$request->clave_municipio;
+			
+	        $url = $this->ws_mun[$origen].'/'.$Mun;
+
+	        $this->client = new \GuzzleHttp\Client();
+
+
+	    	$response = $this->client->post(
+	    		$url	
+	    	);
+
+	        $results = $response->getBody();
+
+
+		    $r = json_decode($results);
+
+		    return response()->json($r);
+
+       }catch (\Exception $e){
+                dd($e->getMessage());
+
+       }
+    }
 
 
 }
