@@ -20,6 +20,7 @@
         </li>
     </ul>
 </div>
+<!---------------------------------
 <div class="row">
     <div class="portlet box blue">
         <div class="portlet-title">
@@ -37,7 +38,7 @@
           </div>
           <div class="col-md-3 col-ms-12">
             <div class="form-group">
-                <select id="itemsConfigUser" class="select2me form-control" onchange="changeComunidad()" >
+                <select id="itemsConfigUser" class="select2me form-control" >
                   <option value="0">-------</option>
                 </select>
               </div>
@@ -48,7 +49,6 @@
 </div>
 
 <div class="row">
- <!-- BEGIN SAMPLE TABLE PORTLET-->
   <div class="portlet box blue">
     <div class="portlet-title" >
       <div class="caption">
@@ -82,10 +82,137 @@
       </div>             
     </div>
   </div>
+       
+</div>
+--------------------------------->
+<div class="row">
+ <!-- BEGIN SAMPLE TABLE PORTLET-->
+  <div class="portlet box blue">
+    <div class="portlet-title" >
+      <div class="caption">
+          <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configurar Usuario</div>
+      </div>           
+    </div>
+    <div class="portlet-body form">
+      <span class="help-block">&nbsp;</span>
+
+      <div class="form-body">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="col-md-6"> 
+                <div class="form-group">
+                  <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
+                  <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">                                     
+                </div>
+              </div>
+              <div class="col-md-6"> 
+                <div class="form-group">
+                  <label >Correo Electrónico</label>                                             
+                  <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                  <span id="emailOK" class="help-block"></span>
+                </div>
+              </div>            
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+               <div class="col-md-6"> 
+                <div class="form-group">
+                  <label >Número de Teléfono</label>                                             
+                  <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
+                </div>
+              </div>
+               <div class="col-md-6"> 
+                <div class="form-group"> 
+                  <label >Nombre(s)</label>                                             
+                  <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
+                </div>
+              </div>            
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="col-md-6"> 
+                <div class="form-group">
+                  <label >Apellido Paterno</label>                                             
+                  <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label >Apellido Materno</label>                                                       
+                  <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
+               </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="col-md-6"> 
+                <div class="form-group">
+                  <label >CURP</label>                                             
+                  <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                   <span id="curpUs" class="help-block"></span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label >RFC</label>                                                       
+                  <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
+                   <span id="rfcUs" class="help-block"></span>
+               </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="col-md-6"> 
+                <div class="form-group"> 
+                  <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
+                  <div class="input-icon right">
+                      <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
+                      <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
+                      <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              
+              <div class="col-md-6"> 
+                <div class="form-group"> 
+                  <label >Permiso</label>
+                  <select id="itemsPermiso" class="select2me form-control" >
+                    <option value="0">-------</option>
+                  </select>                               
+                </div>
+              </div>
+              <div class="col-md-6"> 
+                <div class="form-group"> 
+                  <label >Comunidad</label>
+                  <select id="itemsConfigUser" class="select2me form-control" >
+                    <option value="0">-------</option>
+                  </select>                               
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <div class="row">
+              <div class="col-md-offset-5 col-md-7">
+                <button type="button" class="btn blue" onclick="saveUpdatePerf()"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn default" onclick="limpiarPerf()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+  </div>
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
-
-
 <!----------------------------------------- Nuevo usuario-------------------------------------------->
 <div class="modal fade" id="portlet-perfil" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog  modal-lg">
@@ -97,116 +224,7 @@
       </div>
       <div class="modal-body">
         <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label >Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
-                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
-              </div>                                           
-              </div>
-            </div>
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label >Correo Electrónico</label>                                             
-                <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
-                <span id="emailOK" class="help-block"></span>
-              </div>                                            
-              </div>
-            </div>            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-             <div class="col-md-6"> 
-              <div class="form-group">
-                <label >Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
-              </div>
-            </div>
-             <div class="col-md-6"> 
-              <div class="form-group"> 
-                   <div class="form-group">
-                <label >Nombre(s)</label>                                             
-                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
-              </div>                                
-              </div>
-            </div>            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <label >Apellido Paterno</label>                                             
-                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label >Apellido Materno</label>                                                       
-                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
-             </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <label >CURP</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
-                 <span id="curpUs" class="help-block"></span>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label >RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
-                 <span id="rfcUs" class="help-block"></span>
-             </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label >Tipo</label>                                                       
-                <select id="itemsTipoUser" class="select2me form-control" >
-                  <option value="0">-------</option>
-                  <option value="fisica">Fisica</option>
-                  <option value="moral">Moral</option>
-                </select>
-             </div>
-            </div>
-            <div class="col-md-6"> 
-              <div class="form-group"> 
-                <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
-                <div class="input-icon right">
-                    <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
-                    <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
-                    <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
-                </div>
-              </div> 
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            
-            <div class="col-md-6"> 
-              <div class="form-group"> 
-                <label >Permiso</label>
-                <select id="itemsPermiso" class="select2me form-control" >
-                  <option value="0">-------</option>
-                </select>                               
-              </div>
-            </div>
-          </div>
-        </div>
+       
       </div>
       <div class="row">
         <div class="col-md-12">
@@ -218,6 +236,7 @@
         </div>
       </div>
       <div class="modal-footer">
+        
           <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarPerf()">Cerrar</button>
       </div>
     </div>
@@ -251,8 +270,6 @@
 </div>
 
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
-<input type="text" name="base64pdf1" id="base64pdf1" hidden="true">
-<input type="text" name="base64pdf2" id="base64pdf2" hidden="true">
 @endsection
 
 @section('scripts')
@@ -260,48 +277,29 @@
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
-    $(".iDocument").css("display","none");
-    TableManaged.init();
-    ItemsTramite();    
+    //TableManaged.init();
+    ItemsTramite(); 
+    ItemsPermisos();   
   });
-  function getBase64SAT(file) {
-   var reader = new FileReader();
-   reader.readAsDataURL(file);
-   reader.onload = function () {
-    document.getElementById("base64pdf1").value=reader.result;
-     //return reader.result;
-   };
-   
-}
-function getBase64Notario(file) {
-   var reader = new FileReader();
-   reader.readAsDataURL(file);
-   reader.onload = function () {
-    document.getElementById("base64pdf2").value=reader.result;
-     //return reader.result;
-   };
-   
-}
-$('#downloadSAT').click(function(){ downloadPdf("sat"); return false; });
-$('#downloadNotary').click(function(){ downloadPdf("notary"); return false; });
-function downloadPdf(file)
-{
-  var id_notary=$("#itemsNotario").val();
-  if(id_notary=="0")
-  {
-    return;
-  }
-   $.ajax({
-        method: "get",            
-        url: "{{ url('/get-route') }}"+"/"+id_notary+"/"+file,
-        data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-           window.open(response, '_blank');
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("Error al descargar", "Notifications")   });
   
-}
+function ItemsPermisos()
+  {
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/notary-offices-roles') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        //console.log(response);
+        var resp=$.parseJSON(response);
+        $("#itemsPermiso option").remove();
+        $('#itemsPermiso').append("<option value='0'>------</option>");
+          $.each(resp.response, function(i, item) {
+            $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+          });
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
 function changeComunidad()
 {
   var comunidad=$("#itemsConfigUser").val();
@@ -438,9 +436,8 @@ function changeComunidad()
          Command: toastr.warning("No Success", "Notifications")  });
     }
   function saveUpdatePerf()
-  {    var id_notary=$("#itemsNotario").val();
+  {    
       var id=$("#idperfil").val();
-      var TipoUser=$("#itemsTipoUser").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -455,39 +452,19 @@ function changeComunidad()
 
           emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
-      if(id_notary=='0'){
-        Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
-      }else if(itemsConfigUser =='0'){
-        Command: toastr.warning("Campo Comunidades, requerido!", "Notifications") 
-      }else if(users.length < 1){
+       if(users.length < 1){
         Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
       }else if (!emailRegex.test(emailUser)) {
         Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
-      }else if (telUser.length<10) {
-        Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-      }else if (nameUser.length<1) {
-        Command: toastr.warning("Campo Nombre, requerido!", "Notifications") 
-      }else if (apePatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
-      }else if (apeMatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
-      }else if (!curpValida(curpUser)) {
-       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-      }else if (rfcUser.length<13) {
-        Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications") 
-      }else{
-        if(id.length>0)
-          {
-            updatePerfil();
-          }else{
-            insertPerfil();
-          }
+      }else if (itemsPermiso=="0") {
+        Command: toastr.warning("Selecciona el Permiso, longitud minima 10!", "Notifications") 
+      }else{        
+        insertPerfil();        
       }
   }
   function insertPerfil()
   {
       var id_notary=$("#itemsNotario").val();
-      var TipoUser=$("#itemsTipoUser").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -512,7 +489,6 @@ function changeComunidad()
                 curp: curpUser,
                 rfc: rfcUser,
                 phone: telUser,
-                person_type: TipoUser,
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso
             };
@@ -520,8 +496,8 @@ function changeComunidad()
             console.log(user_);
       $.ajax({
            method: "POST",            
-           url: "{{ url('/notary-offices-create-users') }}",
-           data: {users:user_ ,_token:'{{ csrf_token() }}'}  })
+           url: "{{ url('/config-create-users') }}",
+           data: {user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           response=$.parseJSON(response);
              var error=response.error;
@@ -542,8 +518,8 @@ function changeComunidad()
   }  
   function limpiarPerf()
     {
-      $("#itemsTipoUser").val("0").change();
       $("#itemsPermiso").val("0").change();
+      $("#itemsConfigUser").val("0").change();
       //$("#itemsConfigUser").val("0").change();
       document.getElementById('idperfil').value=""; 
       document.getElementById('users').value=""; 

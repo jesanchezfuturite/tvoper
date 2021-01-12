@@ -222,7 +222,7 @@ class PortaltramitesauxController extends Controller
 				$tipoid=$request->tipoid[$k];
 				$campo_id=$v;
 
-				$caracteristicas=json_decode($request->caracteristicas[$k],true);				
+				$caracteristicas=json_decode($request->caracteristicas[$k],true);
 			}
 			//log::info($caracteristicas);
 			$campoUp=$this->camrel->findWhere(['tramite_id'=>$request->tramiteid,'campo_id'=>$v]);
@@ -412,7 +412,7 @@ class PortaltramitesauxController extends Controller
   		}
   		if($id_find==$request->tramite)
   		{
-  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
   			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
   		}else{
@@ -421,7 +421,7 @@ class PortaltramitesauxController extends Controller
   			{
 				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
   			}else{
-  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 , 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
   				return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
   			}
@@ -605,7 +605,7 @@ class PortaltramitesauxController extends Controller
 				}
 				if($existeAgrupacion->count()>0){
 					return response()->json(["Code" => "400","Message" => "Existe una Agrupacion con ese nombre."]);
-				}				
+				}
 
 				$existe = $this->relcat->where('tramite_id', $tramite)->where('categorias_id', $tipo)->get();
 				if ($existe->count() == 0){
@@ -718,7 +718,7 @@ class PortaltramitesauxController extends Controller
 			$id=$request->id;
 			$porcentaje=$request->porcentaje;
 
-			$upd=$this->costotramitedb->update(["porcentaje"=>$porcentaje],$id);		
+			$upd=$this->costotramitedb->update(["porcentaje"=>$porcentaje],$id);
 			return response()->json(["Code" => "200","Message" => "Porcentaje Actualizado."]);
 
 		} catch (\Exception $e) {
