@@ -184,6 +184,26 @@
                 <input type="text" class="valida-decimal form-control" name="valor" id="valor" placeholder="Ingrese el valor de la operacion Ej. 0.50">
              </div>
             </div>
+            <div class="col-md-9">
+              <label>Este costo puede ser multiple?</label>
+              <input type="checkbox" name="multiple" id="multiple" onchange="changeMultiple()">
+            </div>
+          </div>
+        </div>
+        <div class="row costoMultiple">
+          <div class="col-md-12">
+            <div class="col-md-9">
+              <div class="form-group ">
+                <label >Cantidad mínima en cuotas</label>
+                <input type="text" class="valida-decimal form-control" name="cuotaMin2" id="cuotaMin2" placeholder="Ingrese Cuota Minima...">
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+              <label >Costo por Tipo de operación (MXN)</label>
+              <input type="text" class="valida-decimal form-control" name="valor2" id="valor2" placeholder="Ingrese el valor de la operacion Ej. 0.50">
+            </div>
+           </div>
           </div>
         </div>
 
@@ -390,16 +410,17 @@
       $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "none");
         $(".regla-operativa").css("display", "none");
+        $(".costoMultiple").css("display", "none");
     });
   /*function radiobuttons()
   {
-    var option = document.querySelector('input[name = radio2]:checked').value;        
+    var option = document.querySelector('input[name = radio2]:checked').value;
     if(option=="H" || option=="L")
     {
       document.getElementById('valor').value='1';
-       $(".tipoOperacion").css("display","none");       
+       $(".tipoOperacion").css("display","none");
     }else{
-      document.getElementById('valor').value=''; 
+      document.getElementById('valor').value='';
       $(".tipoOperacion").css("display", "block");
     }
   }*/
@@ -436,13 +457,13 @@
     {
         $(".costo-fijo").css("display","block");
         $(".cuotas").css("display", "none");
-        $(".regla-operativa").css("display", "none");        
+        $(".regla-operativa").css("display", "none");
     }else if(tip=="I")
     {
       $(".costo-fijo").css("display","none");
         $(".cuotas").css("display","none");
         $(".regla-operativa").css("display", "block");
-      
+
     }else{
         $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "none");
@@ -504,17 +525,25 @@
        Command: toastr.warning("No Success", "Notifications")  });
   }
 
+  function changeMultiple(){
+    //var check = $("#multiple:checked").length;
+    if($("#multiple:checked").length){
+      $(".costoMultiple").css("display", "block");
+    }else{
+      $(".costoMultiple").css("display", "none");
+    }
+  }
 
   function saveUpdate()
   {
     var upd=$("#idcosto").val();
 
     var idTramites=$("#itemsTramites").val();
-    var tipoTramite=$("#itemsTipo").val(); 
+    var tipoTramite=$("#itemsTipo").val();
 
     var cuotaMin=$("#cuotaMin").val();
     var cuotaMax=$("#cuotaMax").val();
-    var valor = $("#valor").val();  
+    var valor = $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
 
@@ -522,8 +551,8 @@
 
     var regla = $("#itemsReglas").val();
     var vigencia = $("#vigencia").val();
-    
-    
+
+
     if(idTramites=='limpia')
     {
       Command: toastr.warning("Selecciona un Tramite, Requerido!", "Notifications")
@@ -578,14 +607,14 @@
     // {
     //   Command: toastr.warning("Campo Couta Maximo, Requerido!", "Notifications")
     // }
-    
+
       if(upd.length==0)
       {
         insertCosto();
       }else{
          updateCosto();
       }
-    
+
   }
   function insertCosto()
   {
@@ -599,6 +628,11 @@
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
     var regla=$("#itemsReglas").val();
     var vig=$("#vigencia").val();
+
+    var multiple = $("#multiple:checked").length;
+    var cuotamin2 = $("#cuotaMin2").val();
+    var valor2 = $("#valor2").val();
+
     if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
       {regla=null}
     if(option!=null)
@@ -622,7 +656,7 @@
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:regla,vigencia:vig,_token:'{{ csrf_token() }}'}  })
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:regla,multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, vigencia:vig,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -745,12 +779,12 @@
         .done(function (response) {
 
          if(response.Code =="200"){
-              Command: toastr.success(response.Message, "Notifications") 
+              Command: toastr.success(response.Message, "Notifications")
               findCostos();
             }else{
-              Command: toastr.warning(response.Message, "Notifications") 
-            }         
-            
+              Command: toastr.warning(response.Message, "Notifications")
+            }
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -806,6 +840,11 @@
     var fijo = $("#fijo").val();
     var regla=$("#itemsReglas").val();
     var vig=$("#vigencia").val();
+
+    var multiple = $("#multiple:checked").length;
+    var cuotamin2 = $("#cuotaMin2").val();
+    var valor2 = $("#valor2").val();
+
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
     if(option!=null)
@@ -844,16 +883,16 @@
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:regla,vigencia:vig, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:regla,vigencia:vig, multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
-              Command: toastr.success(response.Message, "Notifications") 
+              Command: toastr.success(response.Message, "Notifications")
               findCostos();
             }else{
-              Command: toastr.warning(response.Message, "Notifications") 
-            }         
-            
+              Command: toastr.warning(response.Message, "Notifications")
+            }
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -977,10 +1016,10 @@ function limpiarchang()
     document.getElementById('cuotaMax').value="";
     document.getElementById('valor').value="";
     document.getElementById('fijo').value="";
-    
+
     document.getElementById('vigencia').value="";
     $("#itemsReglas").val("limpia").change();
-    
+
 }
 function limpiarPorcentaje()
 {
@@ -1008,10 +1047,10 @@ function limitN(n)
   var num = n.value;
     var date = new Date();
     if (parseFloat(num) >= 1&& parseFloat(num) <= 100) {
-         
-    } else {      
+
+    } else {
       document.getElementById('porcentaje').value='';
- 
+
   }
 }
 function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {

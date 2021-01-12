@@ -359,6 +359,7 @@ Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@creat
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
 Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
 Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
+Route::post('/config-create-users', 'PortalNotaryOfficesController@createUsers');
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
@@ -425,5 +426,9 @@ Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
 Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
 Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
 Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
+Route::get('/wsent/{origen}', 'ApiController@entidades');
+Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios');
+Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
+
 
 
