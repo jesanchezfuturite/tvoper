@@ -197,5 +197,23 @@ class PortalNotaryOfficesController extends Controller
     {
         return view('portal/configuracionusuarios');
     }
+     public function createUsers(Request $request){
+        $user = $request->user;
+        $link ="http://10.153.144.218/session-api/signup";
+      
+        $json = json_encode($user);
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $remote_server_output = curl_exec($ch);
+        curl_close ($ch);
+        $response =$remote_server_output;  
+        log::info($response);
+        return $response;
+   }
 
 }
