@@ -435,7 +435,7 @@ class PortalSolicitudesTicketController extends Controller
     public function filtrarSolicitudes(Request $request){
    
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
+      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_catalogo.tramite_id", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
       "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
       ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
