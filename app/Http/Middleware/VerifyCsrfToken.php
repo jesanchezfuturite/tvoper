@@ -29,7 +29,7 @@ class VerifyCsrfToken extends Middleware
         'save-divisas*',
         'delete-divisas*',
         'save-transaccion*',
-        'save-transaccion-motor*'
+        'save-transaccion-motor*',
 
     ];
 }

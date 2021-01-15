@@ -168,14 +168,15 @@ class PortalSolicitudesTicketController extends Controller
             foreach($solicitantes as $key => $value){              
               $info->solicitante=$value;
               // $info["solicitantes"]=$value;  
-              $ticket = $this->ticket->updateOrCreate(["id" =>$request->id],[
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status
         
-              ]);        
+              ]);   
+            $tr_finalizados = $this->tramites_finalizados($ticket->id);     
              array_push($ids, $ticket->id);
             }
             $first_id = reset($ids);
@@ -199,6 +200,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status      
             ]); 
+            $tr_finalizados = $this->tramites_finalizados($ticket->id); 
             
             if($request->has("file")){
                foreach ($request->file as $key => $value) {   
@@ -223,6 +225,8 @@ class PortalSolicitudesTicketController extends Controller
     
       }
       if($error) return response()->json($error);
+
+
       return response()->json(
           [
             "Code" => "200",
@@ -435,7 +439,7 @@ class PortalSolicitudesTicketController extends Controller
     public function filtrarSolicitudes(Request $request){
    
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
+      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_catalogo.tramite_id", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
       "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
       ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
       ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
@@ -791,5 +795,38 @@ class PortalSolicitudesTicketController extends Controller
         log::info("error PortalSolicitudesTicketController@downloadFile");
       }
     }
+    public function tramites_finalizados($id){
+      $ticket = $this->ticket->where("id", $id)->first();
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
+      if($solCatalogo->atendido_por==1){
+        try{
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>2]);
+
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $id,
+          'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+        ]);
+
+        return json_encode(
+          [
+            "response" 	=> "Tramite finalizado",
+            "code"		=> 200
+          ]);
+
+        } catch (\Exception $e) {
+          return json_encode(
+            [
+              "response" 	=> "Error al actualizar - " . $e->getMessage(),
+              "code"		=> 402
+            ]);
+        }
+       
+      }
+
+
+  }
+
+
     
 }

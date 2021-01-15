@@ -369,7 +369,7 @@
                         <div class="col-md-12">
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label >Porcentaje</label>
+                                    <label >Porcentaje</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El valor del porcentaje debe ser el valor de porcentaje a cobrar.." data-original-title="Información"><i class="fa fa-question-circle"></i></a>       
                                     <input type="text" name="porcentaje" id="porcentaje" class="form-control valida-numeros" placeholder="Nuevo Porcentaje..."
                                     oninput="limitN(this);">
                                 </div>
