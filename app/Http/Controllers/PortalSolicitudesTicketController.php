@@ -788,7 +788,7 @@ class PortalSolicitudesTicketController extends Controller
 
     public function downloadFile($file)
     {
-      // try{
+      try{
       $pathtoFile = storage_path('app/'.$file);
       return response()->download($pathtoFile);
       }catch(\Exception $e){
@@ -799,7 +799,7 @@ class PortalSolicitudesTicketController extends Controller
       $ticket = $ticket->where("id", $id)->first();
       $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1){
-        try{
+        // try{
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
