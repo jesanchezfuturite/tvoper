@@ -168,14 +168,15 @@ class PortalSolicitudesTicketController extends Controller
             foreach($solicitantes as $key => $value){              
               $info->solicitante=$value;
               // $info["solicitantes"]=$value;  
-              $ticket = $this->ticket->updateOrCreate(["id" =>$request->id],[
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status
         
-              ]);        
+              ]);   
+            $tr_finalizados = $this->tramites_finalizados($ticket->id);     
              array_push($ids, $ticket->id);
             }
             $first_id = reset($ids);
@@ -199,6 +200,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status      
             ]); 
+            $tr_finalizados = $this->tramites_finalizados($ticket->id); 
             
             if($request->has("file")){
                foreach ($request->file as $key => $value) {   
@@ -223,6 +225,8 @@ class PortalSolicitudesTicketController extends Controller
     
       }
       if($error) return response()->json($error);
+
+
       return response()->json(
           [
             "Code" => "200",
@@ -791,5 +795,35 @@ class PortalSolicitudesTicketController extends Controller
         log::info("error PortalSolicitudesTicketController@downloadFile");
       }
     }
-    
+    public function tramites_finalizados($id){
+        $ticket = $ticket->where("id", $id)->first();
+        $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
+        if($solCatalogo->atendido_por==1){
+          try{
+          $solicitudTicket = $this->ticket->where('id',$id)
+          ->update(['status'=>2]);
+
+          $mensajes =$this->mensajes->create([
+            'ticket_id'=> $id,
+            'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+          ]);
+
+          return json_encode(
+            [
+              "response" 	=> "Tramite finalizado",
+              "code"		=> 200
+            ]);
+
+          } catch (\Exception $e) {
+            return json_encode(
+              [
+                "response" 	=> "Error al actualizar - " . $e->getMessage(),
+                "code"		=> 402
+              ]);
+          }
+         
+        }
+ 
+
+    }
 }
