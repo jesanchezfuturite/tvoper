@@ -797,7 +797,7 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function tramites_finalizados($id){
       $ticket = $this->ticket->where("id", $id)->first();
-      $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1){
         try{
         $solicitudTicket = $this->ticket->where('id',$id)
