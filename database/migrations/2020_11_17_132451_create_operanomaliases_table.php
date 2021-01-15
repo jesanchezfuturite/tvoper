@@ -18,6 +18,7 @@ class CreateOperanomaliasesTable extends Migration
 		Schema::create('oper_anomalias', function(Blueprint $table) {
             $table->increments('id');
             $table->string('referencia',50);
+            $table->integer('origen');
             $table->bigInteger('transaccion_id');
             $table->string('monto');
             $table->integer('banco_id');

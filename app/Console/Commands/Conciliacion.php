@@ -332,7 +332,9 @@ class Conciliacion extends Command
 
                 
                             try{
+                                 $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasMontoDif($data);
                             }catch( \Exception $e ){
                                 Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters');    
                             }
@@ -490,7 +492,9 @@ class Conciliacion extends Command
 
                         if((int)$data["transaccion_id"] > 0)
                         {
+                            $this->anomaliasProceseed($data);                               
                             $this->ps->create( $data );
+                            $this->anomaliasMontoDif($data);
                         }
 
                     }catch( \Exception $e ){
@@ -582,7 +586,9 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
+                                $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasMontoDif($data);
                             }
 
                         }catch( \Exception $e ){
@@ -675,7 +681,9 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
+                                 $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasMontoDif($data);
                             }
 
                         }catch( \Exception $e ){
@@ -871,6 +879,7 @@ class Conciliacion extends Command
             {
                 //log::info("1");
                 $result= $this->anomaliasbd->create([
+                    "origen"=>$data["origen"],
                     "referencia"=>$data["referencia"],
                     "transaccion_id"=>$data["transaccion_id"],
                     "monto"=>$data["monto"],
@@ -887,6 +896,7 @@ class Conciliacion extends Command
             if($findExist->count()>0)
             {
                 $this->anomaliasbd->create([
+                "origen"=>$data["origen"],
                 "referencia"=>$data["referencia"],
                 "transaccion_id"=>$data["transaccion_id"],
                 "monto"=>$data["monto"],
@@ -916,6 +926,7 @@ class Conciliacion extends Command
                 if($ex)
                 {
                     $this->anomaliasbd->create([
+                    "origen"=>$data["origen"],
                     "referencia"=>$data["referencia"],
                     "transaccion_id"=>$data["transaccion_id"],
                     "monto"=>$data["monto"],
