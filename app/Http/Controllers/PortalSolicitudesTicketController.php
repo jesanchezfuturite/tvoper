@@ -796,38 +796,6 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function tramites_finalizados($id){
-<<<<<<< HEAD
-        $ticket = $ticket->where("id", $id)->first();
-        $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
-        if($solCatalogo->atendido_por==1){
-          try{
-          $solicitudTicket = $this->ticket->where('id',$id)
-          ->update(['status'=>2]);
-
-          $mensajes =$this->mensajes->create([
-            'ticket_id'=> $id,
-            'mensaje' => "Solicitud cerrada porque esta asignado al admin"
-          ]);
-
-          return json_encode(
-            [
-              "response" 	=> "Tramite finalizado",
-              "code"		=> 200
-            ]);
-
-          } catch (\Exception $e) {
-            return json_encode(
-              [
-                "response" 	=> "Error al actualizar - " . $e->getMessage(),
-                "code"		=> 402
-              ]);
-          }
-         
-        }
- 
-
-    }
-=======
       $ticket = $ticket->where("id", $id)->first();
       $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1){
@@ -861,5 +829,4 @@ class PortalSolicitudesTicketController extends Controller
 
 
     
->>>>>>> origin/portal
 }
