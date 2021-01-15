@@ -98,7 +98,7 @@ class PortalSolicitudesTicketController extends Controller
       // $info = $request->info;
 
       $ids = [];
-      // try { 
+      try { 
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($solicitantes)){
@@ -217,13 +217,13 @@ class PortalSolicitudesTicketController extends Controller
           }
         }  
         
-      // } catch (\Exception $e) {
-      //   $error = [
-      //       "Code" => "400",
-      //       "Message" => "Error al guardar la solicitud"
-      //   ];
+      } catch (\Exception $e) {
+        $error = [
+            "Code" => "400",
+            "Message" => "Error al guardar la solicitud"
+        ];
     
-      // }
+      }
       if($error) return response()->json($error);
 
 
@@ -796,10 +796,10 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function tramites_finalizados($id){
-      $ticket = $ticket->where("id", $id)->first();
-      $solCatalogo = $solicitudes->where("id", $ticket->catalogo_id)->first();
+      $ticket = $this->ticket->where("id", $id)->first();
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1){
-        // try{
+        try{
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
@@ -814,13 +814,13 @@ class PortalSolicitudesTicketController extends Controller
             "code"		=> 200
           ]);
 
-        // } catch (\Exception $e) {
-        //   return json_encode(
-        //     [
-        //       "response" 	=> "Error al actualizar - " . $e->getMessage(),
-        //       "code"		=> 402
-        //     ]);
-        // }
+        } catch (\Exception $e) {
+          return json_encode(
+            [
+              "response" 	=> "Error al actualizar - " . $e->getMessage(),
+              "code"		=> 402
+            ]);
+        }
        
       }
 
