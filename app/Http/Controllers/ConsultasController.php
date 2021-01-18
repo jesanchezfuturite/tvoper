@@ -419,11 +419,11 @@ class ConsultasController extends Controller
                                 "id_transaccion_motor"=>$f
                             );
                         }else{
-                            $insolicitud []=array(
-                            'id_transaccion_motor'=>$f,
-                            'created_at'=>$fecha,
-                            'updated_at'=>$fecha,
-                            );
+                            //$insolicitud []=array(
+                           // );
+                            $inserts=$this->pagossolicituddb->create([
+                                'id_transaccion_motor'=>$f
+                            ]);  
                         }
                         
                     }
@@ -436,7 +436,7 @@ class ConsultasController extends Controller
             }
                 //log::info($insolicitud);               
             
-            $inserts=$this->pagossolicituddb->insert($insolicitud);              
+            //$inserts=$this->pagossolicituddb->insert($insolicitud);              
             $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);  
          }catch (\Exception $e) {
             $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
@@ -467,7 +467,7 @@ class ConsultasController extends Controller
             {
                 $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.id_transaccion_motor',$folios);
             }else{
-                $select=$this->oper_transaccionesdb->findTransaccionesFolio($user,'oper_transacciones.entidad',$entidad);
+                $select=$this->oper_transaccionesdb->findTransaccionesEntidad($user,'oper_transacciones.entidad',$entidad);
             }           
                    
             $responseJson= $this->reponseVerf('202','',$select);  
