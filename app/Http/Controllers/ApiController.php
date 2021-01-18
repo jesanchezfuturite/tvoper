@@ -38,7 +38,7 @@ class ApiController extends Controller
 	//entidades
 
 	protected $ws_ent = array(
-		"qa" => "http://10.1.0.130:10021/web/services/WSCATEFService/WSCATEF",
+		"qa" => "http://10.1.0.130:10021/web/services/WSCATEFService/WSCATEF?wsdl",
 		"prod"=> "",
 
 	);
