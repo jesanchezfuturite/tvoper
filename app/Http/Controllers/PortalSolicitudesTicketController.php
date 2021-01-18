@@ -176,7 +176,7 @@ class PortalSolicitudesTicketController extends Controller
                 "status"=>$status
         
               ]);   
-            $tr_finalizados = $this->tramites_finalizados($ticket->id);     
+        
              array_push($ids, $ticket->id);
             }
             $first_id = reset($ids);
@@ -200,7 +200,6 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status      
             ]); 
-            $tr_finalizados = $this->tramites_finalizados($ticket->id); 
             
             if($request->has("file")){
                foreach ($request->file as $key => $value) {   
@@ -545,6 +544,13 @@ class PortalSolicitudesTicketController extends Controller
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
           ->update(['status'=> 3]);
+
+          $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->get(["id"]);
+          foreach ($ids as $key => $value) {
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            
+          }
+
         }      
 
       } catch (\Exception $e) {
