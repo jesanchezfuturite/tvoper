@@ -395,7 +395,7 @@ class ApiController extends Controller
 	    	$response = $this->client->get(
 	    		$this->insumos_curp,
 	    		[
-	    			"data" => 
+	    			"query" => 
 		    			[
 			    			"access_token" => $this->key,
 			    			"curp" => $curp,
