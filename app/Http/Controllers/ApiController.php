@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Routing\UrlGenerator;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Guzzle\Http\Exception\ClientErrorResponseException;
@@ -15,10 +17,13 @@ use GuzzleHttp\Exception\BadResponseException;
 // repositorios para afectar la base de datos
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 
 class ApiController extends Controller
 {
     protected $key ;
+
+    protected $url;
 
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
@@ -62,7 +67,8 @@ class ApiController extends Controller
 
 
 	// repos
-	protected $solicitudes_tramite;
+    protected $solicitudes_tramite;
+	protected $tickets;
 
 
     /**
@@ -72,7 +78,9 @@ class ApiController extends Controller
      */
 
     public function __construct(
-    	PortalTramitesRepositoryEloquent $solicitudes_tramite
+    	PortalTramitesRepositoryEloquent $solicitudes_tramite,
+        PortalSolicitudesTicketRepositoryEloquent $tickets,
+        UrlGenerator $url
     )
     {
         
@@ -100,6 +108,11 @@ class ApiController extends Controller
 
 			// inicializamos los repos necesarios
 			$this->solicitudes_tramite = $solicitudes_tramite;
+            $this->tickets = $tickets;
+
+
+            // obtengo la url para 
+            $this->url = $url;
 
         }catch (\Exception $e){
         	dd($e->getMessage());
@@ -356,7 +369,6 @@ class ApiController extends Controller
 
 	        $this->client = new \GuzzleHttp\Client();
 
-
 	    	$response = $this->client->post(
 	    		$url	
 	    	);
@@ -373,6 +385,94 @@ class ApiController extends Controller
 
        }
     }
+
+
+    /**
+     * Consultar todos los tramites que tenga una notaria de valor 
+     * catastral sin aviso de enajenacion
+     *
+     * @param notaria
+     *
+     *
+     * @return void
+     */
+
+    public function getValorCatastral(Request $request)
+    {
+
+        $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
+
+        $notary_users = array();
+
+        $informativo_id = 8;
+
+
+
+        try
+        {
+            $this->client = new \GuzzleHttp\Client();
+
+            $response = $this->client->get(
+                $path
+            );
+
+            $results = $response->getBody();
+
+            $results = json_decode($results);   
+
+            if(count($results) > 0)
+            {
+                foreach($results as $i => $v)
+                {
+                    // guardamos los id de usuarios
+                    $notary_users []= $v->id;
+                }
+            }else{
+                return json_encode(
+                    [
+                        "code" => 401,
+                        "message" => "Notary has not user associated"
+                    ]
+                );
+            }
+
+            $tramites_notaria = $this->tickets
+                ->whereIn('user_id' ,$notary_users)
+                ->where('catalogo_id',$informativo_id)
+                ->get();
+
+            if($tramites_notaria->count() > 0)
+            {
+                $response = array();
+                foreach($tramites_notaria as $tn){
+
+                    $node = json_decode($tn->info);
+
+                    $response[]= (array)$node;
+                }
+                return json_encode($response,JSON_UNESCAPED_SLASHES);
+            }else{
+                return json_encode(
+                [
+                    "code" => 402,
+                    "message" => "La notaria no tiene tramites de Informativo Valor Catastral"
+                ]
+            );
+            }
+            
+
+        }catch (\Exception $e){
+            return json_encode(
+                [
+                    "code" => 400,
+                    "message" => $e->getMessage()
+                ]
+            );
+            
+            
+        }
+    }
+
 
 
 }

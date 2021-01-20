@@ -429,6 +429,7 @@ Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
 Route::get('/wsent/{origen}', 'ApiController@entidades');
 Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios');
 Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
+Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
 
 
