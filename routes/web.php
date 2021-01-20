@@ -350,7 +350,7 @@ Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenA
 Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
 Route::post('/traux-edit-porcentaje','PortaltramitesauxController@savePorcentaje');
 
-Route::get('/notary-offices', 'PortalNotaryOfficesController@createNotary');
+Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
 Route::get('/notary','PortalNotaryOfficesController@index');
 Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUsersNotary');
