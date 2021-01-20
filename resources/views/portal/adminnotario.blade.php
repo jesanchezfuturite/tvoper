@@ -769,6 +769,12 @@ function changeComunidad()
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
        Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres,1 mayuscula, 1 numero! ", "Notifications") 
+    }else if (nameNotario.length<1) {
+      Command: toastr.warning("Campo Nombre, requerido!", "Notifications") 
+    }else if (apPatNotario.length<1) {
+      Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
+    }else if (apMatNotario.length<1) {
+      Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
     }else if (!emailRegex.test(emailNotario2)) {
        Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
     }else if (telNotario2.length<10) {
@@ -780,7 +786,7 @@ function changeComunidad()
     }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
     }else if(itemsCofigNotario =='0'){
-      Command: toastr.warning("Campo Usuario configurado para, requerido!", "Notifications") 
+      Command: toastr.warning("Campo Comunidad, requerido!", "Notifications") 
     }else if(itemsPermisoNotario =='0'){
       Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
     }else if(pdfSAT.length==0){ 
