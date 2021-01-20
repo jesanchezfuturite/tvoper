@@ -514,7 +514,7 @@ class PortaltramitesauxController extends Controller
 				}
 				$res = json_encode($caracteristicas);
 				$update = $this->camrel->update(['caracteristicas'=>$res], $id);
-			}else if($tipo==1)
+			}else if($tipo==1 || $tipo==8)
 			{
 				$registro = $this->camrel->findWhere(['id' => $id]);
 				// $registro = $this->camrel->findWhere(['id' =>17]);
