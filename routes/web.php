@@ -350,7 +350,7 @@ Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenA
 Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
 Route::post('/traux-edit-porcentaje','PortaltramitesauxController@savePorcentaje');
 
-Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
+Route::get('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
 Route::get('/notary','PortalNotaryOfficesController@index');
 Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUsersNotary');
@@ -429,6 +429,8 @@ Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
 Route::get('/wsent/{origen}', 'ApiController@entidades');
 Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios');
 Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
+Route::get('/consultar-curp/{curp}', 'ApiController@curp');
+Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
 
 
