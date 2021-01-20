@@ -297,7 +297,6 @@ class ApiController extends Controller
 			$response = curl_exec($ch);
 	
 			curl_close($ch);        
-			$response = json_decode($response);
 			return $response;
 			// $origen = $request->origen;
 			
