@@ -287,23 +287,35 @@ class ApiController extends Controller
     {
      	try
 		  {
+
 			$origen = $request->origen;
 			
-	        $url = $this->ws_ent[$origen];
+			$url = $this->ws_ent[$origen];
+			$ch = curl_init();    
+			curl_setopt($ch, CURLOPT_URL, $url); 
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$response = curl_exec($ch);
+	
+			curl_close($ch);        
+			$response = json_decode($response);
+			return $response;
+			// $origen = $request->origen;
+			
+	        // $url = $this->ws_ent[$origen];
 
-	        $this->client = new \GuzzleHttp\Client();
+	        // $this->client = new \GuzzleHttp\Client();
 
 
-	    	$response = $this->client->post(
-	    		$url	
-	    	);
+	    	// $response = $this->client->post(
+	    	// 	$url	
+	    	// );
 
-	        $results = $response->getBody();
+	        // $results = $response->getBody();
 
 
-		    $r = json_decode($results);
+		    // $r = json_decode($results);
 
-		    return response()->json($r);
+		    // return response()->json($r);
 
        }catch (\Exception $e){
                 dd($e->getMessage());
