@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 use Guzzle\Http\Exception\ClientErrorResponseException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
+use SoapClient;
 
 // repositorios para afectar la base de datos
 
