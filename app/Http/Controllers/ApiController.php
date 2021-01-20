@@ -295,9 +295,8 @@ class ApiController extends Controller
 
 			$client = new SoapClient($url);
 			$result = $client->WsCatEF();
-			$datos = $result;
-			$ent =json_decode($datos);
-			return $ent;
+
+			return $result;
 			
 			// $origen = $request->origen;
 			
