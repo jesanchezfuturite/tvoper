@@ -20,7 +20,8 @@ class ApiController extends Controller
 {
     protected $key ;
 
-    protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
+	protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
+	protected $access_token= "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.eyJpc3MiOiJodHRwczpcL1wvaW5zdW1vcy5ubC5nb2IubXhcLyIsImF1ZCI6Imh0dHBzOlwvXC9pbnN1bW9zLm5sLmdvYi5teFwvIiwianRpIjoiNGYxZzIzYTEyYWEiLCJ1c2VybmFtZSI6ImZ1bjEiLCJpYXQiOjE2MTEwMDkxNjgsImV4cCI6MTYxMTE4MTk2OCwidWlkIjoxfQ.HCYVELlJ6eYq8HTXF_lHB15g9A2hr7RTl2xmjvrQr-M";
 
     protected $catastro_url = 'http://10.150.130.96/WSCatastro/json/index.php';
 
@@ -28,6 +29,7 @@ class ApiController extends Controller
 	protected $insumos_auth = 'http://insumos.test.nl.gob.mx/api/auth';
 	protected $insumos_user = "fun1";
 	protected $insumos_pass = "prueba123";
+	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 
 	// registro publico
 	protected $ws_rp = array(
@@ -372,7 +374,33 @@ class ApiController extends Controller
                 dd($e->getMessage());
 
        }
-    }
+	}
+	
+	public function curp($curp){
+		try
+        {
+	        $this->client = new \GuzzleHttp\Client();
+
+	    	$response = $this->client->get(
+	    		$this->insumos_curp,
+	    		[
+	    			"data" => 
+		    			[
+			    			"access_token" => $this->access_token,
+			    			"curp" => $curp,
+		    			]
+	    		]	
+	    	);
+
+	    	$results = $response->getBody();
+
+			$results = json_decode($results);	
+
+
+        }catch (\Exception $e){
+        	dd($e->getMessage());
+        }
+	}
 
 
 }
