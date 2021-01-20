@@ -291,13 +291,16 @@ class ApiController extends Controller
 			$origen = $request->origen;
 			
 			$url = $this->ws_ent[$origen];
-			$ch = curl_init();    
-			curl_setopt($ch, CURLOPT_URL, $url); 
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$response = curl_exec($ch);
-	
-			curl_close($ch);        
-			return $response;
+
+			$client = new SoapClient($url);
+			$result = $client->WsCatEF();
+			$xml = $result;
+		  
+			// procesar xml
+			$xml = simplexml_load_string($xml);
+			return $xml;
+		  
+			
 			// $origen = $request->origen;
 			
 	        // $url = $this->ws_ent[$origen];
