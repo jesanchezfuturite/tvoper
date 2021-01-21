@@ -321,7 +321,8 @@ class ApiController extends Controller
 		
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
-			return $result;
+			$response = simplexml_load_string($result);
+			return $response;
 
        }catch (\Exception $e){
                 dd($e->getMessage());
