@@ -361,12 +361,12 @@ class ApiController extends Controller
 			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatmuns.wsbeans.iseries/">
 			<soapenv:Header/>
 			<soapenv:Body>
-				<wsc:soapwscatef>
+				<wsc:soapwscmuns>
 					<arg0>
 						<ACCESO>MARISOL3004</ACCESO>
 						<WEntidadFed>'.$EntidadFed.'</WEntidadFed>
 					</arg0>
-				</wsc:soapwscatef>
+				</wsc:soapwscmuns>
 			</soapenv:Body>
 			</soapenv:Envelope>';
 
