@@ -326,11 +326,7 @@ class ApiController extends Controller
 			$xml = new SimpleXMLElement($response);
 			$body = $xml->xpath('//soapBody')[0];
 			$array = json_decode(json_encode((array)$body), TRUE); 
-
-			foreach ($array as $key => $value) {
-				echo $value;	
-			}
-			print_r($array);
+			return $array;
 
        }catch (\Exception $e){
                 dd($e->getMessage());
