@@ -53,7 +53,7 @@ class ApiController extends Controller
 	//municipios
 
 	protected $ws_mun = array(
-		"qa" => "http://10.1.0.130:10021/web/services/WSCATMUNSService/WSCATMUNS?wsdl",
+		"qa" => "http://10.1.0.130:10087/web/services/WSCATMUNSService/WSCATMUNS",
 		"prod"=> "",
 
 	);
@@ -305,40 +305,23 @@ class ApiController extends Controller
 			</soapenv:Body>
 			</soapenv:Envelope>';
 
-		 $header = array(
-			"Content-type: text/xml;charset=\"utf-8\"",
-			"Accept: text/xml",
-			"Cache-Control: no-cache"
-		);
+			$header = array(
+				"Content-type: text/xml;charset=\"utf-8\"",
+				"Accept: text/xml",
+				"Cache-Control: no-cache"
+			);
 
-		$soap_do = curl_init();
+			$soap_do = curl_init();
 
-		curl_setopt($soap_do, CURLOPT_URL, $url);
-		curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt($soap_do, CURLOPT_POST,           true );
-		curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
-		curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
-	
-		$result = curl_exec($soap_do);
-		curl_close($soap_do);
-		return $result;
-			// $origen = $request->origen;
-			
-	        // $url = $this->ws_ent[$origen];
-
-	        // $this->client = new \GuzzleHttp\Client();
-
-
-	    	// $response = $this->client->post(
-	    	// 	$url	
-	    	// );
-
-	        // $results = $response->getBody();
-
-
-		    // $r = json_decode($results);
-
-		    // return response()->json($r);
+			curl_setopt($soap_do, CURLOPT_URL, $url);
+			curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt($soap_do, CURLOPT_POST,           true );
+			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
+			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+		
+			$result = curl_exec($soap_do);
+			curl_close($soap_do);
+			return $result;
 
        }catch (\Exception $e){
                 dd($e->getMessage());
@@ -365,20 +348,34 @@ class ApiController extends Controller
 			$url = $this->ws_mun[$origen].'/'.$EntidadFed;
 			
 
-	        $this->client = new \GuzzleHttp\Client();
+			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatef.wsbeans.iseries/">
+			<soapenv:Header/>
+			<soapenv:Body>
+				<wsc:soapwscatef>
+					<arg0>
+						<ACCESO>MARISOL3004</ACCESO>
+					</arg0>
+				</wsc:soapwscatef>
+			</soapenv:Body>
+			</soapenv:Envelope>';
 
+			$header = array(
+				"Content-type: text/xml;charset=\"utf-8\"",
+				"Accept: text/xml",
+				"Cache-Control: no-cache"
+			);
 
-	    	$response = $this->client->post(
-	    		$url	
-	    	);
+			$soap_do = curl_init();
 
-	        $results = $response->getBody();
-
-
-		    $r = json_decode($results);
-
-		    return response()->json($r);
-
+			curl_setopt($soap_do, CURLOPT_URL, $url);
+			curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt($soap_do, CURLOPT_POST,           true );
+			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
+			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+		
+			$result = curl_exec($soap_do);
+			curl_close($soap_do);
+			return $result;
        }catch (\Exception $e){
                 dd($e->getMessage());
 
