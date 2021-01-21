@@ -364,7 +364,7 @@ class ApiController extends Controller
 				<wsc:soapwscmuns>
 					<arg0>
 						<ACCESO>MARISOL3004</ACCESO>
-						<WEntidadFed>'.$EntidadFed.'</WEntidadFed>
+						<WENTIDADFED>'.$EntidadFed.'</WENTIDADFED>
 					</arg0>
 				</wsc:soapwscmuns>
 			</soapenv:Body>
