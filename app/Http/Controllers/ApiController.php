@@ -45,7 +45,7 @@ class ApiController extends Controller
 	//entidades
 
 	protected $ws_ent = array(
-		"qa" => "http://10.1.0.130:10021/web/services/WSCATEFService/WSCATEF?wsdl",
+		"qa" => "http://10.1.0.130:10087/web/services/WSCATEFService/WSCATEF",
 		"prod"=> "",
 
 	);
@@ -293,11 +293,35 @@ class ApiController extends Controller
 			
 			$url = $this->ws_ent[$origen];
 
-			$client = new SoapClient($url);
-			$result = $client->WsCatEF();
+	
+			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatef.wsbeans.iseries/">
+			<soapenv:Header/>
+			<soapenv:Body>
+				<wsc:soapwscatef>
+					<arg0>
+						<ACCESO>MARISOL3004</ACCESO>
+					</arg0>
+				</wsc:soapwscatef>
+			</soapenv:Body>
+			</soapenv:Envelope>';
 
-			return $result;
-			
+		 $header = array(
+			"Content-type: text/xml;charset=\"utf-8\"",
+			"Accept: text/xml",
+			"Cache-Control: no-cache"
+		);
+
+		$soap_do = curl_init();
+
+		curl_setopt($soap_do, CURLOPT_URL, $url);
+		curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($soap_do, CURLOPT_POST,           true );
+		curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
+		curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+	
+		$result = curl_exec($soap_do);
+		curl_close($soap_do);
+		return $result;
 			// $origen = $request->origen;
 			
 	        // $url = $this->ws_ent[$origen];
