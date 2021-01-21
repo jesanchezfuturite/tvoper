@@ -14,6 +14,7 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
 use SoapClient;
+use SimpleXMLElement;
 
 // repositorios para afectar la base de datos
 
@@ -321,8 +322,11 @@ class ApiController extends Controller
 		
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
-			$response = simplexml_load_string($result);
-			return $response;
+			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
+			$xml = new SimpleXMLElement($response);
+			$body = $xml->xpath('//soapBody')[0];
+			$array = json_decode(json_encode((array)$body), TRUE); 
+			return $array;
 
        }catch (\Exception $e){
                 dd($e->getMessage());
