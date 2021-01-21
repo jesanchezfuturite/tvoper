@@ -326,7 +326,12 @@ class ApiController extends Controller
 			$xml = new SimpleXMLElement($response);
 			$body = $xml->xpath('//soapBody')[0];
 			$array = json_decode(json_encode((array)$body), TRUE); 
-			return $array;
+			
+			foreach ($array["ns2soapwscatefResponse"]["return"]["WEFLISTA"] as $key => $value) {
+				var_dump($value["WEFCLAVE"]);
+			}	
+	
+
 
        }catch (\Exception $e){
                 dd($e->getMessage());
@@ -350,7 +355,7 @@ class ApiController extends Controller
 
 			$EntidadFed =$request->clave_entidad;
 			
-			$url = $this->ws_mun[$origen].'/'.$EntidadFed;
+			$url = $this->ws_mun[$origen];
 			
 
 			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatef.wsbeans.iseries/">
@@ -359,6 +364,7 @@ class ApiController extends Controller
 				<wsc:soapwscatef>
 					<arg0>
 						<ACCESO>MARISOL3004</ACCESO>
+						<WEntidadFed>'.$EntidadFed.'</WEntidadFed>
 					</arg0>
 				</wsc:soapwscatef>
 			</soapenv:Body>
