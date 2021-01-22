@@ -426,6 +426,8 @@ class ApiController extends Controller
 					'nombre'=>$value["WMUNSNOMBRE"]
 				
 				]);
+
+				$municipios->save();
 			       
 			}	
 
