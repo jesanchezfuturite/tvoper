@@ -419,7 +419,7 @@ class ApiController extends Controller
 			$array = json_decode(json_encode((array)$body), TRUE); 
 		
 
-			foreach ($array["soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
+			foreach ($array["ns2soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
 				$municipios = $this->municipios->firstOrNew([
 					'clave' => $value["WMUNSCLAVE"],
 					'clave_estado' => $EntidadFed,
