@@ -19,6 +19,7 @@ use SimpleXMLElement;
 // repositorios para afectar la base de datos
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\EstadosRepositoryEloquent;
 
@@ -73,7 +74,8 @@ class ApiController extends Controller
 	// repos
     protected $solicitudes_tramite;
 	protected $tickets;
-	protected $estados;
+    protected $estados;
+	protected $campos;
 
 
     /**
@@ -86,7 +88,8 @@ class ApiController extends Controller
     	PortalTramitesRepositoryEloquent $solicitudes_tramite,
         PortalSolicitudesTicketRepositoryEloquent $tickets,
 		UrlGenerator $url,
-		EstadosRepositoryEloquent $estados
+        EstadosRepositoryEloquent $estados,
+		PortalcampoRepositoryEloquent $campos
 		
     )
     {
@@ -117,6 +120,7 @@ class ApiController extends Controller
 			$this->solicitudes_tramite = $solicitudes_tramite;
 			$this->tickets = $tickets;
             $this->estados = $estados;
+            $this->campos  = $campos;
 			
 
 
@@ -515,7 +519,14 @@ class ApiController extends Controller
 
         $informativo_id = 8;
 
+        $campos = $this->campos->all();
 
+        $fields = array();
+
+        foreach($campos as $f)
+        {
+            $fields[$f->id]= $f->descripcion;
+        }
 
         try
         {
@@ -553,12 +564,30 @@ class ApiController extends Controller
             if($tramites_notaria->count() > 0)
             {
                 $response = array();
+
                 foreach($tramites_notaria as $tn){
 
                     $node = json_decode($tn->info);
 
+                    $in = $node->campos;
+
+                    $new = array();
+                    //dd($in);
+                    foreach($in as $i => $j)
+                    {
+                        $new[$i] = array(
+                            "field" => $fields[$i],
+                            "value" => $j,
+                        );
+                    }
+                    
+                    unset($node->campos);
+                        
+                    $node->campos= (object)$new; 
+
                     $response[]= (array)$node;
                 }
+                
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
             }else{
                 return json_encode(
