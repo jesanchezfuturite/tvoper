@@ -64,7 +64,7 @@ var TableManaged = function () {
                 'orderable': false,
                 'targets': [0]
             }, {
-                "searchable": false,
+                "searchable": true,
                 "targets": [0]
             }],
             "order": [
@@ -138,7 +138,7 @@ var TableManaged = function () {
                 'orderable': true,
                 'targets': [0]
             }, {
-                "searchable": false,
+                "searchable": true,
                 "targets": [0]
             }],
             "order": [
@@ -203,7 +203,7 @@ var TableManaged = function () {
                 'orderable': true,
                 'targets': [0]
             }, {
-                "searchable": false,
+                "searchable": true,
                 "targets": [0]
             }],
             "order": [

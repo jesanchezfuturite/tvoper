@@ -203,10 +203,43 @@
                                 <div class="col-md-8">
                                     <div class="form-group">
                                         <label>Tipo</label>
-                                        <select class="select2me form-control"  id="itemsTipos">
+                                        <select class="select2me form-control"  id="itemsTipos" onchange="changeTipo()">
                                             <option>------</option>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row radioTipos">
+                            <div class="col-md-12">
+                                <div class="col-md-8">
+                                    <span class="help-block">File Selecciona el tipo. </span>
+                                      <div class="md-radio-inline">
+                                        <div class="md-radio">
+                                          <input type="radio" id="radio4" name="radio3" class="md-radiobtn" value="pdf" >
+                                          <label for="radio4">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                            Pdf.</label>
+                                        </div>|
+                                        <div class="md-radio">
+                                          <input type="radio" id="radio5" name="radio3" class="md-radiobtn" value="xlsx" >
+                                            <label for="radio5">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                              Excel.</label>
+                                        </div>|
+                                        <div class="md-radio">
+                                          <input type="radio" id="radio6" name="radio3" class="md-radiobtn" value="docx" >
+                                            <label for="radio6">
+                                            <span></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                              Word.</label>
+                                        </div>
+                                      </div>
                                 </div>
                             </div>
                         </div>
@@ -448,8 +481,20 @@
         findCampos();
         findTipos();
         $(".checkfile").css("display", "none");
+        $(".radioTipos").css("display", "none");
         findTipoCategoria();
     });
+
+    function changeTipo()
+    {
+       var tipo=$("#itemsTipos").val();
+        if(tipo=="7")
+        { $(".radioTipos").css("display", "block");
+
+        }else{
+             $(".radioTipos").css("display", "none");
+        }
+    }
      /*$( function() {
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
@@ -773,6 +818,10 @@
         }else{
             $("#checkbox30").prop("checked", false);
         }
+        if(tipo==7)
+        {
+            $("input[name=radio3][value='"+carac.accept+"']").prop("checked",true);
+        }
     }
     function relationshipDeleted(id_)
     {
@@ -789,25 +838,41 @@
         var itemsTramites=$("#itemsTramites").val();
         var itemsCampo=$("#itemsCampos").val();
         var itemsTipos=$("#itemsTipos").val();
+        var option = document.querySelector('input[name = radio3]:checked');
 
         var itemsAgrupaciones=$("#itemsAgrupaciones").val();
-
+        if(option!=null)
+        {
+            option = document.querySelector('input[name = radio3]:checked').value;
+        }
         if(itemsAgrupaciones=="limpia"){
            Command: toastr.warning("Agrupación sin seleccionar, Requerido!", "Notifications")
+           return;
         }else if(itemsTramites=="limpia"){
            Command: toastr.warning("Tramite sin seleccionar, Requerido!", "Notifications")
+           return;
         }else if(itemsCampo=="limpia"){
            Command: toastr.warning("Campo sin seleccionar, Requerido!", "Notifications")
+           return;
         }else if(itemsTipos=="limpia"){
            Command: toastr.warning("Tipo sin seleccionar, Requerido!", "Notifications")
-        }else{
-            if(idRelantion.length>0)
-                {
-                    update();
-                }else{
-                    insertTramiteCampos();
+           return;
+        }else if(itemsTipos==7)
+        {
+            if(option==null){
+                Command: toastr.warning("Selecciona el Tipo File, Requerido!", "Notifications")
+                return;
             }
+            
         }
+
+        if(idRelantion.length>0)
+            {
+                update();
+            }else{
+                insertTramiteCampos();
+        }
+        
     }
      function insertTramiteCampos()
     {
@@ -817,7 +882,11 @@
         var itemsAgrupaciones=$("#itemsAgrupaciones").val();
         var check=$("#checkbox30").prop("checked");
         var valCheck='[{"required":"false"}]';
-
+        var option = document.querySelector('input[name = radio3]:checked');
+        if(option!=null)
+        {
+            option = document.querySelector('input[name = radio3]:checked').value;
+        }
         if(check==true)
         {
           if(itemsTipos == 3 || itemsTipos == 4 || itemsTipos == 5 || itemsTipos == 6){
@@ -843,7 +912,7 @@
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-add-serv') }}",
-           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],agrupacion_id:itemsAgrupaciones,orden:contador, _token:'{{ csrf_token() }}'}
+           data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],agrupacion_id:itemsAgrupaciones,orden:contador,fileT:option, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
              if(response.Code =="200"){
@@ -866,6 +935,11 @@
         var itemsTipos=$("#itemsTipos").val();
         var check=$("#checkbox30").prop("checked");
         var valCheck='[{"required":"false"}]';
+        var option = document.querySelector('input[name = radio3]:checked');
+        if(option!=null)
+        {
+            option = document.querySelector('input[name = radio3]:checked').value;
+        }
         if(check==true)
         {
             valCheck='{"required":"true"}';
@@ -875,7 +949,7 @@
         $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-relcamp') }}",
-           data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
+           data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],fileT:option, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
             
@@ -1061,6 +1135,8 @@
          document.getElementById('idRelantion').value="";
          document.getElementById('iddeleted').value="";
         $("#checkbox30").prop("checked", false);
+        $(".radioTipos").css("display", "none");
+        $("input:radio").attr("checked", false);
 
     }
     function deleted()
