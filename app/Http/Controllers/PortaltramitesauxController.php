@@ -340,25 +340,28 @@ class PortaltramitesauxController extends Controller
 	public function guardaTramite(Request $request)
 	{
 		try {
-			$caracteristicas=json_decode($request->caracteristicas[$k],true);
+			
 			$findCampo;
 			foreach ($request->campoid as $k => $v) {
-				$file=$request->fileT;
-				$filename="";
-				if($file=="xlsx"){
-					$filename="excel";
-				}else if($file=="docx")
-				{
-					$filename="word";
-				}else{
-					$filename=$file;
+				$caracteristicas=json_decode($request->caracteristicas[$k],true);
+				if($request->tipoid[$k]==7){
+					$file=$request->fileT;
+					$filename="";
+					if($file=="xlsx"){
+						$filename="excel";
+					}else if($file=="docx")
+					{
+						$filename="word";
+					}else{
+						$filename=$file;
+					}
+					$option=array('accept' => $request->fileT,'tipo'=>'expediente_validacion_' . $filename);				
+					$caracteristicas=array_merge($caracteristicas,$option);
 				}
-				$option=array('accept' => $request->fileT,'tipo'=>'expediente_validacion_' . $filename);				
-				$caracteristicas=array_merge($caracteristicas,$option);
 				$caracteristicas= json_encode($caracteristicas);
 
 				$in[] = array('tramite_id'=>$request->tramiteid,'campo_id'=>$v,'tipo_id'=>$request->tipoid[$k],'orden'=>$request->orden,'agrupacion_id'=>$request->agrupacion_id,'caracteristicas'=>$caracteristicas);
-				$findCampo=$this->camrel->findWhere(["tramite_id"=>$request->tramiteid,'campo_id'=>$v]);
+				$findCampo=$this->camrel->findWhere(["tramite_id"=>$request->tramiteid,'campo_id'=>$v,'agrupacion_id'=>$request->agrupacion_id]);
 			}
 			if($findCampo->count()>0)
 			{
