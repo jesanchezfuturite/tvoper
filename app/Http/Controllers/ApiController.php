@@ -14,11 +14,13 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
 use SoapClient;
+use SimpleXMLElement;
 
 // repositorios para afectar la base de datos
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\EstadosRepositoryEloquent;
 
 class ApiController extends Controller
 {
@@ -45,7 +47,7 @@ class ApiController extends Controller
 	//entidades
 
 	protected $ws_ent = array(
-		"qa" => "http://10.1.0.130:10021/web/services/WSCATEFService/WSCATEF?wsdl",
+		"qa" => "http://10.1.0.130:10087/web/services/WSCATEFService/WSCATEF",
 		"prod"=> "",
 
 	);
@@ -53,7 +55,7 @@ class ApiController extends Controller
 	//municipios
 
 	protected $ws_mun = array(
-		"qa" => "http://10.1.0.130:10021/web/services/WSCATMUNSService/WSCATMUNS?wsdl",
+		"qa" => "http://10.1.0.130:10087/web/services/WSCATMUNSService/WSCATMUNS",
 		"prod"=> "",
 
 	);
@@ -71,6 +73,7 @@ class ApiController extends Controller
 	// repos
     protected $solicitudes_tramite;
 	protected $tickets;
+	protected $estados;
 
 
     /**
@@ -82,7 +85,9 @@ class ApiController extends Controller
     public function __construct(
     	PortalTramitesRepositoryEloquent $solicitudes_tramite,
         PortalSolicitudesTicketRepositoryEloquent $tickets,
-        UrlGenerator $url
+		UrlGenerator $url,
+		EstadosRepositoryEloquent $estados
+		
     )
     {
         
@@ -110,7 +115,9 @@ class ApiController extends Controller
 
 			// inicializamos los repos necesarios
 			$this->solicitudes_tramite = $solicitudes_tramite;
-            $this->tickets = $tickets;
+			$this->tickets = $tickets;
+            $this->estados = $estados;
+			
 
 
             // obtengo la url para 
@@ -293,28 +300,56 @@ class ApiController extends Controller
 			
 			$url = $this->ws_ent[$origen];
 
-			$client = new SoapClient($url);
-			$result = $client->WsCatEF();
+	
+			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatef.wsbeans.iseries/">
+			<soapenv:Header/>
+			<soapenv:Body>
+				<wsc:soapwscatef>
+					<arg0>
+						<ACCESO>MARISOL3004</ACCESO>
+					</arg0>
+				</wsc:soapwscatef>
+			</soapenv:Body>
+			</soapenv:Envelope>';
 
-			return $result;
-			
-			// $origen = $request->origen;
-			
-	        // $url = $this->ws_ent[$origen];
+			$header = array(
+				"Content-type: text/xml;charset=\"utf-8\"",
+				"Accept: text/xml",
+				"Cache-Control: no-cache"
+			);
 
-	        // $this->client = new \GuzzleHttp\Client();
+			$soap_do = curl_init();
+
+			curl_setopt($soap_do, CURLOPT_URL, $url);
+			curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt($soap_do, CURLOPT_POST,           true );
+			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
+			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+		
+			$result = curl_exec($soap_do);
+			curl_close($soap_do);
+			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
+			$xml = new SimpleXMLElement($response);
+			$body = $xml->xpath('//soapBody')[0];
+			$array = json_decode(json_encode((array)$body), TRUE); 
+		
+
+			foreach ($array["ns2soapwscatefResponse"]["return"]["WEFLISTA"] as $key => $value) {
+				$estados = $this->estados->updateOrCreate(["clave" =>$value['WEFCLAVE']], [
+					'clave' => $value['WEFCLAVE'],
+					'nombre' => $value['WEFNOMBRE']
+				]);       
+			}	
+
+			return json_encode(
+				[
+					"response" 	=> "Estados actualizados",
+					"code"		=> 200
+				]);
 
 
-	    	// $response = $this->client->post(
-	    	// 	$url	
-	    	// );
-
-	        // $results = $response->getBody();
-
-
-		    // $r = json_decode($results);
-
-		    // return response()->json($r);
+		
+	
 
        }catch (\Exception $e){
                 dd($e->getMessage());
@@ -338,23 +373,38 @@ class ApiController extends Controller
 
 			$EntidadFed =$request->clave_entidad;
 			
-			$url = $this->ws_mun[$origen].'/'.$EntidadFed;
+			$url = $this->ws_mun[$origen];
 			
 
-	        $this->client = new \GuzzleHttp\Client();
+			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatmuns.wsbeans.iseries/">
+			<soapenv:Header/>
+			<soapenv:Body>
+				<wsc:soapwscmuns>
+					<arg0>
+						<ACCESO>MARISOL3004</ACCESO>
+						<WENTIDADFED>'.$EntidadFed.'</WENTIDADFED>
+					</arg0>
+				</wsc:soapwscmuns>
+			</soapenv:Body>
+			</soapenv:Envelope>';
 
+			$header = array(
+				"Content-type: text/xml;charset=\"utf-8\"",
+				"Accept: text/xml",
+				"Cache-Control: no-cache"
+			);
 
-	    	$response = $this->client->post(
-	    		$url	
-	    	);
+			$soap_do = curl_init();
 
-	        $results = $response->getBody();
-
-
-		    $r = json_decode($results);
-
-		    return response()->json($r);
-
+			curl_setopt($soap_do, CURLOPT_URL, $url);
+			curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt($soap_do, CURLOPT_POST,           true );
+			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
+			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
+		
+			$result = curl_exec($soap_do);
+			curl_close($soap_do);
+			return $result;
        }catch (\Exception $e){
                 dd($e->getMessage());
 

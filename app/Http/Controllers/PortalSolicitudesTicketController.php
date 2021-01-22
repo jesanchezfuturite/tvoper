@@ -290,8 +290,8 @@ class PortalSolicitudesTicketController extends Controller
           $datos=[];
           foreach ($solicitudes as $d => $dato) { 
             if($dato["tramite_id"]== $tramite["tramite_id"]){
-              if(!empty($info)){
-                $info=$data["info"];
+              if(empty($info)){
+                $info=$dato["info"];
               }else{
                 $info = $this->asignarClavesCatalogo($dato["info"]);
               }              
