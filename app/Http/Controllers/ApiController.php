@@ -115,7 +115,9 @@ class ApiController extends Controller
 
 			// inicializamos los repos necesarios
 			$this->solicitudes_tramite = $solicitudes_tramite;
-            $this->tickets = $tickets;
+			$this->tickets = $tickets;
+            $this->estados = $estados;
+			
 
 
             // obtengo la url para 
