@@ -64,7 +64,7 @@ class Kernel extends ConsoleKernel
                /*->dailyAt('15:26');*/
 
         /*Actualiza la tabla de estados cada semana*/ 
-        $schedule->command('get:Estados')
+        $schedule->command('obtener:Estados')
         ->weekly();
         
         /*Actualiza la tabla de municipios cada semana*/ 
