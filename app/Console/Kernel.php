@@ -19,7 +19,9 @@ class Kernel extends ConsoleKernel
         Commands\updateStatus::class,
         Commands\CorteSendEmail::class,
         Commands\SendEmails::class,
-        Commands\FacturacionOperaciones::class
+        Commands\FacturacionOperaciones::class,
+        Commands\Estados::class
+
     ];
 
     /**
@@ -58,6 +60,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('SendEmails:EmailGrid')
                ->everyFiveMinutes();
                /*->dailyAt('15:26');*/
+
+        /*Actualiza la tabla de estados cada semana*/ 
+        $schedule->command('get:Estados')
+        ->weekly();
 
     }   
 
