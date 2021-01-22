@@ -420,13 +420,7 @@ class ApiController extends Controller
 		
 
 			foreach ($array["ns2soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
-				$municipios = $this->municipios->firstOrNew([
-					'clave' => $value["WMUNSCLAVE"],
-					'clave_estado' => $EntidadFed,
-					'nombre'=>$value["WMUNSNOMBRE"]
-				
-				]);
-
+		
 				$municipios = $this->municipios->where('clave', $value["WMUNSCLAVE"])->where('clave_estado', $EntidadFed)->first();
 
 				if ($municipios === null) {
