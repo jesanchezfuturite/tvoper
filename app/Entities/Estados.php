@@ -22,7 +22,6 @@ class Estados extends Model implements Transformable
      */
     protected $connection = "mysql6";
     protected $fillable = [
-		"id",
         "clave",
         "nombre"
     ];
