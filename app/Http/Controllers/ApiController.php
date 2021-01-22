@@ -19,8 +19,11 @@ use SimpleXMLElement;
 // repositorios para afectar la base de datos
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\EstadosRepositoryEloquent;
+use App\Repositories\MunicipiosRepositoryEloquent;
+
 
 class ApiController extends Controller
 {
@@ -73,7 +76,9 @@ class ApiController extends Controller
 	// repos
     protected $solicitudes_tramite;
 	protected $tickets;
-	protected $estados;
+    protected $estados;
+	protected $campos;
+	protected $municipios;
 
 
     /**
@@ -86,7 +91,9 @@ class ApiController extends Controller
     	PortalTramitesRepositoryEloquent $solicitudes_tramite,
         PortalSolicitudesTicketRepositoryEloquent $tickets,
 		UrlGenerator $url,
-		EstadosRepositoryEloquent $estados
+        EstadosRepositoryEloquent $estados,
+		PortalcampoRepositoryEloquent $campos,
+		MunicipiosRepositoryEloquent $municipios
 		
     )
     {
@@ -117,6 +124,7 @@ class ApiController extends Controller
 			$this->solicitudes_tramite = $solicitudes_tramite;
 			$this->tickets = $tickets;
             $this->estados = $estados;
+            $this->campos  = $campos;
 			
 
 
@@ -404,7 +412,41 @@ class ApiController extends Controller
 		
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
-			return $result;
+		
+			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
+			$xml = new SimpleXMLElement($response);
+			$body = $xml->xpath('//soapBody')[0];
+			$array = json_decode(json_encode((array)$body), TRUE); 
+		
+
+			foreach ($array["ns2soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
+		
+				$municipios = $this->municipios->where('clave', $value["WMUNSCLAVE"])->where('clave_estado', $EntidadFed)->first();
+
+				if ($municipios === null) {
+					$municipios = $this->municipios->create([
+						'clave' => $value["WMUNSCLAVE"],
+						'clave_estado' => $EntidadFed,
+						'nombre'=>$value["WMUNSNOMBRE"]
+					]);
+				}else{
+				 $municipios->update([
+						'clave' => $value["WMUNSCLAVE"],
+						'clave_estado' => $EntidadFed,
+						'nombre'=>$value["WMUNSNOMBRE"]
+					]);
+				}
+
+			}	
+
+			return json_encode(
+				[
+					"response" 	=> "Municipios actualizados",
+					"code"		=> 200
+				]);
+
+
+		
        }catch (\Exception $e){
                 dd($e->getMessage());
 
@@ -494,7 +536,14 @@ class ApiController extends Controller
 
         $informativo_id = 8;
 
+        $campos = $this->campos->all();
 
+        $fields = array();
+
+        foreach($campos as $f)
+        {
+            $fields[$f->id]= $f->descripcion;
+        }
 
         try
         {
@@ -532,12 +581,31 @@ class ApiController extends Controller
             if($tramites_notaria->count() > 0)
             {
                 $response = array();
+
                 foreach($tramites_notaria as $tn){
 
                     $node = json_decode($tn->info);
 
+                    $in = $node->campos;
+
+                    $new = array();
+                    //dd($in);
+                    foreach($in as $i => $j)
+                    {
+                        $new[$i] = array(
+                            "field" => $fields[$i],
+                            "value" => $j,
+                        );
+                    }
+                    
+                    unset($node->campos);
+                        
+                    $node->campos= (object)$new; 
+
                     $response[]= (array)$node;
-                }
+				}
+			
+                
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
             }else{
                 return json_encode(
