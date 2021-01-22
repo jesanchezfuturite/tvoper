@@ -93,7 +93,7 @@ class ApiController extends Controller
 		UrlGenerator $url,
         EstadosRepositoryEloquent $estados,
 		PortalcampoRepositoryEloquent $campos,
-		MunicipiosRepositoryEloquent $municipios,
+		MunicipiosRepositoryEloquent $municipios
 		
     )
     {
