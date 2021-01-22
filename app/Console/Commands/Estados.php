@@ -57,7 +57,7 @@ class Estados extends Command
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->get(
-                	
+                $path
 	    	);
 
             Log::info("actualización de la base de datos de estados");
