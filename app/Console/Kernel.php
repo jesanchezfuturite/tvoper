@@ -20,7 +20,9 @@ class Kernel extends ConsoleKernel
         Commands\CorteSendEmail::class,
         Commands\SendEmails::class,
         Commands\FacturacionOperaciones::class,
-        Commands\Estados::class
+        Commands\Estados::class,
+        Commands\Municipios::class
+
 
     ];
 
@@ -63,6 +65,10 @@ class Kernel extends ConsoleKernel
 
         /*Actualiza la tabla de estados cada semana*/ 
         $schedule->command('get:Estados')
+        ->weekly();
+        
+        /*Actualiza la tabla de municipios cada semana*/ 
+        $schedule->command('obtener:Municipios')
         ->weekly();
 
     }   
