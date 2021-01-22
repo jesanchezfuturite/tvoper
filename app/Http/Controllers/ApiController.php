@@ -594,7 +594,7 @@ class ApiController extends Controller
 
                     $response[]= (array)$node;
 				}
-			}
+			
                 
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
             }else{
