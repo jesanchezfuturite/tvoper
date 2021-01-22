@@ -404,7 +404,28 @@ class ApiController extends Controller
 		
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
-			return $result;
+		
+			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
+			$xml = new SimpleXMLElement($response);
+			$body = $xml->xpath('//soapBody')[0];
+			$array = json_decode(json_encode((array)$body), TRUE); 
+		
+
+			foreach ($array["soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
+				$municipios = $this->municipios->updateOrCreate(["clave" =>$value['WMUNSCLAVE']], [
+					'clave' => $value['WMUNSCLAVE'],
+					'nombre' => $value['WMUNSNOMBRE']
+				]);       
+			}	
+
+			return json_encode(
+				[
+					"response" 	=> "Municipios actualizados",
+					"code"		=> 200
+				]);
+
+
+		
        }catch (\Exception $e){
                 dd($e->getMessage());
 
