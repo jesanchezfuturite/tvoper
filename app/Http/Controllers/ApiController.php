@@ -427,8 +427,22 @@ class ApiController extends Controller
 				
 				]);
 
-				$municipios->save();
-			       
+				$municipios = $this->municipios->where('clave', $value["WMUNSCLAVE"])->where('clave_estado', $EntidadFed)->first();
+
+				if ($municipios === null) {
+					$municipios = $this->municipios->create([
+						'clave' => $value["WMUNSCLAVE"],
+						'clave_estado' => $EntidadFed,
+						'nombre'=>$value["WMUNSNOMBRE"]
+					]);
+				}else{
+				 $municipios->update([
+						'clave' => $value["WMUNSCLAVE"],
+						'clave_estado' => $EntidadFed,
+						'nombre'=>$value["WMUNSNOMBRE"]
+					]);
+				}
+
 			}	
 
 			return json_encode(
