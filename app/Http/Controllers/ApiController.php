@@ -20,6 +20,7 @@ use SimpleXMLElement;
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\EstadosRepositoryEloquent;
 
 class ApiController extends Controller
 {
