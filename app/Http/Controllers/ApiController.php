@@ -593,7 +593,8 @@ class ApiController extends Controller
                     $node->campos= (object)$new; 
 
                     $response[]= (array)$node;
-                }
+				}
+			}
                 
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
             }else{
