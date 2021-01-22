@@ -22,6 +22,8 @@ use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\EstadosRepositoryEloquent;
+use App\Repositories\MunicipiosRepositoryEloquent;
+
 
 class ApiController extends Controller
 {
@@ -76,6 +78,7 @@ class ApiController extends Controller
 	protected $tickets;
     protected $estados;
 	protected $campos;
+	protected $municipios;
 
 
     /**
@@ -89,7 +92,8 @@ class ApiController extends Controller
         PortalSolicitudesTicketRepositoryEloquent $tickets,
 		UrlGenerator $url,
         EstadosRepositoryEloquent $estados,
-		PortalcampoRepositoryEloquent $campos
+		PortalcampoRepositoryEloquent $campos,
+		MunicipiosRepositoryEloquent $municipios,
 		
     )
     {
@@ -416,10 +420,13 @@ class ApiController extends Controller
 		
 
 			foreach ($array["soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
-				$municipios = $this->municipios->updateOrCreate(["clave" =>$value['WMUNSCLAVE']], [
-					'clave' => $value['WMUNSCLAVE'],
-					'nombre' => $value['WMUNSNOMBRE']
-				]);       
+				$municipios = $this->municipios->firstOrNew([
+					'clave' => $value["WMUNSCLAVE"],
+					'clave_estado' => $EntidadFed,
+					'nombre'=>$value["WMUNSNOMBRE"]
+				
+				]);
+			       
 			}	
 
 			return json_encode(
