@@ -72,6 +72,7 @@ class ApiController extends Controller
 	// repos
     protected $solicitudes_tramite;
 	protected $tickets;
+	protected $estados;
 
 
     /**
@@ -83,7 +84,9 @@ class ApiController extends Controller
     public function __construct(
     	PortalTramitesRepositoryEloquent $solicitudes_tramite,
         PortalSolicitudesTicketRepositoryEloquent $tickets,
-        UrlGenerator $url
+		UrlGenerator $url,
+		EstadosRepositoryEloquent $estados
+		
     )
     {
         
@@ -326,12 +329,24 @@ class ApiController extends Controller
 			$xml = new SimpleXMLElement($response);
 			$body = $xml->xpath('//soapBody')[0];
 			$array = json_decode(json_encode((array)$body), TRUE); 
-			
-			foreach ($array["ns2soapwscatefResponse"]["return"]["WEFLISTA"] as $key => $value) {
-				var_dump($value["WEFCLAVE"]);
-			}	
-	
+		
 
+			foreach ($array["ns2soapwscatefResponse"]["return"]["WEFLISTA"] as $key => $value) {
+				$estados = $this->estados->updateOrCreate(["clave" =>$value['WEFCLAVE']], [
+					'clave' => $value['WEFCLAVE'],
+					'nombre' => $value['WEFNOMBRE']
+				]);       
+			}	
+
+			return json_encode(
+				[
+					"response" 	=> "Estados actualizados",
+					"code"		=> 200
+				]);
+
+
+		
+	
 
        }catch (\Exception $e){
                 dd($e->getMessage());
