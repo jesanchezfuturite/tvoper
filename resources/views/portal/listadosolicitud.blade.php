@@ -29,7 +29,7 @@
         <div class="portlet-body">
 	        <div class="form-body">
 		        <div class="row">		          
-		            <div class="col-md-3 col-ms-12">
+		            <div class="col-md-4 col-ms-12">
 		                <div class="form-group">
 		                	<label >Tipo de Solicitud</label>           
 						    <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
@@ -51,10 +51,10 @@
 						    </select>  
 		                </div>
 		            </div>
-		            <div class="col-md-3 col-ms-12">
+		            <div class="col-md-2 col-ms-12">
 		                <div class="form-group"> 
 		                	<label >No. Solicitud</label>          
-						    <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Ingrese Numero de Solicitud...">  
+						    <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
 		                </div>
 		            </div>
 		            <div class="col-md-1 col-ms-12">
@@ -157,14 +157,21 @@
               <div class="form-group">
                 <label>Mensaje</label>
                 <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
+                <span class="help-block">&nbsp;</span>
+                <div class='md-checkbox'>
+                  <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
+                    <label for='checkbox30'>
+                    <span></span>
+                    <span class='check'></span> <span class='box'>
+                    </span>  Mensaje Publico. </label>
+                </div>
               </div>
             </div>
             <div class="col-md-3">             
               <div class="form-group">
-                <span class="help-block">&nbsp;</span>
+                <span class="help-block">&nbsp;</span>                
                 <button type="button" class="btn blue" onclick="saveMessage()"><i class="fa fa-check"></i> Guardar</button>
-                <br>
-                <br>
+                <span class="help-block">&nbsp;</span>
                 <span class="btn green fileinput-button">
                   <i class="fa fa-plus"></i>&nbsp;
                   <span>Adjuntar</span>
@@ -175,6 +182,7 @@
           </div>        
         </div>
         <div class="row">
+          <span class="help-block">&nbsp;</span>
           <div class="col-md-12">
             <div class="col-md-12">
               <div id="addtableMsg">
@@ -210,7 +218,25 @@
     TableManaged2.init2();
     //TableManaged7.init7();
     });
-
+  function findSol()
+  {
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/find-solicitudes') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        //console.log(response);
+        var resp=$.parseJSON(response);
+        $("#opTipoSolicitud option").remove();
+        $('#opTipoSolicitud').append("<option value='0'>------</option>");
+          $.each(resp.response, function(i, item) {
+            $('#opTipoSolicitud').append("<option value='"+item.id+"'>"+item.titulo+"</option>");
+          
+          });
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
    	function findSolicitudes(){
     	var noSolicitud=$("#noSolicitud").val();
     	var opTipoSolicitud=$("#opTipoSolicitud").val();
@@ -364,6 +390,8 @@
            if(response.Code=="200")
              {
                Command: toastr.success(response.Message, "Notifications")
+               findSolicitudes();
+               findSol();
                return;
              }
           //TableManaged7.init7();   
@@ -377,6 +405,11 @@
       var mensaje=$("#message").val();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
+      var check=$("#checkbox30").prop("checked");
+      var msjpublic="1";
+      if(check==false){
+        var msjpublic="0";
+      }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
       }else{
@@ -388,6 +421,7 @@
         }              
         formdata.append("id", id_);      
         formdata.append("mensaje", mensaje);
+        formdata.append("mensaje_para", msjpublic);
         formdata.append("_token",'{{ csrf_token() }}');
         $.ajax({
            method: "POST",
@@ -401,6 +435,7 @@
              {
               document.getElementById("message").value="";
               document.getElementById("file").value="";
+              $("#checkbox30").prop("checked", false);
               findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
                return;

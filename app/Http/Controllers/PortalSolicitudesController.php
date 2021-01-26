@@ -438,10 +438,43 @@ class PortalSolicitudesController extends Controller
     return $solicitudes;
   }
   public function listSolicitudes(){
-    $user_id = auth()->user()->id;
-    $tipoSolicitud = $this->solicitudes->where("atendido_por", $user_id)->get(["titulo", "id"])->toArray();
+    
+    $tipoSolicitud=$this->findSol();
     $status = $this->status->all()->toArray();
     return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
+
+  }
+  public function findSol()
+  {
+    $user_id = auth()->user()->id;
+    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null);
+    //log::info($tipoSolicitud);    
+    foreach ($tipoSolicitud as $k) {
+      if($k["status"]==2)
+      {
+        $tipoSolicitudHijo= $this->solicitudes->where("atendido_por", $user_id)->where("padre_id",$k["id"])->get(["titulo", "id","padre_id"])->toArray();
+        foreach ($tipoSolicitudHijo as $i) {
+          $arrayHijo []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] ,
+            'id'=> $i["id"],
+            'padre_id'=> $i["padre_id"]
+          );
+            $tipoSolicitud=array_merge($tipoSolicitud,$arrayHijo);
+            $arrayHijo=array();
+            
+            $tipoSolicitudTer= $this->solicitudes->where("atendido_por", $user_id)->where("padre_id",$i["id"])->get(["titulo", "id","padre_id"])->toArray();
+            foreach ($tipoSolicitudTer as $t) {
+              $arrayTer []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] . " / " . $t["titulo"],
+                'id'=> $t["id"],
+                'padre_id'=> $t["padre_id"]
+              );
+              $tipoSolicitud=array_merge($tipoSolicitud,$arrayTer);
+              $arrayTer=array();
+            }
+        }
+      }
+      
+    }
+    return $tipoSolicitud;
 
   }
   public function atenderSolicitud($id){
@@ -465,6 +498,7 @@ class PortalSolicitudesController extends Controller
 
   public function guardarSolicitud(Request $request){
     $mensaje = $request->mensaje;
+    $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
   
     if($request->has("file")){
@@ -480,6 +514,7 @@ class PortalSolicitudesController extends Controller
       $mensajes =$this->mensajes->create([
         'ticket_id'=> $ticket_id,
         'mensaje' => $mensaje,
+        'mensaje_para' => $mensaje_para,
         'attach'    =>  $attach
       ]);
 
