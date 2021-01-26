@@ -124,7 +124,8 @@ class ApiController extends Controller
 			$this->solicitudes_tramite = $solicitudes_tramite;
 			$this->tickets = $tickets;
             $this->estados = $estados;
-            $this->campos  = $campos;
+			$this->campos  = $campos;
+			$this->municipios = $municipios;
 			
 
 
@@ -420,23 +421,15 @@ class ApiController extends Controller
 		
 
 			foreach ($array["ns2soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
-		
-				$municipios = $this->municipios->where('clave', $value["WMUNSCLAVE"])->where('clave_estado', $EntidadFed)->first();
+				$municipios = $this->municipios->firstOrNew([
+					'clave' => $value["WMUNSCLAVE"],
+					'clave_estado' => $EntidadFed,
+					'nombre'=>$value["WMUNSNOMBRE"]
+				
+				]);
 
-				if ($municipios === null) {
-					$municipios = $this->municipios->create([
-						'clave' => $value["WMUNSCLAVE"],
-						'clave_estado' => $EntidadFed,
-						'nombre'=>$value["WMUNSNOMBRE"]
-					]);
-				}else{
-				 $municipios->update([
-						'clave' => $value["WMUNSCLAVE"],
-						'clave_estado' => $EntidadFed,
-						'nombre'=>$value["WMUNSNOMBRE"]
-					]);
-				}
-
+				$municipios->save();
+			       
 			}	
 
 			return json_encode(
@@ -508,7 +501,7 @@ class ApiController extends Controller
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+			return response()->json($results);
 
 
         }catch (\Exception $e){

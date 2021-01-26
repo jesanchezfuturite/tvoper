@@ -5,17 +5,18 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
+use Illuminate\Routing\UrlGenerator;
 
 
 class Estados extends Command
 {
-    protected $url_estados = "http://10.153.144.228/wsent/qa";
+    protected $url;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'get:Estados';
+    protected $signature = 'obtener:Estados';
 
     /**
      * The console command description.
@@ -29,9 +30,12 @@ class Estados extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(
+        UrlGenerator $url
+    )
     {
         parent::__construct();
+        $this->url = $url;
     }
 
     /**
@@ -42,16 +46,18 @@ class Estados extends Command
     public function handle()
     {
         $this->getEstados();
+       
         
     }
 
     public function getEstados(){
         try
         {
+            $path = $this->url->to('/') . '/wsent/qa';
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->get(
-	    		$this->url_estados	
+                $path
 	    	);
 
             Log::info("actualización de la base de datos de estados");
