@@ -501,7 +501,8 @@ class ApiController extends Controller
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+			$r = json_decode($results);
+			return response()->json($r);
 
 
         }catch (\Exception $e){
