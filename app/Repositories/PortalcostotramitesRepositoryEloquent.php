@@ -57,7 +57,8 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             'portal_sub_tramites.cuotas',
             'portal_sub_tramites.id_partida',
             'portal_sub_tramites.oficio',
-            'portal_sub_tramites.limite_cuotas')
+            'portal_sub_tramites.limite_cuotas',
+            'portal_sub_tramites.tipoPersona')
             ->leftjoin($this->db  . '.tipo_servicios',$this->db  . '.tipo_servicios.Tipo_Code','=','portal_costo_tramites.tramite_id')
             ->leftjoin('portal_sub_tramites','portal_sub_tramites.costo_id','=','portal_costo_tramites.id')
             ->leftjoin('portal.regla_operativa', 'portal.regla_operativa.id','=', 'portal_costo_tramites.reglaoperativa_id')

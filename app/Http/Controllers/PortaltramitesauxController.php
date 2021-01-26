@@ -340,7 +340,7 @@ class PortaltramitesauxController extends Controller
 	public function guardaTramite(Request $request)
 	{
 		try {
-			
+
 			$findCampo;
 			foreach ($request->campoid as $k => $v) {
 				$caracteristicas=json_decode($request->caracteristicas[$k],true);
@@ -355,7 +355,7 @@ class PortaltramitesauxController extends Controller
 					}else{
 						$filename=$file;
 					}
-					$option=array('accept' => $request->fileT,'tipo'=>'expediente_validacion_' . $filename);				
+					$option=array('accept' => $request->fileT,'tipo'=>'expediente_validacion_' . $filename);
 					$caracteristicas=array_merge($caracteristicas,$option);
 				}
 				$caracteristicas= json_encode($caracteristicas);
@@ -503,11 +503,11 @@ class PortaltramitesauxController extends Controller
   {
     	try {
     		if($request->id==''){
-    			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida,'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas]);
+    			$this->subsidiotramitedb->create(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida,'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas, 'tipoPersona'=>$request->optionPersona]);
 
 				return response()->json(["Code" => "200","Message" => "Registro Guardado."]);
     		}else{
-    			$this->subsidiotramitedb->update(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida, 'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas],$request->id);
+    			$this->subsidiotramitedb->update(['tramite_id'=>$request->tramite,'costo_id'=>$request->costo_id,'cuotas'=>$request->cuotas,'id_partida'=>$request->partida, 'oficio'=>$request->oficio, 'limite_cuotas'=>$request->limite_cuotas, 'tipoPersona'=>$request->optionPersona ],$request->id);
     			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
     		}
 

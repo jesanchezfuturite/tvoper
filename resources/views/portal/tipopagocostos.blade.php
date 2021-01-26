@@ -309,13 +309,13 @@
           <div class="col-md-12">
             <div class="col-md-9">
               <div class="form-group">
-                <label >Cuotas</label>
+                <label >Cuotas a cobrar</label>
                 <input type="text" class="valida-decimal form-control" name="cuotas" id="cuotas" placeholder="Ingrese Cuotas...">
               </div>
             </div>
             <div class="col-md-9">
               <div class="form-group">
-                <label >Limite Cuota</label>
+                <label >Limite Cuotas</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaLimit" id="cuotaLimit" placeholder="Ingrese Limite de Cuotas...">
              </div>
             </div>
@@ -323,6 +323,37 @@
               <div class="form-group">
                 <label ># de Oficio ó Decreto</label>
                 <input type="text" class="form-control" name="oficio" id="oficio" placeholder="Ingrese el numero de oficio del subsidio">
+             </div>
+            </div>
+            <div class="col-md-9">
+              <div class="form-group">
+                <label >Tipo de Persona aplicable</label>
+                <div class="md-radio-inline">
+                  <div class="md-radio">
+                    <input type="radio" id="radio9" name="radio6" class="md-radiobtn" value="pf" >
+                    <label for="radio9">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                      Persona Fisica</label>
+                  </div>|
+                  <div class="md-radio">
+                    <input type="radio" id="radio10" name="radio6" class="md-radiobtn" value="pm" >
+                      <label for="radio10">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Persona Moral</label>
+                  </div>|
+                  <div class="md-radio">
+                    <input type="radio" id="radio11" name="radio6" class="md-radiobtn" value="a" >
+                    <label for="radio11">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>
+                      Ambas </label>
+                  </div>
+                </div>
              </div>
             </div>
           </div>
@@ -369,7 +400,7 @@
                         <div class="col-md-12">
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label >Porcentaje</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El valor del porcentaje debe ser el valor de porcentaje a cobrar.." data-original-title="Información"><i class="fa fa-question-circle"></i></a>       
+                                    <label >Porcentaje</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El valor del porcentaje debe ser el valor de porcentaje a cobrar.." data-original-title="Información"><i class="fa fa-question-circle"></i></a>
                                     <input type="text" name="porcentaje" id="porcentaje" class="form-control valida-numeros" placeholder="Nuevo Porcentaje..."
                                     oninput="limitN(this);">
                                 </div>
@@ -743,7 +774,7 @@
                 +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
                 +"<td>"+porcentaje+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\")'><i class='fa fa-usd'></i></a>"+
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
                   "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
                 );
@@ -898,7 +929,7 @@
          Command: toastr.warning("No Success", "Notifications")  });
 
     }
-    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas, oficio, partidas)
+    function updatesubsidio(id_,subsidio_id,tramite_id,cuotas,limite_cuotas, oficio, partidas, tipoPersona)
     {
       document.getElementById('id_costo').value=id_;
       document.getElementById('id_tramite').value=tramite_id;
@@ -917,6 +948,7 @@
       document.getElementById('cuotaLimit').value=limite_cuotas;
       document.getElementById('oficio').value=oficio;
       $("#itemsPartidas").val(partidas).change();
+      $("input[name=radio6][value='"+tipoPersona+"']").prop("checked",true);
     }
     function save()
     {
@@ -927,6 +959,7 @@
       var oficio = $("#oficio").val();
       var cuotaLimit=$("#cuotaLimit").val();
       var partida = $("#itemsPartidas").val();
+      var optionPersona = document.querySelector('input[name = radio6]:checked');
 
       if(partida=='limpia')
     {
@@ -948,11 +981,17 @@
       Command: toastr.warning("Campo # de Oficio ó Decreto, Requerido!", "Notifications")
       return;
     }
+    if(optionPersona!=null)
+    {
+      optionPersona = document.querySelector('input[name = radio6]:checked').value;
+    }else{
+      optionPersona=null;
+    }
 
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-subsidios') }}",
-           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,oficio:oficio ,limite_cuotas:cuotaLimit,partida:partida, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,oficio:oficio ,limite_cuotas:cuotaLimit,partida:partida, optionPersona:optionPersona, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -973,6 +1012,7 @@
       document.getElementById('cuotaLimit').value='';
       document.getElementById('oficio').value='';
       $("#itemsPartidas").val('limpia').change();
+      $("input:radio").attr("checked", false);
     }
     function deleteTipoServicio()
     {
