@@ -487,7 +487,7 @@ class ApiController extends Controller
 		try
         {
 
-			$paramts =array(
+			$params =array(
 				"access_token" => $this->key,
 				"curp" => $curp
 			);
