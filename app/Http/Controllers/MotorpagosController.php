@@ -1401,7 +1401,9 @@ return json_encode($response);
                 "id_gpm" => $i->id_gpm,
                 "descripcion_gpm" => $i->descripcion_gpm,
                 "tiporeferencia" => $i->fecha_condensada,
-                "limitereferencia" => $i->descripcion
+                "limitereferencia" => $i->descripcion,
+                "id_entidadtramite" => $i->id_entidadtramite,
+                "id_entidadfamilia" => $i->id_entidadfamilia
             );
         }
 
@@ -1410,19 +1412,24 @@ return json_encode($response);
     }
     public function findTipoServicio_whereId(Request $request)
     {
-         $id=$request->id;
-
+        $id=$request->id;
+        $id_entidadtramite=$request->id_entidadtramite;        
+        $entidad="";
+        $familia="";
         $info=$this->tiposerviciodb->findWhere(['Tipo_Code'=>$id]);
-        $findentidad=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id]);
-        $entidad;
-        $familia;
-        foreach ($findentidad as $k) {
-            $entidad=$k->entidad_id;
-        }
-        $findFamilia=$this->familiaentidaddb->findWhere(['entidad_id'=>$entidad]);
-        foreach ($findFamilia as $e) {
-            $familia=$e->familia_id;
-        }
+        
+        if($id_entidadtramite <>"null" || $id_entidadtramite<>null)
+        {
+            $findentidad=$this->entidadtramitedb->findWhere(['id'=>$id_entidadtramite]);
+            foreach ($findentidad as $k) {
+                $entidad=$k->entidad_id;
+            }
+            $findFamilia=$this->familiaentidaddb->findWhere(['entidad_id'=>$entidad]);
+            foreach ($findFamilia as $e) {
+                $familia=$e->familia_id;
+            }
+        }        
+        
         foreach ($info as $i) 
         {
              $response []= array(
@@ -1478,24 +1485,18 @@ return json_encode($response);
         $entidad_id=$request->entidad_id;
         $id=$request->id;
         $response="false";
-    
+        $id_entidadtramite=$request->id_entidadtramite;
         $info=$this->tiposerviciodb->updateMenuByName(['Tipo_Descripcion'=>$descripcion,'Origen_URL'=>$url,'GpoTrans_Num'=>$gpoTrans,'id_gpm'=>$id_gpm,'descripcion_gpm'=>$descripcion_gpm,'tiporeferencia_id'=>$tiporeferencia,'limitereferencia_id'=>$limitereferencia],['Tipo_Code'=>$id]);
         $findentidad=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id,'entidad_id'=>$entidad_id]);
-        if($findentidad->count()==0)
+        if($id_entidadtramite==null || $id_entidadtramite=="null")
         {
-            $insertentidatram=$this->entidadtramitedb->create(['tipo_servicios_id'=>$id,'entidad_id'=>$entidad_id]);
-        }else{
-            $findentidadtram=$this->entidadtramitedb->findWhere(['tipo_servicios_id'=>$id]);
-            if($findentidadtram->count()==1)
-            {
-                $entidadtramite_id;
-                foreach ($findentidadtram as $v) {
-                    $entidadtramite_id=$v->id;
-                }
-                $updateEntidad=$this->entidadtramitedb->update(['entidad_id'=>$entidad_id],$id);
-            }else{
-
+            if($entidad_id<>"limpia" || $entidad_id<>null || $entidad_id<>"null"){
+                $insertentidatram=$this->entidadtramitedb->create(['tipo_servicios_id'=>$id,'entidad_id'=>$entidad_id]);
             }
+        }else{
+            
+            $updateEntidad=$this->entidadtramitedb->update(['entidad_id'=>$entidad_id],$id_entidadtramite);
+           
         }
         $response="true";
       
