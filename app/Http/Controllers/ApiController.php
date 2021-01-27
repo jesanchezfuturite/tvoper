@@ -487,39 +487,18 @@ class ApiController extends Controller
 		try
         {
 
-			$params =array(
-				"access_token" => $this->key,
-				"curp" => $curp
-			);
-			$url = $this->insumos_curp . '?' . http_build_query($params);
-
-			$c = curl_init();
-			curl_setopt($c, CURLOPT_URL, $url);
-			curl_setopt($c, CURLOPT_RETURNTRANSFER, true );
-		
-			$result = curl_exec($c);
-			curl_close($c);
-			
-			return response()->json($result);
-
-		
-	        $this->client = new \GuzzleHttp\Client();
-
-	    	$response = $this->client->get(
-	    		$this->insumos_curp,
-	    		[
-	    			"query" => 
-		    			[
-			    			"access_token" => $this->key,
-			    			"curp" => $curp,
-		    			]
-	    		]	
-	    	);
-
-	    	$results = $response->getBody();
-
-			return response()->json($results);
-
+			$key = $this->key;
+			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;
+			// dd($url);
+				
+			$url_2 = "https://insumos.nl.gob.mx/api/consultacurp?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.eyJpc3MiOiJodHRwczpcL1wvaW5zdW1vcy5ubC5nb2IubXhcLyIsImF1ZCI6Imh0dHBzOlwvXC9pbnN1bW9zLm5sLmdvYi5teFwvIiwianRpIjoiNGYxZzIzYTEyYWEiLCJ1c2VybmFtZSI6ImZ1bjEiLCJpYXQiOjE2MTE3NzMwNjAsImV4cCI6MTYxMTk0NTg2MCwidWlkIjoxfQ.08SttfpUl5SkxODTCmIU0skjyUnB21ZvO-cyWSVA4Mc&curp=CEGK910517MTSSDR02";
+	
+			$ch = curl_init();    
+			curl_setopt($ch, CURLOPT_URL, $url);        
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+			$results = curl_exec($ch);
+			curl_close($ch);
+			return $results;
 
         }catch (\Exception $e){
         	dd($e->getMessage());

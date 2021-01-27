@@ -458,6 +458,10 @@ class PortalSolicitudesTicketController extends Controller
         $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
         $solicitudes->whereIn('user_id', $users);
       }
+      if($request->has('id_usuario')){        
+        $solicitudes->where('user_id', $request->id_usuario);
+      }
+
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
     
       $solicitudes = $solicitudes->get();
