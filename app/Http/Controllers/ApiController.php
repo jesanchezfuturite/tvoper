@@ -486,6 +486,23 @@ class ApiController extends Controller
 	public function curp($curp){
 		try
         {
+
+			$paramts =array(
+				"access_token" => $this->key,
+				"curp" => $curp
+			);
+			$url = $this->insumos_curp . '?' . http_build_query($params);
+
+			$c = curl_init();
+			curl_setopt($c, CURLOPT_URL, $url);
+			curl_setopt($c, CURLOPT_RETURNTRANSFER, true );
+		
+			$result = curl_exec($c);
+			curl_close($c);
+			
+			return response()->json($result);
+
+		
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->get(
