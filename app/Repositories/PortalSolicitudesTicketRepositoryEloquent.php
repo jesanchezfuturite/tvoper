@@ -34,5 +34,17 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
+    public function findPrelacion($id)
+    {
+             
+        $data = PortalSolicitudesTicket::where('solicitudes_ticket.id',$id)
+        ->leftjoin('solicitudes_catalogo','solicitudes_catalogo.id','=','solicitudes_ticket.catalogo_id')
+        ->leftjoin('tramites_prelacion','tramites_prelacion.tramite_id','=','solicitudes_catalogo.tramite_id')
+        ->select('tramites_prelacion.tramite_id')
+        ->get();
+
+        return $data;
+       
+    }
     
 }

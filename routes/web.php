@@ -315,6 +315,7 @@ Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
 Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
 Route::get('/traux-get-partida', 'PortaltramitesauxController@listarPartidas');
+Route::post('/traux-prelacion', 'PortaltramitesauxController@editPrelacion');
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');

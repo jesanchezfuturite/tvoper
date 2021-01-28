@@ -63,17 +63,16 @@
                             </select>
                         </div>
                     </div>
-                    <!-----<div class="col-md-2 col-ms-12 checkfile">
+                    <div class="col-md-2 col-ms-12 checkfile">
                         <span class="help-block"></span>
                        <div class='md-checkbox'>
-                            <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '  onclick="insertCampoFile()">
+                            <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '  onclick="insertPrelacion()">
                                 <label for='checkbox1'>
                                 <span></span>
                                 <span class='check'></span> <span class='box'>
-                            </span>  Requiere Archivo. </label>
+                            </span>  Prelación. </label>
                         </div>
-                    </div>
-                    -->
+                    </div>                
                 </div>
             </div>
         </div>
@@ -495,11 +494,26 @@
              $(".radioTipos").css("display", "none");
         }
     }
-     /*$( function() {
-        $( "#sortable" ).sortable();
-        $( "#sortable" ).disableSelection();
-      
-    } );*/
+    function insertPrelacion()
+    {
+        var id_tramite_=$("#itemsTramites").val();
+        var check=$("#checkbox1").prop("checked");
+        //console.log(check);
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-prelacion') }}",
+           data: {id_tramite:id_tramite_,prelacion:check,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+         if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            }else{
+                Command: toastr.warning(response.Message, "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
     function findAgrupacionesOrden()
     {   id_=$("#itemsTramites").val();
     
@@ -660,7 +674,7 @@
         $('#Removetable div').remove();             
         $("#itemsAgrupaciones").val("limpia").change();
         if(id_=="limpia")
-        {
+        {   $("#checkbox1").prop("checked", false);
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
              $("#itemsCategoria").val("limpia").change();
@@ -668,6 +682,7 @@
             return;
         }else{
             $(".checkfile").css("display", "block");
+
         }
 
         $.ajax({
@@ -677,14 +692,17 @@
         .done(function (response) {
         var Resp=$.parseJSON(response);
         var categoria="limpia";
+        var check=false;
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
                     categoria=item.id_categoria;
+                    check=item.check;
             });
 
             $("#itemsCategoria").val(categoria).change();
+            $("#checkbox1").prop("checked", check);
             /*if(iCheck=="1")
             {
                 $("#checkbox1").prop("checked", true);

@@ -479,6 +479,11 @@ class PortalSolicitudesController extends Controller
   }
   public function atenderSolicitud($id){
     $ticket = $this->ticket->where('id', $id)->first();
+    $findP=$this->ticket->findPrelacion($id);
+    $prelacion=array();    
+      foreach ($findP as $k) {
+        $prelacion=array('prelacion' =>  $k->tramite_id);
+      }
     $informacion = json_decode($ticket->info);
     $informacion = json_decode(json_encode($informacion), true);
     $campos = $informacion["campos"];   
@@ -491,9 +496,16 @@ class PortalSolicitudesController extends Controller
     $camposnuevos = array_combine($catalogue, $campos);
     unset($informacion["campos"]);
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+    $informacion =array_merge( $informacion,$prelacion);
     return $informacion; 
     
 
+  }
+  private function findPrelacion($id)
+  {
+     
+
+    return $prelacion;
   }
 
   public function guardarSolicitud(Request $request){

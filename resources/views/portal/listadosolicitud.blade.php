@@ -205,8 +205,17 @@
         </div>
       </div>
       <div class="modal-footer">
-          <button type="button"  class="btn default" onclick="prelacion()" >Prelación</button>&nbsp;&nbsp;&nbsp;
-          <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarTicket()" >Cerrar Ticket</button>
+        <div class="row">
+          <div class="col-md-9 "></div>
+          <div class="col-md-1 ">
+            <div class="form-group ">
+              <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarTicket()" >Cerrar Ticket</button>
+          </div>
+        </div>
       </div>   
     </div>
   </div>
@@ -217,7 +226,7 @@
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
-    //TableManaged7.init7();
+    $(".btnPrelacion").css("display", "none");
     });
   function prelacion()
   {    
@@ -357,7 +366,12 @@
           for (n in Resp.campos) {            
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
-          //TableManaged7.init7();   
+          if(Resp.prelacion==null || Resp.prelacion=="null") 
+          {
+            $(".btnPrelacion").css("display", "none");
+          }else{
+             $(".btnPrelacion").css("display", "block");
+          }
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");

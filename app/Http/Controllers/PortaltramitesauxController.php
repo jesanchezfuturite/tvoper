@@ -21,6 +21,7 @@ use App\Repositories\PortalsubsidiotramitesRepositoryEloquent;
 use App\Repositories\UmahistoryRepositoryEloquent;
 use App\Repositories\PortaltramitecategoriaRepositoryEloquent;
 use App\Repositories\PortaltramitecategoriarelacionRepositoryEloquent;
+use App\Repositories\PortaltramiteprelacionRepositoryEloquent;
 
 class PortaltramitesauxController extends Controller
 {
@@ -41,6 +42,7 @@ class PortaltramitesauxController extends Controller
 	protected $agrupaciones;
 	protected $category;
 	protected $relcat;
+	protected $tramiteprelaciondb;
 
     public function __construct(
 
@@ -55,7 +57,8 @@ class PortaltramitesauxController extends Controller
 			PortalreglaoperativaRepositoryEloquent $reglas,
 			PortalcamposagrupacionesRepositoryEloquent $agrupaciones,
 			PortaltramitecategoriaRepositoryEloquent $category,
-			PortaltramitecategoriarelacionRepositoryEloquent $relcat
+			PortaltramitecategoriarelacionRepositoryEloquent $relcat,
+			PortaltramiteprelacionRepositoryEloquent $tramiteprelaciondb
 
     )
     {
@@ -73,6 +76,7 @@ class PortaltramitesauxController extends Controller
 			$this->agrupaciones = $agrupaciones;
 			$this->category  = $category;
 			$this->relcat = $relcat;
+			$this->tramiteprelaciondb = $tramiteprelaciondb;
     }
 
 
@@ -619,7 +623,7 @@ class PortaltramitesauxController extends Controller
 
 		public function listarAgrupacion(Request $request){
 			$tramite = $request->id_tramite;
-			$data = $this->agrupaciones->where(['id_tramite' => $tramite])->orderBy('orden', 'ASC')->get();
+			$data = $this->agrupaciones->findTramites($tramite);
 
 			return json_encode($data);
 		}
@@ -756,6 +760,29 @@ class PortaltramitesauxController extends Controller
 		} catch (\Exception $e) {
 			Log::info('Error savePorcentaje: '.$e->getMessage());
 			return response()->json(["Code" => "200","Message" => "Error Actualizar."]);
+		}
+	}
+	public function editPrelacion(Request $request)
+	{
+		$id_tramite=$request->id_tramite;
+		$prelacion=$request->prelacion;
+		
+		$response=array();
+		try {
+			if($prelacion==false || $prelacion =="false")
+			{
+				$delt=$this->tramiteprelaciondb->deleteWhere(["tramite_id"=>$id_tramite]);
+				$response=["Code" => "200","Message" => "Prelacion Eliminado."];
+			}else{
+				$creat=$this->tramiteprelaciondb->create(["tramite_id"=>$id_tramite]);
+				$response=["Code" => "200","Message" => "Prelacion Agregado."];
+			}
+			
+			return response()->json($response);
+
+		} catch (\Exception $e) {
+			Log::info('Error editPrelacion: '.$e->getMessage());
+			return response()->json(["Code" => "200","Message" => "Error Prelacion."]);
 		}
 	}
 }
