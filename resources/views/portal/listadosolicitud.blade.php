@@ -228,7 +228,7 @@
       .done(function (response) {     
         console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
-        document.getElementById("mensaje").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
+        document.getElementById("message").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
         saveMessage();
         })
       .fail(function( msg ) {
