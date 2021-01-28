@@ -220,20 +220,19 @@
     //TableManaged7.init7();
     });
   function prelacion()
-  {
-    console.log("prelación");
+  {    
     $.ajax({
       method: "get",            
       url: "{{ url('/wsrp/qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         console.log(response);
-        var resp=$.parseJSON(response);
+        var resp=$.parseJSON(JSON.stringify(response));
         document.getElementById("mensaje").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
         saveMessage();
         })
       .fail(function( msg ) {
-         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+         Command: toastr.warning("Error al Guardar", "Notifications")   });
   }
   function findSol()
   {
