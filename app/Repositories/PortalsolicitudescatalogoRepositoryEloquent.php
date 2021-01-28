@@ -34,14 +34,14 @@ class PortalsolicitudescatalogoRepositoryEloquent extends BaseRepository impleme
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    public function findSolicitudes($user,$padre_id)
+    public function findSolicitudes($user,$padre_id,$estatus)
     {
         try{        
         $data = Portalsolicitudescatalogo::where("atendido_por",$user)
         ->select("solicitudes_catalogo.id","solicitudes_catalogo.atendido_por", "solicitudes_catalogo.titulo", "solicitudes_catalogo.padre_id","solicitudes_ticket.status")
-        ->Join('solicitudes_ticket',  'solicitudes_catalogo.id', '=','solicitudes_ticket.catalogo_id')
+        ->join('solicitudes_ticket',  'solicitudes_catalogo.id', '=','solicitudes_ticket.catalogo_id')
         ->where("solicitudes_catalogo.padre_id",$padre_id)
-       // ->where("solicitudes_ticket.status","2")
+        
         ->groupBy('solicitudes_catalogo.id')
         ->get()->toArray();
 

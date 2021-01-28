@@ -2677,7 +2677,7 @@ return json_encode($response);
                     $mes="NOVIEMBRE";                    
                     break;
                 case '12':
-                    $mes="NOVIEMBRE";                    
+                    $mes="DICIEMBRE";                    
                     break;                                    
                 default:
                     $mes="---";

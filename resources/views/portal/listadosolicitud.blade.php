@@ -205,6 +205,7 @@
         </div>
       </div>
       <div class="modal-footer">
+          <button type="button"  class="btn default" onclick="prelacion()" >Prelación</button>&nbsp;&nbsp;&nbsp;
           <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarTicket()" >Cerrar Ticket</button>
       </div>   
     </div>
@@ -218,6 +219,22 @@
     TableManaged2.init2();
     //TableManaged7.init7();
     });
+  function prelacion()
+  {
+    console.log("prelación");
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/wsrp/qa') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        console.log(response);
+        var resp=$.parseJSON(response);
+        document.getElementById("mensaje").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
+        saveMessage();
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
   function findSol()
   {
     $.ajax({
@@ -225,11 +242,11 @@
       url: "{{ url('/find-solicitudes') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        //console.log(response);
-        var resp=$.parseJSON(response);
+        console.log(response);
+        var resp=response;
         $("#opTipoSolicitud option").remove();
         $('#opTipoSolicitud').append("<option value='0'>------</option>");
-          $.each(resp.response, function(i, item) {
+          $.each(resp, function(i, item) {
             $('#opTipoSolicitud').append("<option value='"+item.id+"'>"+item.titulo+"</option>");
           
           });
@@ -271,13 +288,20 @@
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
             var Resp=$.parseJSON(JSON.stringify(response));
+            var bton="";
             $.each(Resp, function(i, item) {
+              if(item.status==2)
+              {
+                bton="<td class='text-center' width='20%'></td>";
+              }else{
+                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\")'> Atender </a></td>";
+              }
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
                 	+"<td>"+item.titulo+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
-                	+ "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\")'> Atender </a></td>"
+                	+ bton
                 	+"</tr>"
                 );
             });
@@ -380,10 +404,11 @@
     function cerrarTicket()
     {
       var idT=$("#idTicket").val();
+      var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
            method: "POST", 
            url: "{{ url('/cerrar-ticket') }}",
-           data:{ id:idT ,_token:'{{ csrf_token() }}'} })
+           data:{ id:idT ,id_catalogo:id_catalogo_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response.solicitante);
 
@@ -392,6 +417,8 @@
                Command: toastr.success(response.Message, "Notifications")
                findSolicitudes();
                findSol();
+               chgopt(id_catalogo_);
+
                return;
              }
           //TableManaged7.init7();   
@@ -399,7 +426,14 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
-    }
+    }async function chgopt(id)
+  {  
+    await sleep(2000);
+    $("#opTipoSolicitud").val(id).change();
+  } 
+  function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+  }
     function saveMessage()
     {
       var mensaje=$("#message").val();

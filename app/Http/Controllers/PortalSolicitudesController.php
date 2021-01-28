@@ -416,7 +416,7 @@ class PortalSolicitudesController extends Controller
   public function filtrar(Request $request){
    
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.created_at")
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.status","solicitudes_ticket.created_at")
     ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
     
@@ -447,12 +447,12 @@ class PortalSolicitudesController extends Controller
   public function findSol()
   {
     $user_id = auth()->user()->id;
-    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null);
+    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null,2);
     //log::info($tipoSolicitud);    
     foreach ($tipoSolicitud as $k) {
       if($k["status"]==2)
       {
-        $tipoSolicitudHijo= $this->solicitudes->where("atendido_por", $user_id)->where("padre_id",$k["id"])->get(["titulo", "id","padre_id"])->toArray();
+        $tipoSolicitudHijo= $this->solicitudes->findSolicitudes($user_id,$k["id"],null);
         foreach ($tipoSolicitudHijo as $i) {
           $arrayHijo []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] ,
             'id'=> $i["id"],
@@ -461,7 +461,7 @@ class PortalSolicitudesController extends Controller
             $tipoSolicitud=array_merge($tipoSolicitud,$arrayHijo);
             $arrayHijo=array();
             
-            $tipoSolicitudTer= $this->solicitudes->where("atendido_por", $user_id)->where("padre_id",$i["id"])->get(["titulo", "id","padre_id"])->toArray();
+            $tipoSolicitudTer= $this->solicitudes->findSolicitudes($user_id,$i["id"],null);
             foreach ($tipoSolicitudTer as $t) {
               $arrayTer []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] . " / " . $t["titulo"],
                 'id'=> $t["id"],
@@ -541,12 +541,35 @@ class PortalSolicitudesController extends Controller
 
   public function cerrarTicket(Request $request){
       $id = $request->id;
-
+      $id_catalogo=$request->id_catalogo;
+      $catalogoH="";
       try{
-
-        $solicitudTicket = $this->ticket->where('id',$id)
-        ->update(['status'=>2]);
-
+        $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$id_catalogo]);
+        foreach ($findCatalogoHijo as $k) {
+          $catalogoH=$k->id;
+        }
+        if($findCatalogoHijo->count()>0)
+        {
+          $findSolTicket=$this->ticket->findWhere(["id"=>$id]);
+          foreach ($findSolTicket as $e) {
+            $ins=$this->ticket->create([
+              "clave"=>$e->clave,
+              "catalogo_id"=>$catalogoH,
+              "id_transaccion"=>$e->id_transaccion,
+              "info"=>$e->info,
+              "relacionado_a"=>$e->relacionado_a,
+              "ticket_relacionado"=>$e->id,
+              "user_id"=>$e->user_id,
+              "creado_por"=>$e->creado_por,
+              "asignado_a"=>$e->asignado_a,
+              "status"=>1
+            ]);
+          }
+        }
+        
+        
+        
+        $solicitudTicket = $this->ticket->update(['status'=>2],$id);
         return response()->json(
           [
           "Code" => "200",
