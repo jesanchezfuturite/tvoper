@@ -225,12 +225,12 @@
            data: {anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
-          if(response=="true"){
-            Command: toastr.success("Success", "Notifications")
+          if(response.Code=="200"){
+            Command: toastr.success(response.Message, "Notifications")
             CargartablaINPC();
             limpiar();
           }else{
-            Command: toastr.warning("Error al Guardar", "Notifications")
+            Command: toastr.warning(response.Message, "Notifications")
           }
         })
         .fail(function( msg ) {
@@ -248,12 +248,12 @@
            url: "{{ url('/recargos-update') }}",
            data: {id:id_,anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-          if(response=="true")
+          if(response.Code=="200")
             {
-                Command: toastr.success("Success", "Notifications")
+                Command: toastr.success(response.Message, "Notifications")
                 CargartablaINPC();
             }else{
-                Command: toastr.warning("Error al Actualizar", "Notifications")
+                Command: toastr.warning(response.Message, "Notifications")
             }
             limpiar();
         })

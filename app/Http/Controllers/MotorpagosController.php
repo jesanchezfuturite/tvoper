@@ -1915,10 +1915,11 @@ return json_encode($response);
         $idpartida=$request->idpartida;
         $idservicio=$request->idservicio;
         $descripcion=$request->descripcion;
+        $partida=$request->partida;
         $response = "false";
         try{ 
 
-        $updatepartidas=$this->partidasdb->updatePartida(['id_servicio'=>$idservicio,'descripcion'=>$descripcion],['id_partida'=>$idpartida]);
+        $updatepartidas=$this->partidasdb->updatePartida(['id_servicio'=>$idservicio,'descripcion'=>$descripcion,'id_partida'=>$partida],['id_partida'=>$idpartida]);
          $response = "true";
         } catch( \Exception $e ){
             Log::info('Error Method partidasUpdate: '.$e->getMessage());
@@ -2694,41 +2695,58 @@ return json_encode($response);
     }
     public function inpcInsert(Request $request)
     {
-        $response='false';
+        $response=array();
         $anio=$request->anio;
         $mes=$request->mes;
         $indice=$request->indice;
         try{
-            $find=$this->inpcdb->findWhere(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice]);
+            $find=$this->inpcdb->findWhere(['ano'=>$anio,'mes'=>$mes]);
             if($find->count()==0)
                 {
                     $update=$this->inpcdb->create(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice]);
-                    $response='true';
+                    $response=["Code" => "200", "Message" => "Guardado con éxito"];
                 }else{
-                    $response='false';
+                    $response=["Code" => "400", "Message" => "Ya se encuentra año/mes"];
                 }           
 
         } catch( \Exception $e ){
             Log::info('Error Method inpcInsert: '.$e->getMessage());
-            $response = "false";
+            $response=["Code" => "400", "Message" => "Error al Guardar"];
         }
-        return $response;
+        return response()->json($response);
     }
     public function inpcUpdate(Request $request)
     {
-        $response='false';
+        $response=array();
         $id=$request->id;
         $anio=$request->anio;
         $mes=$request->mes;
         $indice=$request->indice;
         try{
-            $update=$this->inpcdb->update(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice],$id);
-            $response='true';
+            $findIn=$this->inpcdb->findWhere(['id'=>$id]);
+            foreach($findIn as $k) {
+               if($k->ano==$anio && $k->mes==$mes)
+                {
+                    $update=$this->inpcdb->update(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice],$id);  
+                    $response=["Code" => "200", "Message" => "Actualizado con éxito"];
+                }else{
+                    $findInpc=$this->inpcdb->findWhere(['ano'=>$anio,'mes'=>$mes]);
+                    if($findInpc->count()==0)
+                    {
+                        $update=$this->inpcdb->update(['ano'=>$anio,'mes'=>$mes,'indice'=>$indice],$id); 
+                        $response=["Code" => "200", "Message" => "Actualizado con éxito"];
+                    }else{
+                        $response=["Code" => "400", "Message" => "Ya se encuentra año/mes"];
+                    }
+                }
+            }
+            
+            
         } catch( \Exception $e ){
             Log::info('Error Method inpcUpdate: '.$e->getMessage());
-            $response = "false";
+            $response=["Code" => "400", "Message" => "Error al Guardar"];
         }
-        return $response;
+        return response()->json($response);
     }
      public function inpcDeleted(Request $request)
     {
@@ -2805,7 +2823,7 @@ return json_encode($response);
                     $mes="NOVIEMBRE";                    
                     break;
                 case '12':
-                    $mes="NOVIEMBRE";                    
+                    $mes="DICIEMBRE";                    
                     break;                                    
                 default:
                     $mes="---";
@@ -2823,43 +2841,58 @@ return json_encode($response);
     }
     public function recargosInsert(Request $request)
     {
-        $response='false';
         $anio=$request->anio;
         $mes=$request->mes;
         $vencido=$request->vencido;
         $requerido=$request->requerido;
+        $response=array();
         try{
-            $find=$this->recargonominadb->findWhere(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido]);
+            $find=$this->recargonominadb->findWhere(['ano'=>$anio,'mes'=>$mes]);
             if($find->count()==0)
                 {
                     $update=$this->recargonominadb->create(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido]);
-                    $response='true';
+                    $response=["Code" => "200", "Message" => "Guardado con éxito"];
                 }else{
-                    $response='false';
+                    $response=["Code" => "400", "Message" => "Ya se encuentra año/mes"];
                 }           
 
         } catch( \Exception $e ){
             Log::info('Error Method recargosInsert: '.$e->getMessage());
-            $response = "false";
+             $response=["Code" => "400", "Message" => "Error al Guardar"];
         }
-        return $response;
+        return response()->json($response);
     }
     public function recargosUpdate(Request $request)
     {
-        $response='false';
         $id=$request->id;
         $anio=$request->anio;
         $mes=$request->mes;
         $vencido=$request->vencido;
         $requerido=$request->requerido;
+        $response=array();
         try{
-            $update=$this->recargonominadb->update(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido],$id);
-            $response='true';
+            $findP=$this->recargonominadb->findWhere(["id"=>$id]);
+            foreach ($findP as $k) {
+                if($k->ano==$anio && $k->mes==$mes)
+                {
+                    $update=$this->recargonominadb->update(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido],$id);
+                    $response=["Code" => "200", "Message" => "Actualizado con éxito"];
+                }else{
+                    $findPartida=$this->recargonominadb->findWhere(['ano'=>$anio,'mes'=>$mes]);
+                    if($findPartida->count()==0)
+                    {
+                        $update=$this->recargonominadb->update(['ano'=>$anio,'mes'=>$mes,'vencido'=>$vencido,'requerido'=>$requerido],$id);
+                        $response=["Code" => "200", "Message" => "Actualizado con éxito"];
+                    }else{
+                        $response=["Code" => "400", "Message" => "Ya se encuentra año/mes"];
+                    }
+                }
+            }
         } catch( \Exception $e ){
             Log::info('Error Method recargosUpdate: '.$e->getMessage());
-            $response = "false";
+            $response=["Code" => "400", "Message" => "Error al Actualizar"];
         }
-        return $response;
+        return response()->json($response);
     }
      public function recargosDeleted(Request $request)
     {

@@ -272,10 +272,11 @@
          var idpart=$("#idupdate").val();
         var idservicio_=$("#tiposervicio").val();
         var descripcion_=$("#partidaDesc").val();
+        var partida_=$("#idpartida").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/partidas-update') }}",
-        data: {idpartida:idpart,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
+        data: {idpartida:idpart,partida:partida_,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
             {
