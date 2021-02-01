@@ -257,7 +257,7 @@
         var year_=$("#anio").val();
         var dia_=$("#Vdiario").val();
         var mes_=$("#Vmensual").val();
-        var anio_=$("#Vanual").val        
+        var anio_=$("#Vanual").val();        
         var fechafin=$("#fechafin").val();
         var fechainicio=$("#fechainicio").val();
          $.ajax({
