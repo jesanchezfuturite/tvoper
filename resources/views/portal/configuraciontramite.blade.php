@@ -72,7 +72,19 @@
                                 <span class='check'></span> <span class='box'>
                             </span>  Prelación. </label>
                         </div>
-                    </div>                
+                    </div>                              
+                </div>
+                <div class="row">
+                <div class="col-md-2 col-ms-12 checkdivisa">
+                        <span class="help-block"></span>
+                       <div class='md-checkbox'>
+                            <input type='checkbox' id='checkbox2' name="checkdivisa" class='md-check '  onclick="divisa()">
+                                <label for='checkbox2'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                            </span> Configurar divisa. </label>
+                        </div>
+                    </div>   
                 </div>
             </div>
         </div>
@@ -1175,6 +1187,26 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
 
+    }
+    function divisa(){
+        var id_tramite_=$("#itemsTramites").val();
+        var check=$("#checkbox2").prop("checked");
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/traux-divisa') }}",
+           data: {id_tramite:id_tramite_,divisa:check,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+         if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            }else{
+                $("#checkbox2").prop('checked', false); 
+                Command: toastr.warning(response.Message, "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         $("#checkbox2").prop('checked', false); 
+         Command: toastr.warning("No Success", "Notifications")  });
+        
     }
 </script>
 
