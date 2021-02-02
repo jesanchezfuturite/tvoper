@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\AdministratorsRepositoryEloquent;
 
 
 class RegisterController extends Controller
@@ -32,16 +33,17 @@ class RegisterController extends Controller
      * @var string
      */
     protected $redirectTo = '/home';
-
+    protected $menudb;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(AdministratorsRepositoryEloquent $menudb)
     {
         $this->middleware('auth');
 
+        $this->menudb=$menudb;
     }
 
     /**
@@ -67,11 +69,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $this->registerMenu($data['email']);
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'status' => 1,
             'password' => Hash::make($data['password']),
         ]);
+
     }
 
 
@@ -84,6 +89,11 @@ class RegisterController extends Controller
             dd($e-getMessage());
         }
         
+    }
+
+    private function registerMenu($name)
+    {
+        $this->menudb->create(["name"=>$name,"is_admin"=>0,"extra"=>"[]","menu"=>"[]"]);
     }
 
 }
