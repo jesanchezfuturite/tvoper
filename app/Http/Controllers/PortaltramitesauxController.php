@@ -83,6 +83,7 @@ class PortaltramitesauxController extends Controller
 			$this->category  = $category;
 			$this->relcat = $relcat;
 			$this->tramiteprelaciondb = $tramiteprelaciondb;
+			$this->tramitedivisas = $tramitedivisas;
     }
 
 
@@ -821,6 +822,7 @@ class PortaltramitesauxController extends Controller
 				$delt=$this->tramitedivisas->deleteWhere(["tramite_id"=>$id_tramite]);
 				$response=["Code" => "200","Message" => "Divisa Eliminado."];
 			}else{
+				dd($request->all());
 				$creat=$this->tramitedivisas->create(["tramite_id"=>$id_tramite]);
 				$response=["Code" => "200","Message" => "Divisa Agregado."];
 			}
