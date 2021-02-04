@@ -394,7 +394,7 @@
 		function eliminar(){
 			activarSpinner( true , $("#btnDel"), $("#iconBtnDel"));
 			let url =  "{{ url('/solicitud-delete') }}";
-			let data = { id_solcitud: $("#iddeleted").val()}
+			let data = { id_solcitud: $("#iddeleted").val(),_token:'{{ csrf_token() }}'}
 			$.ajax({
 	           method: "post", url,
 	           dataType: 'json', data

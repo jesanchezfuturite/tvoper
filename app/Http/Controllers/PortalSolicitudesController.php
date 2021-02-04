@@ -22,6 +22,8 @@ use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
+use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
+use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
 
 class PortalSolicitudesController extends Controller
 {
@@ -36,6 +38,8 @@ class PortalSolicitudesController extends Controller
   protected $configUserNotary;
   protected $mensajes;
   protected $campo;
+  protected $solicitudrespdb;
+  protected $msjprelaciondb;
 
 
   public function __construct(
@@ -49,7 +53,9 @@ class PortalSolicitudesController extends Controller
      PortalNotaryOfficesRepositoryEloquent $notary,
      PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
      PortalSolicitudesMensajesRepositoryEloquent $mensajes,
-     PortalcampoRepositoryEloquent $campo
+     PortalcampoRepositoryEloquent $campo,
+     PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
+     PortalmensajeprelacionRepositoryEloquent $msjprelaciondb
      
     )
     {
@@ -65,6 +71,8 @@ class PortalSolicitudesController extends Controller
       $this->configUserNotary = $configUserNotary;
       $this->mensajes = $mensajes;
       $this->campo = $campo;
+      $this->solicitudrespdb = $solicitudrespdb;
+      $this->msjprelaciondb = $msjprelaciondb;
 
     }
 
@@ -244,17 +252,19 @@ class PortalSolicitudesController extends Controller
     $titulo = $request->titulo;
     $atiende = $request->user;
     $status = $request->status;
-
+    $users=explode(",",$atiende);
     try {
 
-      $this->solicitudes->create([
+      $inser=$this->solicitudes->create([
         'tramite_id'=> $id_tramite,
         'padre_id'  =>  $padre_id,
         'titulo'    =>  $titulo,
         'atendido_por'=>  $atiende,
         'status'  =>  $status
       ]);
-
+      foreach ($users as $e) {
+        $ins=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$inser->id]);
+      }
       return response()->json(
         [
           "Code" => "200",
@@ -288,9 +298,13 @@ class PortalSolicitudesController extends Controller
     $titulo = $request->titulo;
     $atiende = $request->user;
     $status = $request->status;
-
+    $users=explode(",",$atiende);
+    //log::info($users);
     try{
-
+      $del=$this->solicitudrespdb->deleteWhere(["catalogo_id"=>$id_solicitud]);
+      foreach ($users as $e) {
+        $ins=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$id_solicitud]);
+      }
       $solicitud = $this->solicitudes->update(['tramite_id'=>$id_tramite, 'padre_id'=>$padre_id, 'titulo' => $titulo,
     'atendido_por'=>$atiende, 'status'=>$status], $id_solicitud);
 
@@ -324,6 +338,7 @@ class PortalSolicitudesController extends Controller
     $id_solicitud = $request->id_solcitud;
 
     try {
+      $del=$this->solicitudrespdb->deleteWhere(["catalogo_id"=>$id_solicitud]);
       $registro = $this->solicitudes->where('id', $id_solicitud)->get();
 
       if($registro->count() > 0){
@@ -447,23 +462,32 @@ class PortalSolicitudesController extends Controller
   public function findSol()
   {
     $user_id = auth()->user()->id;
-    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null,2);
-    //log::info($tipoSolicitud);    
-    foreach ($tipoSolicitud as $k) {
+    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null,null);
+    $findSolPadres = $this->solicitudes->findSolicitudes(null,null,2);
+    //log::info($findSolPadres);    
+    foreach ($findSolPadres as $k) {
       if($k["status"]==2)
       {
         $tipoSolicitudHijo= $this->solicitudes->findSolicitudes($user_id,$k["id"],null);
+        //log::info($tipoSolicitudHijo);
         foreach ($tipoSolicitudHijo as $i) {
-          $arrayHijo []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] ,
-            'id'=> $i["id"],
-            'padre_id'=> $i["padre_id"]
-          );
+          $arrayHijo=array();          
+            $arrayHijo []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] ,
+              'id'=> $i["id"],
+              'padre_id'=> $i["padre_id"]
+            );
+          
             $tipoSolicitud=array_merge($tipoSolicitud,$arrayHijo);
-            $arrayHijo=array();
-            
-            $tipoSolicitudTer= $this->solicitudes->findSolicitudes($user_id,$i["id"],null);
+            $arrayHijo=array();            
+        }
+        $soliTer=$this->solicitudes->findSolicitudes(null,$k["id"],2);
+        
+        foreach ($soliTer as $e) {
+          $arrayTer=array();
+            $tipoSolicitudTer= $this->solicitudes->findSolicitudes($user_id,$e["id"],null);
+            //log::info($tipoSolicitudTer);
             foreach ($tipoSolicitudTer as $t) {
-              $arrayTer []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] . " / " . $t["titulo"],
+              $arrayTer []=array('titulo'=> $k["titulo"] . " / " . $e["titulo"] . " / " . $t["titulo"],
                 'id'=> $t["id"],
                 'padre_id'=> $t["padre_id"]
               );
@@ -480,7 +504,10 @@ class PortalSolicitudesController extends Controller
   public function atenderSolicitud($id){
     $ticket = $this->ticket->where('id', $id)->first();
     $findP=$this->ticket->findPrelacion($id);
-    $prelacion=array();    
+    $findmsjPrelacion=$this->msjprelaciondb->findWhere(["solicitud_id"=>$id]);
+    $prelacion=array();
+    $msprelacion=array('mensaje_prelacion'=>$findmsjPrelacion->count());
+
       foreach ($findP as $k) {
         $prelacion=array('prelacion' =>  $k->tramite_id);
       }
@@ -497,21 +524,18 @@ class PortalSolicitudesController extends Controller
     unset($informacion["campos"]);
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
     $informacion =array_merge( $informacion,$prelacion);
+    $informacion =array_merge( $informacion,$msprelacion);
     return $informacion; 
     
 
   }
-  private function findPrelacion($id)
-  {
-     
-
-    return $prelacion;
-  }
+  
 
   public function guardarSolicitud(Request $request){
     $mensaje = $request->mensaje;
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
+    $prelacion = $request->prelacion;
   
     if($request->has("file")){
       $file = $request->file('file'); 
@@ -529,7 +553,12 @@ class PortalSolicitudesController extends Controller
         'mensaje_para' => $mensaje_para,
         'attach'    =>  $attach
       ]);
-
+      if($prelacion==1)
+      {
+        $msprelacion =$this->msjprelaciondb->create([
+          'solicitud_id'=> $ticket_id
+        ]);
+      }
       return response()->json(
         [
           "Code" => "200",

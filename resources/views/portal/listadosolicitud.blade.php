@@ -170,7 +170,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage()"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0)"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <span class="btn green fileinput-button">
                   <i class="fa fa-plus"></i>&nbsp;
@@ -237,8 +237,8 @@
       .done(function (response) {     
         console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
-        document.getElementById("message").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
-        saveMessage();
+        document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
+        saveMessage(1);
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Guardar", "Notifications")   });
@@ -366,7 +366,7 @@
           for (n in Resp.campos) {            
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
-          if(Resp.prelacion==null || Resp.prelacion=="null") 
+          if(Resp.prelacion==null || Resp.prelacion=="null" || Resp.mensaje_prelacion==1) 
           {
             $(".btnPrelacion").css("display", "none");
           }else{
@@ -447,7 +447,7 @@
   function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
-    function saveMessage()
+    function saveMessage(prelacion_)
     {
       var mensaje=$("#message").val();
       var file=$("#file").val();
@@ -469,6 +469,7 @@
         formdata.append("id", id_);      
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
+        formdata.append("prelacion", prelacion_);
         formdata.append("_token",'{{ csrf_token() }}');
         $.ajax({
            method: "POST",
@@ -485,6 +486,7 @@
               $("#checkbox30").prop("checked", false);
               findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
+               $(".btnPrelacion").css("display", "none");
                return;
              }
              else{
