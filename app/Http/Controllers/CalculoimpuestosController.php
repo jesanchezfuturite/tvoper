@@ -458,7 +458,7 @@ class CalculoimpuestosController extends Controller
     							"year"		=> $y,
     							"month"		=> $m,
     							"vencido" 	=> $l->vencido,
-    							"requerido"	=> $l->requerido
+    							"requerido"	=> $l->federal_vencido
     						);
     						break;
     					}
@@ -501,11 +501,11 @@ class CalculoimpuestosController extends Controller
 
 		$fa = strtotime($this->fecha_actual . " 00:00:00");
 		$fv = strtotime($this->fecha_vencimiento . " 00:00:00");
-        
+
 		if($fa <= $fv){
 			return $total;
 		}else{
-            
+
 			// esta vencido por lo tanto corre recargos
 			$fa = explode("-",$this->fecha_actual);
 			$yi = $fa[0];  // año de inicio
@@ -532,7 +532,7 @@ class CalculoimpuestosController extends Controller
 
 			foreach($this->porcentajes_values as $p => $data)
 			{
-                
+
 				if($p <= $i && $p >= $f)
 				{
 
@@ -558,7 +558,7 @@ class CalculoimpuestosController extends Controller
 						exit();
 
 				}*/
-                           
+
 			}
 
 			return $total / 100;
@@ -586,7 +586,7 @@ class CalculoimpuestosController extends Controller
         }
         return $fechaTermino;
 	}
-		
+
 
 
 }
