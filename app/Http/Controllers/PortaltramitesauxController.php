@@ -22,6 +22,8 @@ use App\Repositories\UmahistoryRepositoryEloquent;
 use App\Repositories\PortaltramitecategoriaRepositoryEloquent;
 use App\Repositories\PortaltramitecategoriarelacionRepositoryEloquent;
 use App\Repositories\PortaltramiteprelacionRepositoryEloquent;
+use App\Repositories\TramitesDivisasRepositoryEloquent;
+
 
 class PortaltramitesauxController extends Controller
 {
@@ -43,6 +45,8 @@ class PortaltramitesauxController extends Controller
 	protected $category;
 	protected $relcat;
 	protected $tramiteprelaciondb;
+	protected $tramitedivisas;
+
 
     public function __construct(
 
@@ -58,7 +62,9 @@ class PortaltramitesauxController extends Controller
 			PortalcamposagrupacionesRepositoryEloquent $agrupaciones,
 			PortaltramitecategoriaRepositoryEloquent $category,
 			PortaltramitecategoriarelacionRepositoryEloquent $relcat,
-			PortaltramiteprelacionRepositoryEloquent $tramiteprelaciondb
+			PortaltramiteprelacionRepositoryEloquent $tramiteprelaciondb,
+			TramitesDivisasRepositoryEloquent $tramitedivisas
+
 
     )
     {
@@ -77,6 +83,7 @@ class PortaltramitesauxController extends Controller
 			$this->category  = $category;
 			$this->relcat = $relcat;
 			$this->tramiteprelaciondb = $tramiteprelaciondb;
+			$this->tramitedivisas = $tramitedivisas;
     }
 
 
@@ -783,6 +790,47 @@ class PortaltramitesauxController extends Controller
 		} catch (\Exception $e) {
 			Log::info('Error editPrelacion: '.$e->getMessage());
 			return response()->json(["Code" => "200","Message" => "Error Prelacion."]);
+		}
+	}
+	public function saveDivisa(Request $request)
+	{
+		$tramites_array =array(
+			"100","454","525","101","592","102","593","103","527","104","460","105", "164", "491", 
+			"528","107", "446", "532","106", "531", "458","109", "534","108", "601","110", "539",
+			"11","518", "594", "112", "595", "113", "533","109", "163", "530", "534","116", "535",
+			"17", "526","118", "536", "136", "503", "520","119", "596","120", "575","121", "560",
+			"122", "489", "540","123", "570","124", "123","125", "544", "486","126", "461","488",
+			"542","127","598","128","132","131","129","607","608","130","133", "545","134","600",
+			"135", "474", "485", "546","137", "524"
+		);
+		$id_tramite=$request->id_tramite;
+		$divisa=$request->divisa;
+		
+		$response=array();
+		try {
+			
+			$search =array_search($id_tramite, $tramites_array);
+		
+			if($search==false) {
+				return response()->json(
+					["Code" => "402","Message" => "Este tramite no es configurable para la divisa."]
+				);
+			}
+
+			if($divisa==false || $divisa =="false")
+			{
+				$delt=$this->tramitedivisas->deleteWhere(["tramite_id"=>$id_tramite]);
+				$response=["Code" => "200","Message" => "Divisa Eliminado."];
+			}else{
+				$creat=$this->tramitedivisas->create(["tramite_id"=>$id_tramite]);
+				$response=["Code" => "200","Message" => "Divisa Agregado."];
+			}
+			
+			return response()->json($response);
+
+		} catch (\Exception $e) {
+			Log::info('Error saveDivisa: '.$e->getMessage());
+			return response()->json(["Code" => "200","Message" => "Error Configuración Divisa."]);
 		}
 	}
 }

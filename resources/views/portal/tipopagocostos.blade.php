@@ -315,7 +315,7 @@
             </div>
             <div class="col-md-9">
               <div class="form-group">
-                <label >Limite Cuotas</label>
+                <label >Limite Cuotas elevadas al año</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaLimit" id="cuotaLimit" placeholder="Ingrese Limite de Cuotas...">
              </div>
             </div>
@@ -558,7 +558,7 @@
 
   function changeMultiple(){
     //var check = $("#multiple:checked").length;
-    if($("#multiple:checked").length){
+    if($("#multiple:checked").length == 1){
       $(".costoMultiple").css("display", "block");
     }else{
       $(".costoMultiple").css("display", "none");
@@ -774,7 +774,7 @@
                 +"<td>"+reglaoperativa_id+"</td>"
                 +"<td>"+vigencia+"</td>"
                 +"<td>"+porcentaje+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\",\""+item.variable+"\",\""+item.var_minimo+"\",\""+item.var_valor+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
                   "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
                 );
@@ -844,7 +844,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,regla_id,vigencia,tipoCostoFijo)
+  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,regla_id,vigencia,tipoCostoFijo, variable, var_minimo, var_valor)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
@@ -857,6 +857,13 @@
     document.getElementById('fijo').value=costo_fijo;
     document.getElementById('vigencia').value=vigencia;
     $("#itemsReglas").val(regla_id).change();
+    if(variable == 1){
+      $("div.checker span").addClass("checked");
+      $(".costoMultiple").css("display", "block");
+    }
+
+    document.getElementById('cuotaMin2').value=var_minimo;
+    document.getElementById('valor2').value=var_valor;
     //radiobuttons();
   }
   function updateCosto()
