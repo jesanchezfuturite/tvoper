@@ -170,7 +170,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage()"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0)"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <span class="btn green fileinput-button">
                   <i class="fa fa-plus"></i>&nbsp;
@@ -192,6 +192,7 @@
                       <tr>
                         <th>Mensajes</th>
                         <th>Archivo</th>
+                        <th>Estatus</th>
                         <th>Fecha</th>
                       </tr>
                     </thead>
@@ -237,8 +238,8 @@
       .done(function (response) {     
         console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
-        document.getElementById("message").value="Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
-        saveMessage();
+        document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
+        saveMessage(1);
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Guardar", "Notifications")   });
@@ -250,7 +251,7 @@
       url: "{{ url('/find-solicitudes') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        console.log(response);
+        //console.log(response);
         var resp=response;
         $("#opTipoSolicitud option").remove();
         $('#opTipoSolicitud').append("<option value='0'>------</option>");
@@ -291,7 +292,7 @@
         .done(function (response) {
         	//var Resp=$.parseJSON(response);
             addtable();
-            console.log(response);
+            //console.log(response);
             //console.log(JSON.stringify(response));
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
@@ -325,7 +326,7 @@
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
-      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
+      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
     function findAtender(id)
     {
@@ -366,7 +367,7 @@
           for (n in Resp.campos) {            
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
-          if(Resp.prelacion==null || Resp.prelacion=="null") 
+          if(Resp.prelacion==null || Resp.prelacion=="null" || Resp.mensaje_prelacion==1) 
           {
             $(".btnPrelacion").css("display", "none");
           }else{
@@ -385,10 +386,12 @@
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,
            data:{_token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response.solicitante);
+          //console.log(response);
           tableMsg();
           var icon="";
+          var color="";
           var attach="";
+          var mensaje_para="";
           var resp=$.parseJSON(response);
            $.each(resp, function(i, item) {
             if(item.attach== null || item.attach=="")
@@ -399,9 +402,18 @@
               icon="<i class='fa fa-download'></i>";
               attach=item.attach;
             }
+            if(item.mensaje_para==null || item.mensaje_para==0 )
+            {
+              mensaje_para="Privado";
+              label="danger";
+            }else{
+              mensaje_para="Publico";
+              label="success";
+            }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.mensaje+"</td>"
                   +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
                 );           
@@ -447,7 +459,7 @@
   function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
-    function saveMessage()
+    function saveMessage(prelacion_)
     {
       var mensaje=$("#message").val();
       var file=$("#file").val();
@@ -469,6 +481,7 @@
         formdata.append("id", id_);      
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
+        formdata.append("prelacion", prelacion_);
         formdata.append("_token",'{{ csrf_token() }}');
         $.ajax({
            method: "POST",
@@ -485,6 +498,7 @@
               $("#checkbox30").prop("checked", false);
               findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
+               $(".btnPrelacion").css("display", "none");
                return;
              }
              else{
