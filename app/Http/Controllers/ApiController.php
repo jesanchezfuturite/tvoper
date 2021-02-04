@@ -488,8 +488,10 @@ class ApiController extends Controller
         {
 
 			$key = $this->key;
-			$url = $this->insumos_curp.'?access_token='.urlencode($key).'&curp='.urlencode($curp);
-	
+			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;
+			// dd($url);
+			var_dump($url);
+		
 			$ch = curl_init();    
 			curl_setopt($ch, CURLOPT_URL, $url);        
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
