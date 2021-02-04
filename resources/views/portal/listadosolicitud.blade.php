@@ -192,6 +192,7 @@
                       <tr>
                         <th>Mensajes</th>
                         <th>Archivo</th>
+                        <th>Estatus</th>
                         <th>Fecha</th>
                       </tr>
                     </thead>
@@ -250,7 +251,7 @@
       url: "{{ url('/find-solicitudes') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        console.log(response);
+        //console.log(response);
         var resp=response;
         $("#opTipoSolicitud option").remove();
         $('#opTipoSolicitud').append("<option value='0'>------</option>");
@@ -291,7 +292,7 @@
         .done(function (response) {
         	//var Resp=$.parseJSON(response);
             addtable();
-            console.log(response);
+            //console.log(response);
             //console.log(JSON.stringify(response));
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
@@ -325,7 +326,7 @@
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
-      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
+      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
     function findAtender(id)
     {
@@ -385,10 +386,12 @@
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,
            data:{_token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response.solicitante);
+          //console.log(response);
           tableMsg();
           var icon="";
+          var color="";
           var attach="";
+          var mensaje_para="";
           var resp=$.parseJSON(response);
            $.each(resp, function(i, item) {
             if(item.attach== null || item.attach=="")
@@ -399,9 +402,18 @@
               icon="<i class='fa fa-download'></i>";
               attach=item.attach;
             }
+            if(item.mensaje_para==null || item.mensaje_para==0 )
+            {
+              mensaje_para="Privado";
+              label="danger";
+            }else{
+              mensaje_para="Publico";
+              label="success";
+            }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.mensaje+"</td>"
                   +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
                 );           
