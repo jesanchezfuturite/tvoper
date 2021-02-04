@@ -87,7 +87,7 @@ class CalculoimpuestosController extends Controller
     	$this->fecha_escritura		= $fecha_escritura;
 
 
- 		$this->fecha_vencimiento	= $this->getVencimiento();
+ 		$this->fecha_vencimiento	= $this->prueba();
  		$this->inpc_periodo			= $this->getInpc($this->fecha_escritura); // getInpcperiodo en caso de que sea la fecha acumulada del año vigente
  		$this->fecha_actual			= date("Y-m-d");
  		$this->inpc_reciente		= $this->getInpc($this->fecha_actual);
@@ -565,22 +565,26 @@ class CalculoimpuestosController extends Controller
 		}
 	}
 	public function prueba(){
-		
-		$inicio = strtotime($this->fecha_escritura);
-		$fin = $vencimiento = date("Y-n-j", strtotime($this->fecha_escritura . "+ 15 days"));
-		
-		// $date = date("Y-m-d");
-		$total_days_left = (strtotime($fin) - strtotime($inicio)) / (60 * 60 * 24);
-		while (strtotime($inicio) <= strtotime($fin)) {
-		$timestamp = strtotime($inicio);
-		$day = date("D", $timestamp);
-
-		if($day=="Sat" || $day=="Sun") {
-		$count++ ;
-		}
-		$date = date ("Y-m-d", strtotime("+1 day", strtotime($inicio)));
-		}
-
+		$fecha = $this->fecha_escritura;
+		$inhabil = $this->inhabiles;
+        $dias=0;
+        $fechaTermino = '';
+        $hora = date("H",strtotime($fecha));
+        $fecha = ($hora>=13) ? date("Y-m-d",strtotime($fecha.' +1 days')) : date("Y-m-d",strtotime($fecha)) ;
+        $comienzo = $fecha;
+        //15 es el numero de dias que calcularemos
+        while ($dias <= 15) {
+            $finDeSemana = date("w",strtotime($comienzo));
+            //Si la fecha es sabado o domingo O la fecha existe en los inhabil
+            if (($finDeSemana == 0 || $finDeSemana == 6) || in_array($comienzo,$inhabil)) {
+                $comienzo = date("Y-m-d",strtotime($comienzo.' +1 days'));
+            }else{
+                $fechaTermino = date("Y-m-d",strtotime($comienzo));
+                $comienzo = date("Y-m-d",strtotime($comienzo.' +1 days'));
+                $dias++;
+            }
+        }
+        return $fechaTermino;
 	}
 		
 
