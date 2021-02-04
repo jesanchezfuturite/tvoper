@@ -185,8 +185,15 @@
              </div>
             </div>
             <div class="col-md-9">
-              <label>Este costo puede ser multiple?</label>
-              <input type="checkbox" name="multiple" id="multiple" onchange="changeMultiple()">
+              <div class='md-checkbox'>
+                            <input type='checkbox' id='checkbox1' name="multiple" class='md-check'  onchange="changeMultiple()">
+                                <label for='checkbox1'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                            </span>  Este costo puede ser multiple?</label>
+                            
+                        </div>
+              
             </div>
           </div>
         </div>
@@ -244,7 +251,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div><!----------------
         <div class="row regla-operativa">
           <div class="col-md-12">
             <div class="col-md-9">
@@ -264,11 +271,12 @@
             </div>
           </div>
         </div>
-      </div>
+      </div>-------->
       <div class="row">
         <div class="col-md-12">
           <div class="col-md-12">
             <div class="form-group">
+              <span class="help-block">&nbsp;</span>
               <button type="submit" class="btn blue" onclick="saveUpdate()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
@@ -440,7 +448,7 @@
       findItemsReglas();
       $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "none");
-        $(".regla-operativa").css("display", "none");
+        //$(".regla-operativa").css("display", "none");
         $(".costoMultiple").css("display", "none");
     });
   /*function radiobuttons()
@@ -483,22 +491,18 @@
     {
        $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "block");
-        $(".regla-operativa").css("display", "none");
+        //$(".regla-operativa").css("display", "none");
     }else if(tip=="F")
     {
         $(".costo-fijo").css("display","block");
         $(".cuotas").css("display", "none");
-        $(".regla-operativa").css("display", "none");
-    }else if(tip=="I")
-    {
-      $(".costo-fijo").css("display","none");
-        $(".cuotas").css("display","none");
-        $(".regla-operativa").css("display", "block");
-
+        //$(".regla-operativa").css("display", "none");
+        $(".costoMultiple").css("display", "none");        
     }else{
         $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "none");
-        $(".regla-operativa").css("display", "none");
+        //$(".regla-operativa").css("display", "none");
+        $(".costoMultiple").css("display", "none");
     }
     limpiarchang();
   }
@@ -558,13 +562,15 @@
 
   function changeMultiple(){
     //var check = $("#multiple:checked").length;
-    if($("#multiple:checked").length == 1){
+    if($("#checkbox1").prop("checked") == true){
       $(".costoMultiple").css("display", "block");
     }else{
       $(".costoMultiple").css("display", "none");
+      document.getElementById('cuotaMin2').value="";
+      document.getElementById('valor2').value="";
     }
-  }
-
+     //console.log($("#checkbox1:checked").length);
+}
   function saveUpdate()
   {
     var upd=$("#idcosto").val();
@@ -580,8 +586,8 @@
 
     var fijo = $("#fijo").val();
 
-    var regla = $("#itemsReglas").val();
-    var vigencia = $("#vigencia").val();
+    //var regla = $("#itemsReglas").val();
+    //var vigencia = $("#vigencia").val();
 
 
     if(idTramites=='limpia')
@@ -619,17 +625,6 @@
         Command: toastr.warning("Campo Costo Fijo, Requerido!", "Notifications")
         return;
       }
-    }else if(tipoTramite=="I")
-    {
-        if(regla=="limpia")
-        {
-          Command: toastr.warning("Selecciona la Regla operativa, Requerido!", "Notifications")
-          return;
-        }
-        if(vigencia.length<1){
-          Command: toastr.warning("Campo Días de vigencia, Requerido!", "Notifications")
-        return;
-        }
     }
     // else if(cuotaMin.length==0)
     // {
@@ -657,15 +652,15 @@
     var fijo = $("#fijo").val();
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
-    var regla=$("#itemsReglas").val();
-    var vig=$("#vigencia").val();
+    //var regla=$("#itemsReglas").val();
+    //var vig=$("#vigencia").val();
 
-    var multiple = $("#multiple:checked").length;
+    var multiple = $("#checkbox1:checked").length;
     var cuotamin2 = $("#cuotaMin2").val();
     var valor2 = $("#valor2").val();
 
-    if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
-      {regla=null}
+    /*if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
+      {regla=null}*/
     if(option!=null)
       {
         option = document.querySelector('input[name = radio2]:checked').value;
@@ -677,8 +672,8 @@
           valor="1";
         }
       }
-      if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
-      {regla=null}
+      /*if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
+      {regla=null}*/
       if(optionMoneda!=null)
       {
         optionMoneda = document.querySelector('input[name = radio3]:checked').value;
@@ -687,7 +682,7 @@
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:regla,multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, vigencia:vig,_token:'{{ csrf_token() }}'}  })
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:null,multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, vigencia:null,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -711,7 +706,7 @@
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Tipo Operación</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Costo Operación</th><th>Costo Fijo</th><th>Regla</th><th>Vigencia</th><th>Porcentaje</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_2'> <thead><tr><th>Tramite</th> <th>Tipo</th> <th>Tipo Operación</th> <th>Cuota Minimo</th> <th>Cuota Maximo</th><th>Costo Operación</th><th>Costo Fijo</th><th>Porcentaje</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
   }
   function findCostos()
   {
@@ -755,10 +750,6 @@
             {maximo="N/A";}else{maximo=item.maximo;}
           if(item.valor==null || item.valor=="null")
             {valor="N/A";}else{valor=item.valor;}
-          if(item.reglaoperativa_id==null || item.reglaoperativa_id=="null" || item.reglaoperativa_id=="")
-            {reglaoperativa_id="N/A";}else{reglaoperativa_id=item.reglaoperativa_id;}
-          if(item.vigencia==null || item.vigencia =="null")
-            {vigencia="N/A";}else{vigencia=item.vigencia;}
           if(item.costo_fijo==null || item.costo_fijo=="null")
             {costo_fijo="N/A";}else{costo_fijo=item.costo_fijo +" " + costoFijo;}
           if(item.porcentaje==null || item.porcentaje=="null")
@@ -771,10 +762,8 @@
                 +"<td>"+maximo+"</td>"
                 +"<td>"+valor+"</td>"
                 +"<td>"+costo_fijo+"</td>"
-                +"<td>"+reglaoperativa_id+"</td>"
-                +"<td>"+vigencia+"</td>"
                 +"<td>"+porcentaje+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.reglaoperativa_id+"\",\""+item.vigencia+"\",\""+item.tipo_costo_fijo+"\",\""+item.variable+"\",\""+item.var_minimo+"\",\""+item.var_valor+"\")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.tipo_costo_fijo+"\",\""+item.variable+"\","+item.var_minimo+","+item.var_valor+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
                   "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
                 );
@@ -844,7 +833,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,regla_id,vigencia,tipoCostoFijo, variable, var_minimo, var_valor)
+  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,tipoCostoFijo, variable, var_minimo, var_valor)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
@@ -855,11 +844,14 @@
     $("input[name=radio3][value='"+tipoCostoFijo+"']").prop("checked",true);
     document.getElementById('valor').value=valor;
     document.getElementById('fijo').value=costo_fijo;
-    document.getElementById('vigencia').value=vigencia;
-    $("#itemsReglas").val(regla_id).change();
+    //document.getElementById('vigencia').value=vigencia;
+    //$("#itemsReglas").val(regla_id).change();
     if(variable == 1){
-      $("div.checker span").addClass("checked");
+      $("#checkbox1").prop("checked", true);
       $(".costoMultiple").css("display", "block");
+    }else{
+      $("#checkbox1").prop("checked", false);
+      $(".costoMultiple").css("display", "none");
     }
 
     document.getElementById('cuotaMin2').value=var_minimo;
@@ -876,10 +868,10 @@
     var cuotaMax=$("#cuotaMax").val();
     var valor=$("#valor").val();
     var fijo = $("#fijo").val();
-    var regla=$("#itemsReglas").val();
-    var vig=$("#vigencia").val();
+    //var regla=$("#itemsReglas").val();
+    //var vig=$("#vigencia").val();
 
-    var multiple = $("#multiple:checked").length;
+    var multiple = $("#checkbox1:checked").length;
     var cuotamin2 = $("#cuotaMin2").val();
     var valor2 = $("#valor2").val();
 
@@ -914,14 +906,14 @@
       {valor=null}
     if(fijo=="" || fijo==null || fijo=="null")
       {fijo=null}
-    if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
-      {regla=null}
-    if(vig=="" || vig==null || vig=="null" )
-      {vig=null}
+    /*if(regla=="" || regla==null || regla=="null" || regla=="0" || regla=="limpia")
+      {regla=null}*/
+    /*if(vig=="" || vig==null || vig=="null" )
+      {vig=null}*/
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:regla,vigencia:vig, multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:null,vigencia:null, multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -1051,9 +1043,11 @@
     document.getElementById('idcosto').value="";
     $("input:radio").attr("checked", false);
     document.getElementById('iddeleted').value="";
+    document.getElementById('cuotaMin2').value="";
+    document.getElementById('valor2').value="";
+    $("#checkbox1").prop("checked", false);
     document.getElementById('valor').value="";
-    document.getElementById('vigencia').value="";
-    $("#itemsReglas").val("limpia").change();
+     $(".costoMultiple").css("display", "none");
 
 }
 function limpiarchang()
@@ -1063,9 +1057,11 @@ function limpiarchang()
     document.getElementById('cuotaMax').value="";
     document.getElementById('valor').value="";
     document.getElementById('fijo').value="";
-
-    document.getElementById('vigencia').value="";
-    $("#itemsReglas").val("limpia").change();
+    document.getElementById('cuotaMin2').value="";
+    document.getElementById('valor2').value="";
+    $("#checkbox1").prop("checked", false);
+    //document.getElementById('vigencia').value="";
+    //$("#itemsReglas").val("limpia").change();
 
 }
 function limpiarPorcentaje()
