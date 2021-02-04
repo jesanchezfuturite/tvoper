@@ -549,12 +549,7 @@ class PortalSolicitudesTicketController extends Controller
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
           ->update(['status'=> 3]);
 
-          $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->get(["id"]);
-          foreach ($ids as $key => $value) {
-              $tramites_finalizados = $this->tramites_finalizados($value->id);
-            
-          }
-
+        
         }      
 
       } catch (\Exception $e) {
@@ -602,6 +597,13 @@ class PortalSolicitudesTicketController extends Controller
         }          
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
+
+        $ids = $this->ticket->where('id_transaccion' , $id)->where('estatus', '<>', 5)->get(["id"]);
+        foreach ($ids as $key => $value) {
+            $tramites_finalizados = $this->tramites_finalizados($value->id);
+          
+        }
+
 
       } catch (\Exception $e) {
           $error = $e;

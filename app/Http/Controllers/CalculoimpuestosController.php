@@ -563,7 +563,26 @@ class CalculoimpuestosController extends Controller
 
 			return $total / 100;
 		}
-    }
+	}
+	public function prueba(){
+		
+		$inicio = strtotime($this->fecha_escritura);
+		$fin = $vencimiento = date("Y-n-j", strtotime($this->fecha_escritura . "+ 15 days"));
+		
+		// $date = date("Y-m-d");
+		$total_days_left = (strtotime($fin) - strtotime($inicio)) / (60 * 60 * 24);
+		while (strtotime($inicio) <= strtotime($fin)) {
+		$timestamp = strtotime($inicio);
+		$day = date("D", $timestamp);
+
+		if($day=="Sat" || $day=="Sun") {
+		$count++ ;
+		}
+		$date = date ("Y-m-d", strtotime("+1 day", strtotime($inicio)));
+		}
+
+	}
+		
 
 
 }
