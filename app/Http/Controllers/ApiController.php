@@ -488,11 +488,7 @@ class ApiController extends Controller
         {
 
 			$key = $this->key;
-			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;
-			// dd($url);
-			var_dump($url);
-				
-			$url_2 = "https://insumos.nl.gob.mx/api/consultacurp?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.eyJpc3MiOiJodHRwczpcL1wvaW5zdW1vcy5ubC5nb2IubXhcLyIsImF1ZCI6Imh0dHBzOlwvXC9pbnN1bW9zLm5sLmdvYi5teFwvIiwianRpIjoiNGYxZzIzYTEyYWEiLCJ1c2VybmFtZSI6ImZ1bjEiLCJpYXQiOjE2MTE3NzMwNjAsImV4cCI6MTYxMTk0NTg2MCwidWlkIjoxfQ.08SttfpUl5SkxODTCmIU0skjyUnB21ZvO-cyWSVA4Mc&curp=CEGK910517MTSSDR02";
+			$url = $this->insumos_curp.'?access_token='.urlencode($key).'&curp='.urlencode($curp);
 	
 			$ch = curl_init();    
 			curl_setopt($ch, CURLOPT_URL, $url);        
