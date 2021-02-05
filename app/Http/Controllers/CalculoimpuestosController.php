@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 use Carbon\Carbon;
 
-use App\Repositories\EgobiernoinpcRepositoryEloquent;
+use App\Repositories\InpcRepositoryEloquent;
 use App\Repositories\EgobiernoporcentajesRepositoryEloquent;
 use App\Repositories\EgobiernodiasferiadosRepositoryEloquent;
 
@@ -40,7 +40,7 @@ class CalculoimpuestosController extends Controller
 
 
     public function __construct(
-    	EgobiernoinpcRepositoryEloquent $inpc,
+    	InpcRepositoryEloquent $inpc,
     	EgobiernoporcentajesRepositoryEloquent $porcentaje,
     	EgobiernodiasferiadosRepositoryEloquent $diasferiados
     )
@@ -340,7 +340,7 @@ class CalculoimpuestosController extends Controller
     	try
     	{
     		$list = $this->inpc
-    			->orderBy('anio','DESC')
+    			->orderBy('ano','DESC')
     			->orderBy('mes','ASC')
     			->all();
 
@@ -356,9 +356,9 @@ class CalculoimpuestosController extends Controller
     		foreach($list as $l)
     		{
 
-    			if(!in_array((integer)$l->anio,$years))
+    			if(!in_array((integer)$l->ano,$years))
     			{
-    				$years[]= (integer)$l->anio;
+    				$years[]= (integer)$l->ano;
     			}
     		}
 
@@ -372,7 +372,7 @@ class CalculoimpuestosController extends Controller
     				// buscar el valor en list
     				foreach($list as $l)
     				{
-    					if((integer)$l->anio == $y && (integer)$l->mes == $m)
+    					if((integer)$l->ano == $y && (integer)$l->mes == $m)
     					{
     						$valores [$m]= $l->indice;
     						break;
