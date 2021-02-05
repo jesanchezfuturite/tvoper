@@ -436,7 +436,7 @@ class PortaltramitesauxController extends Controller
 			{
 				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
 			}
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo,'tipo_costo_fijo'=>$request->tipo_costo_fijo,'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo,'valor'=>$request->valor,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
