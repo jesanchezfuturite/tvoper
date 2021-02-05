@@ -545,12 +545,12 @@ class PortalSolicitudesTicketController extends Controller
 
           ]);
          
-        if($solTramites){
-          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-          ->update(['status'=> 3]);
+        // if($solTramites){
+        //   $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+        //   ->update(['status'=> 3]);
 
         
-        }      
+        // }      
 
       } catch (\Exception $e) {
         $error = $e;
@@ -580,10 +580,10 @@ class PortalSolicitudesTicketController extends Controller
           $statusTicket = 99;
           break;
         default:
-          echo "";
+          $statusTicket = 3;
       }
      
-      try { 
+      // try { 
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
           ->update(['estatus'=> $request->status]);        
@@ -605,9 +605,9 @@ class PortalSolicitudesTicketController extends Controller
         }
 
 
-      } catch (\Exception $e) {
-          $error = $e;
-      }  
+      // } catch (\Exception $e) {
+      //     $error = $e;
+      // }  
       if ($error) {
         return response()->json(
           [

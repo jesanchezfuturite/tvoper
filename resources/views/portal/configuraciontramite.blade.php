@@ -492,6 +492,7 @@
         findCampos();
         findTipos();
         $(".checkfile").css("display", "none");
+        $(".checkdivisa").css("display", "none");
         $(".radioTipos").css("display", "none");
         findTipoCategoria();
     });
@@ -685,15 +686,21 @@
     {   id_=$("#itemsTramites").val();
         $('#Removetable div').remove();             
         $("#itemsAgrupaciones").val("limpia").change();
+        $("#checkbox2").prop("checked", false);
         if(id_=="limpia")
         {   $("#checkbox1").prop("checked", false);
+            $("#checkbox2").prop("checked", false);
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
-             $("#itemsCategoria").val("limpia").change();
-             $(".checkfile").css("display", "none");
+            $("#itemsCategoria").val("limpia").change();
+            $(".checkfile").css("display", "none");
+            $(".checkdivisa").css("display", "none");
+
             return;
         }else{
             $(".checkfile").css("display", "block");
+            $(".checkdivisa").css("display", "block");
+
 
         }
 

@@ -822,7 +822,10 @@ class PortaltramitesauxController extends Controller
 				$delt=$this->tramitedivisas->deleteWhere(["tramite_id"=>$id_tramite]);
 				$response=["Code" => "200","Message" => "Divisa Eliminado."];
 			}else{
-				$creat=$this->tramitedivisas->create(["tramite_id"=>$id_tramite]);
+				$exist = $this->tramitedivisas->where("tramite_id", $id_tramite)->first();
+				if(!$exist){
+					$creat=$this->tramitedivisas->create(["tramite_id"=>$id_tramite]);
+				}
 				$response=["Code" => "200","Message" => "Divisa Agregado."];
 			}
 			
