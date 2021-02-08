@@ -567,7 +567,7 @@ class PortalSolicitudesTicketController extends Controller
         
         }  
         
-        $ids = $this->ticket->where('id_transaccion' , $$request->id_transaccion)->where('status', '<>', 5)->get(["id"]);
+        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 5)->get(["id"]);
 
         foreach ($ids as $key => $value) {
             $tramites_finalizados = $this->tramites_finalizados($value->id);
