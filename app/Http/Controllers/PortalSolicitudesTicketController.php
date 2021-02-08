@@ -588,16 +588,16 @@ class PortalSolicitudesTicketController extends Controller
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
           ->update(['estatus'=> $request->status]);        
-          var_dump($solTramites);
-          // $id = $solTramites->id;
+          dd($solTramites, $solTramites["id"]);
+                    // $id = $solTramites->id;
           // $id = $solTramites["id"];
 
         }else{
           $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
           ->update(['estatus'=> $request->status]);
             $id = $solTramites["id"];
-          var_dump($solTramites);
-
+          dd($solTramites, $solTramites["id"]);
+          
 
           // $id = $solTramites->id;
         }          
