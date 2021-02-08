@@ -580,20 +580,26 @@ class PortalSolicitudesTicketController extends Controller
           $statusTicket = 99;
           break;
         default:
-          $statusTicket = 3;
+        $statusTicket = 3;
       }
+      
      
-      // try { 
+      try { 
         if($request->id_transaccion){
           $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
           ->update(['estatus'=> $request->status]);        
+          var_dump($solTramites);
+          // $id = $solTramites->id;
+          // $id = $solTramites["id"];
 
-          $id = $solTramites->id;
         }else{
           $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
           ->update(['estatus'=> $request->status]);
+            $id = $solTramites["id"];
+          var_dump($solTramites);
 
-          $id = $solTramites->id;
+
+          // $id = $solTramites->id;
         }          
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
@@ -605,9 +611,9 @@ class PortalSolicitudesTicketController extends Controller
         }
 
 
-      // } catch (\Exception $e) {
-      //     $error = $e;
-      // }  
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
       if ($error) {
         return response()->json(
           [
