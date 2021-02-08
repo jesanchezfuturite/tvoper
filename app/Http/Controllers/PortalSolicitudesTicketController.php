@@ -536,6 +536,16 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function saveTransaccionMotor(Request $request){      
       $error=null;
+      switch ($request->status) {
+        case "60":
+          $statusTicket = 5;
+          break;
+        case "65":
+          $statusTicket = 99;
+          break;
+        default:
+        $statusTicket = 3;
+      }
       try {
         $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
         ->update([
@@ -548,10 +558,17 @@ class PortalSolicitudesTicketController extends Controller
          
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-          ->update(['status'=> 3]);
+          ->update(['status'=> $statusTicket]);
 
         
-        }      
+        }  
+        
+        $ids = $this->ticket->where('id_transaccion' , $$request->id_transaccion)->where('status', '<>', 5)->get(["id"]);
+
+        foreach ($ids as $key => $value) {
+            $tramites_finalizados = $this->tramites_finalizados($value->id);
+          
+        }
 
       } catch (\Exception $e) {
         $error = $e;
