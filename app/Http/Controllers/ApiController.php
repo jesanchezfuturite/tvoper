@@ -487,7 +487,7 @@ class ApiController extends Controller
 		try
         {
 
-			$key = $this->key;
+			$key = $this->consultar_token();
 			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 			$url = $insumos_curp.'?access_token='.$key.'&curp='.$curp;
 			// dd($url);
@@ -617,6 +617,26 @@ class ApiController extends Controller
             
         }
     }
+	public function consultar_token(){
+		$this->client = new \GuzzleHttp\Client();
+
+	    	$response = $this->client->post(
+	    		$this->insumos_auth,
+	    		[
+	    			"form_params" => 
+		    			[
+			    			"username" => $this->insumos_user,
+			    			"password" => $this->insumos_pass,
+		    			]
+	    		]	
+	    	);
+
+	    	$results = $response->getBody();
+
+			$results = json_decode($results);	
+
+			return  $results->token;
+	}
 
 
 
