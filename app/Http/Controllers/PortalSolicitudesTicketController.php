@@ -260,12 +260,16 @@ class PortalSolicitudesTicketController extends Controller
     }
       
     public function getInfo($user_id){
-      // try {
+      try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
-        dd($relation);
-        $notary_id = $relation->notary_office_id;
-        $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+        if($relation){
+          $notary_id = $relation->notary_office_id;
+          $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+        }else{
+          $notary_offices=null;
+        }
+      
 
         $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)
         ->with(['catalogo' => function ($query) {
@@ -321,14 +325,14 @@ class PortalSolicitudesTicketController extends Controller
         return $response;
         
   
-      // } catch (\Exception $e) {
-      //   return response()->json(
-      //     [
-      //       "Code" => "400",
-      //       "Message" => "Error al obtener información",
-      //     ]
-      //   );
-      // }
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener información",
+          ]
+        );
+      }
     }
   
     public function detalleTramite($clave){
