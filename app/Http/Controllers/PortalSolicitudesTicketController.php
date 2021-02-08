@@ -260,9 +260,10 @@ class PortalSolicitudesTicketController extends Controller
     }
       
     public function getInfo($user_id){
-      try {
+      // try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
+        dd($relation);
         $notary_id = $relation->notary_office_id;
         $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
 
@@ -320,14 +321,14 @@ class PortalSolicitudesTicketController extends Controller
         return $response;
         
   
-      } catch (\Exception $e) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al obtener información",
-          ]
-        );
-      }
+      // } catch (\Exception $e) {
+      //   return response()->json(
+      //     [
+      //       "Code" => "400",
+      //       "Message" => "Error al obtener información",
+      //     ]
+      //   );
+      // }
     }
   
     public function detalleTramite($clave){
@@ -545,12 +546,12 @@ class PortalSolicitudesTicketController extends Controller
 
           ]);
          
-        // if($solTramites){
-        //   $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-        //   ->update(['status'=> 3]);
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+          ->update(['status'=> 3]);
 
         
-        // }      
+        }      
 
       } catch (\Exception $e) {
         $error = $e;
