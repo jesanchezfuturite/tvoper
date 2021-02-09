@@ -712,16 +712,19 @@
         var Resp=$.parseJSON(response);
         var categoria="limpia";
         var check=false;
+        var divisaCheck=false;
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");
             $.each(Resp, function(i, item) {
                 $("#itemsAgrupaciones").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
                     categoria=item.id_categoria;
                     check=item.check;
+                    divisaCheck=item.divisa;
             });
 
             $("#itemsCategoria").val(categoria).change();
             $("#checkbox1").prop("checked", check);
+            $("#checkbox2").prop("checked", divisaCheck);
             /*if(iCheck=="1")
             {
                 $("#checkbox1").prop("checked", true);
