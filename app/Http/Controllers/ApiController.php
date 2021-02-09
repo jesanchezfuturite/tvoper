@@ -20,9 +20,11 @@ use SimpleXMLElement;
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
+use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOffice;
 
 
 class ApiController extends Controller
@@ -79,6 +81,10 @@ class ApiController extends Controller
     protected $estados;
 	protected $campos;
 	protected $municipios;
+	protected $usernotary;
+
+	protected $expediente_catastral_id = 32;
+	protected $solicitudes_aviso_id = 71;
 
 
     /**
@@ -93,8 +99,8 @@ class ApiController extends Controller
 		UrlGenerator $url,
         EstadosRepositoryEloquent $estados,
 		PortalcampoRepositoryEloquent $campos,
-		MunicipiosRepositoryEloquent $municipios
-		
+		MunicipiosRepositoryEloquent $municipios,
+		PortalConfigUserNotaryOffice $usernotary
     )
     {
         
@@ -121,14 +127,13 @@ class ApiController extends Controller
 			$this->key = $results->token;
 
 			// inicializamos los repos necesarios
-			$this->solicitudes_tramite = $solicitudes_tramite;
-			$this->tickets = $tickets;
-            $this->estados = $estados;
-			$this->campos  = $campos;
-			$this->municipios = $municipios;
+			$this->solicitudes_tramite 	= $solicitudes_tramite;
+			$this->tickets 				= $tickets;
+            $this->estados 				= $estados;
+			$this->campos  				= $campos;
+			$this->municipios 			= $municipios;
+			$this->usernotary 			= $usernotary;
 			
-
-
             // obtengo la url para 
             $this->url = $url;
 
@@ -636,6 +641,92 @@ class ApiController extends Controller
 			$results = json_decode($results);	
 
 			return  $results->token;
+	}
+
+
+	/********************* Metodos para validar **********************************/
+
+	/**
+	 *
+	 * Regresa el total de avisos de enajenacion de un expediente catastral
+	 * 
+	 * @param expediente catastral
+	 * 
+	 *
+	 * @return listado de tickets
+	 *
+	 *
+	 */
+
+	public function getTicketsAviso(Request $request)
+	{
+	
+		$ec 	= $request->expediente_catastral; 
+		
+		$users = $this->getUsersbyID($request->user_id);
+
+		$campos = $this->campos->all();
+
+		// buscar las solicitudes del aviso de enajenacion de la notaria
+		$solicitudes = $this->tickets
+			->where('catalogo_id',$this->solicitudes_aviso_id)
+			->whereIn('user_id', $users)
+			->get();
+
+
+		if($solicitudes->count() > 0)
+        {
+            $response = array();
+
+            foreach($solicitudes as $tn){
+
+                $node = json_decode($tn->info);
+
+                $in = $node->campos;
+
+                $new = array();
+                //dd($in);
+                foreach($in as $i => $j)
+                {
+                    $new[$i] = array(
+                        "field" => $fields[$i],
+                        "value" => $j,
+                    );
+                }
+                
+                unset($node->campos);
+                    
+                $node->campos= (object)$new; 
+
+                $response[]= (array)$node;
+			}
+		
+            
+            return json_encode($response,JSON_UNESCAPED_SLASHES);
+        }
+
+
+		return response()->json($solicitudes);
+
+	}
+
+
+	private function getUsersbyID($id)
+	{
+		$users = $this->usernotary->findWhere(["user_id" => $id]);
+
+		foreach($users as $u){
+			$notary = $u->notary_office_id;
+		}
+
+		$users = $this->usernotary->findWhere(["notary_office_id" => $notary]);
+
+		foreach($users as $u){
+			$response []= $u->user_id
+		}
+
+		return $response;
+
 	}
 
 
