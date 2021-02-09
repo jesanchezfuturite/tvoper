@@ -87,7 +87,7 @@ class CalculoimpuestosController extends Controller
     	$this->fecha_escritura		= $fecha_escritura;
 
 
- 		$this->fecha_vencimiento	= $this->prueba();
+ 		$this->fecha_vencimiento	= $this->obtenerVencimiento();
  		$this->inpc_periodo			= $this->getInpc($this->fecha_escritura); // getInpcperiodo en caso de que sea la fecha acumulada del año vigente
  		$this->fecha_actual			= date("Y-m-d");
  		$this->inpc_reciente		= $this->getInpc($this->fecha_actual);
@@ -564,7 +564,7 @@ class CalculoimpuestosController extends Controller
 			return $total / 100;
 		}
 	}
-	public function prueba(){
+	public function obtenerVencimiento(){
 		$fecha = $this->fecha_escritura;
 		$inhabil = $this->inhabiles;
         $dias=0;
