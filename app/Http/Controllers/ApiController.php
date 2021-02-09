@@ -487,17 +487,30 @@ class ApiController extends Controller
 		try
         {
 
-			$key = $this->key;
-			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;
-			// dd($url);
-			var_dump($url);
+			$key = $this->consultar_token();
+			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
+			$url = $insumos_curp.'?access_token='.$key.'&curp='.$curp;
 		
-			$ch = curl_init();    
-			curl_setopt($ch, CURLOPT_URL, $url);        
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
-			$results = curl_exec($ch);
-			curl_close($ch);
-			return $results;
+			$url_2 = "https://insumos.nl.gob.mx/api/consultacurp?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.eyJpc3MiOiJodHRwczpcL1wvaW5zdW1vcy5ubC5nb2IubXhcLyIsImF1ZCI6Imh0dHBzOlwvXC9pbnN1bW9zLm5sLmdvYi5teFwvIiwianRpIjoiNGYxZzIzYTEyYWEiLCJ1c2VybmFtZSI6ImZ1bjEiLCJpYXQiOjE2MTI4ODcyMzAsImV4cCI6MTYxMzA2MDAzMCwidWlkIjoxfQ.bZFvKq-eoqG9T2P5cCDxligYddNk_lAyaWuqFivz8A8&curp=CEGK910517MTSSDR02";
+			
+			$curl = curl_init();
+
+			curl_setopt_array($curl, array(
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => "GET",
+			));
+
+			$response = curl_exec($curl);
+
+			curl_close($curl);
+			echo $response;
+
 
         }catch (\Exception $e){
         	dd($e->getMessage());
@@ -616,6 +629,26 @@ class ApiController extends Controller
             
         }
     }
+	public function consultar_token(){
+		$this->client = new \GuzzleHttp\Client();
+
+	    	$response = $this->client->post(
+	    		$this->insumos_auth,
+	    		[
+	    			"form_params" => 
+		    			[
+			    			"username" => $this->insumos_user,
+			    			"password" => $this->insumos_pass,
+		    			]
+	    		]	
+	    	);
+
+	    	$results = $response->getBody();
+
+			$results = json_decode($results);	
+
+			return  $results->token;
+	}
 
 
 
