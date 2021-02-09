@@ -39,12 +39,14 @@ class PortalcamposagrupacionesRepositoryEloquent extends BaseRepository implemen
              
         $data = Portalcamposagrupaciones::where('id_tramite',$id_tramite)
         ->leftjoin('tramites_prelacion','tramites_prelacion.tramite_id','=','campos_agrupaciones.id_tramite')
+        ->leftjoin('tramites_divisas','tramites_divisas.tramite_id','=','campos_agrupaciones.id_tramite')
         ->select('campos_agrupaciones.id',
             'campos_agrupaciones.descripcion',
             'campos_agrupaciones.id_tramite',
             'campos_agrupaciones.id_categoria',
             'campos_agrupaciones.orden',
-            'tramites_prelacion.id as check')
+            'tramites_prelacion.id as check',
+            'tramites_divisas.id as divisa')
         ->orderBy('campos_agrupaciones.orden','ASC')
         ->get();
 
