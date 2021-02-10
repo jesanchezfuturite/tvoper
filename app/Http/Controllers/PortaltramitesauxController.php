@@ -436,7 +436,7 @@ class PortaltramitesauxController extends Controller
 			{
 				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
 			}
-  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
+  		$this->costotramitedb->create(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_costo'=>$request->var_costo, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,'status'=>'1']);
   		return response()->json(["Code" => "200","Message" => "Success"]);
 
 		} catch (\Exception $e) {
@@ -455,7 +455,7 @@ class PortaltramitesauxController extends Controller
   		}
   		if($id_find==$request->tramite)
   		{
-  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  			$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple,'var_costo'=>$request->var_costo, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 ,'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
   			return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
   		}else{
@@ -464,7 +464,7 @@ class PortaltramitesauxController extends Controller
   			{
 				return response()->json(["Code" => "400","Message" => "El Tramite ya se encuentra Configurado."]);
   			}else{
-  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple, 'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 , 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
+  				$this->costotramitedb->update(['tramite_id'=>$request->tramite,'tipo'=>$request->tipo, 'tipo_costo_fijo'=>$request->tipo_costo_fijo, 'costo'=>$request->costo,'costo_fijo'=>$request->fijo,'minimo'=>$request->minimo,'maximo'=>$request->maximo, 'valor'=>$request->valor, 'variable'=>$request->multiple,'var_costo'=>$request->var_costo,  'var_minimo' => $request->cuotamin2,'var_valor'=>$request->valor2 , 'reglaoperativa_id'=>$request->regla_id,'vigencia'=>$request->vigencia,],$request->id);
 
   				return response()->json(["Code" => "200","Message" => "Registro Actualizado."]);
   			}
@@ -773,7 +773,7 @@ class PortaltramitesauxController extends Controller
 	{
 		$id_tramite=$request->id_tramite;
 		$prelacion=$request->prelacion;
-		
+
 		$response=array();
 		try {
 			if($prelacion==false || $prelacion =="false")
@@ -784,7 +784,7 @@ class PortaltramitesauxController extends Controller
 				$creat=$this->tramiteprelaciondb->create(["tramite_id"=>$id_tramite]);
 				$response=["Code" => "200","Message" => "Prelacion Agregado."];
 			}
-			
+
 			return response()->json($response);
 
 		} catch (\Exception $e) {
@@ -795,7 +795,7 @@ class PortaltramitesauxController extends Controller
 	public function saveDivisa(Request $request)
 	{
 		$tramites_array =array(
-			"100","454","525","101","592","102","593","103","527","104","460","105", "164", "491", 
+			"100","454","525","101","592","102","593","103","527","104","460","105", "164", "491",
 			"528","107", "446", "532","106", "531", "458","109", "534","108", "601","110", "539",
 			"11","518", "594", "112", "595", "113", "533","109", "163", "530", "534","116", "535",
 			"17", "526","118", "536", "136", "503", "520","119", "596","120", "575","121", "560",
@@ -805,12 +805,12 @@ class PortaltramitesauxController extends Controller
 		);
 		$id_tramite=$request->id_tramite;
 		$divisa=$request->divisa;
-		
+
 		$response=array();
 		try {
-			
+
 			$search =array_search($id_tramite, $tramites_array);
-		
+
 			if($search==false) {
 				return response()->json(
 					["Code" => "402","Message" => "Este tramite no es configurable para la divisa."]
@@ -828,7 +828,7 @@ class PortaltramitesauxController extends Controller
 				}
 				$response=["Code" => "200","Message" => "Divisa Agregado."];
 			}
-			
+
 			return response()->json($response);
 
 		} catch (\Exception $e) {
