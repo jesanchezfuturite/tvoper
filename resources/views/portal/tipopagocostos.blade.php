@@ -191,20 +191,45 @@
                                 <span></span>
                                 <span class='check'></span> <span class='box'>
                             </span>  Este costo puede ser multiple?</label>
-                            
+
                         </div>
-              
+
             </div>
           </div>
         </div>
         <div class="row costoMultiple">
           <div class="col-md-12">
             <div class="col-md-9">
+              <div class="form-group">
+                <label >Tipo de Operación</label>
+                <span class="help-block">Selecciona una Opcion. </span>
+                  <div class="md-radio-inline">
+                    <div class="md-radio">
+                      <input type="radio" id="radio12" name="radio4" class="md-radiobtn" value="H" >
+                      <label for="radio12">
+                        <span></span>
+                        <span class="check"></span>
+                        <span class="box"></span>
+                        Hoja.</label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio13" name="radio4" class="md-radiobtn" value="L" >
+                      <label for="radio13">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Lote. </label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-md-9">
               <div class="form-group ">
                 <label >Cantidad mínima en cuotas</label>
                 <input type="text" class="valida-decimal form-control" name="cuotaMin2" id="cuotaMin2" placeholder="Ingrese Cuota Minima...">
               </div>
             </div>
+
             <div class="col-md-9">
               <div class="form-group">
               <label >Costo por Tipo de operación (MXN)</label>
@@ -497,7 +522,7 @@
         $(".costo-fijo").css("display","block");
         $(".cuotas").css("display", "none");
         //$(".regla-operativa").css("display", "none");
-        $(".costoMultiple").css("display", "none");        
+        $(".costoMultiple").css("display", "none");
     }else{
         $(".costo-fijo").css("display","none");
         $(".cuotas").css("display", "none");
@@ -583,6 +608,7 @@
     var valor = $("#valor").val();
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
+    var var_costo = document.querySelector('input[name = radio4]:checked');
 
     var fijo = $("#fijo").val();
 
@@ -652,6 +678,7 @@
     var fijo = $("#fijo").val();
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
+    var optioncosto = document.querySelector('input[name = radio4]:checked');
     //var regla=$("#itemsReglas").val();
     //var vig=$("#vigencia").val();
 
@@ -678,11 +705,16 @@
       {
         optionMoneda = document.querySelector('input[name = radio3]:checked').value;
       }
+      if(optioncosto!=null)
+      {
+        optioncosto = document.querySelector('input[name = radio4]:checked').value;
+      }
+      //console.log(var_costo);
     //console.log(option);
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-post-tramites') }}",
-           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:null,multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, vigencia:null,_token:'{{ csrf_token() }}'}  })
+           data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:null,multiple:multiple, var_costo:optioncosto, cuotamin2:cuotamin2, valor2:valor2, vigencia:null,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
@@ -763,7 +795,7 @@
                 +"<td>"+valor+"</td>"
                 +"<td>"+costo_fijo+"</td>"
                 +"<td>"+porcentaje+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.tipo_costo_fijo+"\",\""+item.variable+"\","+item.var_minimo+","+item.var_valor+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"costoUpdate("+item.id+","+item.tramite_id+",\""+item.tipo+"\",\""+item.costo+"\",\""+item.costo_fijo+"\","+item.minimo+","+item.maximo+","+item.valor+",\""+item.tipo_costo_fijo+"\",\""+item.variable+"\",\""+item.var_costo+"\","+item.var_minimo+","+item.var_valor+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#portlet-deleted' title='Eliminar' onclick='costoDelete("+item.id+")'><i class='fa fa-minus'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='#portlet-subsidio' title='Subsidio' onclick='updatesubsidio("+item.id+","+item.subsidio_id+","+item.tramite_id+",\""+item.cuotas+"\",\""+item.limite_cuotas+"\",\""+item.oficio+"\",\""+item.id_partida+"\",\""+item.tipoPersona+"\")'><i class='fa fa-usd'></i></a>"+
                   "<a class='btn btn-icon-only blue' data-toggle='modal'data-original-title='' title='Porcentaje' href='#portlet-porcentaje' onclick='updatePorcentaje("+item.id+",\""+item.porcentaje+"\")'><i class='fa fa-percentage'><strong>%</strong></i></a></td>"
                 +"</tr>"
                 );
@@ -833,7 +865,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,tipoCostoFijo, variable, var_minimo, var_valor)
+  function costoUpdate(id,tramite_id,tipo,costo,costo_fijo,minimo,maximo,valor,tipoCostoFijo, variable, var_costo, var_minimo, var_valor)
   {
     document.getElementById('idcosto').value=id;
     $("#itemsTramites").val(tramite_id).change();
@@ -844,6 +876,7 @@
     $("input[name=radio3][value='"+tipoCostoFijo+"']").prop("checked",true);
     document.getElementById('valor').value=valor;
     document.getElementById('fijo').value=costo_fijo;
+    $("input[name=radio4][value='"+var_costo+"']").prop("checked",true);
     //document.getElementById('vigencia').value=vigencia;
     //$("#itemsReglas").val(regla_id).change();
     if(variable == 1){
@@ -872,11 +905,13 @@
     //var vig=$("#vigencia").val();
 
     var multiple = $("#checkbox1:checked").length;
+
     var cuotamin2 = $("#cuotaMin2").val();
     var valor2 = $("#valor2").val();
 
     var option = document.querySelector('input[name = radio2]:checked');
     var optionMoneda = document.querySelector('input[name = radio3]:checked');
+    var optioncosto = document.querySelector('input[name = radio4]:checked');
     if(option!=null)
       {
         option = document.querySelector('input[name = radio2]:checked').value;
@@ -889,7 +924,10 @@
       }else{
         optionMoneda=null;
       }
-
+    if(optioncosto!=null)
+      {
+        optioncosto = document.querySelector('input[name = radio4]:checked').value;
+      }
       //console.log(option);
     if(option=="H"  || option =="L")
     {
@@ -913,7 +951,7 @@
       $.ajax({
            method: "POST",
            url: "{{ url('/traux-edit-tramites') }}",
-           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:null,vigencia:null, multiple:multiple, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
+           data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:null,vigencia:null, multiple:multiple, var_costo:optioncosto, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
          if(response.Code =="200"){
