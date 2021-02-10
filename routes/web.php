@@ -436,8 +436,7 @@ Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
 Route::get('/consultar-curp/{curp}', 'ApiController@curp');
 Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
-
-Route::get('/consultar-aviso/{expediente}/{user-id}', 'ApiController@getValorCatastral');
+Route::get('/aviso/{expediente}/{user-id}', 'ApiController@getTicketsAviso');
 
 
 

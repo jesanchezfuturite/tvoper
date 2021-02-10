@@ -20,11 +20,10 @@ use SimpleXMLElement;
 
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
-use App\Repositories\PortalTramitesRepositoryEloquent;
 use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
 use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
-use App\Repositories\PortalConfigUserNotaryOffice;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 
 
 class ApiController extends Controller
@@ -100,7 +99,7 @@ class ApiController extends Controller
         EstadosRepositoryEloquent $estados,
 		PortalcampoRepositoryEloquent $campos,
 		MunicipiosRepositoryEloquent $municipios,
-		PortalConfigUserNotaryOffice $usernotary
+		PortalConfigUserNotaryOfficeRepositoryEloquent $usernotary
     )
     {
         
@@ -717,9 +716,6 @@ class ApiController extends Controller
             return json_encode($response,JSON_UNESCAPED_SLASHES);
         }
 
-
-		return response()->json($solicitudes);
-
 	}
 
 
@@ -734,7 +730,7 @@ class ApiController extends Controller
 		$users = $this->usernotary->findWhere(["notary_office_id" => $notary]);
 
 		foreach($users as $u){
-			$response []= $u->user_id
+			$response []= $u->user_id;
 		}
 
 		return $response;
