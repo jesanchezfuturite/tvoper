@@ -672,11 +672,18 @@ class ApiController extends Controller
 	public function getTicketsAviso(Request $request)
 	{
 	
-		$ec 	= $request->expediente_catastral; 
+		$ec 	= $request->expediente; 
 		
-		$users = $this->getUsersbyID($request->user_id);
+		$users = $this->getUsersbyID($request->userid);
 
 		$campos = $this->campos->all();
+
+		$fields = array();
+
+        foreach($campos as $f)
+        {
+            $fields[$f->id]= $f->descripcion;
+        }
 
 		// buscar las solicitudes del aviso de enajenacion de la notaria
 		$solicitudes = $this->tickets
@@ -724,6 +731,7 @@ class ApiController extends Controller
 		$users = $this->usernotary->findWhere(["user_id" => $id]);
 
 		foreach($users as $u){
+
 			$notary = $u->notary_office_id;
 		}
 
