@@ -263,8 +263,13 @@ class PortalSolicitudesTicketController extends Controller
       try {
         
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
-        $notary_id = $relation->notary_office_id;
-        $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+        if($relation){
+          $notary_id = $relation->notary_office_id;
+          $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+        }else{
+          $notary_offices=null;
+        }
+      
 
         $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)
         ->with(['catalogo' => function ($query) {
@@ -535,6 +540,16 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function saveTransaccionMotor(Request $request){      
       $error=null;
+      switch ($request->status) {
+        case "60":
+          $statusTicket = 5;
+          break;
+        case "65":
+          $statusTicket = 99;
+          break;
+        default:
+        $statusTicket = 3;
+      }
       try {
         $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
         ->update([
@@ -545,12 +560,19 @@ class PortalSolicitudesTicketController extends Controller
 
           ]);
          
-        // if($solTramites){
-        //   $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-        //   ->update(['status'=> 3]);
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+          ->update(['status'=> $statusTicket]);
 
         
-        // }      
+        }  
+        
+        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 5)->get(["id"]);
+
+        foreach ($ids as $key => $value) {
+            $tramites_finalizados = $this->tramites_finalizados($value->id);
+          
+        }
 
       } catch (\Exception $e) {
         $error = $e;
@@ -584,29 +606,36 @@ class PortalSolicitudesTicketController extends Controller
       }
       
      
-      // try { 
-        if($request->id_transaccion){
-          $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-          ->update(['estatus'=> $request->status]);    
+      try { 
+        if($request->id_transaccion){   
+          $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
+            "estatus"=> $request->status
+          ]);
+
+          $id = $solTramites->id;
 
         }else{
-          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
-          ->update(['estatus'=> $request->status]);
+          $solTramites= $this->solTramites->updateOrCreate(['id_transaccion_motor' => $request->id_transaccion_motor], [
+            "estatus"=> $request->status
+          ]);
+          $id = $solTramites->id;
+            
         }          
-        $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+        $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
-        $ids = $this->ticket->where('id_transaccion' , $$request->id_transaccion)->where('estatus', '<>', 5)->get(["id"]);
-       
+
+        $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 5)->get(["id"]);
+
         foreach ($ids as $key => $value) {
             $tramites_finalizados = $this->tramites_finalizados($value->id);
           
         }
 
 
-      // } catch (\Exception $e) {
-      //     $error = $e;
-      // }  
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
       if ($error) {
         return response()->json(
           [
