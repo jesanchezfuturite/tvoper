@@ -387,6 +387,7 @@ Route::get('/find-solicitudes' , 'PortalSolicitudesController@findSol');
 Route::get('/get-motivos' , 'PortalSolicitudesController@getmotivos');
 Route::post('/create-solicitud-motivo' , 'PortalSolicitudesController@createsolicitudMotivos');
 Route::get('/get-solicitudes-motivos/{solicitud_catalogo_id?}' , 'PortalSolicitudesController@getSolicitudesMotivos');
+Route::post('/delete-solicitudes-motivos' , 'PortalSolicitudesController@deleteSolicitudMotivo');
 
 
 
