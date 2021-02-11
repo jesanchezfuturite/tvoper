@@ -175,30 +175,43 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarTramites()"></button>
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarChecks()"></button>
         <h4 class="modal-title">Configurar Motivos de Rechazo</h4>
-        <input hidden="true" type="text" name="idtramite" id="idtramite">
+        <input hidden="true" type="text" name="idcatalogo" id="idcatalogo">
       </div>
-      <div class="modal-body" style="height:420px  !important;overflow-y:scroll;overflow-y:auto;">
+      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <div class="modal-body">
-        
-         <select class="select2me form-control" placeholder="Usuario"  multiple name="itemsMotivos" id="itemsMotivos">
-		</select>   
-      
-      
-    </div>
-  </div><div class="col-md-12">
-    <div class="row">
-        <div class="col-md-12"> 
-        <span class="help-block"></span>          
-            <div class="form-group">
-              <button type="submit" class="btn blue" onclick="updateTramites()"><i class="fa fa-check"></i> Guardar</button>
+        <div class="row">
+           <div class="col-md-12">
+            <div class='form-group'>
+              <div class="col-md-4"></div>
+              <label for="search" class="col-md-2 control-label" >Buscar:</label> 
+              <div class="col-md-6"> 
+                <input type="text" name="search" id="search" class="form-control" placeholder="Buscar...">
+              <!--  <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div>-->
+              </div> 
             </div>
+          </div>
         </div>
-      </div>
-      </div>
-    <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarTramites()">Cerrar</button>
+        <div class="row">
+          <div  id="demo">              
+            <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
+              <thead>
+                <tr>            
+                <th>Selecciona</th>
+                </tr>
+            </thead>
+            <tbody>  
+                        
+            </tbody>
+          </table>
+        </div> 
+      <br>
+        </div>     
+    </div>
+  </div>
+    <div class="modal-footer"><span class="help-block"></span>  
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarChecks()">Cerrar</button>
       </div>
     </div>
 
@@ -211,6 +224,12 @@
 	<script src="assets/global/dataTable/jszip.min.js"></script>
 	<script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
+
+	    jQuery(document).ready(() => {
+	    	getTramites();
+	    	getUsers();
+	    	findMotivos();
+	    });
 		var tramites = [];
 		var usuarios = [];
 
@@ -456,7 +475,8 @@
 			setInfoModal();			
 		}
 		function openModalMotivo(data){
-					usuarios.forEach(usuario => addOptionToSelect( $("#itemsMotivos"),  usuario.nombre + " - " + usuario.email , usuario.id ));
+			document.getElementById('idcatalogo').value=data;
+			findMotivosSelect(data);
 		}
 		function setInfoForm( solicitud ){
 			$("#titulo").val( solicitud.titulo );
@@ -475,10 +495,72 @@
 	    	elementBtn.attr("disabled", activar);
 		}
 
-	    jQuery(document).ready(() => {
-	    	getTramites();
-	    	getUsers();
-	    });
+	    function findMotivos()
+	    {
+	    	$("#table2 tbody tr").remove();
+			$.ajax({
+			    method: "get",            
+			    url: "{{ url('/get-motivos') }}",
+			    data: {_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        
+			        $.each($.parseJSON(response), function(i, item) {                
+			            $("#table2").append("<tr>"
+			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='insertMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
+			              +"</tr>"
+			            );
+			        });
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function insertMotivos(id_motivo)
+	{
+		var catalogo_id=$("#idcatalogo").val();
+		$.ajax({
+			    method: "POST",            
+			    url: "{{ url('/create-solicitud-motivo') }}",
+			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        if(response.Code=="200")
+			        	{
+			        		console.log(response.Message);
+			        	}else{
+			        		Command: toastr.warning(response.Message, "Notifications") 
+			        	}
+			        
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function limpiarChecks()
+	{
+			$("input:checkbox[name=checkMotivo]").removeAttr("checked");
+	}
+	function findMotivosSelect(id)
+	{
 
+			$.ajax({
+			    method: "get",            
+			    url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id,
+			    data: {_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        
+			        $.each($.parseJSON(response), function(i, item) {                
+			            $("#ch_"+item.motivo_id).prop("checked", true);
+			        });
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	$("#search").keyup(function(){
+        _this = this;
+        $.each($("#table2 tbody tr"), function() {
+        if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+        $(this).hide();
+        else
+        $(this).show();
+        });
+    });
 	</script>
 @endsection
