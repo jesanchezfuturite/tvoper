@@ -171,6 +171,39 @@
 	   </div>
 	</div>
 </div>
+<div class="modal fade" id="portlet-motivos" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarTramites()"></button>
+        <h4 class="modal-title">Configurar Motivos de Rechazo</h4>
+        <input hidden="true" type="text" name="idtramite" id="idtramite">
+      </div>
+      <div class="modal-body" style="height:420px  !important;overflow-y:scroll;overflow-y:auto;">
+        <div class="modal-body">
+        
+         <select class="select2me form-control" placeholder="Usuario"  multiple name="itemsMotivos" id="itemsMotivos">
+		</select>   
+      
+      
+    </div>
+  </div><div class="col-md-12">
+    <div class="row">
+        <div class="col-md-12"> 
+        <span class="help-block"></span>          
+            <div class="form-group">
+              <button type="submit" class="btn blue" onclick="updateTramites()"><i class="fa fa-check"></i> Guardar</button>
+            </div>
+        </div>
+      </div>
+      </div>
+    <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarTramites()">Cerrar</button>
+      </div>
+    </div>
+
+</div>
+</div>
 @endsection
 
 @section('scripts')
@@ -236,9 +269,10 @@
 
 		function getTemplateAcciones( data, type, row, meta  ){
 			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
-			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
+			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
+			let botonMotivo = "<a class='btn btn-icon-only green'href='#portlet-motivos' data-toggle='modal' title='Motivos de Rechazo' onclick='openModalMotivo( "  + data + " )'><i class='fa fa-list'></i></a>";
 			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>";
-			return botonEditar + botonAddSolicitudDependiente + botonEliminar;	
+			return botonEditar + botonAddSolicitudDependiente + botonEliminar+botonMotivo;	
 		}
 
 		function createTable( url){
@@ -374,12 +408,13 @@
 		    html += "<tr> <th></th><th>Titulo</th> <th></th></tr>";
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
-		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
+		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
+		    	let botonMotivo = "<a href='#portlet-motivos' class='btn btn-icon-only green' data-toggle='modal' tittle='Motivos de Rechazo' onclick='openModalMotivo( "  + solicitud.id_solcitud + " )'><i class='fa fa-list'></i></a>";
 		    	let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(solicitud) +", true)'><i class='fa fa-code-fork'></i></a>";
 		   
 				let tdShowHijas = solicitud.hijas && solicitud.hijas.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_solcitud  +"' class='fa fa-plus'></a>" : '';
 				
-		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>'
+		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + botonMotivo + '</td></tr>'
 		    
 		    });
 		    html+='</table>';
@@ -420,7 +455,9 @@
 			$("#add-solicitud-modal").modal({show: 'true'}); 
 			setInfoModal();			
 		}
-
+		function openModalMotivo(data){
+					usuarios.forEach(usuario => addOptionToSelect( $("#itemsMotivos"),  usuario.nombre + " - " + usuario.email , usuario.id ));
+		}
 		function setInfoForm( solicitud ){
 			$("#titulo").val( solicitud.titulo );
 			$("#tramitesSelectModal option[value=" +  solicitud.tramite_id +"]").attr('selected','selected').change();
