@@ -494,20 +494,26 @@ class ApiController extends Controller
         {
 
 			$key = $this->consultar_token();
-			var_dump($key);
 			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 			$url = $insumos_curp.'?access_token='.$key.'&curp='.$curp;
-			// var_dump($url);
-		
 			
-			$ch = curl_init();    
-			curl_setopt($ch, CURLOPT_URL, $url); 
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$this->client = new \GuzzleHttp\Client();
 
-			$response = curl_exec($ch);
+	    	$response = $this->client->get(
+	    		$this->insumos_url,
+	    		[
+	    			"query" => 
+		    			[
+			    			"curp" 			=> $curp,
+			    			"access_token"	=> $key 
+		    			]
+	    		]	
+	    	);
 
-			curl_close($ch);
-			echo $response;
+	    	$results = $response->getBody();
+
+			$results = json_decode($results);	
+
 
 
         }catch (\Exception $e){
