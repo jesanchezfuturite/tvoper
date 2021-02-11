@@ -40,7 +40,9 @@ class ApiController extends Controller
 	protected $insumos_auth = 'http://insumos.test.nl.gob.mx/api/auth';
 	protected $insumos_user = "fun1";
 	protected $insumos_pass = "prueba123";
-	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
+	protected $insumos_curp = "https://insumos.test.nl.gob.mx/api/consultacurp";
+	protected $insumos_auth_produccion = 'https://insumos.nl.gob.mx/api/auth';
+
 	
 	// registro publico
 	protected $ws_rp = array(
@@ -492,27 +494,17 @@ class ApiController extends Controller
         {
 
 			$key = $this->consultar_token();
-			$access_token ="yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImp0aSI6IjRmMWcyM2ExMmFhIn0.eyJpc3MiOiJodHRwczpcL1wvaW5zdW1vcy5ubC5nb2IubXhcLyIsImF1ZCI6Imh0dHBzOlwvXC9pbnN1bW9zLm5sLmdvYi5teFwvIiwianRpIjoiNGYxZzIzYTEyYWEiLCJ1c2VybmFtZSI6ImZ1bjEiLCJpYXQiOjE2MTMwNjM5MzcsImV4cCI6MTYxMzIzNjczNywidWlkIjoxfQ.dI7Y_fYAnSKvPS5clm9jXRDLT3W4u5OSusTOnAiOe0w";
+			var_dump($key);
 			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 			$url = $insumos_curp.'?access_token='.$access_token.'&curp='.$curp;
 			// var_dump($url);
 		
-			$url_2 = "https://insumos.nl.gob.mx/api/consultacurp?access_token=&curp=CEGK910517MTSSDR02";
 			
-			$curl = curl_init();
+			$ch = curl_init();    
+			curl_setopt($ch, CURLOPT_URL, $url); 
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-			curl_setopt_array($curl, array(
-			CURLOPT_URL => $url,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 0,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "GET",
-			));
-
-			$response = curl_exec($curl);
+			$response = curl_exec($ch);
 
 			curl_close($curl);
 			echo $response;
@@ -639,7 +631,7 @@ class ApiController extends Controller
 		$this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->post(
-	    		$this->insumos_auth,
+	    		$this->insumos_auth_produccion,
 	    		[
 	    			"form_params" => 
 		    			[
