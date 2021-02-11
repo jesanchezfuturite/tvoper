@@ -50,6 +50,7 @@ class PortalcostotramitesRepositoryEloquent extends BaseRepository implements Po
             'portal_costo_tramites.tipo_costo_fijo',
             'portal_costo_tramites.valor',
             'portal_costo_tramites.variable',
+            'portal_costo_tramites.var_costo',
             'portal_costo_tramites.var_minimo',
             'portal_costo_tramites.var_valor',
             'portal_costo_tramites.reglaoperativa_id',
