@@ -506,7 +506,7 @@ class ApiController extends Controller
 
 			$response = curl_exec($ch);
 
-			curl_close($curl);
+			curl_close($ch);
 			echo $response;
 
 
