@@ -496,7 +496,7 @@ class ApiController extends Controller
 			$key = $this->consultar_token();
 			var_dump($key);
 			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
-			$url = $insumos_curp.'?access_token='.$access_token.'&curp='.$curp;
+			$url = $insumos_curp.'?access_token='.$key.'&curp='.$curp;
 			// var_dump($url);
 		
 			
