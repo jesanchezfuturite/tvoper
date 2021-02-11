@@ -24,6 +24,10 @@ use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
 use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
+use App\Repositories\SolicitudesMotivoRepositoryEloquent;
+use App\Repositories\MotivosRepositoryEloquent;
+use App\Entities\SolicitudesMotivo;
+
 
 class PortalSolicitudesController extends Controller
 {
@@ -40,6 +44,9 @@ class PortalSolicitudesController extends Controller
   protected $campo;
   protected $solicitudrespdb;
   protected $msjprelaciondb;
+  protected $solicitudesMotivos;
+  protected $motivos;
+
 
 
   public function __construct(
@@ -55,7 +62,9 @@ class PortalSolicitudesController extends Controller
      PortalSolicitudesMensajesRepositoryEloquent $mensajes,
      PortalcampoRepositoryEloquent $campo,
      PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
-     PortalmensajeprelacionRepositoryEloquent $msjprelaciondb
+     PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
+     SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
+     MotivosRepositoryEloquent $motivos
      
     )
     {
@@ -73,6 +82,9 @@ class PortalSolicitudesController extends Controller
       $this->campo = $campo;
       $this->solicitudrespdb = $solicitudrespdb;
       $this->msjprelaciondb = $msjprelaciondb;
+      $this->solicitudesMotivos = $solicitudesMotivos;
+      $this->motivos = $motivos;
+
 
     }
 
@@ -696,6 +708,71 @@ class PortalSolicitudesController extends Controller
             "Message" => "Estatus actualizado",
           ]);
       }    
+    }
+    public function getmotivos(){
+      try{
+        $motivos = $this->motivos->all();        
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener motivos"
+        ]);   
+      }
+  
+      return json_encode($motivos);
+    }
+
+      public function createsolicitudMotivos(Request $request){
+      try{
+        $solicitudesMotivos= $this->solicitudesMotivos->updateOrCreate(['motivo_id' => $request->motivo_id], [
+          "motivo_id"=> $request->motivo_id,
+          "solicitud_catalogo_id"=> $request->solicitud_catalogo_id
+
+        ]); 
+
+                
+        if ($solicitudesMotivos->wasRecentlyCreated === true) {
+          $mensaje = "Solicitud motivo creada";
+          } else {
+          $mensaje = "Solicitud motivo actualizada";
+
+        }
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => $mensaje
+        ]);      
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - Crear/editar solicitudes motivos '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error"
+          ]); 
+      }
+  
+    }
+
+    public function getSolicitudesMotivos($solicitud_catalogo_id=""){
+      try{
+        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'solicitudes_motivo.solicitud_catalogo_id', 'motivos.motivo')
+        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id')
+        ->get();
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener motivos"
+        ]);   
+      }
+  
+      return json_encode($solicitudesMotivos);
     }
  
 }
