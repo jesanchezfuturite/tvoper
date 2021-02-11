@@ -40,7 +40,7 @@ class ApiController extends Controller
 	protected $insumos_auth = 'http://insumos.test.nl.gob.mx/api/auth';
 	protected $insumos_user = "fun1";
 	protected $insumos_pass = "prueba123";
-	protected $insumos_curp = "https://insumos.test.nl.gob.mx/api/consultacurp";
+	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 	protected $insumos_auth_produccion = 'https://insumos.nl.gob.mx/api/auth';
 
 	
@@ -492,28 +492,17 @@ class ApiController extends Controller
 	public function curp($curp){
 		try
         {
-
 			$key = $this->consultar_token();
-			$insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
-			$url = $insumos_curp.'?access_token='.$key.'&curp='.$curp;
+			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;		
 			
-			$this->client = new \GuzzleHttp\Client();
+			$ch = curl_init();    
+			curl_setopt($ch, CURLOPT_URL, $url); 
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-	    	$response = $this->client->get(
-	    		$this->insumos_url,
-	    		[
-	    			"query" => 
-		    			[
-			    			"curp" 			=> $curp,
-			    			"access_token"	=> $key 
-		    			]
-	    		]	
-	    	);
+			$response = curl_exec($ch);
 
-	    	$results = $response->getBody();
-
-			$results = json_decode($results);	
-
+			curl_close($ch);
+			return $response;
 
 
         }catch (\Exception $e){
