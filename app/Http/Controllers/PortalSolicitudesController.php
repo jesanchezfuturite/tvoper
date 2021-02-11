@@ -727,23 +727,16 @@ class PortalSolicitudesController extends Controller
 
       public function createsolicitudMotivos(Request $request){
       try{
-        $solicitudesMotivos= $this->solicitudesMotivos->updateOrCreate(['motivo_id' => $request->motivo_id], [
+        $solicitudesMotivos= $this->solicitudesMotivos->create([
           "motivo_id"=> $request->motivo_id,
           "solicitud_catalogo_id"=> $request->solicitud_catalogo_id
 
         ]); 
 
-                
-        if ($solicitudesMotivos->wasRecentlyCreated === true) {
-          $mensaje = "Solicitud motivo creada";
-          } else {
-          $mensaje = "Solicitud motivo actualizada";
-
-        }
         return response()->json(
           [
             "Code" => "200",
-            "Message" => $mensaje
+            "Message" => "Solicitud motivo agregado"
         ]);      
       }
       catch(\Exception $e) {
@@ -773,6 +766,22 @@ class PortalSolicitudesController extends Controller
       }
   
       return json_encode($solicitudesMotivos);
+    }
+    public function deleteSolicitudMotivo(Request $request){
+      try{
+        $solicitudesMotivosDelete = $this->solicitudesMotivos
+        ->where("motivo_id", $request->motivo_id)
+        ->where("solicitud_catalogo_id", $request->solicitud_catalogo_id)
+        ->delete();
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error eliminar: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al eliminar solicitud motivos"
+        ]);   
+      }
     }
  
 }
