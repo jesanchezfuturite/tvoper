@@ -506,7 +506,7 @@
 			        
 			        $.each($.parseJSON(response), function(i, item) {                
 			            $("#table2").append("<tr>"
-			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='insertMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
+			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='saveMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
 			              +"</tr>"
 			            );
 			        });
@@ -514,12 +514,40 @@
 			.fail(function( msg ) {
 			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
 	}
+	function saveMotivos(id_motivo)
+	{
+		if($("#ch_"+id_motivo).prop("checked")==true)
+		{
+			insertMotivos(id_motivo);
+		}else{
+			deleteMotivos(id_motivo);
+		}
+	}
 	function insertMotivos(id_motivo)
 	{
 		var catalogo_id=$("#idcatalogo").val();
 		$.ajax({
 			    method: "POST",            
 			    url: "{{ url('/create-solicitud-motivo') }}",
+			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        if(response.Code=="200")
+			        	{
+			        		console.log(response.Message);
+			        	}else{
+			        		Command: toastr.warning(response.Message, "Notifications") 
+			        	}
+			        
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function deleteMotivos(id_motivo)
+	{
+		var catalogo_id=$("#idcatalogo").val();
+		$.ajax({
+			    method: "POST",            
+			    url: "{{ url('/delete-solicitudes-motivos') }}",
 			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        if(response.Code=="200")
