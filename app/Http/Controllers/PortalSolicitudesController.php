@@ -753,8 +753,12 @@ class PortalSolicitudesController extends Controller
     public function getSolicitudesMotivos($solicitud_catalogo_id=""){
       try{
         $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'solicitudes_motivo.solicitud_catalogo_id', 'motivos.motivo')
-        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id')
-        ->get();
+        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id');
+
+        if($solicitud_catalogo_id){
+          $solicitudesMotivos->where('solicitudes_motivo.solicitud_catalogo_id', $solicitud_catalogo_id);
+        }
+        $solicitudesMotivos=$solicitudesMotivos->get();
       }
       catch(\Exception $e) {
         Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());

@@ -108,7 +108,7 @@
   <div class="modal-dialog" style="width: 80%;">
     <div class="modal-content" >
       <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" ></button>
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
         <h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4>
         <div style="text-align: right !important;"><button type="button"  data-dismiss="modal" class="btn green right" style="text-align: right;" onclick="cerrarTicket()">Cerrar Ticket</button></div>
       </div>
@@ -159,12 +159,32 @@
                 <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
                 <span class="help-block">&nbsp;</span>
                 <div class='md-checkbox'>
+                  <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
+                    <label for='checkbox1'>
+                    <span></span>
+                    <span class='check'></span> <span class='box'>
+                    </span> Rechazo. </label>
+                </div>
+                <div class="row selectMotivos">
+                  <div class="col-md-12">
+                    <span class="help-block">&nbsp;</span> 
+                    <label class="col-md-2">Motivos de Rechazo</label>
+                     <div class="col-md-7">
+                      <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos">
+                        <option value="0">------</option>  
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <span class="help-block">&nbsp;</span>
+                <div class='md-checkbox'>
                   <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
                     <label for='checkbox30'>
                     <span></span>
                     <span class='check'></span> <span class='box'>
                     </span>  Mensaje Publico. </label>
                 </div>
+                
               </div>
             </div>
             <div class="col-md-3">             
@@ -228,7 +248,17 @@
 	jQuery(document).ready(function() {
     TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
+      $(".selectMotivos").css("display", "none");
     });
+  function changeMotivos()
+  {
+    if($("#checkbox1").prop("checked") == true){
+      $(".selectMotivos").css("display", "block");
+    }else{
+      $(".selectMotivos").css("display", "none");
+    }
+    $("#itemsMotivos").val("0").change();
+  }
   function prelacion()
   {    
     $.ajax({
@@ -262,6 +292,23 @@
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
+  function findMotivosSelect()
+  {
+    var id_catalogo_=$("#opTipoSolicitud").val();
+      $.ajax({
+          method: "get",            
+          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
+          data: {_token:'{{ csrf_token() }}'}  })
+          .done(function (response) {     
+            $("#itemsMotivos option").remove();
+            $("#itemsMotivos").append("<option value='0'>-------</option>");
+            $.each($.parseJSON(response), function(i, item) {                
+              $("#itemsMotivos").append("<option value='"+item.id+"'>"+item.motivo+"</option>");
+            });
+          })
+      .fail(function( msg ) {
+      Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
    	function findSolicitudes(){
     	var noSolicitud=$("#noSolicitud").val();
@@ -314,6 +361,7 @@
                 	+"</tr>"
                 );
             });
+            findMotivosSelect();
         	TableManaged2.init2();   
         })
         .fail(function( msg ) {
@@ -443,6 +491,7 @@
                findSolicitudes();
                findSol();
                chgopt(id_catalogo_);
+               limpiar();
 
                return;
              }
@@ -495,10 +544,10 @@
              {
               document.getElementById("message").value="";
               document.getElementById("file").value="";
-              $("#checkbox30").prop("checked", false);
+              limpiar();
               findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
-               $(".btnPrelacion").css("display", "none");
+               
                return;
              }
              else{
@@ -511,5 +560,12 @@
         });
       }
     }
+  function limpiar()
+  {
+    $("#checkbox1").prop("checked", false);
+    $("#checkbox30").prop("checked", false);
+    $(".selectMotivos").css("display", "none");
+    $(".btnPrelacion").css("display", "none");
+  }
 	</script>
 @endsection

@@ -171,6 +171,52 @@
 	   </div>
 	</div>
 </div>
+<div class="modal fade" id="portlet-motivos" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarChecks()"></button>
+        <h4 class="modal-title">Configurar Motivos de Rechazo</h4>
+        <input hidden="true" type="text" name="idcatalogo" id="idcatalogo">
+      </div>
+      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
+        <div class="modal-body">
+        <div class="row">
+           <div class="col-md-12">
+            <div class='form-group'>
+              <div class="col-md-4"></div>
+              <label for="search" class="col-md-2 control-label" >Buscar:</label> 
+              <div class="col-md-6"> 
+                <input type="text" name="search" id="search" class="form-control" placeholder="Buscar...">
+              <!--  <div class='md-checkbox'><input type='checkbox' id='checkbox30' class='md-check'>   <label for='checkbox30'>    <span></span>  <span class='check'></span> <span class='box'></span>Mostrar Todos</label> </div>-->
+              </div> 
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div  id="demo">              
+            <table class="table table-hover table-wrapper-scroll-y my-custom-scrollbar" id="table2">
+              <thead>
+                <tr>            
+                <th>Selecciona</th>
+                </tr>
+            </thead>
+            <tbody>  
+                        
+            </tbody>
+          </table>
+        </div> 
+      <br>
+        </div>     
+    </div>
+  </div>
+    <div class="modal-footer"><span class="help-block"></span>  
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarChecks()">Cerrar</button>
+      </div>
+    </div>
+
+</div>
+</div>
 @endsection
 
 @section('scripts')
@@ -178,6 +224,12 @@
 	<script src="assets/global/dataTable/jszip.min.js"></script>
 	<script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
+
+	    jQuery(document).ready(() => {
+	    	getTramites();
+	    	getUsers();
+	    	findMotivos();
+	    });
 		var tramites = [];
 		var usuarios = [];
 
@@ -236,9 +288,10 @@
 
 		function getTemplateAcciones( data, type, row, meta  ){
 			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
-			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
+			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
+			let botonMotivo = "<a class='btn btn-icon-only green'href='#portlet-motivos' data-toggle='modal' title='Motivos de Rechazo' onclick='openModalMotivo( "  + data + " )'><i class='fa fa-list'></i></a>";
 			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>";
-			return botonEditar + botonAddSolicitudDependiente + botonEliminar;	
+			return botonEditar + botonAddSolicitudDependiente + botonEliminar+botonMotivo;	
 		}
 
 		function createTable( url){
@@ -374,12 +427,13 @@
 		    html += "<tr> <th></th><th>Titulo</th> <th></th></tr>";
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
-		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
+		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
+		    	let botonMotivo = "<a href='#portlet-motivos' class='btn btn-icon-only green' data-toggle='modal' tittle='Motivos de Rechazo' onclick='openModalMotivo( "  + solicitud.id_solcitud + " )'><i class='fa fa-list'></i></a>";
 		    	let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(solicitud) +", true)'><i class='fa fa-code-fork'></i></a>";
 		   
 				let tdShowHijas = solicitud.hijas && solicitud.hijas.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_solcitud  +"' class='fa fa-plus'></a>" : '';
 				
-		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>'
+		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + botonMotivo + '</td></tr>'
 		    
 		    });
 		    html+='</table>';
@@ -420,7 +474,10 @@
 			$("#add-solicitud-modal").modal({show: 'true'}); 
 			setInfoModal();			
 		}
-
+		function openModalMotivo(data){
+			document.getElementById('idcatalogo').value=data;
+			findMotivosSelect(data);
+		}
 		function setInfoForm( solicitud ){
 			$("#titulo").val( solicitud.titulo );
 			$("#tramitesSelectModal option[value=" +  solicitud.tramite_id +"]").attr('selected','selected').change();
@@ -438,10 +495,100 @@
 	    	elementBtn.attr("disabled", activar);
 		}
 
-	    jQuery(document).ready(() => {
-	    	getTramites();
-	    	getUsers();
-	    });
+	    function findMotivos()
+	    {
+	    	$("#table2 tbody tr").remove();
+			$.ajax({
+			    method: "get",            
+			    url: "{{ url('/get-motivos') }}",
+			    data: {_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        
+			        $.each($.parseJSON(response), function(i, item) {                
+			            $("#table2").append("<tr>"
+			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='saveMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
+			              +"</tr>"
+			            );
+			        });
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function saveMotivos(id_motivo)
+	{
+		if($("#ch_"+id_motivo).prop("checked")==true)
+		{
+			insertMotivos(id_motivo);
+		}else{
+			deleteMotivos(id_motivo);
+		}
+	}
+	function insertMotivos(id_motivo)
+	{
+		var catalogo_id=$("#idcatalogo").val();
+		$.ajax({
+			    method: "POST",            
+			    url: "{{ url('/create-solicitud-motivo') }}",
+			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        if(response.Code=="200")
+			        	{
+			        		console.log(response.Message);
+			        	}else{
+			        		Command: toastr.warning(response.Message, "Notifications") 
+			        	}
+			        
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function deleteMotivos(id_motivo)
+	{
+		var catalogo_id=$("#idcatalogo").val();
+		$.ajax({
+			    method: "POST",            
+			    url: "{{ url('/delete-solicitudes-motivos') }}",
+			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        if(response.Code=="200")
+			        	{
+			        		console.log(response.Message);
+			        	}else{
+			        		Command: toastr.warning(response.Message, "Notifications") 
+			        	}
+			        
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function limpiarChecks()
+	{
+			$("input:checkbox[name=checkMotivo]").removeAttr("checked");
+	}
+	function findMotivosSelect(id)
+	{
 
+			$.ajax({
+			    method: "get",            
+			    url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id,
+			    data: {_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        
+			        $.each($.parseJSON(response), function(i, item) {                
+			            $("#ch_"+item.motivo_id).prop("checked", true);
+			        });
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	$("#search").keyup(function(){
+        _this = this;
+        $.each($("#table2 tbody tr"), function() {
+        if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1)
+        $(this).hide();
+        else
+        $(this).show();
+        });
+    });
 	</script>
 @endsection
