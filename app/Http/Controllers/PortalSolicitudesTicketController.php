@@ -388,12 +388,17 @@ class PortalSolicitudesTicketController extends Controller
         $campos = [];
         if(isset($informacion->campos)){
           foreach($informacion->campos as $key=>$value){
-              $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
+            if(is_numeric($key)){
+              $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();              
               $campos[$catalogo->descripcion] = $value;
+            }else{
+              $campos[$key] = $value;
+            }
+              
           }
           $informacion->campos = $campos;
-        } 
-        return json_encode($informacion);
+        }
+        return $informacion;
     }
 
     public function saveFile($data){
@@ -490,22 +495,9 @@ class PortalSolicitudesTicketController extends Controller
       $solicitudes = $solicitudes->get();
       
       $catalogo = $this->campo->select('id','descripcion')->get();
-      foreach($solicitudes as $key => &$value){
-       $informacion = json_decode($value->info);
-        $campos = [];
-        if(isset($informacion->campos)){
-          foreach($informacion->campos as $k=>$v){
-              foreach($catalogo as $cat){
-                if($k = $cat->id){
-                  $campos[$cat->descripcion] = $v; 
-                  break;
-                }
-              }
-              $informacion->campos = $campos;
-          }
-        } 
-
-       $value->info =$informacion;
+      foreach($solicitudes as $key => $value){
+        $informacion = $this->asignarClavesCatalogo($value->info);
+        $value->info =$informacion;
      
       }
 
@@ -747,7 +739,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
     public function getDataTramite($id){        
-      try {
+      // try {
         $solicitudes = $this->ticket->where('id', $id)->first();
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
@@ -772,7 +764,7 @@ class PortalSolicitudesTicketController extends Controller
             $response =[];
             foreach($tramites as $t => $tramite){
               $datos=[];
-              foreach ($solicitudes as $d => $dato) { 
+              foreach ($solicitudes as $d => $dato) {
                 if($dato["tramite_id"]== $tramite["tramite_id"]){
                   $info = $this->asignarClavesCatalogo($dato["info"]);
                   $data=array(
@@ -833,16 +825,16 @@ class PortalSolicitudesTicketController extends Controller
       
 
   
-      }catch(\Exception $e) {
+      // }catch(\Exception $e) {
   
   
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al obtener tramite",
-          ]
-        );
-      }
+      //   return response()->json(
+      //     [
+      //       "Code" => "400",
+      //       "Message" => "Error al obtener tramite",
+      //     ]
+      //   );
+      // }
     
     }
     public function deleteFiles($clave){
