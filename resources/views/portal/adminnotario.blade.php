@@ -28,13 +28,13 @@
     <div class="portlet box blue">
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-bank"></i>Agregar Notario
+                <i class="fa fa-bank"></i>Agregar Notaria
             </div>
             <div class="tools">                
-              <a href="#portlet-notario" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo"></a>
-              <a id="Remov" href="javascript:;" data-original-title="" title="">
+              <a href="#portlet-notario" data-toggle="modal" class="config" data-original-title="" title="Nueva Notaria"></a>
+             <!-- <a id="Remov" href="javascript:;" data-original-title="" title="">
                 <i class='fa fa-remove' style="color:#d7eaf8 !important;"></i>
-              </a>
+              </a>--->
             </div>
         </div>
         <div class="portlet-body">
@@ -54,7 +54,7 @@
             </div>            
           <div class="col-md-3 col-ms-12">
             <div class="form-group">
-                <label >Notarios Registrados </label>  
+                <label >Notarias Registrados </label>  
                 <span class="help-block">(Selecciona para ver los Perfiles)</span> 
             </div>
           </div>
@@ -89,7 +89,7 @@
               <a id="downloadNotary" href="#" class="icon-btn" data-original-title="" title="Descargar Archivo">
                 <i class="fa fa-file-pdf-o"></i>
                 <div>
-                  &nbsp;Descargar Constancia Notario&nbsp;
+                  &nbsp;Descargar Constancia Notaria&nbsp;
                 </div>
               </a>
             </div>
@@ -104,7 +104,7 @@
       </div>
     </div>
 </div>
-<div class="row">
+<div class="row perfilesHide">
  <!-- BEGIN SAMPLE TABLE PORTLET-->
   <div class="portlet box blue">
     <div class="portlet-title" >
@@ -112,8 +112,8 @@
           <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configurar Perfil</div>
       </div>
       <div class="tools">                
-        <a href="#portlet-perfil" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo"></a>
-        <a id="Remov" href="javascript:;" data-original-title="" title=""><i class='fa fa-remove' style="color:#d7eaf8 !important;"></i></a>
+        <a href="#portlet-perfil" data-toggle="modal" class="config" data-original-title="" title="Nuevo Perfil"></a>
+       <!-- <a id="Remov" href="javascript:;" data-original-title="" title=""><i class='fa fa-remove' style="color:#d7eaf8 !important;"></i></a>-->
       </div>           
     </div>
       <div class="portlet-body">
@@ -157,7 +157,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarNot()"></button>
-        <h3 class="modal-title">Configuración Notario</h3>        
+        <h3 class="modal-title">Configuración Notaria</h3>        
       </div>
       <div class="modal-body">
         <div class="row">
@@ -174,8 +174,8 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <div class="form-group">
-                <label >Número de Notario</label>                                             
-                <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notario...">
+                <label >Número de Notaria</label>                                             
+                <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notaria...">
               </div>                                           
               </div>
             </div>
@@ -357,18 +357,6 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            
-            <div class="col-md-4"> 
-              <div class="form-group"> 
-                   <div class="form-group">
-                <label >Permiso</label> 
-                   <select id="itemsPermisoNotario" class="select2me form-control" >
-                  <option value="0">-------</option>
-                  <option value="16">Notario</option>
-                </select>
-              </div>                                
-              </div>
-            </div>
             <div class="col-md-4"> 
               <div class="form-group">
                 <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                             
@@ -609,6 +597,7 @@
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
+     $(".perfilesHide").css("display", "none");
     $(".iDocument").css("display","none");
     TableManaged.init();
     ItemsTramite();
@@ -661,7 +650,7 @@ function changeComunidad()
   {
     $("#itemsNotario option").remove();
     $('#itemsNotario').append("<option value='0'>------</option>");
-
+    $(".perfilesHide").css("display", "none");
     return;
   }
    $.ajax({
@@ -674,6 +663,7 @@ function changeComunidad()
             $.each(response, function(i, item) {                
                 $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+"</option>");
             });
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
@@ -691,11 +681,11 @@ function changeComunidad()
         var resp=$.parseJSON(response);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
-        $("#itemsPermisoNotario option").remove();
-        $('#itemsPermisoNotario').append("<option value='0'>------</option>");
+        //$("#itemsPermisoNotario option").remove();
+        //$('#itemsPermisoNotario').append("<option value='0'>------</option>");
           $.each(resp.response, function(i, item) {
             $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
-            $('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
+            //$('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
                 //console.log(item.id);
           });
         })
@@ -745,7 +735,7 @@ function changeComunidad()
     var passNotario=$("#passNotario").val();
 
     var itemsCofigNotario=$("#itemsCofigNotario").val();
-    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
+    //var itemsPermisoNotario=$("#itemsPermisoNotario").val();
     var pdf = $("#fileSAT")[0].files[0]; 
     var pdf2 = $("#fileNotario")[0].files[0];
      var pdfSAT = $("#fileSAT").val(); 
@@ -787,8 +777,6 @@ function changeComunidad()
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
     }else if(itemsCofigNotario =='0'){
       Command: toastr.warning("Campo Comunidad, requerido!", "Notifications") 
-    }else if(itemsPermisoNotario =='0'){
-      Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
     }else if(pdfSAT.length==0){ 
          Command: toastr.warning("Archivo Constancia SAT, Requerido!", "Notifications")
     }else if(pdfNotario.length==0){ 
@@ -823,7 +811,7 @@ function changeComunidad()
     var rfcNotario=$("#rfcNotario").val();
     var itemsTipoNotario=$("#itemsTipoNotario").val();
     var itemsCofigNotario=$("#itemsCofigNotario").val();
-    var itemsPermisoNotario=$("#itemsPermisoNotario").val();
+    //var itemsPermisoNotario=$("#itemsPermisoNotario").val();
     var passNotario=$("#passNotario").val();
 
     var base64SAT=$("#base64pdf1").val();
@@ -841,7 +829,7 @@ function changeComunidad()
     phone:telNotario2,
     person_type:itemsTipoNotario,
     config_id: itemsCofigNotario,
-    role_id: itemsPermisoNotario };
+    role_id: 2 };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -902,6 +890,7 @@ function changeComunidad()
     if(id=="0")
     {
       $(".iDocument").css("display","none");
+      $(".perfilesHide").css("display", "none");
       addtable();
       TableManaged.init();
       return;
@@ -921,6 +910,7 @@ function changeComunidad()
           document.getElementById('jsonCode').value=response;            
           var Resp=response;
           addtable();
+          $(".perfilesHide").css("display", "block");
         $.each(Resp, function(i, item) {   
              json=JSON.stringify(item);        
              status=item.status;    
@@ -1002,7 +992,7 @@ function changeComunidad()
   }
   function perfilUpdate(json)
   {
-   //console.log(json);
+   console.log(json);
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
     //$("#itemsConfigUser").val(json.config_id).change();
@@ -1140,8 +1130,8 @@ function changeComunidad()
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso
             };
-            console.log(id_notary);
-            console.log(user_);
+            //console.log(id_notary);
+            //console.log(user_);
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
@@ -1203,7 +1193,7 @@ function changeComunidad()
     document.getElementById('rfcNotario').value="";
     $("#itemsTipoNotario").val("0").change();
     document.getElementById('passNotario').value=""; 
-    $("#itemsPermisoNotario").val("0").change();
+    //$("#itemsPermisoNotario").val("0").change();
     //$("input:radio").attr("checked", false);
     document.getElementById('base64pdf1').value="";
     document.getElementById('base64pdf2').value="";
