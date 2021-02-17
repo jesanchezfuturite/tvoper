@@ -549,14 +549,15 @@
 			    method: "POST",            
 			    url: "{{ url('/delete-solicitudes-motivos') }}",
 			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
-			    .done(function (response) {     
-			        if(response.Code=="200")
+			    .done(function (response) { 
+			    //console.log(response);    
+			        if(response.Code=="200" || response.Code==null)
 			        	{
 			        		console.log(response.Message);
 			        	}else{
 			        		Command: toastr.warning(response.Message, "Notifications") 
 			        	}
-			        
+			       
 			    })
 			.fail(function( msg ) {
 			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
