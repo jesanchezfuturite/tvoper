@@ -739,7 +739,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
     public function getDataTramite($id){        
-      // try {
+      try {
         $solicitudes = $this->ticket->where('id', $id)->first();
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
@@ -772,7 +772,7 @@ class PortalSolicitudesTicketController extends Controller
                     "clave"=>$dato["clave"],
                     "catalogo_id"=>$dato["catalogo_id"],
                     "user_id"=>$dato["user_id"],
-                    "info"=>json_decode($info),
+                    "info"=>$info,
                     "status"=>$dato["status"]
                   );
                   array_push($datos, $data);
@@ -825,16 +825,16 @@ class PortalSolicitudesTicketController extends Controller
       
 
   
-      // }catch(\Exception $e) {
+      }catch(\Exception $e) {
   
   
-      //   return response()->json(
-      //     [
-      //       "Code" => "400",
-      //       "Message" => "Error al obtener tramite",
-      //     ]
-      //   );
-      // }
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener tramite",
+          ]
+        );
+      }
     
     }
     public function deleteFiles($clave){
