@@ -385,25 +385,15 @@ class PortalSolicitudesTicketController extends Controller
 
     public function asignarClavesCatalogo($info){
         $informacion = json_decode($info);
-        $informacion = json_decode(json_encode($informacion), true);
-    
-  
-        if(array_key_exists("campos", $informacion)){
-          $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
-          $campos = $informacion["campos"]; 
-          $keys = array_column($catalogo, 'id');
-          $values = array_column($catalogo, 'descripcion');
-          $combine = array_combine($keys, $values);
-          $catalogue = array_intersect_key($combine, $campos);
-          
-          $camposnuevos = array_combine($catalogue, $campos);
-          unset($informacion["campos"]);
-          $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
-        }
-
-       
-
-        return json_encode($informacion); 
+        $campos = [];
+        if(isset($informacion->campos)){
+          foreach($informacion->campos as $key=>$value){
+              $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
+              $campos[$catalogo->descripcion] = $value;
+          }
+          $informacion->campos = $campos;
+        } 
+        return json_encode($informacion);
     }
 
     public function saveFile($data){
@@ -441,12 +431,40 @@ class PortalSolicitudesTicketController extends Controller
  
 
     public function filtrarSolicitudes(Request $request){
-   
       $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-      ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_catalogo.tramite_id", "solicitudes_status.descripcion", "solicitudes_ticket.id_transaccion",
-      "solicitudes_ticket.created_at", "solicitudes_ticket.user_id", "solicitudes_ticket.info", "solicitudes_ticket.clave")
+      ->select(
+        "solicitudes_ticket.id",
+        "solicitudes_catalogo.titulo",
+        "solicitudes_catalogo.tramite_id",
+        "solicitudes_status.descripcion",
+        "solicitudes_ticket.id_transaccion",
+        "solicitudes_ticket.created_at",
+        "solicitudes_ticket.user_id",
+        "solicitudes_ticket.info",
+        "solicitudes_ticket.clave",
+        
+        "mensajes.id AS mensajes_id",
+        "mensajes.ticket_id AS mensajes_ticket_id",
+        "mensajes.mensaje AS mensajes_mensaje",
+        "mensajes.attach AS mensajes_attach",
+        "mensajes.mensaje_para AS mensajes_mensaje_para",
+        "mensajes.created_at AS mensajes_created_at",
+        "mensajes.updated_at AS mensajes_updated_at",
+        
+        "tramites.id AS tramites_id",
+        "tramites.id_transaccion_motor AS tramites_id_transaccion_motor",
+        "tramites.estatus AS tramites_estatus",
+        "tramites.json_envio AS tramites_json_envio",
+        "tramites.json_recibo AS tramites_json_recibo",
+        "tramites.url_recibo AS tramites_url_recibo",
+        "tramites.created_at AS tramites_created_at",
+        "tramites.updated_at AS tramites_updated_at"
+      )
+
       ->join('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-      ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+      ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
+      ->leftJoin('solicitudes_tramite as tramites', 'tramites.id', 'solicitudes_ticket.id_transaccion')
+      ->leftJoin('solicitudes_mensajes as mensajes', 'mensajes.ticket_id', 'solicitudes_ticket.id');
       
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
@@ -463,44 +481,62 @@ class PortalSolicitudesTicketController extends Controller
         $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
         $solicitudes->whereIn('user_id', $users);
       }
+
       if($request->has('id_usuario')){        
         $solicitudes->where('user_id', $request->id_usuario);
       }
 
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
-    
       $solicitudes = $solicitudes->get();
-
-      $mensajes = $this->mensajes;
-      $tramites = $this->solTramites;
-      $trmts=[];
-      foreach ($solicitudes as $key => $value) {
-        foreach ($tramites->get() as $t => $tmt){
-          if($value->id_transaccion ==$tmt->id){
-            array_push( $trmts, $tmt->toArray());
-          }
-        }
-
-        $value->tramites= $trmts;
-      }
-
-      $datos=[];
+      
+      $catalogo = $this->campo->select('id','descripcion')->get();
       foreach($solicitudes as $key => &$value){
-        $info = $this->asignarClavesCatalogo($value->info);
-        $value->info =$info;
-        foreach ($mensajes->get() as $m => $msje){
-          if($value->id ==$msje->ticket_id){
-            array_push( $datos, $msje->toArray());
+       $informacion = json_decode($value->info);
+        $campos = [];
+        if(isset($informacion->campos)){
+          foreach($informacion->campos as $k=>$v){
+              foreach($catalogo as $cat){
+                if($k = $cat->id){
+                  $campos[$cat->descripcion] = $v; 
+                  break;
+                }
+              }
+              $informacion->campos = $campos;
           }
-        }
+        } 
 
-        $value->mensajes= $datos;
-
+       $value->info =$informacion;
+     
       }
 
+
+      $response = [];
+
+      foreach ($solicitudes as $solicitud) {
+        $search = array_search($solicitud->id, array_column($response, 'id'));
+        $mensajes = [];
+        $tramites = [];
+        $sol = $search ? $response[$search] : [];
+        foreach($solicitud as $key => $val){
+          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);
+          if(count($matches) > 0){
+            if($val) ${$matches[1]}[$matches[2]] = $val;
+          }else{
+            $sol[$key] = $val;
+          }
+        }
+        if(count($mensajes) > 0) $sol['mensajes'][] = $mensajes;
+        else $sol['mensajes'] = [];
+        if(count($tramites) > 0) $sol['tramites'][] = $tramites;
+        else $sol['tramites'] = [];
+        if(!$search) $response[] = $sol;
+        else $response[$search] = $sol;
+      }
+
+      return $response;
+  
       
       
-      return $solicitudes;
     }
 
     public function saveTransaccion(Request $request){
