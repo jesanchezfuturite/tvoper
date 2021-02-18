@@ -69,7 +69,7 @@
       </div>
     </div>
 </div>
-<div class="row">
+<!---<div class="row">
     <div class="portlet box blue iDocument">
         <div class="portlet-title">
             <div class="caption">
@@ -103,13 +103,13 @@
         </div>
       </div>
     </div>
-</div>
+</div>-->
 <div class="row perfilesHide">
  <!-- BEGIN SAMPLE TABLE PORTLET-->
   <div class="portlet box blue">
     <div class="portlet-title" >
       <div class="caption">
-          <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configurar Perfil</div>
+          <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Administrar Usuarios</div>
       </div>
       <div class="tools">                
         <a href="#portlet-perfil" data-toggle="modal" class="config" data-original-title="" title="Nuevo Perfil"></a>
@@ -138,7 +138,8 @@
               <th>RFC</th>
               <th>Curp</th>
               <th>Status</th>
-            <th>&nbsp;</th>
+            <th>Opciones</th>
+            <th>Documentos</th>
             </tr>
           </thead>
           <tbody>                   
@@ -429,7 +430,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarPerf()"></button>
-        <h4 class="modal-title">Configuracion Perfil</h4>
+        <h4 class="modal-title">Configuracion Usuario</h4>
         <input hidden="true" type="text" name="idperfil" id="idperfil">
       </div>
       <div class="modal-body">
@@ -598,7 +599,7 @@
 <script type="text/javascript">
   jQuery(document).ready(function() {
      $(".perfilesHide").css("display", "none");
-    $(".iDocument").css("display","none");
+    //$(".iDocument").css("display","none");
     TableManaged.init();
     ItemsTramite();
     ItemsPermisos();
@@ -622,8 +623,8 @@ function getBase64Notario(file) {
    };
    
 }
-$('#downloadSAT').click(function(){ downloadPdf("sat"); return false; });
-$('#downloadNotary').click(function(){ downloadPdf("notary"); return false; });
+//$('#downloadSAT').click(function(){ downloadPdf("sat"); return false; });
+//$('#downloadNotary').click(function(){ downloadPdf("notary"); return false; });
 function downloadPdf(file)
 {
   var id_notary=$("#itemsNotario").val();
@@ -889,7 +890,7 @@ function changeComunidad()
     var com=$("#itemsConfigUser").val();
     if(id=="0")
     {
-      $(".iDocument").css("display","none");
+      //$(".iDocument").css("display","none");
       $(".perfilesHide").css("display", "none");
       addtable();
       TableManaged.init();
@@ -901,7 +902,7 @@ function changeComunidad()
       //$("#itemsNotario").val(0).change();
       return;
     }
-    $(".iDocument").css("display","block");
+    //$(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
@@ -911,6 +912,7 @@ function changeComunidad()
           var Resp=response;
           addtable();
           $(".perfilesHide").css("display", "block");
+          btn_download="";
         $.each(Resp, function(i, item) {   
              json=JSON.stringify(item);        
              status=item.status;    
@@ -929,9 +931,13 @@ function changeComunidad()
                 msgg="Sin estatus"; 
                 icon="green";
                 title="Activar";
+              }              
+              if(item.role_id==2)
+              {
+                btn_download="<a class='btn btn-icon-only blue' href='javascript:;' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='javascript:;'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
+              }else{
+                btn_download="";
               }
-              //console.log(item.config_id);
-            //if(com==item.config_id){   
               $('#sample_3 tbody').append("<tr>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
@@ -939,7 +945,8 @@ function changeComunidad()
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='15%'>"+btn_download+"</td>"
                 +"</tr>"
                 );
               //}
@@ -952,7 +959,7 @@ function changeComunidad()
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>&nbsp;</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>Opciones</th><th>Documentos</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();
 
   }
@@ -1006,6 +1013,12 @@ function changeComunidad()
       document.getElementById('curpUser').value=json.curp; 
       document.getElementById('rfcUser').value=json.rfc; 
       document.getElementById('password').value=""; 
+      if(json.role_id==2)
+      {
+        document.getElementById("itemsPermiso").disabled=true; 
+      }else{
+        document.getElementById("itemsPermiso").disabled=false; 
+      }
 
   }
   function updatePerfil()
@@ -1168,7 +1181,8 @@ function changeComunidad()
       document.getElementById('apeMatUser').value=""; 
       document.getElementById('curpUser').value=""; 
       document.getElementById('rfcUser').value=""; 
-      document.getElementById('password').value=""; 
+      document.getElementById('password').value="";
+      document.getElementById("itemsPermiso").disabled=false; 
   }
   function limpiarNot()
   {
@@ -1200,6 +1214,7 @@ function changeComunidad()
     document.getElementById('delFileNotario').click();
     document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
+
 
 }
 function onechange2()
