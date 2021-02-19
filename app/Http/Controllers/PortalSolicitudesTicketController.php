@@ -267,16 +267,23 @@ class PortalSolicitudesTicketController extends Controller
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         if($relation){
           $notary_id = $relation->notary_office_id;
-          $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get(); 
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+          // $notary_offices=  $this->notary->where('id', $notary_id)->get()->toArray();
+         
+          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id');
+          }])->get()->toArray();
         }else{
-          $notary_offices=null;
+            
+          $solicitudes = PortalSolicitudesTicket::where('user_id', $users)->where('status', 99)
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id');
+          }])->get()->toArray();
         }
       
 
-        $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)
-        ->with(['catalogo' => function ($query) {
-          $query->select('id', 'tramite_id');
-        }])->get()->toArray();
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -321,7 +328,7 @@ class PortalSolicitudesTicketController extends Controller
   
         }
 
-        $response["notary_offices"]=$notary_offices;
+        // $response["notary_offices"]=$notary_offices;
         $response["tramites"] =$tmts;
   
         return $response;
