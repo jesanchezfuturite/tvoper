@@ -79,8 +79,14 @@ class PortalSolicitudesTicketController extends Controller
         return $tmts;
     }
     public function registrarSolicitud(Request $request){
-      // $name= \Request::route()->getName();
-      $status = $request->estatus;
+      $name= \Request::route()->getName();
+      if($name=="RegistrarSolicitudTemporal"){
+        $status=80;
+      }else{
+        $status=90;
+
+      }
+      // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
