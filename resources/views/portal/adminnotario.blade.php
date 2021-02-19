@@ -430,7 +430,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarPerf()"></button>
-        <h4 class="modal-title">Configuracion Usuario</h4>
+        <h4 class="modal-title">Configuración Usuario</h4>
         <input hidden="true" type="text" name="idperfil" id="idperfil">
       </div>
       <div class="modal-body">
@@ -934,18 +934,20 @@ function changeComunidad()
               }              
               if(item.role_id==2)
               {
-                btn_download="<a class='btn btn-icon-only blue' href='javascript:;' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only green' data-toggle='modal' href='javascript:;'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='javascript:;' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='javascript:;'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
               }else{
                 btn_download="";
               }
+              role=item.roles; 
               $('#sample_3 tbody').append("<tr>"
+                +"<td>"+role.description+"</td>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
                 +"<td>"+item.name+"</td>"
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-minus'></i></a></td>"
+                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#portlet-deleted'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\")'><i class='fa fa-power-off'></i></a></td>"
                 + "<td class='text-center' width='15%'>"+btn_download+"</td>"
                 +"</tr>"
                 );
@@ -959,7 +961,7 @@ function changeComunidad()
   function addtable()
   {
     $("#addtables div").remove();
-    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>Opciones</th><th>Documentos</th></tr> </thead> <tbody></tbody> </table>");
+    $("#addtables").append("<table class='table table-hover' id='sample_3'> <thead><tr><th>Tipo Rol</th><th>Usuario</th><th>Correo Electrónico</th> <th>Nombre</th><th>RFC</th><th>Curp</th><th>Status</th><th>&nbsp;&nbsp;Opciones&nbsp;</th><th>Documentos</th></tr> </thead> <tbody></tbody> </table>");
      //TableManaged3.init3();
 
   }
