@@ -83,7 +83,7 @@ class PortalSolicitudesTicketController extends Controller
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
       }else{
-        $status=90;
+        $status=99;
 
       }
       // $status = $request->estatus;
