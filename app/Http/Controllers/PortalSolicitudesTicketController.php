@@ -559,6 +559,8 @@ class PortalSolicitudesTicketController extends Controller
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
+
+              $this->guardarCarrito($value->id, 1);
           }
         }        
 
@@ -587,7 +589,10 @@ class PortalSolicitudesTicketController extends Controller
         case "60":
           $statusTicket = 5;
           break;
-        case "65":
+        case "70":
+        case "45":
+        case "15":
+        case "5":
           $statusTicket = 99;
           break;
         default:
@@ -609,11 +614,16 @@ class PortalSolicitudesTicketController extends Controller
 
         
         }  
-        
-        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 5)->get(["id"]);
+               
+        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
+        ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
+          $this->guardarCarrito($value->id, 2);
+
+          if($value->status<>5){
             $tramites_finalizados = $this->tramites_finalizados($value->id);
+          }
           
         }
 
@@ -641,7 +651,10 @@ class PortalSolicitudesTicketController extends Controller
         case "60":
           $statusTicket = 5;
           break;
-        case "65":
+        case "70":
+        case "45":
+        case "15":
+        case "5":
           $statusTicket = 99;
           break;
         default:
@@ -667,13 +680,18 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
-
-        $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 5)->get(["id"]);
+        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
+        ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
+          $this->guardarCarrito($value->id, 2);
+          
+          if($value->status<>5){
             $tramites_finalizados = $this->tramites_finalizados($value->id);
+          }
           
         }
+
 
 
       } catch (\Exception $e) {
@@ -909,7 +927,28 @@ class PortalSolicitudesTicketController extends Controller
 
 
   }
- 
+
+  public function guardarCarrito($id, $status){
+      try{
+      $solicitudTicket = $this->ticket->whereIn('id',$id)
+      ->update(['en_carrito'=>$status]);
+
+      return json_encode(
+        [
+          "response" 	=> "Solicitud en el carrito",
+          "code"		=> 200
+        ]);
+
+      } catch (\Exception $e) {
+        return json_encode(
+          [
+            "response" 	=> "Error al guardar en carrito - " . $e->getMessage(),
+            "code"		=> 402
+          ]);
+      }
+
+
+  } 
 
     
 }
