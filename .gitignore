@@ -11,3 +11,4 @@ npm-debug.log
 yarn-error.log
 config/database.php
 /config/database.php
+.DS_Store

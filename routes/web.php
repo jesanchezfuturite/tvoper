@@ -315,6 +315,9 @@ Route::post('/traux-add-serv','PortaltramitesauxController@guardaTramite');
 Route::post('/traux-edit-relcamp','PortaltramitesauxController@editarTramite');
 Route::post('/traux-del-relcamp','PortaltramitesauxController@eliminarTramite');
 Route::get('/traux-get-partida', 'PortaltramitesauxController@listarPartidas');
+Route::post('/traux-prelacion', 'PortaltramitesauxController@editPrelacion');
+Route::post('/traux-divisa', 'PortaltramitesauxController@saveDivisa');
+
 
 
 Route::get('/solicitudes', 'PortalSolicitudesController@index');
@@ -326,6 +329,9 @@ Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
 
 
+/*estas son para crear los tickets de solicitud*/
+Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
+
 
 Route::get('/traux-pago-costos','PortaltramitesauxController@Viewtipopagocosto');
 Route::get('/traux-get-tramites','PortaltramitesauxController@findTramites');
@@ -336,6 +342,16 @@ Route::post('/traux-edit-tramites','PortaltramitesauxController@updateCostos');
 Route::post('/traux-del-tramites','PortaltramitesauxController@updateStatusCostos');
 Route::post('/traux-post-subsidios','PortaltramitesauxController@updateSubsidio');
 Route::post('/traux-add-caract', 'PortaltramitesauxController@addCaracteristics');
+Route::get('/traux-get-reglas', 'PortaltramitesauxController@getReglas');
+Route::post('/traux-agrupacion', 'PortaltramitesauxController@listarAgrupacion');
+Route::get('/configuracion-tramites', 'PortaltramitesauxController@viewConfiguracion');
+Route::post('/guardar-agrupacion', 'PortaltramitesauxController@guardarAgrupacion');
+Route::post('/guardar-orden', 'PortaltramitesauxController@guardarOrden');
+Route::get('/listarCategorias', 'PortaltramitesauxController@listCategory');
+Route::post('/addFile', 'PortaltramitesauxController@addFile');
+Route::post('/guardar-orden-agrupacion', 'PortaltramitesauxController@saveOrdenAgrupacion');
+Route::post('/edit-agrupacion', 'PortaltramitesauxController@editAgrupacion');
+Route::post('/traux-edit-porcentaje','PortaltramitesauxController@savePorcentaje');
 
 Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary');
 Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers');
@@ -344,9 +360,12 @@ Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUser
 Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status');
 Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary');
 Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission');
+Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
+Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
+Route::post('/config-create-users', 'PortalNotaryOfficesController@createUsers');
 
 
-Route::get('/operacion-roles', 'OperacionRolesController@index');
+Route::get('/comunidades', 'OperacionRolesController@index');
 Route::get('/operacion-roles-create', 'OperacionRolesController@createRol');
 Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite');
 Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites');
@@ -354,4 +373,80 @@ Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol');
 Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol');
 Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
 Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
+
+Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
+Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
+Route::get('/atender-solicitudes/{id}', 'PortalSolicitudesController@atenderSolicitud');
+Route::post('/guardar-solicitudes', 'PortalSolicitudesController@guardarSolicitud');
+Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket');
+Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes');
+Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile');
+Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute');
+Route::post('/solicitudes-update-status' , 'PortalSolicitudesController@updateStatus');
+Route::get('/find-solicitudes' , 'PortalSolicitudesController@findSol');
+Route::get('/get-motivos' , 'PortalSolicitudesController@getmotivos');
+Route::post('/create-solicitud-motivo' , 'PortalSolicitudesController@createsolicitudMotivos');
+Route::get('/get-solicitudes-motivos/{solicitud_catalogo_id?}' , 'PortalSolicitudesController@getSolicitudesMotivos');
+Route::post('/delete-solicitudes-motivos' , 'PortalSolicitudesController@deleteSolicitudMotivo');
+
+
+
+Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
+Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
+Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
+Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
+Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
+Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
+Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
+Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
+Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
+Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus');
+Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitudTemporal");
+Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite');
+Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
+Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
+Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
+
+
+Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
+Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
+Route::post('/reglas-tmt-relationship', 'PortalReglaOperativaController@getCampos');
+Route::post('/reglas-cmp', 'PortalReglaOperativaController@getReglasCampos');
+Route::post('/reglas-info', 'PortalReglaOperativaController@getReglas');
+Route::post('/reglas-save', 'PortalReglaOperativaController@saveRegla');
+
+
+Route::get('/avisos-internos', 'PortalAvisosInternosController@index');
+Route::get('/find-avisos', 'PortalAvisosInternosController@findNotifications');
+Route::post('/create-avisos', 'PortalAvisosInternosController@createNotifications');
+Route::post('/update-avisos', 'PortalAvisosInternosController@updateNotifications');
+Route::post('/delete-avisos', 'PortalAvisosInternosController@deletedNotifications');
+
+
+Route::get('/obtener-divisas', 'DivisasController@getDivisas');
+Route::post('/save-divisas', 'DivisasController@saveDivisas');
+Route::post('/delete-divisas', 'DivisasController@deleteDivisas');
+Route::get('/get-divisas-save', 'DivisasController@getDivisasSave');
+Route::get('/divisas', 'DivisasController@index');
+Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
+
+/***************************apis webservice*************************************/
+Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
+Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
+Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
+Route::get('/wsent/{origen}', 'ApiController@entidades');
+Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios');
+Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
+Route::get('/consultar-curp/{curp}', 'ApiController@curp');
+Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
+
+Route::get('/aviso/{expediente}/{userid}', 'ApiController@getTicketsAviso');
+
+
+
+Route::get('/obtener-estados', 'CatalogosController@getEntidad');
+Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+
+
+
 

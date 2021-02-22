@@ -6,23 +6,47 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-
+use DB;
 use Carbon\Carbon;
+use App\Entities\PortalSolicitudesTicket;
 
 use App\Repositories\UsersRepositoryEloquent;
+use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
+use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
+use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
+use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
+use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
+use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
+use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
+use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
+use App\Repositories\SolicitudesMotivoRepositoryEloquent;
+use App\Repositories\MotivosRepositoryEloquent;
+use App\Entities\SolicitudesMotivo;
+
 
 class PortalSolicitudesController extends Controller
 {
   protected $users;
   protected $solicitudes;
   protected $tramites;
+  protected $tickets;
   protected $tiposer;
   protected $partidas;
+  protected $notary;
+  protected $status;  
+  protected $configUserNotary;
+  protected $mensajes;
+  protected $campo;
+  protected $solicitudrespdb;
+  protected $msjprelaciondb;
+  protected $solicitudesMotivos;
+  protected $motivos;
+
 
 
   public function __construct(
@@ -30,15 +54,37 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudescatalogoRepositoryEloquent $solicitudes,
      TramitedetalleRepositoryEloquent $tramites,
      EgobiernotiposerviciosRepositoryEloquent $tiposer,
-     EgobiernopartidasRepositoryEloquent $partidas
+     EgobiernopartidasRepositoryEloquent $partidas,
+     PortalSolicitudesStatusRepositoryEloquent $status,
+     PortalSolicitudesTicketRepositoryEloquent $ticket,
+     PortalNotaryOfficesRepositoryEloquent $notary,
+     PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
+     PortalSolicitudesMensajesRepositoryEloquent $mensajes,
+     PortalcampoRepositoryEloquent $campo,
+     PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
+     PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
+     SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
+     MotivosRepositoryEloquent $motivos
+     
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
       $this->tiposer = $tiposer;
       $this->partidas = $partidas;
+      $this->status = $status;
+      $this->ticket = $ticket;
+      $this->notary = $notary;
+      $this->configUserNotary = $configUserNotary;
+      $this->mensajes = $mensajes;
+      $this->campo = $campo;
+      $this->solicitudrespdb = $solicitudrespdb;
+      $this->msjprelaciondb = $msjprelaciondb;
+      $this->solicitudesMotivos = $solicitudesMotivos;
+      $this->motivos = $motivos;
+
 
     }
 
@@ -218,17 +264,19 @@ class PortalSolicitudesController extends Controller
     $titulo = $request->titulo;
     $atiende = $request->user;
     $status = $request->status;
-
+    $users=explode(",",$atiende);
     try {
 
-      $this->solicitudes->create([
+      $inser=$this->solicitudes->create([
         'tramite_id'=> $id_tramite,
         'padre_id'  =>  $padre_id,
         'titulo'    =>  $titulo,
         'atendido_por'=>  $atiende,
         'status'  =>  $status
       ]);
-
+      foreach ($users as $e) {
+        $ins=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$inser->id]);
+      }
       return response()->json(
         [
           "Code" => "200",
@@ -262,9 +310,13 @@ class PortalSolicitudesController extends Controller
     $titulo = $request->titulo;
     $atiende = $request->user;
     $status = $request->status;
-
+    $users=explode(",",$atiende);
+    //log::info($users);
     try{
-
+      $del=$this->solicitudrespdb->deleteWhere(["catalogo_id"=>$id_solicitud]);
+      foreach ($users as $e) {
+        $ins=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$id_solicitud]);
+      }
       $solicitud = $this->solicitudes->update(['tramite_id'=>$id_tramite, 'padre_id'=>$padre_id, 'titulo' => $titulo,
     'atendido_por'=>$atiende, 'status'=>$status], $id_solicitud);
 
@@ -298,6 +350,7 @@ class PortalSolicitudesController extends Controller
     $id_solicitud = $request->id_solcitud;
 
     try {
+      $del=$this->solicitudrespdb->deleteWhere(["catalogo_id"=>$id_solicitud]);
       $registro = $this->solicitudes->where('id', $id_solicitud)->get();
 
       if($registro->count() > 0){
@@ -387,5 +440,353 @@ class PortalSolicitudesController extends Controller
     return $data;
 
   }
+  public function filtrar(Request $request){
+   
+    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.status","solicitudes_ticket.created_at")
+    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+    
+    if($request->has('tipo_solicitud')){
+        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
+    }
 
+    if($request->has('estatus')){
+      $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+    }
+
+    if($request->has('id_solicitud')){
+      $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
+     
+    }
+    $solicitudes->where('solicitudes_ticket.status', '!=', 99)
+    ->orderBy('solicitudes_ticket.created_at', 'DESC');
+    $solicitudes = $solicitudes->get();
+    return $solicitudes;
+  }
+  public function listSolicitudes(){
+    
+    $tipoSolicitud=$this->findSol();
+    $status = $this->status->all()->toArray();
+    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
+
+  }
+  public function findSol()
+  {
+    $user_id = auth()->user()->id;
+    $tipoSolicitud = $this->solicitudes->findSolicitudes($user_id,null,null);
+    $findSolPadres = $this->solicitudes->findSolicitudes(null,null,2);
+    //log::info($findSolPadres);    
+    foreach ($findSolPadres as $k) {
+      if($k["status"]==2)
+      {
+        $tipoSolicitudHijo= $this->solicitudes->findSolicitudes($user_id,$k["id"],null);
+        //log::info($tipoSolicitudHijo);
+        foreach ($tipoSolicitudHijo as $i) {
+          $arrayHijo=array();          
+            $arrayHijo []=array('titulo'=> $k["titulo"] . " / " . $i["titulo"] ,
+              'id'=> $i["id"],
+              'padre_id'=> $i["padre_id"]
+            );
+          
+            $tipoSolicitud=array_merge($tipoSolicitud,$arrayHijo);
+            $arrayHijo=array();            
+        }
+        $soliTer=$this->solicitudes->findSolicitudes(null,$k["id"],2);
+        
+        foreach ($soliTer as $e) {
+          $arrayTer=array();
+            $tipoSolicitudTer= $this->solicitudes->findSolicitudes($user_id,$e["id"],null);
+            //log::info($tipoSolicitudTer);
+            foreach ($tipoSolicitudTer as $t) {
+              $arrayTer []=array('titulo'=> $k["titulo"] . " / " . $e["titulo"] . " / " . $t["titulo"],
+                'id'=> $t["id"],
+                'padre_id'=> $t["padre_id"]
+              );
+              $tipoSolicitud=array_merge($tipoSolicitud,$arrayTer);
+              $arrayTer=array();
+            }
+        }
+      }
+      
+    }
+    return $tipoSolicitud;
+
+  }
+  public function atenderSolicitud($id){
+    $ticket = $this->ticket->where('id', $id)->first();
+    $findP=$this->ticket->findPrelacion($id);
+    $findmsjPrelacion=$this->msjprelaciondb->findWhere(["solicitud_id"=>$id]);
+    $prelacion=array();
+    $msprelacion=array('mensaje_prelacion'=>$findmsjPrelacion->count());
+
+      foreach ($findP as $k) {
+        $prelacion=array('prelacion' =>  $k->tramite_id);
+      }
+    $informacion = json_decode($ticket->info);
+    $informacion = json_decode(json_encode($informacion), true);
+    $campos = $informacion["campos"];   
+    $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+    $keys = array_column($catalogo, 'id');
+    $values = array_column($catalogo, 'descripcion');
+    $combine = array_combine($keys, $values);
+    $catalogue = array_intersect_key($combine, $campos);
+    
+    $camposnuevos = array_combine($catalogue, $campos);
+    unset($informacion["campos"]);
+    $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+    $informacion =array_merge( $informacion,$prelacion);
+    $informacion =array_merge( $informacion,$msprelacion);
+    return $informacion; 
+    
+
+  }
+  
+
+  public function guardarSolicitud(Request $request){
+    $mensaje = $request->mensaje;
+    $mensaje_para = $request->mensaje_para;
+    $ticket_id = $request->id;
+    $prelacion = $request->prelacion;
+  
+    if($request->has("file")){
+      $file = $request->file('file'); 
+      $extension = $file->getClientOriginalExtension();
+      $attach = "archivo_solicitud_".$request->id.".".$extension;
+      \Storage::disk('local')->put($attach,  \File::get($file));
+    }else{
+      $attach ="";
+    }
+  
+    try {
+      $mensajes =$this->mensajes->create([
+        'ticket_id'=> $ticket_id,
+        'mensaje' => $mensaje,
+        'mensaje_para' => $mensaje_para,
+        'attach'    =>  $attach
+      ]);
+      if($prelacion==1)
+      {
+        $msprelacion =$this->msjprelaciondb->create([
+          'solicitud_id'=> $ticket_id
+        ]);
+      }
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Mensaje guardado con éxito",
+          "data"=>$mensajes
+          
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar mensaje",
+        ]
+      );
+    }
+  }
+
+  public function cerrarTicket(Request $request){
+      $id = $request->id;
+      $id_catalogo=$request->id_catalogo;
+      $catalogoH="";
+      try{
+        $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$id_catalogo]);
+        foreach ($findCatalogoHijo as $k) {
+          $catalogoH=$k->id;
+        }
+        if($findCatalogoHijo->count()>0)
+        {
+          $findSolTicket=$this->ticket->findWhere(["id"=>$id]);
+          foreach ($findSolTicket as $e) {
+            $ins=$this->ticket->create([
+              "clave"=>$e->clave,
+              "catalogo_id"=>$catalogoH,
+              "id_transaccion"=>$e->id_transaccion,
+              "info"=>$e->info,
+              "relacionado_a"=>$e->relacionado_a,
+              "ticket_relacionado"=>$e->id,
+              "user_id"=>$e->user_id,
+              "creado_por"=>$e->creado_por,
+              "asignado_a"=>$e->asignado_a,
+              "status"=>1
+            ]);
+          }
+        }
+        
+        
+        
+        $solicitudTicket = $this->ticket->update(['status'=>2],$id);
+        return response()->json(
+          [
+          "Code" => "200",
+          "Message" => "Ticket cerrado",
+          ]
+        );
+
+      }catch(\Exception $e){
+
+        Log::info('Error Cerrar Ticket '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cerrar ticket",
+          ]
+        );
+      }
+
+    }
+    public function getMensajes($id){      
+      try{
+         $mensajes = $this->mensajes->where('ticket_id', $id)
+                    ->orderBy('created_at', 'DESC')
+                    ->get()
+                    ->toArray();
+      }catch(\Exception $e){
+
+        Log::info('Error Obtener Mensajes '.$e->getMessage());
+
+        return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al obtener mensajes",
+          ]
+        );
+      }
+      return json_encode($mensajes);
+    }
+    public function downloadFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->download($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@downloadFile");
+      }
+    }
+    public function getFileRoute($id, $type){
+        $url="http://10.153.144.218/session-api/";
+        $link = "http://10.153.144.218/session-api/notary-offices/file/"."$id/$type";
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);                
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+        $route = curl_exec($ch);
+        $error =curl_error($ch);
+        curl_close($ch);
+        $route=json_decode($route);
+        return $url."/".$route->response;
+        
+  
+    }
+
+    public function updateStatus(Request $request){
+      try { 
+           
+        $solicitudTicket = $this->ticket->where('id' , $request->id)
+        ->update(['status'=> $request->status]);
+
+      } catch (\Exception $e) {
+          $error = $e;
+      }  
+      if ($error) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus"
+          ]);
+      }else { 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Estatus actualizado",
+          ]);
+      }    
+    }
+    public function getmotivos(){
+      try{
+        $motivos = $this->motivos->all();        
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener motivos"
+        ]);   
+      }
+  
+      return json_encode($motivos);
+    }
+
+      public function createsolicitudMotivos(Request $request){
+      try{
+        $solicitudesMotivos= $this->solicitudesMotivos->create([
+          "motivo_id"=> $request->motivo_id,
+          "solicitud_catalogo_id"=> $request->solicitud_catalogo_id
+
+        ]); 
+
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud motivo agregado"
+        ]);      
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - Crear/editar solicitudes motivos '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error"
+          ]); 
+      }
+  
+    }
+
+    public function getSolicitudesMotivos($solicitud_catalogo_id=""){
+      try{
+        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'solicitudes_motivo.solicitud_catalogo_id', 'motivos.motivo')
+        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id');
+
+        if($solicitud_catalogo_id){
+          $solicitudesMotivos->where('solicitudes_motivo.solicitud_catalogo_id', $solicitud_catalogo_id);
+        }
+        $solicitudesMotivos=$solicitudesMotivos->get();
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al obtener motivos"
+        ]);   
+      }
+  
+      return json_encode($solicitudesMotivos);
+    }
+    public function deleteSolicitudMotivo(Request $request){
+      try{
+        $solicitudesMotivosDelete = $this->solicitudesMotivos
+        ->where("motivo_id", $request->motivo_id)
+        ->where("solicitud_catalogo_id", $request->solicitud_catalogo_id)
+        ->delete();
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error eliminar: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al eliminar solicitud motivos"
+        ]);   
+      }
+    }
+ 
 }
+

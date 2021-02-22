@@ -95,7 +95,8 @@
             <div class="modal-body">
               <div class="tabbable-line boxless tabbable-reversed">
 						<!--<form class="horizontal-form">-->
-							<input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">
+              <input hidden="true" type="text" name="idupdate" id="idupdate" class="idupdate">
+							<input hidden="true" type="text" name="identidadtramite" id="identidadtramite" class="identidadtramite">
 											<div class="form-body">
 												
 												<div class="row">
@@ -952,19 +953,20 @@
          console.log("Error al Cargar select Option Limite Referencia");  });
     
 	}
-  function OperacionTramite(id_)
+  function OperacionTramite(id_,id_entidadtramite_)
   {
     document.getElementById('idupdate').value=id_;
+    document.getElementById('identidadtramite').value=id_entidadtramite_;
     $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-Find-where') }}",
-           data: { id:id_, _token: '{{ csrf_token() }}' }
+           data: { id:id_,id_entidadtramite:id_entidadtramite_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
             
         var Resp=$.parseJSON(response);
         $.each(Resp, function(i, item) { 
-        $("#familia").val(item.familia_id).change(); 
+        
         document.getElementById('descripcion').value=item.descripcion;
         document.getElementById('origen').value=item.origen;
         document.getElementById('gpo').value=item.gpm;
@@ -972,8 +974,12 @@
         document.getElementById('gpmdescripcion').value=item.descripcion_gpm;          
         $("#limitereferencia").val(item.limitereferencia).change();
         $("#tiporeferencia").val(item.tiporeferencia).change();
-        chgopt(item.entidad_id);        
-       console.log(item.entidad_id);
+        if(id_entidadtramite_!=null || id_entidadtramite_!="null")
+        {$("#familia").val(item.familia_id).change(); 
+        chgopt(item.entidad_id);  }else{
+          $("#familia").val("limpia").change();
+        }      
+       //console.log(item.entidad_id);
        
         });
         
@@ -1103,12 +1109,13 @@
     var limitereferencia_=$("#limitereferencia").val();
     var tiporeferencia_=$("#tiporeferencia").val();
     var entidad_=$("#entidadfamilia").val();
+    var id_entidadtramite_=$("#identidadtramite").val();
 
     var id_=$("#idupdate").val();
     $.ajax({
            method: "POST",
            url: "{{ url('/tipo-servicio-update') }}",
-           data: { id:id_,descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad:entidad_, _token: '{{ csrf_token() }}' }
+           data: { id:id_,descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad_id:entidad_,id_entidadtramite:id_entidadtramite_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
      
@@ -1160,19 +1167,22 @@
          var Resp=$.parseJSON(response);
          var orig="";
          var desc="";
+         var entid="";
          $("#table_2").remove();
          $("#table_1").append("<div class='portlet-body' id='table_2'><div class='row'> <div class='col-md-1'> <div class='form-group'> <button class='btn green' data-toggle='modal' href='#static2'>Agregar</button> </div>     </div> <div class='col-md-2'><div class='form-group'> <button class='btn green' data-toggle='modal' href='#static3'>Actulizar por Entidad</button> </div></div> <div class='col-md-9 text-right'><div class='form-group'> <button class='btn blue' onclick='GuardarExcel()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div>  <span class='help-block'>&nbsp;</span>   <table class='table table-hover' id='sample_2'>   <thead>   <tr> <th>&nbsp;Entidad&nbsp;</th>  <th>Servicio</th>    <th>Origen URL</th>  <th>Descripcion gpm</th>  <th>Tipo Referencia</th>  <th>Limite Referencia</th> <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </th> </tr>  </thead><tbody> <tr> <td><p>Cargando...</p></td> </tr></tbody></table></div>");
          $("#sample_2 tbody tr").remove();
         $.each(Resp, function(i, item) {
-           
+           if(item.Entidad==null || item.Entidad=="null")
+           {  entid="N/A";  }else{
+            entid=item.Entidad;    }
             $("#sample_2 tbody").append("<tr>"
-            +"<td>"+item.Entidad+"</td>"
+            +"<td>"+entid+"</td>"
             +"<td>"+item.Tipo_Descripcion+"</td>"
             +"<td>"+item.Origen_URL+"</td>"
             +"<td>"+item.descripcion_gpm+"</td>"
             +"<td>"+item.tiporeferencia+"</td>"
             +"<td>"+item.limitereferencia+"</td>"
-            +"<td><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\')\"><i class='fa fa-pencil'></i></a>&nbsp;<a class='btn btn-icon-only green' href='#large' data-toggle='modal' data-original-title='' title='Calculo de Conseptos' onclick=\"CalculoConsepto(\'"+item.id+"\')\"><i class='fa fa-cogs'></i></a>&nbsp;<a class='btn btn-icon-only grey' href='#modalSubsidio' data-toggle='modal' data-original-title='' title='Subsidio' onclick=\"CalculoSubsidio(\'"+item.id+"\')\"><i class='fa fa-eye'></i></a></td>"
+            +"<td class='text-center'><a class='btn btn-icon-only blue' href='#static2' data-toggle='modal' data-original-title='Editar' title='Editar' onclick=\"OperacionTramite(\'"+item.id+"\',\'"+item.id_entidadtramite+"\')\"><i class='fa fa-pencil'></i></a></td>"
             +"</tr>");
             /*<a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick=\"deletetramite(\'"+item.id+"\')\"><i class='fa fa-minus'></i></a>*/
        
@@ -1789,6 +1799,8 @@
     document.getElementById('origen').value="";
     document.getElementById('descripcion').value="";
     document.getElementById('idupdate').value="";
+    document.getElementById('identidadtramite').value="";
+
   }
   function limpiar_modal() {
     $("#tiporeferencia2").val("limpia").change();
