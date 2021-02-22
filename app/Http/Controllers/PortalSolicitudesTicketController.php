@@ -80,36 +80,45 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function registrarSolicitud(Request $request){
       $name= \Request::route()->getName();
-      if($name=="RegistrarSolicitud"){
-        $status=99;
-      }else{
+      if($name=="RegistrarSolicitudTemporal"){
         $status=80;
+      }else{
+        $status=99;
+
       }
+      // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
-      $solicitantes = $request->solicitantes; 
+      $info = json_decode($request->info);
+
+      if($request->has("solicitantes") && !$request->has("enajenantes")){
+        $datosrecorrer= $request->solicitantes; 
+        $data = 1;
+      }else if($request->has("enajenantes")){
+        $datosrecorrer= $request->enajenantes;     
+        $data = 2;
+      }
+      
       $clave = $request->clave;
       
       $user_id = $request->user_id;
-      $solicitantes = json_decode($solicitantes);
-      $info = json_decode($request->info);
+      $datosrecorrer = json_decode($datosrecorrer);
       // $info = $request->info;
 
       $ids = [];
-      try { 
+      // try { 
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-          if(!empty($solicitantes)){
-            $ids_entrada = array_column($solicitantes, 'id');
+          if(!empty($datosrecorrer)){
+            $ids_entrada = array_column($datosrecorrer, 'id');
             $ids_eliminar = array_diff($ids_originales, $ids_entrada);
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
-            $eliminar_solicitantes = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+            $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
 
-            foreach($solicitantes as $key => $value){
-              $info->solicitante=$value;
-              // $info["solicitante"]=$value;  
+            foreach($datosrecorrer as $key => $value){
+              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
@@ -159,15 +168,14 @@ class PortalSolicitudesTicketController extends Controller
           }
 
         }else{
-          if(!empty($solicitantes)){
+          if(!empty($datosrecorrer)){
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-            $ids_entrada = array_column($solicitantes, 'id');
+            $ids_entrada = array_column($datosrecorrer, 'id');
             $ids_eliminar = array_diff($ids_originales, $ids_entrada);
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
-            $eliminar_solicitantes = $this->ticket->whereIn('id', $ids_eliminar)->delete();
-            foreach($solicitantes as $key => $value){              
-              $info->solicitante=$value;
-              // $info["solicitantes"]=$value;  
+            $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+            foreach($datosrecorrer as $key => $value){              
+              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
@@ -216,13 +224,13 @@ class PortalSolicitudesTicketController extends Controller
           }
         }  
         
-      } catch (\Exception $e) {
-        $error = [
-            "Code" => "400",
-            "Message" => "Error al guardar la solicitud"
-        ];
+      // } catch (\Exception $e) {
+      //   $error = [
+      //       "Code" => "400",
+      //       "Message" => "Error al guardar la solicitud"
+      //   ];
     
-      }
+      // }
       if($error) return response()->json($error);
 
 
@@ -265,16 +273,23 @@ class PortalSolicitudesTicketController extends Controller
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         if($relation){
           $notary_id = $relation->notary_office_id;
-          $notary_offices=  $this->notary->where('id', $notary_id)->first()->toArray();
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get(); 
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+          // $notary_offices=  $this->notary->where('id', $notary_id)->get()->toArray();
+         
+          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id');
+          }])->get()->toArray();
         }else{
-          $notary_offices=null;
+            
+          $solicitudes = PortalSolicitudesTicket::where('user_id', $users)->where('status', 99)
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id');
+          }])->get()->toArray();
         }
       
 
-        $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)
-        ->with(['catalogo' => function ($query) {
-          $query->select('id', 'tramite_id');
-        }])->get()->toArray();
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -319,7 +334,7 @@ class PortalSolicitudesTicketController extends Controller
   
         }
 
-        $response["notary_offices"]=$notary_offices;
+        // $response["notary_offices"]=$notary_offices;
         $response["tramites"] =$tmts;
   
         return $response;
@@ -894,7 +909,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
   }
-
+ 
 
     
 }
