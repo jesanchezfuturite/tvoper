@@ -39,7 +39,7 @@
         </div>
         <div class="portlet-body">
         <div class="row">
-          <div class="col-md-2 col-ms-12">
+          <!---<div class="col-md-2 col-ms-12">
             <div class="form-group">
               <label class="control-label">Comunidades</label>
               <span class="help-block">(Selecciona)</span> 
@@ -51,7 +51,7 @@
                   <option value="0">-------</option>
                 </select>
               </div>
-            </div>            
+            </div> -->           
           <div class="col-md-3 col-ms-12">
             <div class="form-group">
                 <label >Notarias Registrados </label>  
@@ -508,18 +508,21 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row"hidden="true">
           <div class="col-md-12">
             <div class="col-md-6">
               <div class="form-group">
                 <label >Tipo</label>                                                       
-                <select id="itemsTipoUser" class="select2me form-control" >
-                  <option value="0">-------</option>
-                  <option value="fisica">Fisica</option>
-                  <option value="moral">Moral</option>
+                <select id="itemsTipoUser" class="select2me form-control" >                  
+                  <option value="fisica">Fisica</option>                  
                 </select>
              </div>
             </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
             <div class="col-md-6"> 
               <div class="form-group"> 
                 <label >Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
@@ -530,11 +533,6 @@
                 </div>
               </div> 
             </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            
             <div class="col-md-6"> 
               <div class="form-group"> 
                 <label >Permiso</label>
@@ -600,9 +598,11 @@
   jQuery(document).ready(function() {
      $(".perfilesHide").css("display", "none");
     //$(".iDocument").css("display","none");
+    changeComunidad();
     TableManaged.init();
     ItemsTramite();
     ItemsPermisos();
+
     
   });
   function getBase64SAT(file) {
@@ -645,8 +645,9 @@ function downloadPdf(file)
 }
 function changeComunidad()
 {
-  var comunidad=$("#itemsConfigUser").val();
-  $("#itemsNotario").val("0").change();
+  //var comunidad=$("#itemsConfigUser").val();
+  var comunidad="4";
+  //$("#itemsNotario").val("0").change();
   if(comunidad=="0")
   {
     $("#itemsNotario option").remove();
@@ -701,12 +702,12 @@ function changeComunidad()
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#itemsCofigNotario option").remove();
-            $("#itemsConfigUser option").remove();
+            //$("#itemsConfigUser option").remove();
             $('#itemsCofigNotario').append("<option value='0'>------</option>");
-            $('#itemsConfigUser').append("<option value='0'>------</option>");
+            //$('#itemsConfigUser').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
                 $('#itemsCofigNotario').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
-                $('#itemsConfigUser').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+                //$('#itemsConfigUser').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
             });
         })
         .fail(function( msg ) {
@@ -887,7 +888,8 @@ function changeComunidad()
   function changeNotario()
   {
     var id=$("#itemsNotario").val();
-    var com=$("#itemsConfigUser").val();
+    //var com=$("#itemsConfigUser").val();
+    var com=4;
     if(id=="0")
     {
       //$(".iDocument").css("display","none");
@@ -1029,7 +1031,8 @@ function changeComunidad()
     var id_notary=$("#itemsNotario").val();
     var id_user=$("#idperfil").val();
       var TipoUser=$("#itemsTipoUser").val();
-      var itemsConfigUser=$("#itemsConfigUser").val();
+      //var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsConfigUser=4;
       var itemsPermiso=$("#itemsPermiso").val();
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
@@ -1077,15 +1080,17 @@ function changeComunidad()
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      var itemsConfigUser=$("#itemsConfigUser").val();
+      //var itemsConfigUser=$("#itemsConfigUser").val();
+      /*else if(itemsConfigUser =='0'){
+        Command: toastr.warning("Campo Comunidades, requerido!", "Notifications") 
+      }*/
+      var itemsConfigUser=4;
       var itemsPermiso=$("#itemsPermiso").val();
 
           emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
-      }else if(itemsConfigUser =='0'){
-        Command: toastr.warning("Campo Comunidades, requerido!", "Notifications") 
       }else if(users.length < 1){
         Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
       }else if (!emailRegex.test(emailUser)) {
@@ -1126,7 +1131,8 @@ function changeComunidad()
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      var itemsConfigUser=$("#itemsConfigUser").val();
+      //var itemsConfigUser=$("#itemsConfigUser").val();
+      var itemsConfigUser=4;
       var itemsPermiso=$("#itemsPermiso").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
