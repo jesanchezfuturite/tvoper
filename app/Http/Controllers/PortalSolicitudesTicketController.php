@@ -104,7 +104,6 @@ class PortalSolicitudesTicketController extends Controller
       $clave = $request->clave;
       
       $user_id = $request->user_id;
-      $datosrecorrer = json_decode($datosrecorrer);
       // $info = $request->info;
 
       $ids = [];
@@ -112,6 +111,8 @@ class PortalSolicitudesTicketController extends Controller
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($datosrecorrer)){
+            $datosrecorrer = json_decode($datosrecorrer);
+
             $ids_entrada = array_column($datosrecorrer, 'id');
             $ids_eliminar = array_diff($ids_originales, $ids_entrada);
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
@@ -169,6 +170,7 @@ class PortalSolicitudesTicketController extends Controller
 
         }else{
           if(!empty($datosrecorrer)){
+            $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
             $ids_entrada = array_column($datosrecorrer, 'id');
             $ids_eliminar = array_diff($ids_originales, $ids_entrada);
@@ -278,14 +280,20 @@ class PortalSolicitudesTicketController extends Controller
           // $notary_offices=  $this->notary->where('id', $notary_id)->get()->toArray();
          
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
-          ->where('en_carrito', 1)
+          ->where(function ($query) {
+              $query->where('en_carrito', '=', 1)
+                    ->orWhere('en_carrito', '=', null);
+          })
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get()->toArray();
         }else{
             
-          $solicitudes = PortalSolicitudesTicket::where('user_id', $users)->where('status', 99)
-          ->where('en_carrito', 1)
+          $solicitudes = PortalSolicitudesTicket::where('user_id', $users)->where('status', 99)          
+          ->where(function ($query) {
+            $query->where('en_carrito', '=', 1)
+                  ->orWhere('en_carrito', '=', null);
+          })
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get()->toArray();
