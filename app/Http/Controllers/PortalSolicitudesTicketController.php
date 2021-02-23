@@ -940,7 +940,7 @@ class PortalSolicitudesTicketController extends Controller
 
   public function guardarCarrito($id, $status){
       try{
-      $solicitudTicket = $this->ticket->whereIn('id',$id)
+      $solicitudTicket = $this->ticket->where('id',$id)
       ->update(['en_carrito'=>$status]);
 
       return json_encode(
