@@ -287,6 +287,7 @@ class PortalSolicitudesTicketController extends Controller
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get()->toArray();
+          
         }else{
             
           $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)          
