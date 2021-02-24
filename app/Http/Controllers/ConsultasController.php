@@ -19,6 +19,11 @@ use App\Repositories\PagossolicitudRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 
+/*agrego esto para complementar la consulta necesaria*/
+use App\Repositories\MetodopagoRepositoryEloquent;
+use App\Repositories\ProcessedregistersRepositoryEloquent;
+
+
 class ConsultasController extends Controller
 {
     /**
@@ -37,6 +42,11 @@ class ConsultasController extends Controller
     protected $usuarioentidaddb;
     protected $oper_transaccionesdb;
     protected $pagossolicituddb;
+    protected $metodospago;
+
+    protected $users_entidad;
+    protected $list_mp;
+    protected $conciliacion;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -51,21 +61,129 @@ class ConsultasController extends Controller
         ApplicableSubjectRepositoryEloquent $applicablesubjectdb,
         UsuariodbentidadRepositoryEloquent $usuarioentidaddb,
         TransaccionesRepositoryEloquent $oper_transaccionesdb,
-        PagossolicitudRepositoryEloquent $pagossolicituddb
+        PagossolicitudRepositoryEloquent $pagossolicituddb,
+        MetodopagoRepositoryEloquent $metodospago,
+        ProcessedregistersRepositoryEloquent $conciliacion
 
     )
     {
-        $this->tiposerviciodb=$tiposerviciodb;
-        $this->partidasdb=$partidasdb;
-        $this->conceptscalculationdb=$conceptscalculationdb;
-        $this->conceptsubsidiesdb=$conceptsubsidiesdb;
-        $this->umahistorydb=$umahistorydb;
-        $this->currenciesdb=$currenciesdb;
-        $this->applicablesubjectdb=$applicablesubjectdb;
-        $this->usuarioentidaddb=$usuarioentidaddb;
-        $this->oper_transaccionesdb=$oper_transaccionesdb;
-        $this->pagossolicituddb=$pagossolicituddb;
+        $this->tiposerviciodb           = $tiposerviciodb;
+        $this->partidasdb               = $partidasdb;
+        $this->conceptscalculationdb    = $conceptscalculationdb;
+        $this->conceptsubsidiesdb       = $conceptsubsidiesdb;
+        $this->umahistorydb             = $umahistorydb;
+        $this->currenciesdb             = $currenciesdb;
+        $this->applicablesubjectdb      = $applicablesubjectdb;
+        $this->usuarioentidaddb         = $usuarioentidaddb;
+        $this->oper_transaccionesdb     = $oper_transaccionesdb;
+        $this->pagossolicituddb         = $pagossolicituddb;
+        $this->metodospago              = $metodospago;
+        $this->conciliacion             = $conciliacion;
+
+        $this->loadUserEntities();
+        $this->loadMetodosPago();
+        
     }
+
+    /**
+     * loadUserEntities. regresa los usuarios de la tabla
+     *
+     * @param ninguna
+     *
+     * @return array()
+     *
+     */
+    private function loadUserEntities()
+    {
+        
+        $res = array();
+
+        $info = $this->usuarioentidaddb->all();
+
+        foreach($info as $i)
+        {
+            $res []= array(
+                "us"    => $i->usuariobd,
+                "en"    => $i->id_entidad
+            );
+        }
+
+        $this->users_entidad = $res;
+    }
+
+    /**
+     * loadMetodoPago. Regresa los metodos de pagos registrados en el sistema
+     *
+     * @param ninguna
+     *
+     * @return array()
+     *
+     */
+
+    private function loadMetodosPago()
+    {
+        
+        $res = array();
+
+        $info = $this->metodospago->all();
+
+        foreach($info as $i)
+        {
+            $res [$i->id]= $i->nombre;
+        }
+
+        $this->list_mp = $res;
+    }
+    /**
+     * checkEntity. aqui regresamos cual es el id de la entidad 
+     *
+     * @param entidad
+     *
+     * @return integer if 0 la entidad no existe
+     *
+     */
+    private function checkEntity($entidad)
+    {   
+        foreach($this->users_entidad as $name)
+        {
+            if(strcmp($name["us"],$entidad) == 0)
+            {
+                return (integer)$name["en"];
+            }
+        }
+
+        return 0;
+
+    }
+
+    /**
+     * obtenerfechaConciliacion. obtener la fecha en que se concilio un documento  
+     *
+     * @param entidad
+     *
+     * @return integer if 0 la entidad no existe
+     *
+     */
+    private function obtenerfechaConciliacion($referencia)
+    {   
+        $info = $this->conciliacion->findWhere(
+            [ "referencia" => $referencia ]
+        );
+
+        if($info->count() > 0){
+            foreach($info as $i)
+            {
+                return $i->fecha_ejecucion;
+            }
+        }else{
+
+            return "";
+        }
+
+
+
+    }
+
 
     public function calculoconceptos(Request $request)
     {
@@ -348,44 +466,74 @@ class ConsultasController extends Controller
         //log::info($request);
         $responseJson=array();
         $response=array();
-        try{
-        $user=$request->user;
-        //$entidad=$request->entidad;
-       /*$validator = Validator::make($request->all(), [
-            'user' => 'required',
-            'entidad' => 'required',
-        ]);
-       if ($validator->fails()) {
-            log::info($validator->fails());
-        }else{*/
-            if($user==null)
+
+        try
+        {
+            $user = ( isset($request->user) ) ? $request->user : "externo";
+            
+            $entidad= $this->checkEntity($user);
+
+            if($entidad == 0)
             {
                 $responseJson= $this->reponseVerf('400','user requerido',[]);
+                
                 return response()->json($responseJson);
-            }
-            $userExist=$this->usuarioentidaddb->findWhere(['usuariobd'=>$user]);
-            if($userExist->count()>0)
-            {
-                $response=$this->oper_transaccionesdb->findTransaccionesPagado($user);
-               //log::info('registros: ' . $response->count());
-                if($response<>null)
+
+            }else{
+                
+                // obtener todos los registros que ya se arrojaron
+                $procesados = array();
+
+                $pro = $this->pagossolicituddb->all();
+
+                foreach($pro as $p)
                 {
-                    $responseJson= $this->reponseVerf('202','',$response);
+                    $procesados[]= $p->id_transaccion_motor;
+                }
+
+                $response=$this->oper_transaccionesdb
+                    ->where('entidad',$entidad)
+                    ->where('estatus',0)
+                    ->whereNotIn('id_transaccion_motor', $procesados)->get();
+               
+               //log::info('registros: ' . $response->count());
+                if($response->count() > 0)
+                {
+                    $temp = array();
+                    foreach($response as $r)
+                    {   
+                        $temp[]= array(
+                            "usuario"               => $user,
+                            "entidad"               => $entidad,
+                            "referencia"            => $r->referencia,
+                            "id_transaccion_motor"  => $r->id_transaccion_motor,
+                            "id_transaccion"        => $r->id_transaccion,
+                            "estatus"               => $r->estatus,
+                            "Total"                 => $r->importe_transaccion,
+                            "MetododePago"          => $this->list_mp[$r->metodo_pago_id],
+                            "cve_Banco"             => $r->tipo_pago,
+                            "FechaTransaccion"      => $r->fecha_transaccion,
+                            "FechaPago"             => $r->fecha_pago,
+                            "FechaConciliacion"     => $this->obtenerfechaConciliacion($r->referencia),
+                        );
+                        
+                    }
+
+                    $responseJson= $this->reponseVerf('202','', [ "all" => $temp ] );
                 }else{
                     $responseJson= $this->reponseVerf('202','Sin registros',$response);
                 }
-                
-            }else{
-                $responseJson= $this->reponseVerf('400','usuario no existe',[]);
             }
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
+            dd($e->getMessage());
             $responseJson= $this->reponseVerf('400','ocurrio un error',[]);     
           return  response()->json($responseJson);            
         }
         return response()->json($responseJson);
 
     }
+
     public function PagosVerificados(Request $request)
     { 
         $fecha=Carbon::now()->format('Y-m-d H:m:s');
