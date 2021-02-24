@@ -177,7 +177,7 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){              
-              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value;
+              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value->info;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
@@ -275,18 +275,14 @@ class PortalSolicitudesTicketController extends Controller
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         if($relation){
           $notary_id = $relation->notary_office_id;
-          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get(); 
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->toSql(); 
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
           // $notary_offices=  $this->notary->where('id', $notary_id)->get()->toArray();
          
-          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
-          ->where(function ($query) {
-              $query->where('en_carrito', '=', 1)
-                    ->orWhere('en_carrito', '=', null);
-          })
+          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)->where('en_carrito', '=', 1)          
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
-          }])->get()->toArray();
+          }])->get();
         }else{
             
           $solicitudes = PortalSolicitudesTicket::where('user_id', $users)->where('status', 99)          
