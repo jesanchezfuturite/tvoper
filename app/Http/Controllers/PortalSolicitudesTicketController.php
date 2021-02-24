@@ -277,7 +277,7 @@ class PortalSolicitudesTicketController extends Controller
           $notary_id = $relation->notary_office_id;
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get(); 
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
-          // $notary_offices=  $this->notary->where('id', $notary_id)->get()->toArray();
+          
          
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
