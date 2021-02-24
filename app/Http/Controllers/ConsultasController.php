@@ -519,7 +519,7 @@ class ConsultasController extends Controller
                         
                     }
 
-                    $responseJson= $this->reponseVerf('202','', [ "all" => $temp ] );
+                    $responseJson= $this->reponseVerf('202','',$temp);
                 }else{
                     $responseJson= $this->reponseVerf('202','Sin registros',$response);
                 }
