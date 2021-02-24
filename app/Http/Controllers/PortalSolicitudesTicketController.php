@@ -957,8 +957,29 @@ class PortalSolicitudesTicketController extends Controller
           ]);
       }
 
-
   } 
+
+  
+  public function enCarrito(Request $request){
+    try{
+    $solicitudTicket = $this->ticket->whereIn('id',$request->ids)
+    ->update(['en_carrito'=>$status]);
+
+    return json_encode(
+      [
+        "response" 	=> "Solicitudes en el carrito",
+        "code"		=> 200
+      ]);
+
+    } catch (\Exception $e) {
+      return json_encode(
+        [
+          "response" 	=> "Error al guardar en carrito - " . $e->getMessage(),
+          "code"		=> 402
+        ]);
+    }
+
+} 
 
     
 }
