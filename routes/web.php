@@ -406,6 +406,8 @@ Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketControlle
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
+Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
+
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
