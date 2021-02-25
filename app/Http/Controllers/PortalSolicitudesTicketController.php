@@ -999,6 +999,5 @@ class PortalSolicitudesTicketController extends Controller
     }
 
   } 
-
     
 }
