@@ -356,7 +356,7 @@
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
-                <label for="userNotario">*Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                            
+                <label for="userNotario">*Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                            
                 <input type="text" class="form-control valida-user" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
               </div>
             </div> 
@@ -442,7 +442,7 @@
             <div class="col-md-6"> 
               <div class="form-group">
                 <div class="form-group">
-                <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe de estar compuesto por minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
+                <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
                 <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
               </div>                                           
               </div>
@@ -758,7 +758,8 @@ function changeComunidad()
         method: "get",            
         url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
+        .done(function (response) { 
+        console.log(response);    
             $("#itemsNotario option").remove();
             $('#itemsNotario').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {                
@@ -778,7 +779,7 @@ function changeComunidad()
       url: "{{ url('/notary-offices-roles') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        console.log(response);
+        //console.log(response);
         var resp=$.parseJSON(response);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
@@ -903,11 +904,12 @@ function changeComunidad()
        $("#emailNotario2").focus();
     }else if(itemsCofigNotario =='0'){
       Command: toastr.warning("Campo Comunidad, requerido!", "Notifications") 
-      //$("#telNotario2").focus();
-    }else if(!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario) || userNotario.length < 8){
-       Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres,1 mayuscula, 1 numero! ", "Notifications")
+      //$("#telNotario2").focus();!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario)||
+    }else if(  userNotario.length < 8){
+       Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres", "Notifications")
        $("#userNotario").focus(); 
-    }else if(!/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
+       ///
+    }else if( !/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
         $("#passNotario").focus();      
     }else if(pdfSAT.length==0){ 
@@ -985,9 +987,9 @@ function changeComunidad()
            url: "{{ url('/notary-offices') }}",
            data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-          console.log(response);
+          //console.log(response);
           var resp=$.parseJSON(response);
-          console.log(resp);
+          //console.log(resp);
           if(resp.data=="response"){
             changeComunidad();
             limpiarNot();
@@ -1041,7 +1043,7 @@ function changeComunidad()
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) { 
-          console.log(response);
+          //console.log(response);
           document.getElementById('jsonCode').value=response;            
           var Resp=response;
           addtable();
@@ -1161,7 +1163,7 @@ function changeComunidad()
   }
   function perfilUpdate(json)
   {
-   console.log(json);
+   //console.log(json);
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
     //$("#itemsConfigUser").val(json.config_id).change();
@@ -1255,8 +1257,8 @@ function changeComunidad()
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
-      }else if(users.length < 1){
-        Command: toastr.warning("Campo Usuario, requerido!", "Notifications") 
+      }else if(users.length < 8){
+        Command: toastr.warning("Campo Usuario, mini. 8 caracteres", "Notifications") 
         $("#users").focus();
       }else if (!emailRegex.test(emailUser)) {
         Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications")
@@ -1290,13 +1292,13 @@ function changeComunidad()
             {              
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                console.log("permiso notario");
+                //console.log("permiso notario");
               
             }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                console.log("permiso suplente");
+                //console.log("permiso suplente");
               
             }else{
               updatePerfil();
@@ -1307,13 +1309,13 @@ function changeComunidad()
             {              
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                console.log("permiso notario");
+                //console.log("permiso notario");
               
             }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                console.log("permiso suplente");
+                //console.log("permiso suplente");
               
             }else{
               insertPerfil();
@@ -1364,7 +1366,7 @@ function changeComunidad()
         .done(function (response) { 
           response=$.parseJSON(response);
              var error=response.error;
-             console.log(error);
+             //console.log(error);
              if(response.data=="error")
              {
                Command: toastr.warning(error.message, "Notifications")
