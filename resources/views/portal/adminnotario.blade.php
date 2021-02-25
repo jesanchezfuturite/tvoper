@@ -31,7 +31,8 @@
                 <i class="fa fa-bank"></i>Agregar Notaria
             </div>
             <div class="tools">                
-              <a href="#portlet-notario" data-toggle="modal" class="config" data-original-title="" title="Nueva Notaria"></a>
+              <a href="#portlet-notario" data-toggle="modal" class="config" data-original-title=""onclick="newNotary()" title="Nueva Notaria"></a>
+              <a href="#portlet-notario" data-toggle="modal" class="tooltips" data-original-title="" title="Editar Notaria" onclick="editNotary()"><i class='fa fa-pencil edit-notary' style="color:#d7eaf8 !important;"></i></a>
              <!-- <a id="Remov" href="javascript:;" data-original-title="" title="">
                 <i class='fa fa-remove' style="color:#d7eaf8 !important;"></i>
               </a>--->
@@ -112,7 +113,7 @@
           <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Administrar Usuarios</div>
       </div>
       <div class="tools">                
-        <a href="#portlet-perfil" data-toggle="modal" class="config" data-original-title="" title="Nuevo Perfil"></a>
+        <a href="#portlet-notario" data-toggle="modal" class="config" data-original-title="" title="Nuevo Perfil" onclick="configUser()"></a>
        <!-- <a id="Remov" href="javascript:;" data-original-title="" title=""><i class='fa fa-remove' style="color:#d7eaf8 !important;"></i></a>-->
       </div>           
     </div>
@@ -154,13 +155,14 @@
 
 <!----------------------------------------- Nuevo Notario-------------------------------------------->
 <div class="modal fade" id="portlet-notario" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-  <div class="modal-dialog" style="width: 80%">
+  <div class="modal-dialog" style="width: 75%">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarNot()"></button>
-        <h3 class="modal-title">Configuración Notaria</h3>        
+        <h3 class="modal-title" id="encabezado_modal">Configuración Notaria</h3>        
       </div>
       <div class="modal-body">
+      <div class="section-notary">
         <div class="row">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -180,7 +182,7 @@
               </div>                                           
               </div>
             </div>
-            <div class="col-md-3"> 
+            <div class="col-md-4"> 
               <div class="form-group">
                 <label for="itemsEntidadNot">* Entidad Federativa</label>  
                 <select id="itemsEntidadNot" class="select2me form-control" onchange="changeEntidades()">
@@ -201,7 +203,7 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-          <div class="col-md-4"> 
+          <div class="col-md-5"> 
               <div class="form-group">
                 <label for="calleNotario"> * Calle</label>                                             
                 <input type="text" class="form-control" name="calleNotario" id="calleNotario" placeholder="Ingrese Calle...">
@@ -230,7 +232,7 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-4"> 
+            <div class="col-md-5"> 
               <div class="form-group">
                 <div class="form-group">
                 <label for="distritoNotario">* Colonia</label>                                             
@@ -267,87 +269,95 @@
                        
           </div>
         </div>
-        <div class="row">
+      </div> 
+        <div class="row title-user">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
                 <h4 class="form-section"><strong>Datos del notario titular</strong></h4>
-
+                <input hidden="true" type="text" name="idperfil" id="idperfil">
               </div>
             </div>
           </div>
         </div>
+        <div class="section-users">
         <div class="row">
-          <div class="col-md-12">                       
-            <div class="col-md-4">
+          <div class="col-md-12">             
+            <div class="col-md-4"> 
               <div class="form-group">
-                <label for="nameNotario">* Nombre (s)</label>                                                       
-                <input type="text" class="form-control" name="nameNotario" id="nameNotario" placeholder="Ingrese Nombre..."> 
+                <label for="nameUser">* Nombre(s)</label>                                             
+                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
               </div>
             </div>
-             <div class="col-md-4"> 
+            <div class="col-md-4"> 
               <div class="form-group">
-                <label for="apPatNotario">* Apellido Paterno</label>                                             
-                <input type="text" class="form-control" name="apPatNotario" id="apPatNotario" placeholder="Ingrese Apellido Paterno...">
+                <label for="apePatUser">* Apellido Paterno</label>                                             
+                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
-                <label for="apMatNotario">* Apellido Materno</label>                                                       
-                <input type="text" class="form-control" name="apMatNotario" id="apMatNotario" placeholder="Ingrese Apellido Materno...">
+                <label for="apeMatUser">* Apellido Materno</label>                                                       
+                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
              </div>
             </div>
           </div>
         </div>
-         <div class="row">
+        <div class="row">
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
-                <label for="curpNotario">* CURP</label>                                             
-                <input type="text" class="form-control" name="curpNotario" id="curpNotario" placeholder="Ingrese Curp..."onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpNot()">
-                 <span id="curpNot" class="help-block"></span>
+                <label for="curpUser">* CURP</label>                                             
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                 <span id="curpUs" class="help-block"></span>
               </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
-                <label for="rfcNotario">* RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcNotario" id="rfcNotario" placeholder="Ingrese RFC..."onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCNot()">
-                 <span id="rfcNot" class="help-block"></span>
+                <label for="rfcUser">* RFC</label>                                                       
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
+                 <span id="rfcUs" class="help-block"></span>
              </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4"> 
               <div class="form-group">
-                <label for="telNotario2">* Numero de Teléfono</label>                                                       
-                <input type="text" class="form-control valida-numeros"  maxlength = "10"name="telNotario2" id="telNotario2" placeholder="Ingrese Numero de Teléfono..."> 
-            </div>
+                <label for="telUser">* Número de Teléfono</label>                                             
+                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
+              </div>
             </div>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-12">            
-            <div class="col-md-4">
+          <div class="col-md-12">          
+            <div class="col-md-4"> 
               <div class="form-group">
-                <label for="emailNotario2">* Correo Electrónico</label>                                                       
-                <input type="text" class="form-control" name="emailNotario2" id="emailNotario2" placeholder="Ingrese Correo Electrónico...">
-                <span id="emailNot2" class="help-block"></span>
+                <label for="emailUser">* Correo Electrónico</label>                                             
+                <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                <span id="emailOK" class="help-block"></span>                                            
+              </div>
+            </div> 
+            <div class="col-md-4" hidden="true">
+              <div class="form-group">
+                <label for="itemsTipoUser">* Tipo</label>                                                       
+                <select id="itemsTipoUser" class="select2me form-control" >                  
+                  <option value="fisica">Fisica</option>                  
+                </select>
              </div>
             </div>
-            <div class="col-md-4"> 
-              <div class="form-group"> 
-                   <div class="form-group">
+            <div class="col-md-4 input-comunidad"> 
+              <div class="form-group">
                 <label for="itemsCofigNotario">* Comunidad</label> 
                    <select id="itemsCofigNotario" class="select2me form-control" disabled="true">
                   <option value="0">-------</option>
-                </select>
-              </div>                                
+                </select>                                
               </div>
             </div>
-            <div class="col-md-3" hidden="true">
-              <div class="form-group">
-                <label for="itemsTipoNotario">* Tipo</label>                                                       
-                <select id="itemsTipoNotario" class="select2me form-control" >
-                  <option value="fisica">Fisica</option>
-                </select>            
+            <div class="col-md-4 input-permiso"> 
+              <div class="form-group"> 
+                <label for="itemsPermiso">* Permiso</label>
+                <select id="itemsPermiso" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>                               
               </div>
             </div>
           </div>
@@ -356,23 +366,27 @@
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
-                <label for="userNotario">*Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                            
-                <input type="text" class="form-control valida-user" name="userNotario" id="userNotario" placeholder="Ingrese Usuario...">
-              </div>
-            </div> 
-            <div class="col-md-4"> 
-              <div class="form-group">
-                <label for="passNotario">* Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                             
-                <div class="input-icon right">
-                    <i  id="pass2"class="fa fa-eye-slash" onclick="onechange2()"  style="cursor:pointer;color: black;"></i>
-                    <input type="password" name="passNotario"id="passNotario" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña..." value="">                   
-                </div>
-                <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordNot()"> Generar</a></span>                           
+                <div class="form-group">
+                <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
+                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
+              </div>                                           
               </div>
             </div>
+            <div class="col-md-4"> 
+              <div class="form-group"> 
+               <label class="required_pass">*</label> <label for="password">Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
+                <div class="input-icon right">
+                    <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
+                    <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
+                    <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
+                </div>
+              </div> 
+            </div>
+            
           </div>
         </div>
-        <div class="row">
+      </div>
+        <div class="row section-archivos">
           <div class="col-md-12">
             <div class="col-md-4"> 
               <div class="form-group">
@@ -415,7 +429,10 @@
         <div class="row">
           <div class="col-md-12">             
             <div class="form-group">
-              <button type="submit" class="btn blue" onclick="saveNotario()"><i class="fa fa-check"></i> Guardar</button>
+              <span class="help-block">&nbsp;</span>
+              <button type="submit" class="btn blue btn-save-Not" onclick="saveNotario()"><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue btn-upd-Not" onclick="updateNotaria()"><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue btn-saveup-User" onclick="saveUpdatePerf()"><i class="fa fa-check"></i> Guardar</button>
             </div>
           </div>
         </div>
@@ -426,143 +443,6 @@
     </div>
   </div>
 </div>
-<!----------------------------------------- Nuevo usuario-------------------------------------------->
-<div class="modal fade" id="portlet-perfil" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-  <div class="modal-dialog  modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarPerf()"></button>
-        <h4 class="modal-title">Configuración Usuario</h4>
-        <input hidden="true" type="text" name="idperfil" id="idperfil">
-      </div>
-      <div class="modal-body">
-        <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
-                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
-              </div>                                           
-              </div>
-            </div>
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <div class="form-group">
-                <label for="emailUser">* Correo Electrónico</label>                                             
-                <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
-                <span id="emailOK" class="help-block"></span>
-              </div>                                            
-              </div>
-            </div>            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-             <div class="col-md-6"> 
-              <div class="form-group">
-                <label for="telUser">* Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
-              </div>
-            </div>
-             <div class="col-md-6"> 
-              <div class="form-group"> 
-                   <div class="form-group">
-                <label for="nameUser">* Nombre(s)</label>                                             
-                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
-              </div>                                
-              </div>
-            </div>            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <label for="apePatUser">* Apellido Paterno</label>                                             
-                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="apeMatUser">* Apellido Materno</label>                                                       
-                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
-             </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group">
-                <label for="curpUser">* CURP</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
-                 <span id="curpUs" class="help-block"></span>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="rfcUser">* RFC</label>                                                       
-                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
-                 <span id="rfcUs" class="help-block"></span>
-             </div>
-            </div>
-          </div>
-        </div>
-        <div class="row"hidden="true">
-          <div class="col-md-12">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="itemsTipoUser">* Tipo</label>                                                       
-                <select id="itemsTipoUser" class="select2me form-control" >                  
-                  <option value="fisica">Fisica</option>                  
-                </select>
-             </div>
-            </div>
-            
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-6"> 
-              <div class="form-group"> 
-               <label class="required_pass">*</label> <label for="password">Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
-                <div class="input-icon right">
-                    <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
-                    <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
-                    <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
-                </div>
-              </div> 
-            </div>
-            <div class="col-md-6"> 
-              <div class="form-group"> 
-                <label for="itemsPermiso">* Permiso</label>
-                <select id="itemsPermiso" class="select2me form-control" >
-                  <option value="0">-------</option>
-                </select>                               
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <div class="col-md-12">             
-            <div class="form-group">
-              <button type="submit" class="btn blue" onclick="saveUpdatePerf()"><i class="fa fa-check"></i> Guardar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarPerf()">Cerrar</button>
-      </div>
-    </div>
-    </div>
-  </div>
-</div>
-
 <!----------------------------------------- status perfil-------------------------------------------->
 <div id="portlet-deleted" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
@@ -653,6 +533,10 @@
 <script type="text/javascript">
   jQuery(document).ready(function() {
      $(".perfilesHide").css("display", "none");
+     $(".edit-notary").css("display", "none");
+     $(".btn-upd-Not").css("display", "none");
+     $(".btn-saveup-User").css("display", "none");
+     $(".input-permiso").css("display", "none");
     //$(".iDocument").css("display","none");
     changeComunidad();
     findentidades();
@@ -660,8 +544,74 @@
     ItemsComunidad();
     ItemsPermisos();    
   });
+  function newNotary()
+  {
+     $(".section-notary").css("display", "block");
+     $(".title-user").css("display", "block");
+     $(".section-users").css("display", "block");
+     $(".section-archivos").css("display", "block");     
+
+     $(".input-comunidad").css("display", "block");
+     $(".input-permiso").css("display", "none");
+
+     $(".btn-save-Not").css("display", "block");
+     $(".btn-saveup-User").css("display", "none");
+     $(".btn-upd-Not").css("display", "none");
+     document.getElementById("encabezado_modal").innerHTML = "Configuración Notaria"
+  }
+  function editNotary()
+  {
+     $(".section-notary").css("display", "block");
+     $(".title-user").css("display", "none");
+     $(".section-users").css("display", "none");
+     $(".section-archivos").css("display", "block");     
+
+     $(".input-comunidad").css("display", "none");
+     $(".input-permiso").css("display", "none");
+
+     $(".btn-save-Not").css("display", "none");
+     $(".btn-saveup-User").css("display", "none");
+     $(".btn-upd-Not").css("display", "block");
+     document.getElementById("encabezado_modal").innerHTML = "Configuración Notaria"
+  }
+  function configUser()
+  {
+     $(".section-notary").css("display", "none");
+     $(".title-user").css("display", "none");
+     $(".section-users").css("display", "block");
+     $(".section-archivos").css("display", "none");     
+
+     $(".input-comunidad").css("display", "none");
+     $(".input-permiso").css("display", "block");
+
+     $(".btn-save-Not").css("display", "none");
+     $(".btn-saveup-User").css("display", "block");
+     $(".btn-upd-Not").css("display", "none");
+     document.getElementById("encabezado_modal").innerHTML = "Configuración Usuario"
+  }
+  function findCurp()
+  {
+    var curp=$("#curpUser").val();
+   $.ajax({
+        method: "get",            
+        url: "{{ url('/consultar-curp') }}"+"/"+curp,
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {  
+          var resp=$.parseJSON(response); 
+          if(resp.status=="ok")
+          {
+            document.getElementById("nameUser").value=resp.data.nombres;
+            document.getElementById("apePatUser").value=resp.data.apePat;
+            document.getElementById("apeMatUser").value=resp.data.apeMat;
+          }
+
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error consulta curp", "Notifications")   });
+  
+}
   function findentidades()
-{
+  {
   
    $.ajax({
         method: "get",            
@@ -759,11 +709,13 @@ function changeComunidad()
         url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
-        console.log(response);    
+            var ent="";
             $("#itemsNotario option").remove();
             $('#itemsNotario').append("<option value='0'>------</option>");
-            $.each(response, function(i, item) {                
-                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+"</option>");
+            $.each(response, function(i, item) {  
+                if(item.estado==null || item.estado=="null")
+                  {ent="";}else{ent=" - "+item.estado}
+                $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+ent+"</option>");
             });
 
         })
@@ -830,18 +782,17 @@ function changeComunidad()
     var itemsCiudadNot=$("#itemsCiudadNot").val();
     var itemsEntidadNot=$("#itemsEntidadNot").val();
     var codigopostNotario=$("#codigopostNotario").val();
-    var userNotario=$("#userNotario").val();
-    var emailNotario2=$("#emailNotario2").val();
-    var nameNotario=$("#nameNotario").val();
-    var apPatNotario=$("#apPatNotario").val();
-    var apMatNotario=$("#apMatNotario").val();
-    var telNotario2=$("#telNotario2").val();
-    var curpNotario=$("#curpNotario").val();
-    var rfcNotario=$("#rfcNotario").val();
-    var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var passNotario=$("#passNotario").val();
-
-    var itemsCofigNotario=$("#itemsCofigNotario").val();
+    
+    var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var password=$("#password").val();      
+      var nameUser=$("#nameUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var apePatUser=$("#apePatUser").val();      
+      var curpUser=$("#curpUser").val();      
+      var rfcUser=$("#rfcUser").val();
+      //var itemsConfigUser=$("#itemsConfigUser").val();
+      var telUser=$("#telUser").val();
     //var itemsPermisoNotario=$("#itemsPermisoNotario").val();
     var pdf = $("#fileSAT")[0].files[0]; 
     var pdf2 = $("#fileNotario")[0].files[0];
@@ -881,37 +832,33 @@ function changeComunidad()
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
         $("#emailNotario").focus();
-    }else if (nameNotario.length<1) {
-      Command: toastr.warning("Campo Nombre, requerido!", "Notifications") 
-      $("#nameNotario").focus();
-    }else if (apPatNotario.length<1) {
-      Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
-      $("#apPatNotario").focus();
-    }else if (apMatNotario.length<1) {
-      Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
-      $("#apMatNotario").focus();
-    }else if (!curpValida(curpNotario)) {
+    }else if (nameUser.length<1) {
+      Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
+        $("#nameUser").focus();  
+    }else if (apePatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
+        $("#apePatUser").focus(); 
+    }else if (apeMatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
+        $("#apeMatUser").focus(); 
+    }else if (!curpValida(curpUser)) {
        Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-       $("#curpNotario").focus();
-    }else if (rfcNotario.length<12) {
-       Command: toastr.warning("Campo RFC, longitud minima 12!", "Notifications") 
-       $("#rfcNotario").focus();
-    }else if (telNotario2.length<10) {
-       Command: toastr.warning("Segundo Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-       $("#telNotario2").focus();
-    }else if (!emailRegex.test(emailNotario2)) {
-       Command: toastr.warning("Segundo campo Correo Electrónico, formato incorrecto!", "Notifications") 
-       $("#emailNotario2").focus();
-    }else if(itemsCofigNotario =='0'){
-      Command: toastr.warning("Campo Comunidad, requerido!", "Notifications") 
-      //$("#telNotario2").focus();!/[a-z]/.test(userNotario) || !/[A-Z]/.test(userNotario) || !/[0-9]/.test(userNotario)||
-    }else if(  userNotario.length < 8){
-       Command: toastr.warning("Campo Usuario, formato incorrecto, 8 min. caracteres", "Notifications")
-       $("#userNotario").focus(); 
-       ///
-    }else if( !/[a-z]/.test(passNotario) || !/[A-Z]/.test(passNotario) || !/[0-9]/.test(passNotario) || passNotario.length < 8){
+       $("#curpUser").focus(); 
+    }else if (rfcUser.length<13) {
+        Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
+        $("#rfcUser").focus();  
+    }else if (telUser.length<10) {
+        Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
+        $("#telUser").focus(); 
+    }else if (!emailRegex.test(emailUser)) {
+        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications")
+        $("#emailUser").focus(); 
+    }else if(users.length < 8){
+        Command: toastr.warning("Campo Usuario, mini. 8 caracteres", "Notifications") 
+        $("#users").focus();
+    }else if( !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
       Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications") 
-        $("#passNotario").focus();      
+        $("#password").focus();      
     }else if(pdfSAT.length==0){ 
          Command: toastr.warning("Archivo Constancia SAT, Requerido!", "Notifications")
     }else if(pdfNotario.length==0){ 
@@ -936,35 +883,38 @@ function changeComunidad()
     var itemsCiudadNot=$("#itemsCiudadNot").val();
     var itemsEntidadNot=$("#itemsEntidadNot").val();
     var codigopostNotario=$("#codigopostNotario").val();
-    var userNotario=$("#userNotario").val();
-    var emailNotario2=$("#emailNotario2").val();
-    var nameNotario=$("#nameNotario").val();
-    var apPatNotario=$("#apPatNotario").val();
-    var apMatNotario=$("#apMatNotario").val();
-    var telNotario2=$("#telNotario2").val();
-    var curpNotario=$("#curpNotario").val();
-    var rfcNotario=$("#rfcNotario").val();
-    var itemsTipoNotario=$("#itemsTipoNotario").val();
-    var itemsCofigNotario=$("#itemsCofigNotario").val();
+    
     //var itemsPermisoNotario=$("#itemsPermisoNotario").val();
-    var passNotario=$("#passNotario").val();
+    var users=$("#users").val();
+      var emailUser=$("#emailUser").val();
+      var password=$("#password").val();      
+      var nameUser=$("#nameUser").val();
+      var apeMatUser=$("#apeMatUser").val();
+      var apePatUser=$("#apePatUser").val();      
+      var curpUser=$("#curpUser").val();      
+      var rfcUser=$("#rfcUser").val();
+      //var itemsConfigUser=$("#itemsConfigUser").val();
+      var telUser=$("#telUser").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var itemsCofigNotario=$("#itemsCofigNotario").val();
+      var itemsPermiso=$("#itemsPermiso").val();
 
     var base64SAT=$("#base64pdf1").val();
     var base64Notario=$("#base64pdf2").val();
 
    
-    var titular_={username: userNotario,
-    email: emailNotario2,
-    password: passNotario,
-    name: nameNotario,
-    mothers_surname:apMatNotario ,
-    fathers_surname:apPatNotario,
-    curp: curpNotario,
-    rfc: rfcNotario,
-    phone:telNotario2,
-    person_type:itemsTipoNotario,
-    config_id: itemsCofigNotario,
-    role_id: 2 };
+    var titular_={username: users,
+                email: emailUser,
+                password: password,
+                name: nameUser,
+                mothers_surname: apeMatUser,
+                fathers_surname: apePatUser,
+                curp: curpUser,
+                rfc: rfcUser,
+                phone: telUser,
+                person_type: TipoUser,
+                config_id: itemsCofigNotario,
+                role_id: 2 };
 
     var notary_off= {notary_number: numNotario,
       phone: telNotario,
@@ -981,7 +931,7 @@ function changeComunidad()
       notary_constancy_file: base64Notario,
       titular: titular_
       }; 
-    //console.log(notary_off);
+    console.log(notary_off);
     $.ajax({
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
@@ -1026,6 +976,7 @@ function changeComunidad()
     if(id=="0")
     {
       //$(".iDocument").css("display","none");
+      $(".edit-notary").css("display", "none");
       $(".perfilesHide").css("display", "none");
       addtable();
       TableManaged.init();
@@ -1037,13 +988,14 @@ function changeComunidad()
       //$("#itemsNotario").val(0).change();
       return;
     }
+    $(".edit-notary").css("display", "block");
     //$(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) { 
-          //console.log(response);
+          console.log(response);
           document.getElementById('jsonCode').value=response;            
           var Resp=response;
           addtable();
@@ -1090,7 +1042,7 @@ function changeComunidad()
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-perfil' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='javascript:;'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a></td>"
+                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-notario' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='javascript:;'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a></td>"
                 + "<td class='text-center' width='15%'>"+btn_download+"</td>"
                 +"</tr>"
                 );
@@ -1164,6 +1116,7 @@ function changeComunidad()
   function perfilUpdate(json)
   {
    //console.log(json);
+   configUser();
     $("#itemsTipoUser").val("0").change();
     $("#itemsPermiso").val(json.role_id).change();
     //$("#itemsConfigUser").val(json.config_id).change();
@@ -1193,8 +1146,7 @@ function changeComunidad()
     var id_user=$("#idperfil").val();
       var TipoUser=$("#itemsTipoUser").val();
       //var itemsConfigUser=$("#itemsConfigUser").val();
-      var itemsConfigUser=4;
-      var itemsPermiso=$("#itemsPermiso").val();
+      
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -1204,6 +1156,8 @@ function changeComunidad()
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
+      var itemsConfigUser=4;
+      var itemsPermiso=$("#itemsPermiso").val();
       var user_={username: users,
                 email: emailUser,
                 name: nameUser,
@@ -1220,7 +1174,7 @@ function changeComunidad()
            url: "{{ url('/notary-offices-edit-user') }}",
            data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
-             limpiarPerf();
+             limpiarNot();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
 
@@ -1257,15 +1211,6 @@ function changeComunidad()
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
-      }else if(users.length < 8){
-        Command: toastr.warning("Campo Usuario, mini. 8 caracteres", "Notifications") 
-        $("#users").focus();
-      }else if (!emailRegex.test(emailUser)) {
-        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications")
-        $("#emailUser").focus(); 
-      }else if (telUser.length<10) {
-        Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
-        $("#telUser").focus(); 
       }else if (nameUser.length<1) {
         Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
         $("#nameUser").focus();  
@@ -1281,12 +1226,24 @@ function changeComunidad()
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
         $("#rfcUser").focus();  
+      }else if (telUser.length<10) {
+        Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications") 
+        $("#telUser").focus(); 
+      }else if (!emailRegex.test(emailUser)) {
+        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications")
+        $("#emailUser").focus(); 
+      }else if(users.length < 8){
+        Command: toastr.warning("Campo Usuario, mini. 8 caracteres", "Notifications") 
+        $("#users").focus();
       }else if(itemsPermiso =='0'){
         Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
+        console.log(id_NotSuplente +"-"+id_NotTitular+"-"+itemsPermiso+"-"+permisoEdit);
         if(id.length>0)
           {
-            if(id==id_NotSuplente || id==id_NotTitular && itemsPermiso==permisoEdit){
+            if(id==id_NotSuplente && itemsPermiso==permisoEdit){
+              updatePerfil();
+            }else if(id==id_NotTitular && itemsPermiso==permisoEdit){
               updatePerfil();
             }else if(itemsPermiso==2 && id_NotTitular.length>0)
             {              
@@ -1305,13 +1262,7 @@ function changeComunidad()
             }
             
           }else{
-            if(itemsPermiso==2 && id_NotTitular.length>0)
-            {              
-                $('#portlet-desactivaCuenta').modal('show');
-                $('#lbl_permiso').text(namePermiso);
-                //console.log("permiso notario");
-              
-            }else if(itemsPermiso==5 && id_NotSuplente.length>0)
+            if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
@@ -1326,18 +1277,19 @@ function changeComunidad()
   function insertPerfil()
   {
       var id_notary=$("#itemsNotario").val();
-      var TipoUser=$("#itemsTipoUser").val();
+      
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
-      var telUser=$("#telUser").val();
+      var password=$("#password").val();      
       var nameUser=$("#nameUser").val();
-      var apePatUser=$("#apePatUser").val();
       var apeMatUser=$("#apeMatUser").val();
-      var curpUser=$("#curpUser").val();
+      var apePatUser=$("#apePatUser").val();      
+      var curpUser=$("#curpUser").val();      
       var rfcUser=$("#rfcUser").val();
-      var password=$("#password").val();
       //var itemsConfigUser=$("#itemsConfigUser").val();
-      var itemsConfigUser=4;
+      var telUser=$("#telUser").val();
+      var TipoUser=$("#itemsTipoUser").val();
+      var itemsConfigUser=$("#itemsCiudadNot").val();;
       var itemsPermiso=$("#itemsPermiso").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications")
@@ -1365,14 +1317,14 @@ function changeComunidad()
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           response=$.parseJSON(response);
-             var error=response.error;
+             
              //console.log(error);
              if(response.data=="error")
-             {
+             {  var error=response.error;
                Command: toastr.warning(error.message, "Notifications")
                return;
              }
-             limpiarPerf();
+             limpiarNot();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
              //console.log(response);
@@ -1410,24 +1362,7 @@ function changeComunidad()
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
   }
-  function limpiarPerf()
-    {
-      $("#itemsTipoUser").val("0").change();
-      $("#itemsPermiso").val("0").change();
-      //$("#itemsConfigUser").val("0").change();
-      document.getElementById('idperfil').value=""; 
-      document.getElementById('users').value=""; 
-      document.getElementById('emailUser').value=""; 
-      document.getElementById('telUser').value=""; 
-      document.getElementById('nameUser').value=""; 
-      document.getElementById('apePatUser').value=""; 
-      document.getElementById('apeMatUser').value=""; 
-      document.getElementById('curpUser').value=""; 
-      document.getElementById('rfcUser').value=""; 
-      document.getElementById('password').value="";
-      document.getElementById('permisoEdit').value="";
-      document.getElementById("itemsPermiso").disabled=false; 
-  }
+
   function limpiarNot()
   {
     document.getElementById('numNotario').value="";
@@ -1441,25 +1376,27 @@ function changeComunidad()
     //$("#itemsCofigNotario").val("0").change();
     $("#itemsEntidadNot").val("19").change();
     document.getElementById('codigopostNotario').value="";
-    document.getElementById('userNotario').value="";
-    document.getElementById('emailNotario2').value="";
-    document.getElementById('nameNotario').value="";
-    document.getElementById('apPatNotario').value="";
-    document.getElementById('apMatNotario').value="";
-    document.getElementById('telNotario2').value="";
-    document.getElementById('curpNotario').value="";
-    document.getElementById('rfcNotario').value="";
-    $("#itemsTipoNotario").val("0").change();
-    document.getElementById('passNotario').value=""; 
-    //$("#itemsPermisoNotario").val("0").change();
+    //$("#itemsTipoUser").val("0").change();
+      $("#itemsPermiso").val("0").change();
+      document.getElementById('idperfil').value="";      
+      document.getElementById('users').value=""; 
+      document.getElementById('emailUser').value=""; 
+      document.getElementById('telUser').value=""; 
+      document.getElementById('nameUser').value=""; 
+      document.getElementById('apePatUser').value=""; 
+      document.getElementById('apeMatUser').value=""; 
+      document.getElementById('curpUser').value=""; 
+      document.getElementById('rfcUser').value=""; 
+      document.getElementById('password').value="";
+      document.getElementById('permisoEdit').value="";
+      document.getElementById("itemsPermiso").disabled=false; 
     //$("input:radio").attr("checked", false);
     document.getElementById('base64pdf1').value="";
     document.getElementById('base64pdf2').value="";
     document.getElementById('delFileNotario').click();
     document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
-
-
+    
 }
 function onechange2()
 {
@@ -1520,17 +1457,6 @@ document.getElementById('emailNotario').addEventListener('input', function() {
       document.getElementById("emailNot").style.color = "red";
     }
 });
-document.getElementById('emailNotario2').addEventListener('input', function() {
-    campo = event.target;
-    valido = document.getElementById('emailNot2');        
-    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-    if (emailRegex.test(campo.value)) {
-        valido.innerText = "";
-    } else {
-      valido.innerText = "Incorrecto";
-      document.getElementById("emailNot2").style.color = "red";
-    }
-});
 function curpValida(curp) {
     var re = /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/,
         validado = curp.match(re);
@@ -1559,13 +1485,6 @@ function curpValida(curp) {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
-function gPasswordNot()
-{
-  var caracteres = "abcdefghijkmnpqrtuvwxyzABCDEFGHJKMNPQRTUVWXYZ123467890";
-  var pass = "";
-  for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
-  document.getElementById("passNotario").value=pass;
-}
 function gPasswordPerf()
 {
   var caracteres = "abcdefghijkmnpqrtuvwxyzABCDEFGHJKMNPQRTUVWXYZ123467890";
@@ -1599,18 +1518,6 @@ function rfcValido(rfc, aceptarGenerico = true) {
         return false;
     return rfcSinDigito + digitoVerificador;
 }
-function validarRFCNot() {
-    var rfc=$("#rfcNotario").val();
-    //console.log(rfc);
-    rfcCorrecto=rfcValido(rfc.toUpperCase());
-    valido = document.getElementById('rfcNot'); 
-    if (rfcCorrecto) {
-     valido.innerText = "";
-    } else {
-      valido.innerText = "Incorrecto";
-      document.getElementById("rfcNot").style.color = "red";
-    }
-}
 function validarRFCUser() {
     var rfc=$("#rfcUser").val();
     rfcCorrecto=rfcValido(rfc.toUpperCase());
@@ -1622,23 +1529,13 @@ function validarRFCUser() {
       document.getElementById("rfcUs").style.color = "red";
     }
 }
-function validarCurpNot() {
-    var curp=$("#curpNotario").val();
-    rfcCorrecto=curpValida(curp.toUpperCase());
-    valido = document.getElementById('curpNot'); 
-    if (rfcCorrecto) {
-      valido.innerText = "";
-    } else {
-      valido.innerText = "Incorrecto";
-      document.getElementById("curpNot").style.color = "red";
-    }
-}
 function validarCurpUser() {
     var curp=$("#curpUser").val();
     rfcCorrecto=curpValida(curp.toUpperCase());
     valido = document.getElementById('curpUs'); 
     if (rfcCorrecto) {
       valido.innerText = "";
+      findCurp();
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("curpUs").style.color = "red";

@@ -787,6 +787,40 @@ class PortalSolicitudesController extends Controller
         ]);   
       }
     }
+    public function findFirmaTramite($tramite_id="")
+    {
+      try{
+        $findSoli = $this->solicitudes->findWhere(["tramite_id"=>$tramite_id]);
+        return json_encode($findSoli);
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error buscar firma: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al buscar firma"
+        ]);   
+      }
+    }
+    public function updateFirmaTramite(Request $request)
+    {
+      try{
+        $findSoli = $this->solicitudes->where('tramite_id',$request->tramite_id)->update(["firma"=>$request->firma]);
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Actualizado correctamente"
+        ]);
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error buscar firma: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al buscar firma"
+        ]);   
+      }
+    }
  
 }
 
