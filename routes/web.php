@@ -363,6 +363,8 @@ Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermi
 Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity');
 Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
 Route::post('/config-create-users', 'PortalNotaryOfficesController@createUsers');
+Route::post('/notary-offices-update', 'PortalNotaryOfficesController@updateNotary');
+
 
 
 Route::get('/comunidades', 'OperacionRolesController@index');
@@ -406,6 +408,8 @@ Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketControlle
 Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites');
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
+Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
+
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
