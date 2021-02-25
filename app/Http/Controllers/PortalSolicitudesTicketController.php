@@ -177,7 +177,7 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){              
-              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value->info;
+              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
