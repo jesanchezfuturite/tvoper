@@ -349,7 +349,6 @@ class PortalSolicitudesTicketController extends Controller
         
   
       } catch (\Exception $e) {
-        dd($e);
         return response()->json(
           [
             "Code" => "400",
@@ -407,43 +406,18 @@ class PortalSolicitudesTicketController extends Controller
     
     }
 
-    // public function asignarClavesCatalogo($info, &$consulta){
-    //     $informacion = json_decode($info);
-    //     $campos = [];
-    //     if(isset($informacion->campos)){
-    //       foreach($informacion->campos as $key=>$value){
-    //         if(is_numeric($key)){
-    //           $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();              
-    //           $consulta++;
-    //           $campos[$catalogo->descripcion] = $value;
-    //         }else{
-    //           $campos[$key] = $value;
-    //         }
-              
-    //       }
-    //       $informacion->campos = $campos;
-    //     }
-    //     return $informacion;
-    // }
-
     public function asignarClavesCatalogo($info){
         $informacion = json_decode($info);
-        $camposId = [];
         $campos = [];
         if(isset($informacion->campos)){
           foreach($informacion->campos as $key=>$value){
-            if(is_numeric($key)) $camposId[] = (int)$key;
-              // $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
-              // $campos[$catalogo->descripcion] = $value;
-            // }else{
+            if(is_numeric($key)){
+              $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
+              $campos[$catalogo->descripcion] = $value;
+            }else{
               $campos[$key] = $value;
-            // }
-
-            $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $camposId)->first();
-            // foreach($catalogo as $item){
-            //   var_dump($item);
-            // }
-            // var_dump($camposId, $catalogo);
+            }
+              
           }
           $informacion->campos = $campos;
         }
