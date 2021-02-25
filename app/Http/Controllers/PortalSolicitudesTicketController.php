@@ -529,17 +529,20 @@ class PortalSolicitudesTicketController extends Controller
       $response = [];
       foreach($solicitudes as $key => $solicitud){
         $solicitud->info = json_decode($solicitud->info);
-        $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
+        if(isset($solicitud->info->campos))
+          $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
       }
       $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
       foreach($solicitudes as $key => $solicitud){
-        $campos = [];
-        foreach($solicitud->info->campos as $key => $val){
-          if(is_numeric($key)) $key = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
-          $campos[$key] = $val;
+        if(isset($solicitud->info->campos)){
+          $campos = [];
+          foreach($solicitud->info->campos as $key => $val){
+            if(is_numeric($key)) $key = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
+            $campos[$key] = $val;
+          }
+          
+          $solicitud->info->campos = $campos;
         }
-        
-        $solicitud->info->campos = $campos;
 
         $search = array_search($solicitud->id, array_column($response, 'id'));
         $mensajes = [];
