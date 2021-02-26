@@ -468,7 +468,7 @@ class PortalSolicitudesTicketController extends Controller
 
         `solicitudes_catalogo`.`titulo`,
         `solicitudes_catalogo`.`tramite_id`,
-
+        `solicitudes_catalogo`.`firma`,
         
         IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
         
