@@ -508,7 +508,10 @@ class PortalSolicitudesTicketController extends Controller
       ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
           
       if($request->has('pendiente_firma')){        
-        $solicitudes->where('solicitudes_catalogo.firma', "1")->where("solicitudes_ticket.por_firmar", NULL);
+        $solicitudes->where('solicitudes_catalogo.firma', "1")->where(function ($query) {
+          $query->where("solicitudes_ticket.por_firmar", NULL);
+        });
+        
       }
       
       if($request->has('tipo_solicitud')){
