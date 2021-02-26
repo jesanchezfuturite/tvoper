@@ -86,6 +86,11 @@ class PortalSolicitudesTicketController extends Controller
         $status=99;
 
       }
+      if($request->has("en_carrito")){
+        $carrito =1;
+      }else{
+        $carrito="";
+      }
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -125,7 +130,8 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
-                "status"=>$status
+                "status"=>$status,
+                "en_carrito"=>$carrito
         
               ]);        
              array_push($ids, $ticket->id);
@@ -150,7 +156,8 @@ class PortalSolicitudesTicketController extends Controller
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status      
+              "status"=>$status,
+              "en_carrito"=>$carrito   
             ]); 
             
             if($request->has("file")){
@@ -183,7 +190,8 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
-                "status"=>$status
+                "status"=>$status,
+                "en_carrito"=>$carrito
         
               ]);   
         
@@ -208,7 +216,8 @@ class PortalSolicitudesTicketController extends Controller
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status      
+              "status"=>$status,
+              "en_carrito"=>$carrito   
             ]); 
             
             if($request->has("file")){
