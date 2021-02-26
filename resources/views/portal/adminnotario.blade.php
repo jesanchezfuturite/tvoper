@@ -355,7 +355,7 @@
             <div class="col-md-4 input-permiso"> 
               <div class="form-group"> 
                 <label for="itemsPermiso">* Permiso</label>
-                <select id="itemsPermiso" class="select2me form-control" >
+                <select id="itemsPermiso" class="select2me form-control" onchange="changePermiso();">
                   <option value="0">-------</option>
                 </select>                               
               </div>
@@ -504,7 +504,7 @@
              Ya Existe un Cuenta de <label id="lbl_del_permiso" style="color: #cb5a5e;"></label>
              <br>
              <br>
-             Se desactive la cuenta primero.
+             Desactive la cuenta primero.
 
                 </p>
             </div>
@@ -525,6 +525,7 @@
 <input type="text" name="id_NotTitular" id="id_NotTitular" hidden="true">
 <input type="text" name="id_NotSuplente" id="id_NotSuplente" hidden="true">
 <input type="text" name="permisoEdit" id="permisoEdit" hidden="true">
+<input type="text" name="arrayPermisos" id="arrayPermisos" hidden="true">
 @endsection
 
 @section('scripts')
@@ -544,6 +545,13 @@
     ItemsComunidad();
     ItemsPermisos();    
   });
+  function changePermiso() {
+    if($("#itemsPermiso").val()==2){
+      $(".section-archivos").css("display", "block");
+     }else{
+      $(".section-archivos").css("display", "none");
+    }
+  }
   function newNotary()
   {
      $(".section-notary").css("display", "block");
@@ -573,6 +581,7 @@
      $(".btn-saveup-User").css("display", "none");
      $(".btn-upd-Not").css("display", "block");
      document.getElementById("encabezado_modal").innerHTML = "Configuración Notaria"
+     findeditNotary();
   }
   function configUser()
   {
@@ -588,6 +597,37 @@
      $(".btn-saveup-User").css("display", "block");
      $(".btn-upd-Not").css("display", "none");
      document.getElementById("encabezado_modal").innerHTML = "Configuración Usuario"
+     selectPermiso_insert();
+  }
+  function findeditNotary()
+  {
+
+    var id_=$("#itemsNotario").val();
+    $.ajax({
+        method: "get",            
+        url: "{{ url('/get-notary-offices/') }}"+"/"+id_,
+        data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {  
+          var resp=$.parseJSON(response); 
+          //console.log(resp);
+          document.getElementById("numNotario").value=resp.response.notary_office.notary_number;
+          $("#itemsEntidadNot").val(resp.response.notary_office.federal_entity_id).change();          
+          document.getElementById("calleNotario").value=resp.response.notary_office.street;
+          document.getElementById("numeroExtNotario").value=resp.response.notary_office["outdoor-number"];
+          document.getElementById("numeroNotario").value=resp.response.notary_office.number;
+          document.getElementById("codigopostNotario").value=resp.response.notary_office.zip;
+          document.getElementById("distritoNotario").value=resp.response.notary_office.district;
+          document.getElementById("telNotario").value=resp.response.notary_office.phone;
+          document.getElementById("emailNotario").value=resp.response.notary_office.email;
+          chgopt(resp.response.notary_office.city_id);
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error consulta curp", "Notifications")   });
+  }
+  async function chgopt(id)
+  {  
+    await sleep(1000);
+    $("#itemsCiudadNot").val(id).change();
   }
   function findCurp()
   {
@@ -609,7 +649,7 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error consulta curp", "Notifications")   });
   
-}
+  }
   function findentidades()
   {
   
@@ -659,6 +699,7 @@ function changeEntidades()
    reader.readAsDataURL(file);
    reader.onload = function () {
     document.getElementById("base64pdf1").value=reader.result;
+    //console.log(reader.result);
      //return reader.result;
    };
    
@@ -668,6 +709,7 @@ function getBase64Notario(file) {
    reader.readAsDataURL(file);
    reader.onload = function () {
     document.getElementById("base64pdf2").value=reader.result;
+    //console.log(reader.result);
      //return reader.result;
    };
    
@@ -709,12 +751,13 @@ function changeComunidad()
         url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+          //console.log(response)
             var ent="";
             $("#itemsNotario option").remove();
             $('#itemsNotario').append("<option value='0'>------</option>");
             $.each(response, function(i, item) {  
                 if(item.estado==null || item.estado=="null")
-                  {ent="";}else{ent=" - "+item.estado}
+                  {ent="";}else{ent=" - "+item.estado.nombre;}
                 $('#itemsNotario').append("<option value='"+item.id+"'>"+item.notary_number+ent+"</option>");
             });
 
@@ -731,23 +774,47 @@ function changeComunidad()
       url: "{{ url('/notary-offices-roles') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        //console.log(response);
-        var resp=$.parseJSON(response);
-        $("#itemsPermiso option").remove();
-        $('#itemsPermiso').append("<option value='0'>------</option>");
-        //$("#itemsPermisoNotario option").remove();
-        //$('#itemsPermisoNotario').append("<option value='0'>------</option>");
-          $.each(resp.response, function(i, item) {
-            if(item.id==2 || item.id==5 || item.id==6 || item.id==7 || item.id==8){
-              $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
-            }
-            //$('#itemsPermisoNotario').append("<option value='"+item.id+"'>"+item.description+"</option>");
-                //console.log(item.id);
-          });
+        document.getElementById("arrayPermisos").value=response;
           
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
+  function selectPermiso_insert()
+  { var array=$("#arrayPermisos").val();
+    var resp=$.parseJSON(array);
+        $("#itemsPermiso option").remove();
+        $('#itemsPermiso').append("<option value='0'>------</option>");
+          $.each(resp.response, function(i, item) {
+            if( item.name=="notary_substitute" || item.name=="notary_capturist" || item.name=="notary_payments" || item.name=="notary_capturist_payments"){
+              $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+            }
+          });
+  }
+  function selectPermiso_updateNotary(id_)
+  { var array=$("#arrayPermisos").val();
+    var resp=$.parseJSON(array);
+        $("#itemsPermiso option").remove();
+        $('#itemsPermiso').append("<option value='0'>------</option>");
+          $.each(resp.response, function(i, item) {
+            if(item.name=="notary_titular" || item.name=="notary_substitute"){
+              $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+            }
+          });
+          $("#itemsPermiso").val(id_).change();
+
+  }
+  function selectPermiso_updateUser(id_)
+  { var array=$("#arrayPermisos").val();
+    var resp=$.parseJSON(array);
+        $("#itemsPermiso option").remove();
+        $('#itemsPermiso').append("<option value='0'>------</option>");
+          $.each(resp.response, function(i, item) {
+            if( item.name=="notary_capturist" || item.name=="notary_payments" || item.name=="notary_capturist_payments"){
+              $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
+            }
+          });
+          $("#itemsPermiso").val(id_).change();
   }
   function ItemsComunidad()
     {
@@ -769,7 +836,135 @@ function changeComunidad()
         .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  async function saveNotario()
+  function updateFile()
+  {
+     var id_=$("#itemsNotario").val();
+    var base64SAT=$("#base64pdf1").val();
+    var base64Notario=$("#base64pdf2").val();
+    var numeroNotario=$("#itemsNotario option:selected").text();
+    var splitNum=numeroNotario.split(" - ");
+    numNotario=splitNum[0];
+    //console.log(numNotario+"---")
+    var formdata = new FormData();
+      formdata.append("id", id_);      
+      formdata.append("notary_number", numNotario);
+    if(base64SAT.length>0 ){ 
+      formdata.append("sat_constancy_file", base64SAT);        
+    }if(base64Notario.length>0){ 
+          formdata.append("notary_constancy_file", base64Notario);
+    }
+    formdata.append("_token",'{{ csrf_token() }}');
+    saveChangeNotary(formdata);
+    //chgoptionNotary(id_);
+
+        
+  }
+  function updateNotaria()
+  {
+     var id_=$("#itemsNotario").val();
+     var numNotario=$("#numNotario").val();
+    var telNotario=$("#telNotario").val();
+    var emailNotario=$("#emailNotario").val();
+    var calleNotario=$("#calleNotario").val();
+    var numeroNotario=$("#numeroNotario").val();
+    var numeroExtNotario=$("#numeroExtNotario").val();
+    var distritoNotario=$("#distritoNotario").val();
+    var itemsCiudadNot=$("#itemsCiudadNot").val();
+    var itemsEntidadNot=$("#itemsEntidadNot").val();
+    var codigopostNotario=$("#codigopostNotario").val();
+    var base64SAT=$("#base64pdf1").val();
+    var base64Notario=$("#base64pdf2").val();
+    emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
+    if (numNotario.length<1) {
+       Command: toastr.warning("Campo Numero Notaria, requerido!", "Notifications") 
+       $("#numNotario").focus();
+    }else if(itemsEntidadNot=="0"){
+      Command: toastr.warning("Campo Entidad Federativa, requerido!", "Notifications")
+    }else if(itemsCiudadNot=="0"){
+      Command: toastr.warning("Campo Ciudad, requerido!", "Notifications")
+    }else if (calleNotario.length<1) {
+       Command: toastr.warning("Campo Calle, requerido!", "Notifications") 
+       $("#calleNotario").focus(); 
+    }else if (numeroExtNotario.length<1) {
+       Command: toastr.warning("Campo Número Exterior, requerido!", "Notifications")
+       $("#numeroExtNotario").focus(); 
+    }else if (codigopostNotario.length<5) {
+       Command: toastr.warning("Campo Codigo Postal, longitud minima 5!", "Notifications")
+       $("#codigopostNotario").focus(); 
+    }else if (distritoNotario.length<1) {
+       Command: toastr.warning("Campo Colonia, requerido!", "Notifications") 
+       $("#distritoNotario").focus(); 
+    }else if (telNotario.length<10) {
+       Command: toastr.warning("Campo Numero Teléfono, longitud minima 10!", "Notifications")
+       $("#telNotario").focus();  
+    }else if (!emailRegex.test(emailNotario)) {
+       Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
+        $("#emailNotario").focus();
+    }else{
+      var formdata = new FormData();
+        formdata.append("id", id_);      
+        formdata.append("notary_number", numNotario);      
+        formdata.append("phone", telNotario);
+        formdata.append("email", emailNotario);
+        formdata.append("street", calleNotario);
+        formdata.append("number", numeroNotario);
+        formdata.append("outdoor-number", numeroExtNotario);
+        formdata.append("district", distritoNotario);
+        formdata.append("federal_entity_id", itemsEntidadNot);
+        formdata.append("city_id", itemsCiudadNot);
+        
+        if(base64SAT.length>0 ){ 
+          formdata.append("sat_constancy_file", base64SAT);        
+        }if(base64Notario.length>0){ 
+          formdata.append("notary_constancy_file", base64Notario);
+        }
+        formdata.append("_token",'{{ csrf_token() }}');
+        saveChangeNotary(formdata);
+        changeComunidad();
+        chgoptionNotary(id_);
+
+    }     
+  }
+  async function chgoptionNotary(id)
+  {  
+    await sleep(2000);
+    $("#itemsNotario").val(id).change();
+  }
+  function saveChangeNotary(formdata)
+  {
+    //console.log(Object.fromEntries(formdata));
+    $.ajax({
+           method: "POST", 
+           contentType: false,
+            processData: false,
+           url: "{{ url('/notary-offices-update') }}",
+           data:formdata })
+        .done(function (response) {
+          var resp=$.parseJSON(response);
+         //console.log(resp);
+          
+          if(response==null || response=="null")
+          {
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
+          if(resp.data=="response"){
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }
+          if(resp.error){
+            Command: toastr.warning(resp.error.message, "Notifications");
+          }else{
+            Command: toastr.success("Success", "Notifications");
+            return;
+          }         
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+  }
+
+  function saveNotario()
   {
     var numNotario=$("#numNotario").val();
     var telNotario=$("#telNotario").val();
@@ -794,14 +989,8 @@ function changeComunidad()
       //var itemsConfigUser=$("#itemsConfigUser").val();
       var telUser=$("#telUser").val();
     //var itemsPermisoNotario=$("#itemsPermisoNotario").val();
-    var pdf = $("#fileSAT")[0].files[0]; 
-    var pdf2 = $("#fileNotario")[0].files[0];
-     var pdfSAT = $("#fileSAT").val(); 
+    var pdfSAT = $("#fileSAT").val(); 
     var pdfNotario = $("#fileNotario").val();
-    if(pdfSAT.length>0 && pdfNotario.length>0){ 
-      getBase64SAT(pdf);
-      getBase64Notario(pdf2);
-    }
       
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     
@@ -864,7 +1053,7 @@ function changeComunidad()
     }else if(pdfNotario.length==0){ 
          Command: toastr.warning("Archivo Constancia Notario, Requerido!", "Notifications")
     }else{
-     await sleep(1000);
+     //await sleep(1000);
       insertNotario();
     }
   }
@@ -931,7 +1120,7 @@ function changeComunidad()
       notary_constancy_file: base64Notario,
       titular: titular_
       }; 
-    console.log(notary_off);
+    //console.log(notary_off);
     $.ajax({
            method: "POST", 
            url: "{{ url('/notary-offices') }}",
@@ -995,7 +1184,7 @@ function changeComunidad()
            url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) { 
-          console.log(response);
+          //console.log(response);
           document.getElementById('jsonCode').value=response;            
           var Resp=response;
           addtable();
@@ -1029,7 +1218,7 @@ function changeComunidad()
               if(item.role_id==2 && status=="1")
               {
                 document.getElementById('id_NotTitular').value=item.id;
-                btn_download="<a class='btn btn-icon-only yellow' href='javascript:;' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='javascript:;'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='#' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='#'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
               }else{
                 btn_download="";                
               }
@@ -1042,7 +1231,7 @@ function changeComunidad()
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-notario' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='javascript:;'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a></td>"
+                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-notario' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a></td>"
                 + "<td class='text-center' width='15%'>"+btn_download+"</td>"
                 +"</tr>"
                 );
@@ -1117,8 +1306,9 @@ function changeComunidad()
   {
    //console.log(json);
    configUser();
-    $("#itemsTipoUser").val("0").change();
-    $("#itemsPermiso").val(json.role_id).change();
+    //$("#itemsTipoUser").val("0").change();
+    selectPermiso_updateNotary();
+    //$("#itemsPermiso").val(json.role_id).change();
     //$("#itemsConfigUser").val(json.config_id).change();
       document.getElementById('permisoEdit').value=json.role_id; 
       document.getElementById('idperfil').value=json.id; 
@@ -1130,12 +1320,20 @@ function changeComunidad()
       document.getElementById('apeMatUser').value=json.mothers_surname; 
       document.getElementById('curpUser').value=json.curp; 
       document.getElementById('rfcUser').value=json.rfc; 
-      document.getElementById('password').value=""; 
+      document.getElementById('password').value="";  
       if(json.role_id==2 && json.status==1)
       {
         document.getElementById("itemsPermiso").disabled=true; 
       }else{
-        document.getElementById("itemsPermiso").disabled=false; 
+        document.getElementById("itemsPermiso").disabled=false;
+        
+      }
+      if(json.role_id==2 || json.role_id==5)
+      {
+        selectPermiso_updateNotary(json.role_id);
+      }else{
+        selectPermiso_updateUser(json.role_id);
+        $(".section-archivos").css("display", "none");
       }
 
   }
@@ -1156,7 +1354,7 @@ function changeComunidad()
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      var itemsConfigUser=4;
+      var itemsConfigUser=$("#itemsCofigNotario").val();
       var itemsPermiso=$("#itemsPermiso").val();
       var user_={username: users,
                 email: emailUser,
@@ -1167,13 +1365,16 @@ function changeComunidad()
                 rfc: rfcUser,
                 phone: telUser,
                 config_id:itemsConfigUser,
-                role_id:itemsPermiso
+                role_id:itemsPermiso,
+                status:1
             };
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-edit-user') }}",
            data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
+          if(itemsPermiso==2)
+          {  updateFile();}
              limpiarNot();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
@@ -1238,7 +1439,7 @@ function changeComunidad()
       }else if(itemsPermiso =='0'){
         Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
       }else{
-        console.log(id_NotSuplente +"-"+id_NotTitular+"-"+itemsPermiso+"-"+permisoEdit);
+        //console.log(id_NotSuplente +"-"+id_NotTitular+"-"+itemsPermiso+"-"+permisoEdit);
         if(id.length>0)
           {
             if(id==id_NotSuplente && itemsPermiso==permisoEdit){
@@ -1249,7 +1450,7 @@ function changeComunidad()
             {              
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                //console.log("permiso notario");
+                
               
             }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
@@ -1289,7 +1490,7 @@ function changeComunidad()
       //var itemsConfigUser=$("#itemsConfigUser").val();
       var telUser=$("#telUser").val();
       var TipoUser=$("#itemsTipoUser").val();
-      var itemsConfigUser=$("#itemsCiudadNot").val();;
+      var itemsConfigUser=$("#itemsCofigNotario").val();;
       var itemsPermiso=$("#itemsPermiso").val();
       if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
         Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications")
@@ -1316,10 +1517,9 @@ function changeComunidad()
            url: "{{ url('/notary-offices-create-users') }}",
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
-          response=$.parseJSON(response);
-             
-             //console.log(error);
-             if(response.data=="error")
+          //console.log(response);
+          response=$.parseJSON(response);  
+             if(response==null || response.data=="error")
              {  var error=response.error;
                Command: toastr.warning(error.message, "Notifications")
                return;
@@ -1342,6 +1542,7 @@ function changeComunidad()
      if(itemsPermiso==2)
      {
       id_=$("#id_NotTitular").val();
+      
      }
      if(itemsPermiso==5)
      {
@@ -1356,6 +1557,7 @@ function changeComunidad()
             {
               updatePerfil();
             }else{
+              
               insertPerfil();
             }
         })
@@ -1541,6 +1743,25 @@ function validarCurpUser() {
       document.getElementById("curpUs").style.color = "red";
     }
 }
+$("#fileSAT").change(function(){
+    var pdf = $("#fileSAT")[0].files[0]; 
+    if(this.files.length==0)
+    {      
+      document.getElementById('base64pdf1').value="";    
+    }else{
+      getBase64SAT(pdf);
+    }
+});
+$("#fileNotario").change(function(){  
+    var pdf = $("#fileNotario")[0].files[0];
+    if(this.files.length==0)
+    {      
+      document.getElementById('base64pdf2').value="";
+    }else{
+      getBase64Notario(pdf);
+    }
+    
+});
 
 /*function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
   var f = new Date();
