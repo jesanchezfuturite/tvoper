@@ -178,7 +178,7 @@
               <div class="form-group">
                 <div class="form-group">
                 <label for="numNotario">* Número de Notaria</label>                                             
-                <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notaria...">
+                <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notaria..."autocomplete="off">
               </div>                                           
               </div>
             </div>
@@ -212,13 +212,13 @@
            <div class="col-md-2">
               <div class="form-group">
                 <label for="numeroExtNotario">* Número Exterior</label>                                                       
-                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior..."maxlength="10">
+                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior..."maxlength="10"autocomplete="off">
              </div> 
            </div>
            <div class="col-md-2">
               <div class="form-group">
                 <label for="numeroNotario">Número Interior</label>                                                       
-                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero..." >
+                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero..." autocomplete="off">
              </div> 
            </div> 
            <div class="col-md-3">
@@ -243,7 +243,7 @@
              <div class="col-md-3"> 
               <div class="form-group">
                 <label for="telNotario">* Número de Teléfono</label>                                             
-                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono..."  maxlength = "10">
+                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono..."  maxlength = "10"autocomplete="off">
               </div>
             </div>            
              <div class="col-md-4">
@@ -282,7 +282,14 @@
         </div>
         <div class="section-users">
         <div class="row">
-          <div class="col-md-12">             
+          <div class="col-md-12">
+          <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="curpUser">* CURP</label>                                             
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                 <span id="curpUs" class="help-block"></span>
+              </div>
+            </div>             
             <div class="col-md-4"> 
               <div class="form-group">
                 <label for="nameUser">* Nombre(s)</label>                                             
@@ -292,25 +299,19 @@
             <div class="col-md-4"> 
               <div class="form-group">
                 <label for="apePatUser">* Apellido Paterno</label>                                             
-                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno...">
+                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno..."autocomplete="off">
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="apeMatUser">* Apellido Materno</label>                                                       
-                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno...">
-             </div>
-            </div>
+            
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-4"> 
+            <div class="col-md-4">
               <div class="form-group">
-                <label for="curpUser">* CURP</label>                                             
-                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
-                 <span id="curpUs" class="help-block"></span>
-              </div>
+                <label for="apeMatUser">* Apellido Materno</label>                                                       
+                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno..."autocomplete="off">
+             </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">
@@ -368,7 +369,7 @@
               <div class="form-group">
                 <div class="form-group">
                 <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
-                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario...">
+                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario..."autocomplete="off">
               </div>                                           
               </div>
             </div>
@@ -566,6 +567,8 @@
      $(".btn-saveup-User").css("display", "none");
      $(".btn-upd-Not").css("display", "none");
      document.getElementById("encabezado_modal").innerHTML = "Configuración Notaria"
+     document.getElementById("itemsEntidadNot").disabled=false;
+     document.getElementById("numNotario").disabled=false;
   }
   function editNotary()
   {
@@ -601,7 +604,7 @@
   }
   function findeditNotary()
   {
-
+    document.getElementById("numNotario").disabled=true;
     var id_=$("#itemsNotario").val();
     $.ajax({
         method: "get",            
@@ -620,6 +623,13 @@
           document.getElementById("telNotario").value=resp.response.notary_office.phone;
           document.getElementById("emailNotario").value=resp.response.notary_office.email;
           chgopt(resp.response.notary_office.city_id);
+          console.log(resp.response.notary_office.federal_entity_id);
+          if(resp.response.notary_office.federal_entity_id==0)
+          {
+            document.getElementById("itemsEntidadNot").disabled=false;
+          }else{
+            document.getElementById("itemsEntidadNot").disabled=true;
+          }
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error consulta curp", "Notifications")   });
@@ -643,6 +653,13 @@
             document.getElementById("nameUser").value=resp.data.nombres;
             document.getElementById("apePatUser").value=resp.data.apePat;
             document.getElementById("apeMatUser").value=resp.data.apeMat;
+            document.getElementById("nameUser").disabled=true ;
+            document.getElementById("apePatUser").disabled=true;
+            document.getElementById("apeMatUser").disabled=true;
+          }else{
+            document.getElementById("nameUser").disabled=false ;
+            document.getElementById("apePatUser").disabled=false;
+            document.getElementById("apeMatUser").disabled=false;
           }
 
         })
@@ -844,16 +861,17 @@ function changeComunidad()
     var numeroNotario=$("#itemsNotario option:selected").text();
     var splitNum=numeroNotario.split(" - ");
     numNotario=splitNum[0];
-    //console.log(numNotario+"---")
     var formdata = new FormData();
       formdata.append("id", id_);      
       formdata.append("notary_number", numNotario);
     if(base64SAT.length>0 ){ 
       formdata.append("sat_constancy_file", base64SAT);        
-    }if(base64Notario.length>0){ 
-          formdata.append("notary_constancy_file", base64Notario);
+    }
+    if(base64Notario.length>0){ 
+      formdata.append("notary_constancy_file", base64Notario);
     }
     formdata.append("_token",'{{ csrf_token() }}');
+    //console.log(Object.fromEntries(formdata));
     saveChangeNotary(formdata);
     //chgoptionNotary(id_);
 
@@ -1021,6 +1039,9 @@ function changeComunidad()
     }else if (!emailRegex.test(emailNotario)) {
        Command: toastr.warning("Campo Correo Electrónico, formato incorrecto!", "Notifications") 
         $("#emailNotario").focus();
+    }else if (!curpValida(curpUser)) {
+       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
+       $("#curpUser").focus(); 
     }else if (nameUser.length<1) {
       Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
         $("#nameUser").focus();  
@@ -1030,9 +1051,6 @@ function changeComunidad()
     }else if (apeMatUser.length<1) {
         Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
         $("#apeMatUser").focus(); 
-    }else if (!curpValida(curpUser)) {
-       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-       $("#curpUser").focus(); 
     }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
         $("#rfcUser").focus();  
@@ -1412,6 +1430,9 @@ function changeComunidad()
     
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
+      }else if (!curpValida(curpUser)) {
+       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
+       $("#curpUser").focus(); 
       }else if (nameUser.length<1) {
         Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
         $("#nameUser").focus();  
@@ -1421,9 +1442,6 @@ function changeComunidad()
       }else if (apeMatUser.length<1) {
         Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
         $("#apeMatUser").focus(); 
-      }else if (!curpValida(curpUser)) {
-       Command: toastr.warning("Campo CURP, formato incorrecto!", "Notifications") 
-       $("#curpUser").focus(); 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
         $("#rfcUser").focus();  
@@ -1598,6 +1616,9 @@ function changeComunidad()
     document.getElementById('delFileNotario').click();
     document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
+    document.getElementById("nameUser").disabled=false ;
+            document.getElementById("apePatUser").disabled=false;
+            document.getElementById("apeMatUser").disabled=false;
     
 }
 function onechange2()
