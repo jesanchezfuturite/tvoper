@@ -86,6 +86,11 @@ class PortalSolicitudesTicketController extends Controller
         $status=99;
 
       }
+      if($request->has("en_carrito")){
+        $carrito =1;
+      }else{
+        $carrito="";
+      }
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -125,7 +130,8 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
-                "status"=>$status
+                "status"=>$status,
+                "en_carrito"=>$carrito
         
               ]);        
              array_push($ids, $ticket->id);
@@ -150,7 +156,8 @@ class PortalSolicitudesTicketController extends Controller
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status      
+              "status"=>$status,
+              "en_carrito"=>$carrito   
             ]); 
             
             if($request->has("file")){
@@ -177,13 +184,14 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){              
-              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value->info;
+              $data==1 ? $info->solicitante=$value :  $info->enajenante=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
-                "status"=>$status
+                "status"=>$status,
+                "en_carrito"=>$carrito
         
               ]);   
         
@@ -208,7 +216,8 @@ class PortalSolicitudesTicketController extends Controller
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
-              "status"=>$status      
+              "status"=>$status,
+              "en_carrito"=>$carrito   
             ]); 
             
             if($request->has("file")){
@@ -269,34 +278,36 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
       
-    public function getInfo($user_id){
-      try {
-        
+    public function getInfo($user_id, $type=""){
+      try {        
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         if($relation){
           $notary_id = $relation->notary_office_id;
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->toSql(); 
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
-          
-         
+            
+        }else{
+          $users = ["$user_id"];          
+        }
+
+        if($type=="firma"){
+          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
+          ->where(function ($query) {
+            $query->where('por_firmar', '=', 1);
+          })         
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id')->where("firma", 1);
+          }])->get()->toArray(); 
+        }else{
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
           })         
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
-          }])->get()->toArray();          
-        }else{
-            
-          $solicitudes = PortalSolicitudesTicket::where('user_id', $user_id)->where('status', 99)          
-          ->where(function ($query) {
-            $query->where('en_carrito', '=', 1);
-          })
-          ->with(['catalogo' => function ($query) {
-            $query->select('id', 'tramite_id');
-          }])->get()->toArray();
+          }])->get()->toArray();   
+     
         }
-      
 
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
@@ -466,6 +477,7 @@ class PortalSolicitudesTicketController extends Controller
 
         `solicitudes_catalogo`.`titulo`,
         `solicitudes_catalogo`.`tramite_id`,
+        `solicitudes_catalogo`.`firma`,
         
         IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
         
@@ -476,6 +488,8 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`user_id`,
         `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`clave`,
+        `solicitudes_ticket`.`por_firmar`,
+
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
@@ -501,6 +515,13 @@ class PortalSolicitudesTicketController extends Controller
       ->leftJoin('solicitudes_tramite as tramites', 'tramites.id', 'solicitudes_ticket.id_transaccion')
       ->leftJoin('solicitudes_mensajes as mensajes', 'mensajes.ticket_id', 'solicitudes_ticket.id')
       ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
+          
+      if($request->has('pendiente_firma')){        
+        $solicitudes->where('solicitudes_catalogo.firma', "1")->where(function ($query) {
+          $query->where("solicitudes_ticket.por_firmar", NULL);
+        });
+        
+      }
       
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
@@ -517,29 +538,32 @@ class PortalSolicitudesTicketController extends Controller
         $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
         $solicitudes->whereIn('user_id', $users);
       }
-
+      
       if($request->has('id_usuario')){        
         $solicitudes->where('user_id', $request->id_usuario);
       }
-
+  
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
-
+   
       $campos = [];
       $response = [];
       foreach($solicitudes as $key => $solicitud){
         $solicitud->info = json_decode($solicitud->info);
-        $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
+        if(isset($solicitud->info->campos))
+          $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
       }
       $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
       foreach($solicitudes as $key => $solicitud){
-        $campos = [];
-        foreach($solicitud->info->campos as $key => $val){
-          if(is_numeric($key)) $key = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
-          $campos[$key] = $val;
+        if(isset($solicitud->info->campos)){
+          $campos = [];
+          foreach($solicitud->info->campos as $key => $val){
+            if(is_numeric($key)) $key = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
+            $campos[$key] = $val;
+          }
+          
+          $solicitud->info->campos = $campos;
         }
-        
-        $solicitud->info->campos = $campos;
 
         $search = array_search($solicitud->id, array_column($response, 'id'));
         $mensajes = [];
@@ -973,23 +997,27 @@ class PortalSolicitudesTicketController extends Controller
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['en_carrito'=>$body['status']]);
+        $count = $this->ticket->where("en_carrito", 1)->count();
         $mensaje="Solicitudes en el carrito";
       }
 
       if($body["type"]=="firmado"){
         $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['firmado'=>$body['status']]);
+        $count = $this->ticket->where("firmado", 1)->count();
         $mensaje="Solicitudes firmadas";
-
       }
 
       if($body["type"]=="por_firmar"){
         $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['por_firmar'=>$body['status']]);
+        $count = $this->ticket->where("por_firmar", 1)->count();
         $mensaje="Solicitudes por firmar";
+
 
       }
       return json_encode([
         "response" 	=> $mensaje,
-        "code"		=> 200
+        "code"		=> 200,
+        "count"=>$count
       ]);
     } catch (\Exception $e) {
       return json_encode([
