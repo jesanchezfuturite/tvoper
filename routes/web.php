@@ -399,7 +399,7 @@ Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite');
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
-Route::get('/solicitudes-info/{id}', 'PortalSolicitudesTicketController@getInfo');
+Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
 Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
