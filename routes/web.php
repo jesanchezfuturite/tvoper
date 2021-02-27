@@ -365,7 +365,7 @@ Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers');
 Route::post('/config-create-users', 'PortalNotaryOfficesController@createUsers');
 Route::post('/notary-offices-update', 'PortalNotaryOfficesController@updateNotary');
 Route::get('/get-notary-offices/{id}', 'PortalNotaryOfficesController@getNotary');
-Route::get('/notary-offices-username/{username}', 'PortalNotaryOfficesController@searchUsername');
+Route::post('/notary-offices-username', 'PortalNotaryOfficesController@searchUsername');
 
 
 

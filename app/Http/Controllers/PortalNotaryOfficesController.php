@@ -9,6 +9,7 @@ use App\Repositories\OperacionRoleRepositoryEloquent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use SoapClient;
+use GuzzleHttp\Client;
 
 /**
  * Class PortalNotaryOfficesController.
@@ -249,15 +250,24 @@ class PortalNotaryOfficesController extends Controller
         return $notary;
     }
 
-    public function searchUsername($username){
-        $link ="http://10.153.144.218/session-api/notary-offices/user/"."$username";
-        $ch = curl_init();    
-        curl_setopt($ch, CURLOPT_URL, $link);        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
-        $user = curl_exec($ch);
-        curl_close($ch);
-        
-        return $user;
+    public function searchUsername(Request $request){
+        $data = $request->all();
+        $url ="http://10.153.144.218/session-api/notary-offices/user";
+
+
+        $client = new \GuzzleHttp\Client();
+
+	    	$response = $this->client->get(
+	    		$url,
+	    		[
+	    			"query" =>$data
+	    		]	
+	    	);
+
+	    	$results = $response->getBody();
+
+		
+			return  $results;
     }
 
 
