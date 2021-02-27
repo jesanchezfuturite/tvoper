@@ -249,4 +249,16 @@ class PortalNotaryOfficesController extends Controller
         return $notary;
     }
 
+    public function searchUsername($username){
+        $link ="http://10.153.144.218/session-api/notary-offices/user/"."$username";
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        $user = curl_exec($ch);
+        curl_close($ch);
+        
+        return $user;
+    }
+
+
 }
