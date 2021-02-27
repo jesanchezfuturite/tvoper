@@ -872,7 +872,8 @@ function changeComunidad()
     }
     formdata.append("_token",'{{ csrf_token() }}');
     //console.log(Object.fromEntries(formdata));
-    saveChangeNotary(formdata);
+    if(base64SAT.length>0 || base64Notario.length>0)
+      {saveChangeNotary(formdata);}
     //chgoptionNotary(id_);
 
         
@@ -1208,6 +1209,7 @@ function changeComunidad()
           addtable();
           $(".perfilesHide").css("display", "block");
           btn_download="";
+          btn_desact="";
           document.getElementById('id_NotTitular').value="";
           document.getElementById('id_NotSuplente').value="";
         $.each(Resp, function(i, item) {   
@@ -1237,8 +1239,10 @@ function changeComunidad()
               {
                 document.getElementById('id_NotTitular').value=item.id;
                 btn_download="<a class='btn btn-icon-only yellow' href='#' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='#'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
+                btn_desact="</a><a class='btn btn-icon-only default' data-toggle='modal' href='#'  title='No Aplica')'><i class='fa fa-power-off'></i></a>";
               }else{
-                btn_download="";                
+                btn_download=""; 
+                btn_desact="</a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a>";               
               }
               role=item.roles; 
               $('#sample_3 tbody').append("<tr>"
@@ -1249,7 +1253,7 @@ function changeComunidad()
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
-                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-notario' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only "+icon+"' data-toggle='modal' href='#'  title='"+title+"' onclick='perfilDelete(\""+item.id+"\",\""+item.status+"\",\""+item.role_id+"\")'><i class='fa fa-power-off'></i></a></td>"
+                + "<td class='text-center' width='15%'><a class='btn btn-icon-only blue' href='#portlet-notario' data-toggle='modal' data-original-title='' title='Editar' onclick='"+"perfilUpdate("+json+")'><i class='fa fa-pencil'></i>"+btn_desact+"</td>"
                 + "<td class='text-center' width='15%'>"+btn_download+"</td>"
                 +"</tr>"
                 );
@@ -1353,6 +1357,9 @@ function changeComunidad()
         selectPermiso_updateUser(json.role_id);
         $(".section-archivos").css("display", "none");
       }
+      document.getElementById("nameUser").disabled=true;
+      document.getElementById("apePatUser").disabled=true;
+      document.getElementById("apeMatUser").disabled=true;
 
   }
   function updatePerfil()
@@ -1688,7 +1695,7 @@ function curpValida(curp) {
       return false;
     
     //Validar que coincida el dígito verificador
-    function digitoVerificador(curp17) {
+    /*function digitoVerificador(curp17) {
         //Fuente https://consultas.curp.gob.mx/CurpSP/
         var diccionario  = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
             lngSuma      = 0.0,
@@ -1701,7 +1708,7 @@ function curpValida(curp) {
     }
   
     if (validado[2] != digitoVerificador(validado[1])) 
-      return false;
+      return false;*/
         
     return true; //Validado
 }
@@ -1715,12 +1722,12 @@ function gPasswordPerf()
   for (i=0; i<16; i++) pass +=caracteres.charAt(Math.floor(Math.random()*caracteres.length));
   document.getElementById("password").value=pass;
 }
-function rfcValido(rfc, aceptarGenerico = true) {
-    const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A\d])$/;
+function rfcValido(rfc, aceptarGenerico = false) {
+    const re       = /^([A-ZÑ&]{3,4}) ?(?:- ?)?(\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])) ?(?:- ?)?([A-Z\d]{2})([A-Z\d])$/;
     var   validado = rfc.match(re);
     if (!validado)
         return false;
-    const digitoVerificador = validado.pop(),
+   /* const digitoVerificador = validado.pop(),
           rfcSinDigito      = validado.slice(1).join(''),
           len               = rfcSinDigito.length,
           diccionario       = "0123456789ABCDEFGHIJKLMN&OPQRSTUVWXYZ Ñ",
@@ -1739,7 +1746,8 @@ function rfcValido(rfc, aceptarGenerico = true) {
         return false;
     else if (!aceptarGenerico && rfcSinDigito + digitoVerificador == "XEXX010101000")
         return false;
-    return rfcSinDigito + digitoVerificador;
+    return rfcSinDigito + digitoVerificador;*/
+    return true;
 }
 function validarRFCUser() {
     var rfc=$("#rfcUser").val();
@@ -1762,6 +1770,9 @@ function validarCurpUser() {
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("curpUs").style.color = "red";
+      document.getElementById("nameUser").disabled=false ;
+      document.getElementById("apePatUser").disabled=false;
+      document.getElementById("apeMatUser").disabled=false;
     }
 }
 $("#fileSAT").change(function(){
