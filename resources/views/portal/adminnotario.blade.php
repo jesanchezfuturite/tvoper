@@ -369,7 +369,8 @@
               <div class="form-group">
                 <div class="form-group">
                 <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
-                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario..."autocomplete="off">
+                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario..."autocomplete="off" oninput="usernameE(this.value,'userError')">
+                <span id="userError" class="help-block"></span>
               </div>                                           
               </div>
             </div>
@@ -552,6 +553,54 @@
      }else{
       $(".section-archivos").css("display", "none");
     }
+  }
+  function  usernameE(user,input) {
+    valido = document.getElementById(input); 
+    var formdata = new FormData();    
+    if(input=="userError"){
+      if(user.length>7)
+      { 
+        formdata.append("username",user);
+        formdata.append("_token",'{{ csrf_token() }}');
+        findUserEmail(formdata,input);
+      }else{
+        valido.innerText = "Incorrecto";
+        valido.style.color = "red";
+      }
+      return;
+    }     
+  }
+  function findUserEmail(formdata,input)
+  {    
+    valido = document.getElementById(input);
+    if(input=="userError"){
+      message="El nombre de usuario ya está en uso";
+    }
+    if(input=="emailOK"){
+      message="El correo electrónico ya está en uso";
+    }
+    $.ajax({
+        method: "POST", 
+           contentType: false,
+            processData: false,           
+        url: "{{ url('/notary-offices-username') }}",
+        data: formdata  })
+        .done(function (response) { 
+        //console.log(response); 
+
+          var resp=$.parseJSON(response);
+          if(resp==null || resp.response.status==422){
+            valido.innerText=resp.response.message;
+            valido.style.color = "red";
+          }else{
+            valido.innerText="";
+          }
+        })
+        .fail(function( msg ) {
+         console.log("Error consulta Usuario/Email", "Notifications") 
+         valido.innerText=message; 
+         valido.style.color = "red"; });
+  
   }
   function newNotary()
   {
@@ -1667,10 +1716,14 @@ $('.valida-user').on('input', function () {
 });
 document.getElementById('emailUser').addEventListener('input', function() {
     campo = event.target;
-    valido = document.getElementById('emailOK');        
+    valido = document.getElementById('emailOK'); 
+    var formdata = new FormData();        
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     if (emailRegex.test(campo.value)) {
+      formdata.append("email",campo.value);
+        formdata.append("_token",'{{ csrf_token() }}');
         valido.innerText = "";
+        findUserEmail(formdata,"emailOK")
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("emailOK").style.color = "red";
