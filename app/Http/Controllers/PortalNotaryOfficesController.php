@@ -257,7 +257,7 @@ class PortalNotaryOfficesController extends Controller
 
         $client = new \GuzzleHttp\Client();
 
-	    	$response = $this->client->get(
+	    	$response = $client->get(
 	    		$url,
 	    		[
 	    			"query" =>$data
