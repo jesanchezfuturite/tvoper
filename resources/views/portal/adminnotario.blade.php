@@ -395,7 +395,7 @@
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn green btn-file">
                         <span class="fileinput-new">
-                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia SAT </span>
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Constancia SAT </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia SAT </span>
                         <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
@@ -413,7 +413,7 @@
                <div class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn green btn-file">
                         <span class="fileinput-new">
-                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Constancia Notario </span>
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Constancia Notario </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia Notario </span>
                         <input type="file" name="fileNotario" accept="application/pdf"  id="fileNotario">
@@ -624,7 +624,7 @@
      $(".section-notary").css("display", "block");
      $(".title-user").css("display", "none");
      $(".section-users").css("display", "none");
-     $(".section-archivos").css("display", "block");     
+     $(".section-archivos").css("display", "none");     
 
      $(".input-comunidad").css("display", "none");
      $(".input-permiso").css("display", "none");
@@ -912,13 +912,10 @@ function changeComunidad()
     numNotario=splitNum[0];
     var formdata = new FormData();
       formdata.append("id", id_);      
-      formdata.append("notary_number", numNotario);
-    if(base64SAT.length>0 ){ 
-      formdata.append("sat_constancy_file", base64SAT);        
-    }
-    if(base64Notario.length>0){ 
+      formdata.append("notary_number", numNotario);    
+      formdata.append("sat_constancy_file", base64SAT);  
       formdata.append("notary_constancy_file", base64Notario);
-    }
+    
     formdata.append("_token",'{{ csrf_token() }}');
     //console.log(Object.fromEntries(formdata));
     if(base64SAT.length>0 || base64Notario.length>0)
@@ -981,11 +978,11 @@ function changeComunidad()
         formdata.append("federal_entity_id", itemsEntidadNot);
         formdata.append("city_id", itemsCiudadNot);
         
-        if(base64SAT.length>0 ){ 
+        /*if(base64SAT.length>0 ){ 
           formdata.append("sat_constancy_file", base64SAT);        
         }if(base64Notario.length>0){ 
           formdata.append("notary_constancy_file", base64Notario);
-        }
+        }*/
         formdata.append("_token",'{{ csrf_token() }}');
         saveChangeNotary(formdata);
         changeComunidad();
@@ -1119,7 +1116,7 @@ function changeComunidad()
     }else if(pdfSAT.length==0){ 
          Command: toastr.warning("Archivo Constancia SAT, Requerido!", "Notifications")
     }else if(pdfNotario.length==0){ 
-         Command: toastr.warning("Archivo Constancia Notario, Requerido!", "Notifications")
+         Command: toastr.warning("Archivo Constancia Notaria, Requerido!", "Notifications")
     }else{
      //await sleep(1000);
       insertNotario();
@@ -1412,13 +1409,10 @@ function changeComunidad()
 
   }
   function updatePerfil()
-  {
-    
+  {    
     var id_notary=$("#itemsNotario").val();
     var id_user=$("#idperfil").val();
-      var TipoUser=$("#itemsTipoUser").val();
-      //var itemsConfigUser=$("#itemsConfigUser").val();
-      
+      var TipoUser=$("#itemsTipoUser").val();      
       var users=$("#users").val();
       var emailUser=$("#emailUser").val();
       var telUser=$("#telUser").val();
@@ -1430,26 +1424,33 @@ function changeComunidad()
       var password=$("#password").val();
       var itemsConfigUser=$("#itemsCofigNotario").val();
       var itemsPermiso=$("#itemsPermiso").val();
-      var user_={username: users,
-                email: emailUser,
-                name: nameUser,
-                mothers_surname: apeMatUser,
-                fathers_surname: apePatUser,
-                curp: curpUser,
-                rfc: rfcUser,
-                phone: telUser,
-                config_id:itemsConfigUser,
-                role_id:itemsPermiso,
-                status:1
-            };
+      var base64SAT=$("#base64pdf1").val();
+      var base64Notario=$("#base64pdf2").val();
+      var formdata = new FormData();
+      formdata.append("username", users);  
+      formdata.append("email", emailUser);  
+      formdata.append("name", nameUser);  
+      formdata.append("mothers_surname", apeMatUser);  
+      formdata.append("fathers_surname", apePatUser);  
+      formdata.append("curp", curpUser);  
+      formdata.append("rfc", rfcUser);  
+      formdata.append("phone", telUser);   
+      formdata.append("config_id", itemsConfigUser);  
+      formdata.append("role_id", itemsPermiso);  
+      formdata.append("status", 1);  
+      if(base64SAT.length>0 && base64Notario.length>0)
+      {
+        formdata.append("sat_constancy_file", base64SAT);  
+        formdata.append("notary_constancy_file", base64Notario);
+      }
       $.ajax({
-           method: "POST",            
+           method: "POST", 
+           contentType: false,
+            processData: false,          
            url: "{{ url('/notary-offices-edit-user') }}",
-           data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) { 
-          if(itemsPermiso==2)
-          {  updateFile();}
-             limpiarNot();
+           data: {notary_id:id_notary,user_id:id_user,user:formdata ,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {          
+             //limpiarNot();
              Command: toastr.success("Success", "Notifications")
              changeNotario();
 
@@ -1473,17 +1474,13 @@ function changeComunidad()
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
       var password=$("#password").val();
-      //var itemsConfigUser=$("#itemsConfigUser").val();
-      /*else if(itemsConfigUser =='0'){
-        Command: toastr.warning("Campo Comunidades, requerido!", "Notifications") 
-      }*/
       var itemsConfigUser=4;
       var itemsPermiso=$("#itemsPermiso").val();
       var permisoEdit=$("#permisoEdit").val();
       var namePermiso=$("#itemsPermiso option:selected").text();
-
-          emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
-    
+          emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;  
+      var base64SAT=$("#base64pdf1").val();
+      var base64Notario=$("#base64pdf2").val();  
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
       }else if (!curpValida(curpUser)) {
@@ -1512,8 +1509,7 @@ function changeComunidad()
         $("#users").focus();
       }else if(itemsPermiso =='0'){
         Command: toastr.warning("Campo Permiso, requerido!", "Notifications") 
-      }else{
-        //console.log(id_NotSuplente +"-"+id_NotTitular+"-"+itemsPermiso+"-"+permisoEdit);
+      }else{        
         if(id.length>0)
           {
             if(id==id_NotSuplente && itemsPermiso==permisoEdit){
@@ -1521,28 +1517,28 @@ function changeComunidad()
             }else if(id==id_NotTitular && itemsPermiso==permisoEdit){
               updatePerfil();
             }else if(itemsPermiso==2 && id_NotTitular.length>0)
-            {              
+            {    
+              if(base64SAT.length==0)
+              {
+                Command: toastr.warning("Archivo Constancia SAT, requerido!", "Notifications")
+              }else if(base64Notario.length==0){
+                Command: toastr.warning("Archivo Constancia Notaria, requerido!", "Notifications")
+              }else{
                 $('#portlet-desactivaCuenta').modal('show');
-                $('#lbl_permiso').text(namePermiso);
-                
-              
+                $('#lbl_permiso').text(namePermiso);  
+              }
             }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
-                $('#lbl_permiso').text(namePermiso);
-                //console.log("permiso suplente");
-              
+                $('#lbl_permiso').text(namePermiso);             
             }else{
               updatePerfil();
-            }
-            
+            }            
           }else{
             if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
-                //console.log("permiso suplente");
-              
             }else{
               insertPerfil();
             }
