@@ -999,8 +999,15 @@ class PortalSolicitudesTicketController extends Controller
   public function enCarrito(Request $request){
     $body = $request->json()->all();
     $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
-    $ids =  $this->ticket->whereIn('clave', $clave)->get(["id"])->toArray();   
-  
+    $ids = array();
+    foreach($clave as $key => $v){
+      $data =  $this->ticket->where('clave', $v)->pluck("id")->toArray(); 
+      $ids[]=array(
+        "clave"=>$v,
+        "ids"=>$data
+      );     
+      
+    }
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
