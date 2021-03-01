@@ -852,7 +852,7 @@ function changeComunidad()
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
           $.each(resp.response, function(i, item) {
-            if( item.name=="notary_substitute" || item.name=="notary_capturist" || item.name=="notary_payments" || item.name=="notary_capturist_payments"){
+            if( item.name=="notary_titular" || item.name=="notary_substitute" || item.name=="notary_capturist" || item.name=="notary_payments" || item.name=="notary_capturist_payments"){
               $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
             }
           });
@@ -1425,30 +1425,27 @@ function changeComunidad()
       var itemsConfigUser=$("#itemsCofigNotario").val();
       var itemsPermiso=$("#itemsPermiso").val();
       var base64SAT=$("#base64pdf1").val();
-      var base64Notario=$("#base64pdf2").val();
-      var formdata = new FormData();
-      formdata.append("username", users);  
-      formdata.append("email", emailUser);  
-      formdata.append("name", nameUser);  
-      formdata.append("mothers_surname", apeMatUser);  
-      formdata.append("fathers_surname", apePatUser);  
-      formdata.append("curp", curpUser);  
-      formdata.append("rfc", rfcUser);  
-      formdata.append("phone", telUser);   
-      formdata.append("config_id", itemsConfigUser);  
-      formdata.append("role_id", itemsPermiso);  
-      formdata.append("status", 1);  
-      if(base64SAT.length>0 && base64Notario.length>0)
+      var base64Notario=$("#base64pdf2").val(); 
+      var user_={username: users,
+                email: emailUser,
+                name: nameUser,
+                mothers_surname: apeMatUser,
+                fathers_surname: apePatUser,
+                curp: curpUser,
+                rfc: rfcUser,
+                phone: telUser,
+                config_id: itemsConfigUser,
+                role_id: itemsPermiso,
+                status: 1
+            };
+        if(base64SAT.length>0 && base64Notario.length>0)
       {
-        formdata.append("sat_constancy_file", base64SAT);  
-        formdata.append("notary_constancy_file", base64Notario);
-      }
+        Object.assign(user_,{sat_constancy_file:base64SAT,notary_constancy_file:base64Notario});
+      } 
       $.ajax({
-           method: "POST", 
-           contentType: false,
-            processData: false,          
+           method: "POST",           
            url: "{{ url('/notary-offices-edit-user') }}",
-           data: {notary_id:id_notary,user_id:id_user,user:formdata ,_token:'{{ csrf_token() }}'}  })
+           data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {          
              //limpiarNot();
              Command: toastr.success("Success", "Notifications")
@@ -1567,6 +1564,8 @@ function changeComunidad()
         $("#password").focus();  
         return;
       }
+      var base64SAT=$("#base64pdf1").val();
+      var base64Notario=$("#base64pdf2").val();
       var user_={username: users,
                 email: emailUser,
                 password: password,
@@ -1580,8 +1579,11 @@ function changeComunidad()
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso
             };
-            //console.log(id_notary);
-            //console.log(user_);
+            
+        if(base64SAT.length>0 && base64Notario.length>0)
+      {
+        Object.assign(user_,{sat_constancy_file:base64SAT,notary_constancy_file:base64Notario});
+      }  
       $.ajax({
            method: "POST",            
            url: "{{ url('/notary-offices-create-users') }}",
