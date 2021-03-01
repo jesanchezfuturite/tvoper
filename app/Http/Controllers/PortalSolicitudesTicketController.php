@@ -994,21 +994,22 @@ class PortalSolicitudesTicketController extends Controller
   
   public function enCarrito(Request $request){
     $body = $request->json()->all();
+    $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
     try{
       if($body["type"]=="en_carrito"){
-        $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['en_carrito'=>$body['status']]);
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
         $count = $this->ticket->where("en_carrito", 1)->count();
         $mensaje="Solicitudes en el carrito";
       }
 
       if($body["type"]=="firmado"){
-        $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['firmado'=>$body['status']]);
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
         $count = $this->ticket->where("firmado", 1)->count();
         $mensaje="Solicitudes firmadas";
       }
 
       if($body["type"]=="por_firmar"){
-        $solicitudTicket = $this->ticket->whereIn('id',$body['ids'])->update(['por_firmar'=>$body['status']]);
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar'=>$body['status']]);
         $count = $this->ticket->where("por_firmar", 1)->count();
         $mensaje="Solicitudes por firmar";
 
