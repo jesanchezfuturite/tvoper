@@ -1620,21 +1620,22 @@ function changeComunidad()
      {
       id_=$("#id_NotSuplente").val();
      }
-    $.ajax({
-           method: "POST",            
-           url: "{{ url('/notary-offices-user-status') }}",
-           data: {notary_id:id_notary,user_id:id_,status:0, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-          if(idperfil.length>0)
+     if(idperfil.length>0)
             {
               updatePerfil();
             }else{
               
               insertPerfil();
             }
+    /*$.ajax({
+           method: "POST",            
+           url: "{{ url('/notary-offices-user-status') }}",
+           data: {notary_id:id_notary,user_id:id_,status:0, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+          
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
+                 Command: toastr.warning("No Success", "Notifications")  });*/
   }
 
   function limpiarNot()
