@@ -109,11 +109,10 @@ class PortalNotaryOfficesController extends Controller
         $notary_id = $request->notary_id;
         $user_id = $request->user_id;
         $data = array(
-            "id"=>$user_id,
             "status"=>$request->status
         );
         $json = json_encode($data);
-        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users/$user_id";
+        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users_status/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); 
