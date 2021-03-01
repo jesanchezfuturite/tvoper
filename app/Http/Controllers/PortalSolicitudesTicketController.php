@@ -293,7 +293,8 @@ class PortalSolicitudesTicketController extends Controller
         if($type=="firma"){
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
           ->where(function ($query) {
-            $query->where('por_firmar', '=', 1);
+            $query->where('por_firmar', '=', 1)
+            ->whereNotNull('id_transaccion');
           })         
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id')->where("firma", 1);
@@ -521,7 +522,8 @@ class PortalSolicitudesTicketController extends Controller
           $query->where("solicitudes_ticket.por_firmar", NULL)
                 ->orWhere('solicitudes_ticket.por_firmar', 1)
           ->where("solicitudes_ticket.status", 2)
-          ->orWhere("solicitudes_ticket.status", 3);
+          ->orWhere("solicitudes_ticket.status", 3)
+          ->whereNotNull('solicitudes_ticket.id_transaccion');
           
         });
         
