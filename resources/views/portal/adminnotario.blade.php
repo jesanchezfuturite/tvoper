@@ -1295,7 +1295,7 @@ function changeComunidad()
                 +"<td>"+role.description+"</td>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
-                +"<td>"+item.name+"</td>"
+                +"<td>"+item.name+" "+item.fathers_surname+" "+item.mothers_surname+"</td>"
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
