@@ -293,7 +293,8 @@ class PortalSolicitudesTicketController extends Controller
         if($type=="firma"){
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
           ->where(function ($query) {
-            $query->where('por_firmar', '=', 1);
+            $query->where('por_firmar', '=', 1)
+            ->whereNotNull('id_transaccion');
           })         
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id')->where("firma", 1);
@@ -518,7 +519,12 @@ class PortalSolicitudesTicketController extends Controller
           
       if($request->has('pendiente_firma')){        
         $solicitudes->where('solicitudes_catalogo.firma', "1")->where(function ($query) {
-          $query->where("solicitudes_ticket.por_firmar", NULL);
+          $query->where("solicitudes_ticket.por_firmar", NULL)
+                ->orWhere('solicitudes_ticket.por_firmar', 1)
+          ->where("solicitudes_ticket.status", 2)
+          ->orWhere("solicitudes_ticket.status", 3)
+          ->whereNotNull('solicitudes_ticket.id_transaccion');
+          
         });
         
       }
@@ -995,11 +1001,21 @@ class PortalSolicitudesTicketController extends Controller
   public function enCarrito(Request $request){
     $body = $request->json()->all();
     $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
+    $ids = array();
+    foreach($clave as $key => $v){
+      $data =  $this->ticket->where('clave', $v)->pluck("id")->toArray(); 
+      $ids[]=array(
+        "clave"=>$v,
+        "ids"=>$data
+      );     
+      
+    }
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
         $count = $this->ticket->where("en_carrito", 1)->count();
         $mensaje="Solicitudes en el carrito";
+        
       }
 
       if($body["type"]=="firmado"){
@@ -1018,7 +1034,9 @@ class PortalSolicitudesTicketController extends Controller
       return json_encode([
         "response" 	=> $mensaje,
         "code"		=> 200,
-        "count"=>$count
+        "count"=>$count,
+        "ids" => $ids
+
       ]);
     } catch (\Exception $e) {
       return json_encode([
