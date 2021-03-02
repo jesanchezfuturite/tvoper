@@ -1532,7 +1532,18 @@ function changeComunidad()
               updatePerfil();
             }            
           }else{
-            if(itemsPermiso==5 && id_NotSuplente.length>0)
+            if(itemsPermiso==2 && id_NotTitular.length>0)
+            {    
+              if(base64SAT.length==0)
+              {
+                Command: toastr.warning("Archivo Constancia SAT, requerido!", "Notifications")
+              }else if(base64Notario.length==0){
+                Command: toastr.warning("Archivo Constancia Notaria, requerido!", "Notifications")
+              }else{
+                $('#portlet-desactivaCuenta').modal('show');
+                $('#lbl_permiso').text(namePermiso);  
+              }
+            }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
@@ -1652,7 +1663,7 @@ function changeComunidad()
     $("#itemsEntidadNot").val("19").change();
     document.getElementById('codigopostNotario').value="";
     //$("#itemsTipoUser").val("0").change();
-      $("#itemsPermiso").val("0").change();
+      //$("#itemsPermiso").val("0").change();
       document.getElementById('idperfil').value="";      
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
