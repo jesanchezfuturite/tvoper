@@ -1438,10 +1438,14 @@ function changeComunidad()
                 role_id: itemsPermiso,
                 status: 1
             };
-        if(base64SAT.length>0 && base64Notario.length>0)
+        if(base64SAT.length>0)
       {
-        Object.assign(user_,{sat_constancy_file:base64SAT,notary_constancy_file:base64Notario});
+        Object.assign(user_,{sat_constancy_file:base64SAT});
       } 
+       if(base64Notario.length>0)
+      {
+        Object.assign(user_,{notary_constancy_file:base64Notario});
+      }
       $.ajax({
            method: "POST",           
            url: "{{ url('/notary-offices-edit-user') }}",
@@ -1512,7 +1516,7 @@ function changeComunidad()
             if(id==id_NotSuplente && itemsPermiso==permisoEdit){
               updatePerfil();
             }else if(id==id_NotTitular && itemsPermiso==permisoEdit){
-              updatePerfil();
+              updatePerfil(); 
             }else if(itemsPermiso==2 && id_NotTitular.length>0)
             {    
               if(base64SAT.length==0)
