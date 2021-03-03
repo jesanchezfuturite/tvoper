@@ -428,6 +428,21 @@
           </div>
           
         </div>
+        <div class="row input-checkbox-reenvio">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+               <div class='md-checkbox'>
+                    <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '>
+                    <label for='checkbox1'>
+                    <span></span>
+                    <span class='check'></span> <span class='box'>
+                  </span>  Reenvio de Correo. </label>
+                </div>                                        
+              </div>
+            </div>            
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-12">             
             <div class="form-group">
@@ -540,6 +555,7 @@
      $(".btn-upd-Not").css("display", "none");
      $(".btn-saveup-User").css("display", "none");
      $(".input-permiso").css("display", "none");
+     $(".input-checkbox-reenvio").css("display", "none");
     //$(".iDocument").css("display","none");
     changeComunidad();
     findentidades();
@@ -611,6 +627,7 @@
 
      $(".input-comunidad").css("display", "block");
      $(".input-permiso").css("display", "none");
+     $(".input-checkbox-reenvio").css("display", "none");
 
      $(".btn-save-Not").css("display", "block");
      $(".btn-saveup-User").css("display", "none");
@@ -628,6 +645,7 @@
 
      $(".input-comunidad").css("display", "none");
      $(".input-permiso").css("display", "none");
+     $(".input-checkbox-reenvio").css("display", "none");
 
      $(".btn-save-Not").css("display", "none");
      $(".btn-saveup-User").css("display", "none");
@@ -644,6 +662,7 @@
 
      $(".input-comunidad").css("display", "none");
      $(".input-permiso").css("display", "block");
+    
 
      $(".btn-save-Not").css("display", "none");
      $(".btn-saveup-User").css("display", "block");
@@ -847,7 +866,9 @@ function changeComunidad()
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
   function selectPermiso_insert()
-  { var array=$("#arrayPermisos").val();
+  { 
+    $(".input-checkbox-reenvio").css("display", "none");
+    var array=$("#arrayPermisos").val();
     var resp=$.parseJSON(array);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
@@ -856,9 +877,12 @@ function changeComunidad()
               $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
             }
           });
+          $("#itemsPermiso").val("0").change();
   }
   function selectPermiso_updateNotary(id_)
-  { var array=$("#arrayPermisos").val();
+  { 
+ $(".input-checkbox-reenvio").css("display", "block");
+    var array=$("#arrayPermisos").val();
     var resp=$.parseJSON(array);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
@@ -871,7 +895,8 @@ function changeComunidad()
 
   }
   function selectPermiso_updateUser(id_)
-  { var array=$("#arrayPermisos").val();
+  {  $(".input-checkbox-reenvio").css("display", "block");
+    var array=$("#arrayPermisos").val();
     var resp=$.parseJSON(array);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
@@ -1425,7 +1450,8 @@ function changeComunidad()
       var itemsConfigUser=$("#itemsCofigNotario").val();
       var itemsPermiso=$("#itemsPermiso").val();
       var base64SAT=$("#base64pdf1").val();
-      var base64Notario=$("#base64pdf2").val(); 
+      var base64Notario=$("#base64pdf2").val();
+      var check=$("#checkbox1").prop("checked"); 
       var user_={username: users,
                 email: emailUser,
                 name: nameUser,
@@ -1436,7 +1462,8 @@ function changeComunidad()
                 phone: telUser,
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso,
-                status: 1
+                status: 1,
+                reenviar:check
             };
         if(base64SAT.length>0)
       {
@@ -1446,6 +1473,7 @@ function changeComunidad()
       {
         Object.assign(user_,{notary_constancy_file:base64Notario});
       }
+      console.log(user_);
       $.ajax({
            method: "POST",           
            url: "{{ url('/notary-offices-edit-user') }}",
@@ -1481,7 +1509,8 @@ function changeComunidad()
       var namePermiso=$("#itemsPermiso option:selected").text();
           emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;  
       var base64SAT=$("#base64pdf1").val();
-      var base64Notario=$("#base64pdf2").val();  
+      var base64Notario=$("#base64pdf2").val();
+      var check=$("#checkbox1").prop("checked");   
       if(id_notary=='0'){
         Command: toastr.warning("Selecciona Nortario, requerido!", "Notifications") 
       }else if (!curpValida(curpUser)) {
@@ -1513,6 +1542,13 @@ function changeComunidad()
       }else{        
         if(id.length>0)
           {
+            if(check==true){
+              if(password.length<1)
+              { Command: toastr.warning("Campo Contraseña, requerido!", "Notifications") 
+                $("#password").focus();
+                return;
+              }
+            }
             if(id==id_NotSuplente && itemsPermiso==permisoEdit){
               updatePerfil();
             }else if(id==id_NotTitular && itemsPermiso==permisoEdit){
@@ -1687,9 +1723,9 @@ function changeComunidad()
     document.getElementById('delFileSAT').click();
     document.getElementById('numeroExtNotario').value="";
     document.getElementById("nameUser").disabled=false ;
-            document.getElementById("apePatUser").disabled=false;
-            document.getElementById("apeMatUser").disabled=false;
-    
+    document.getElementById("apePatUser").disabled=false;
+    document.getElementById("apeMatUser").disabled=false;
+    $("#checkbox1").prop("checked", false);
 }
 function onechange2()
 {
