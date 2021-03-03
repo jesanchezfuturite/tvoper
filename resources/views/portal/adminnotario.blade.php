@@ -1295,7 +1295,7 @@ function changeComunidad()
                 +"<td>"+role.description+"</td>"
                 +"<td>"+item.username+"</td>"
                 +"<td>"+item.email+"</td>"
-                +"<td>"+item.name+"</td>"
+                +"<td>"+item.name+" "+item.fathers_surname+" "+item.mothers_surname+"</td>"
                 +"<td>"+item.rfc+"</td>"
                 +"<td>"+item.curp+"</td>"
                 +"<td>&nbsp;<span class='label label-sm label-"+label+"'>"+msgg+"</span></td>"
@@ -1438,10 +1438,14 @@ function changeComunidad()
                 role_id: itemsPermiso,
                 status: 1
             };
-        if(base64SAT.length>0 && base64Notario.length>0)
+        if(base64SAT.length>0)
       {
-        Object.assign(user_,{sat_constancy_file:base64SAT,notary_constancy_file:base64Notario});
+        Object.assign(user_,{sat_constancy_file:base64SAT});
       } 
+       if(base64Notario.length>0)
+      {
+        Object.assign(user_,{notary_constancy_file:base64Notario});
+      }
       $.ajax({
            method: "POST",           
            url: "{{ url('/notary-offices-edit-user') }}",
@@ -1512,7 +1516,7 @@ function changeComunidad()
             if(id==id_NotSuplente && itemsPermiso==permisoEdit){
               updatePerfil();
             }else if(id==id_NotTitular && itemsPermiso==permisoEdit){
-              updatePerfil();
+              updatePerfil(); 
             }else if(itemsPermiso==2 && id_NotTitular.length>0)
             {    
               if(base64SAT.length==0)
@@ -1532,7 +1536,18 @@ function changeComunidad()
               updatePerfil();
             }            
           }else{
-            if(itemsPermiso==5 && id_NotSuplente.length>0)
+            if(itemsPermiso==2 && id_NotTitular.length>0)
+            {    
+              if(base64SAT.length==0)
+              {
+                Command: toastr.warning("Archivo Constancia SAT, requerido!", "Notifications")
+              }else if(base64Notario.length==0){
+                Command: toastr.warning("Archivo Constancia Notaria, requerido!", "Notifications")
+              }else{
+                $('#portlet-desactivaCuenta').modal('show');
+                $('#lbl_permiso').text(namePermiso);  
+              }
+            }else if(itemsPermiso==5 && id_NotSuplente.length>0)
             {             
                 $('#portlet-desactivaCuenta').modal('show');
                 $('#lbl_permiso').text(namePermiso);
@@ -1620,21 +1635,22 @@ function changeComunidad()
      {
       id_=$("#id_NotSuplente").val();
      }
-    $.ajax({
-           method: "POST",            
-           url: "{{ url('/notary-offices-user-status') }}",
-           data: {notary_id:id_notary,user_id:id_,status:0, _token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
-          if(idperfil.length>0)
+     if(idperfil.length>0)
             {
               updatePerfil();
             }else{
               
               insertPerfil();
             }
+    /*$.ajax({
+           method: "POST",            
+           url: "{{ url('/notary-offices-user-status') }}",
+           data: {notary_id:id_notary,user_id:id_,status:0, _token:'{{ csrf_token() }}'}  })
+        .done(function (response) {     
+          
         })
         .fail(function( msg ) {
-         Command: toastr.warning("No Success", "Notifications")  });
+                 Command: toastr.warning("No Success", "Notifications")  });*/
   }
 
   function limpiarNot()
@@ -1651,7 +1667,7 @@ function changeComunidad()
     $("#itemsEntidadNot").val("19").change();
     document.getElementById('codigopostNotario').value="";
     //$("#itemsTipoUser").val("0").change();
-      $("#itemsPermiso").val("0").change();
+      //$("#itemsPermiso").val("0").change();
       document.getElementById('idperfil').value="";      
       document.getElementById('users').value=""; 
       document.getElementById('emailUser').value=""; 
