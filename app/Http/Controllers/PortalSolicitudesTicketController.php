@@ -490,7 +490,8 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`clave`,
         `solicitudes_ticket`.`por_firmar`,
-
+        `solicitudes_ticket`.`doc_firmado`,
+        `solicitudes_ticket`.`firmado,
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
@@ -502,10 +503,10 @@ class PortalSolicitudesTicketController extends Controller
 
         `tramites`.`id` as `tramites_id`,
         `tramites`.`id_transaccion_motor` as `tramites_id_transaccion_motor`,
-        `tramites`.`estatus` as `tramites_estatus`,
-        `tramites`.`json_envio` as `tramites_json_envio`,
-        `tramites`.`json_recibo` as `tramites_json_recibo`,
-        `tramites`.`url_recibo` as `tramites_url_recibo`,
+        `tramites`.`estatus` as `tramites_estatus`,".
+        // `tramites`.`json_envio` as `tramites_json_envio`,
+        // `tramites`.`json_recibo` as `tramites_json_recibo`,
+        "`tramites`.`url_recibo` as `tramites_url_recibo`,
         `tramites`.`created_at` as `tramites_created_at`,
         `tramites`.`updated_at` as `tramites_updated_at`
       ");
@@ -518,15 +519,16 @@ class PortalSolicitudesTicketController extends Controller
       ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
           
       if($request->has('pendiente_firma')){        
-        $solicitudes->where('solicitudes_catalogo.firma', "1")->where(function ($query) {
-          $query->where("solicitudes_ticket.por_firmar", NULL)
-                ->orWhere('solicitudes_ticket.por_firmar', 1)
-          ->where("solicitudes_ticket.status", 2)
-          ->orWhere("solicitudes_ticket.status", 3)
-          ->whereNotNull('solicitudes_ticket.id_transaccion');
-          
-        });
-        
+        $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->whereIn("solicitudes_ticket.status", [2,3])
+        ->whereNotNull('solicitudes_ticket.id_transaccion');
+      }
+
+      if($request->has('firmado')){        
+        $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->whereIn("solicitudes_ticket.status", [2,3])
+        ->whereNotNull('solicitudes_ticket.id_transaccion')
+        ->whereNotNull('solicitudes_ticket.firmado');
       }
       
       if($request->has('tipo_solicitud')){
@@ -541,7 +543,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
       }
       if($request->has('notary_id')){
-        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
+        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
         $solicitudes->whereIn('user_id', $users);
       }
       
@@ -559,6 +561,7 @@ class PortalSolicitudesTicketController extends Controller
         if(isset($solicitud->info->campos))
           $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
       }
+      $campos = array_unique($campos);
       $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
       foreach($solicitudes as $key => $solicitud){
         if(isset($solicitud->info->campos)){
