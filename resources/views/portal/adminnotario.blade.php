@@ -1446,7 +1446,7 @@ function changeComunidad()
       var apeMatUser=$("#apeMatUser").val();
       var curpUser=$("#curpUser").val();
       var rfcUser=$("#rfcUser").val();
-      var password=$("#password").val();
+      var password_=$("#password").val();
       var itemsConfigUser=$("#itemsCofigNotario").val();
       var itemsPermiso=$("#itemsPermiso").val();
       var base64SAT=$("#base64pdf1").val();
@@ -1463,9 +1463,13 @@ function changeComunidad()
                 config_id: itemsConfigUser,
                 role_id: itemsPermiso,
                 status: 1,
-                reenviar:check
+                reenvio:check
             };
-        if(base64SAT.length>0)
+      if(check==true)
+      {
+        Object.assign(user_,{password:password_});        
+      }
+      if(base64SAT.length>0)
       {
         Object.assign(user_,{sat_constancy_file:base64SAT});
       } 
@@ -1546,6 +1550,11 @@ function changeComunidad()
               if(password.length<1)
               { Command: toastr.warning("Campo Contraseña, requerido!", "Notifications") 
                 $("#password").focus();
+                return;
+              }
+              if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || password.length < 8){
+                Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications")
+                $("#password").focus();  
                 return;
               }
             }
