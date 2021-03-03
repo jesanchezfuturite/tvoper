@@ -112,7 +112,7 @@ class PortalSolicitudesTicketController extends Controller
       // $info = $request->info;
 
       $ids = [];
-      // try { 
+      try { 
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
           if(!empty($datosrecorrer)){
@@ -235,13 +235,13 @@ class PortalSolicitudesTicketController extends Controller
           }
         }  
         
-      // } catch (\Exception $e) {
-      //   $error = [
-      //       "Code" => "400",
-      //       "Message" => "Error al guardar la solicitud"
-      //   ];
+      } catch (\Exception $e) {
+        $error = [
+            "Code" => "400",
+            "Message" => "Error al guardar la solicitud"
+        ];
     
-      // }
+      }
       if($error) return response()->json($error);
 
 
@@ -1001,6 +1001,7 @@ class PortalSolicitudesTicketController extends Controller
   public function enCarrito(Request $request){
     $body = $request->json()->all();
     $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
+  
     $ids = array();
     foreach($clave as $key => $v){
       $data =  $this->ticket->where('clave', $v)->pluck("id")->toArray(); 
@@ -1019,6 +1020,10 @@ class PortalSolicitudesTicketController extends Controller
       }
 
       if($body["type"]=="firmado"){
+        foreach($body["ids"] as $key => $value){
+            $doc_firmado = $this->ticket->where('id',$value)->update(['doc_firmado'=>$body["urls"][$key]]);
+
+        }
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
         $count = $this->ticket->where("firmado", 1)->count();
         $mensaje="Solicitudes firmadas";
