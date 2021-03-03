@@ -491,7 +491,7 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`clave`,
         `solicitudes_ticket`.`por_firmar`,
         `solicitudes_ticket`.`doc_firmado`,
-        `solicitudes_ticket`.`firmado,
+        `solicitudes_ticket`.`firmado`,
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
