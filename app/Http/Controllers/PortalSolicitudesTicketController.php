@@ -283,7 +283,6 @@ class PortalSolicitudesTicketController extends Controller
         $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
         if($relation){
           $notary_id = $relation->notary_office_id;
-          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->toSql(); 
           $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
             
         }else{
@@ -1000,7 +999,17 @@ class PortalSolicitudesTicketController extends Controller
   
   public function enCarrito(Request $request){
     $body = $request->json()->all();
+    $user_id = $body["user_id"];
     $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
+    $relation = $this->configUserNotary->where('user_id', $user_id)->first(); 
+    if($relation){
+      $notary_id = $relation->notary_office_id;
+      $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+        
+    }else{
+      $users = ["$user_id"];          
+    }
+
   
     $ids = array();
     foreach($clave as $key => $v){
@@ -1014,7 +1023,7 @@ class PortalSolicitudesTicketController extends Controller
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-        $count = $this->ticket->where("en_carrito", 1)->count();
+        $count = $this->ticket->where("en_carrito", 1)->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes en el carrito";
         
       }
@@ -1025,13 +1034,13 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
-        $count = $this->ticket->where("firmado", 1)->count();
+        $count = $this->ticket->where("firmado", 1)->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes firmadas";
       }
 
       if($body["type"]=="por_firmar"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar'=>$body['status']]);
-        $count = $this->ticket->where("por_firmar", 1)->count();
+        $count = $this->ticket->where("por_firmar", 1)->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes por firmar";
 
 
