@@ -75,7 +75,7 @@
                     </div>                              
                 </div>
                 <div class="row">
-                <div class="col-md-2 col-ms-12 checkdivisa">
+                    <div class="col-md-2 col-ms-12 checkdivisa">
                         <span class="help-block"></span>
                        <div class='md-checkbox'>
                             <input type='checkbox' id='checkbox2' name="checkdivisa" class='md-check '  onclick="divisa()">
@@ -84,7 +84,17 @@
                                 <span class='check'></span> <span class='box'>
                             </span> Configurar divisa. </label>
                         </div>
-                    </div>   
+                    </div>
+                    <div class="col-md-2 col-ms-12 checkfirma">
+                        <span class="help-block"></span>
+                       <div class='md-checkbox'>
+                            <input type='checkbox' id='checkbox3' name="checkfirma" class='md-check '  onclick="firma()">
+                                <label for='checkbox3'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                            </span> Requiere Firma. </label>
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>
@@ -493,10 +503,58 @@
         findTipos();
         $(".checkfile").css("display", "none");
         $(".checkdivisa").css("display", "none");
+        $(".checkfirma").css("display", "none");
         $(".radioTipos").css("display", "none");
         findTipoCategoria();
     });
+    function findfirma()
+    {
+        var tramite=$("#itemsTramites").val();
+        $.ajax({
+           method: "get",
+           url: "{{ url('/get-firma-find') }}"+"/"+tramite,
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+        //console.log(response);
+            if(response==null || response=="null" || response=="[]")
+            {
+                $(".checkfirma").css("display", "none");
+                return;
+            }else{
+                $(".checkfirma").css("display", "block");
+            }
+            var checkl=0;
+            $.each(Resp, function(i, item) {
+               checkl=item.firma;
+            });
+            
+            $("#checkbox3").prop("checked", checkl);
 
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
+    function firma()
+    {
+        var id_tramite_=$("#itemsTramites").val();
+        var check=$("#checkbox3:checked").length;
+        console.log(check);
+        $.ajax({
+           method: "POST",
+           url: "{{ url('/update-firma') }}",
+           data: {tramite_id:id_tramite_,firma:check,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+         if(response.Code =="200"){
+            Command: toastr.success(response.Message, "Notifications")
+            }else{
+                Command: toastr.warning(response.Message, "Notifications")
+            }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+        
+    }
     function changeTipo()
     {
        var tipo=$("#itemsTipos").val();
@@ -690,17 +748,19 @@
         if(id_=="limpia")
         {   $("#checkbox1").prop("checked", false);
             $("#checkbox2").prop("checked", false);
+            $("#checkbox3").prop("checked", false);
             $("#itemsAgrupaciones option").remove();
             $("#itemsAgrupaciones").append("<option value='limpia'>-------</option>");            
             $("#itemsCategoria").val("limpia").change();
             $(".checkfile").css("display", "none");
             $(".checkdivisa").css("display", "none");
+            $(".checkfirma").css("display", "none");
 
             return;
         }else{
             $(".checkfile").css("display", "block");
             $(".checkdivisa").css("display", "block");
-
+            findfirma();
 
         }
 

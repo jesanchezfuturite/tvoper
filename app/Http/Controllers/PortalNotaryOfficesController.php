@@ -9,6 +9,7 @@ use App\Repositories\OperacionRoleRepositoryEloquent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use SoapClient;
+use GuzzleHttp\Client;
 
 /**
  * Class PortalNotaryOfficesController.
@@ -108,11 +109,10 @@ class PortalNotaryOfficesController extends Controller
         $notary_id = $request->notary_id;
         $user_id = $request->user_id;
         $data = array(
-            "id"=>$user_id,
             "status"=>$request->status
         );
         $json = json_encode($data);
-        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users/$user_id";
+        $link ="http://10.153.144.218/session-api/notary-offices/". "$notary_id/users_status/$user_id";
         $ch = curl_init();    
         curl_setopt($ch, CURLOPT_URL, $link);     
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); 
@@ -215,5 +215,59 @@ class PortalNotaryOfficesController extends Controller
         log::info($response);
         return $response;
    }
+    public function updateNotary(Request $request){
+        $id = $request->id;
+        $data = $request->all();           
+        $json=json_encode($data);
+
+        $link = "http://10.153.144.218/session-api/notary-offices/"."$id";
+       
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $link);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');  
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $remote_server_output = curl_exec($ch);
+        curl_close ($ch);
+        $response =json_decode($remote_server_output);
+
+        return json_encode($response);
+     
+
+    }
+
+    public function getNotary($id){
+        $link ="http://10.153.144.218/session-api/notary-offices/"."$id";
+        $ch = curl_init();    
+        curl_setopt($ch, CURLOPT_URL, $link);        
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);        
+        $notary = curl_exec($ch);
+        curl_close($ch);
+        
+        return $notary;
+    }
+
+    public function searchUsername(Request $request){
+        $data = $request->all();
+        $url ="http://10.153.144.218/session-api/notary-offices/user";
+
+
+        $client = new \GuzzleHttp\Client();
+
+	    	$response = $client->get(
+	    		$url,
+	    		[
+	    			"query" =>$data
+	    		]	
+	    	);
+
+	    	$results = $response->getBody();
+
+		
+			return  $results;
+    }
+
 
 }
