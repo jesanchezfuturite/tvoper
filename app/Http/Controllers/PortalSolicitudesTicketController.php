@@ -538,7 +538,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->where('solicitudes_ticket.status', $request->estatus);
       }
   
-      if($request->has('id_solicitud')){
+      if($request->has('id_solicitud')){        
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
       }
       if($request->has('notary_id')){
@@ -546,8 +546,16 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->whereIn('user_id', $users);
       }
       
-      if($request->has('id_usuario')){        
-        $solicitudes->where('user_id', $request->id_usuario);
+      if($request->has('id_usuario')){     
+        $relation = $this->configUserNotary->where('user_id', $request->id_usuario)->first(); 
+        if($relation){
+          $notary_id = $relation->notary_office_id;
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+            
+        }else{
+          $users = ["$user_id"];          
+        }   
+        $solicitudes->whereIn('user_id', $users);
       }
   
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
