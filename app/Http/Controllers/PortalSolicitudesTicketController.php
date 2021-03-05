@@ -836,18 +836,15 @@ class PortalSolicitudesTicketController extends Controller
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
           if($solicitudes->catalogo_id ==10){
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
-            
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
 
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
-            }
+            $ids_tramites=[];   
 
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
@@ -876,22 +873,24 @@ class PortalSolicitudesTicketController extends Controller
             unset($tmts[0]["tramite_id"]);
 
             $response["tramite"] =$tmts[0];
+            $response["operaciones"]=$solicitudes;
+ 
+
 
             return $response;     
           }else{
             $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
-            
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
-            }
 
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
+          
+            $ids_tramites=[];
+     
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
             $tramites = $this->getTramites($idstmts);
@@ -904,6 +903,9 @@ class PortalSolicitudesTicketController extends Controller
             $tramites[0]["json_envio"]=json_decode($json_envio);
   
             $response["tramite"] =$tramites[0];
+            $response["operaciones"]=$solicitudes;
+ 
+
             return $response;
           }
         }else{
