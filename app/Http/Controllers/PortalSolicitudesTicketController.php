@@ -537,6 +537,11 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has('estatus')){
         $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
       }
+
+      if($request->has('en_carrito')){
+        $solicitudes->where('solicitudes_ticket.en_carrito', 1)
+        ->where('solicitudes_ticket.status', 99);
+      }
   
       if($request->has('id_solicitud')){        
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
