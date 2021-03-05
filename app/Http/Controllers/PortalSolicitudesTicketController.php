@@ -535,7 +535,7 @@ class PortalSolicitudesTicketController extends Controller
       }
   
       if($request->has('estatus')){
-        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+        $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
       }
   
       if($request->has('id_solicitud')){        
@@ -560,6 +560,7 @@ class PortalSolicitudesTicketController extends Controller
   
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
+      // dd($solicitudes);
    
       $campos = [];
       $response = [];
