@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use DB;
 use Carbon\Carbon;
 use App\Entities\PortalSolicitudesTicket;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use File;
+use Illuminate\Support\Facades\View;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
@@ -830,6 +833,19 @@ class PortalSolicitudesController extends Controller
             "Message" => "Error al buscar firma"
         ]);   
       }
+    }
+    public function downloadPdf()
+    {
+      
+      $path=storage_path('app/pdf/filepdf.pdf');
+                $dompdf = new DOMPDF();
+                //$dompdf->setPaper('A3', 'portrait');
+                $html=View::make('documentos/prelacion',['transaccion'=>'00000000000000000'])->render();
+                log::info($html);
+                $dompdf->load_html( $html);
+                $dompdf->render();
+                $output=$dompdf->output();
+                 File::put($path,$output);
     }
  
 }
