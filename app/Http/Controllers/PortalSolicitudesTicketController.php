@@ -842,12 +842,33 @@ class PortalSolicitudesTicketController extends Controller
         if($tramite->estatus==0){
           if($solicitudes->catalogo_id ==10){
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
-            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->select('not.suplente_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
+            ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
             ->where('tk.id', $id)
             ->get()->toArray();
+            
+            $notario = [];
+            foreach($solicitudes as $key => $value){
+              $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value->titular_id)->first();
+              $suplente = DB::connection('mysql6')->table("portal.users")->where("id", $value->substitute_id)->first();
+              
+              $notario["titular"] =array(
+                'nombre'=> $titular->name,
+                'apellido_paterno'=> $titular->fathers_surname,
+                'apellido_materno'=> $titular->mothers_surname,
+
+              );
+
+              $notario["suplente"] =array(
+                'nombre'=> $suplente->name,
+                'apellido_paterno'=> $suplente->fathers_surname,
+                'apellido_materno'=> $suplente->mothers_surname,
+              );
+            }
 
             $ids_tramites=[];   
 
@@ -879,7 +900,7 @@ class PortalSolicitudesTicketController extends Controller
 
             $response["tramite"] =$tmts[0];
             $response["operaciones"]=$solicitudes;
- 
+            $response["notaria"]=$notario;
 
 
             return $response;     
@@ -887,12 +908,33 @@ class PortalSolicitudesTicketController extends Controller
             $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
 
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
-            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->select('not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
+            ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
             ->where('tk.id', $id)
             ->get()->toArray();
+
+            $notario = [];
+            foreach($solicitudes as $key => $value){
+              $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value->titular_id)->first();
+              $suplente = DB::connection('mysql6')->table("portal.users")->where("id", $value->substitute_id)->first();
+              
+              $notario["titular"] =array(
+                'nombre'=> $titular->name,
+                'apellido_paterno'=> $titular->fathers_surname,
+                'apellido_materno'=> $titular->mothers_surname,
+
+              );
+
+              $notario["suplente"] =array(
+                'nombre'=> $suplente->name,
+                'apellido_paterno'=> $suplente->fathers_surname,
+                'apellido_materno'=> $suplente->mothers_surname,
+              );
+            }
           
             $ids_tramites=[];
      
@@ -909,6 +951,8 @@ class PortalSolicitudesTicketController extends Controller
   
             $response["tramite"] =$tramites[0];
             $response["operaciones"]=$solicitudes;
+            $response["notaria"]=$notario;
+
  
 
             return $response;
@@ -925,6 +969,7 @@ class PortalSolicitudesTicketController extends Controller
 
   
       }catch(\Exception $e) {
+
   
   
         return response()->json(
