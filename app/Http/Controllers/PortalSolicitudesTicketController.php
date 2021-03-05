@@ -489,7 +489,8 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`clave`,
         `solicitudes_ticket`.`por_firmar`,
-
+        `solicitudes_ticket`.`doc_firmado`,
+        `solicitudes_ticket`.`firmado`,
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
@@ -501,10 +502,10 @@ class PortalSolicitudesTicketController extends Controller
 
         `tramites`.`id` as `tramites_id`,
         `tramites`.`id_transaccion_motor` as `tramites_id_transaccion_motor`,
-        `tramites`.`estatus` as `tramites_estatus`,
-        `tramites`.`json_envio` as `tramites_json_envio`,
-        `tramites`.`json_recibo` as `tramites_json_recibo`,
-        `tramites`.`url_recibo` as `tramites_url_recibo`,
+        `tramites`.`estatus` as `tramites_estatus`,".
+        // `tramites`.`json_envio` as `tramites_json_envio`,
+        // `tramites`.`json_recibo` as `tramites_json_recibo`,
+        "`tramites`.`url_recibo` as `tramites_url_recibo`,
         `tramites`.`created_at` as `tramites_created_at`,
         `tramites`.`updated_at` as `tramites_updated_at`
       ");
@@ -517,15 +518,16 @@ class PortalSolicitudesTicketController extends Controller
       ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
           
       if($request->has('pendiente_firma')){        
-        $solicitudes->where('solicitudes_catalogo.firma', "1")->where(function ($query) {
-          $query->where("solicitudes_ticket.por_firmar", NULL)
-                ->orWhere('solicitudes_ticket.por_firmar', 1)
-          ->where("solicitudes_ticket.status", 2)
-          ->orWhere("solicitudes_ticket.status", 3)
-          ->whereNotNull('solicitudes_ticket.id_transaccion');
-          
-        });
-        
+        $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->whereIn("solicitudes_ticket.status", [2,3])
+        ->whereNotNull('solicitudes_ticket.id_transaccion');
+      }
+
+      if($request->has('firmado')){        
+        $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->whereIn("solicitudes_ticket.status", [2,3])
+        ->whereNotNull('solicitudes_ticket.id_transaccion')
+        ->whereNotNull('solicitudes_ticket.firmado');
       }
       
       if($request->has('tipo_solicitud')){
@@ -533,23 +535,32 @@ class PortalSolicitudesTicketController extends Controller
       }
   
       if($request->has('estatus')){
-        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+        $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
       }
   
-      if($request->has('id_solicitud')){
+      if($request->has('id_solicitud')){        
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
       }
       if($request->has('notary_id')){
-        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray(); 
+        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
         $solicitudes->whereIn('user_id', $users);
       }
       
-      if($request->has('id_usuario')){        
-        $solicitudes->where('user_id', $request->id_usuario);
+      if($request->has('id_usuario')){     
+        $relation = $this->configUserNotary->where('user_id', $request->id_usuario)->first(); 
+        if($relation){
+          $notary_id = $relation->notary_office_id;
+          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+            
+        }else{
+          $users = ["$user_id"];          
+        }   
+        $solicitudes->whereIn('user_id', $users);
       }
   
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
+      // dd($solicitudes);
    
       $campos = [];
       $response = [];
@@ -558,6 +569,7 @@ class PortalSolicitudesTicketController extends Controller
         if(isset($solicitud->info->campos))
           $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
       }
+      $campos = array_unique($campos);
       $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
       foreach($solicitudes as $key => $solicitud){
         if(isset($solicitud->info->campos)){
@@ -824,18 +836,15 @@ class PortalSolicitudesTicketController extends Controller
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
           if($solicitudes->catalogo_id ==10){
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
-            
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
 
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
-            }
+            $ids_tramites=[];   
 
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
@@ -864,22 +873,24 @@ class PortalSolicitudesTicketController extends Controller
             unset($tmts[0]["tramite_id"]);
 
             $response["tramite"] =$tmts[0];
+            $response["operaciones"]=$solicitudes;
+ 
+
 
             return $response;     
           }else{
             $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
-            
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
-            }
 
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
+          
+            $ids_tramites=[];
+     
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
             $tramites = $this->getTramites($idstmts);
@@ -892,6 +903,9 @@ class PortalSolicitudesTicketController extends Controller
             $tramites[0]["json_envio"]=json_decode($json_envio);
   
             $response["tramite"] =$tramites[0];
+            $response["operaciones"]=$solicitudes;
+ 
+
             return $response;
           }
         }else{
