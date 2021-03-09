@@ -315,7 +315,11 @@
       }
     </style>
   </head>
-  <body class="">  
+  <body class=""> 
+  <?php 
+    $img_nl=base64_encode(file_get_contents("images/nl.png"));
+    $img_irc=base64_encode(file_get_contents("images/irc.png"));
+  ?> 
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td class="container">
@@ -325,11 +329,14 @@
                 <td class="wrapper">
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td> <div style="position: relative;">
-                             <img src="" width="175px" align="right"name="image_irc">
-                              <img src="" width="175px" align="left"name="image_nl"> </div>
+                      <td align="center"> 
+                        <div style="position: absolute;">
+                          <img src="data:image/png;base64,<?php echo $img_irc ?>" width="195px" align="right"name="image_irc">
+                          <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="195px" align="left"name="image_nl"> </div>
                        <center><h3><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h3></center> 
-                       <center><h4><strong>DOCUMENTO PRELACION</strong></h4></center> 
+                       <br>
+                       <center><h4><strong>&nbsp;</strong></h4></center> 
+                       <center><h4><strong>DOCUMENTO PRELACIÓN</strong></h4></center> 
                        <center><h4>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h4></center>                         
                       </td>
                     </tr>
@@ -474,10 +481,11 @@
                         <td width="50%">
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
-                                  <td> <div style="position: relative;">
-                                         <img src="" width="125px" align="right"name="image_irc2">
-                                        <img src="" width="125px" align="left"name="image_nl2">
-                                        </div>
+                                  <td> 
+                                    <div style="position: relative;">
+                                      <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
+                                      <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
+                                    </div>
                                    <center><h4><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h4></center>
                                    <br> 
                                    <center><h5><strong>DOCUMENTO PRELACION</strong></h5></center> 
@@ -613,9 +621,10 @@
                         <td width="50%">
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
-                                  <td> <div style="position: relative;">
-                                        <img src="" width="125px" align="right"name="image_irc3">
-                                        <img src="" width="125px" align="left"name="image_nl3"> 
+                                  <td> 
+                                    <div style="position: relative;">
+                                      <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
+                                      <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
                                     </div>
                                    <center><h4><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h4></center> 
                                    <br>
