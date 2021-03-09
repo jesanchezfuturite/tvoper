@@ -534,10 +534,6 @@ class PortalSolicitudesTicketController extends Controller
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
       }
   
-      if($request->has('estatus')){
-        $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
-      }
-
       if($request->has('en_carrito')){
         $solicitudes->where('solicitudes_ticket.en_carrito', 1)
         ->where('solicitudes_ticket.status', 99);
@@ -563,6 +559,10 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->whereIn('user_id', $users);
       }
   
+      if($request->has('estatus')){
+        $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
+      }
+
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
       // dd($solicitudes);
@@ -735,9 +735,11 @@ class PortalSolicitudesTicketController extends Controller
           $id = $solTramites->id;
 
         }else{
+          
           $solTramites= $this->solTramites->updateOrCreate(['id_transaccion_motor' => $request->id_transaccion_motor], [
             "estatus"=> $request->status
           ]);
+
           $id = $solTramites->id;
             
         }          

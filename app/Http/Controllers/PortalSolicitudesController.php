@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use DB;
 use Carbon\Carbon;
 use App\Entities\PortalSolicitudesTicket;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use File;
+use Illuminate\Support\Facades\View;
 use App\Repositories\UsersRepositoryEloquent;
 use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
@@ -557,7 +560,15 @@ class PortalSolicitudesController extends Controller
     }else{
       $attach ="";
     }
-  
+    if($prelacion==1)
+      {
+        $msprelacion =$this->msjprelaciondb->create([
+          'solicitud_id'=> $ticket_id
+        ]);
+        $attach= "documento_prelacion_".$request->id.".pdf";
+        $this->savePdfprelacion($attach);
+        
+      }
     try {
       $mensajes =$this->mensajes->create([
         'ticket_id'=> $ticket_id,
@@ -565,12 +576,7 @@ class PortalSolicitudesController extends Controller
         'mensaje_para' => $mensaje_para,
         'attach'    =>  $attach
       ]);
-      if($prelacion==1)
-      {
-        $msprelacion =$this->msjprelaciondb->create([
-          'solicitud_id'=> $ticket_id
-        ]);
-      }
+      
       return response()->json(
         [
           "Code" => "200",
@@ -830,6 +836,22 @@ class PortalSolicitudesController extends Controller
             "Message" => "Error al buscar firma"
         ]);   
       }
+    }
+    private function savePdfprelacion($path)
+    { 
+      $path=storage_path('app/'.$path);
+      $options= new Options();
+      $options->set('isHtml5ParserEnabled',true);
+      $options->set('isRemoteEnabled',true);
+      $dompdf = new DOMPDF($options);
+      $dompdf->setPaper('A4', 'portrait');
+      $dompdf->set_option('dpi', '135');
+      $html=View::make('documentos/prelacion',['transaccion'=>'00000000000000000'])->render();
+     // log::info($html);
+      $dompdf->load_html( $html);
+      $dompdf->render();
+      $output=$dompdf->output();
+      File::put($path,$output);
     }
  
 }
