@@ -747,8 +747,10 @@
         //console.log(response);  
             $("#itemsEntidadNot option").remove();
             $('#itemsEntidadNot').append("<option value='0'>------</option>");
-            $.each(resp, function(i, item) {                
+            $.each(resp, function(i, item) { 
+              if(item.clave>0 && item.clave<33) {             
                 $('#itemsEntidadNot').append("<option value='"+item.clave+"'>"+item.nombre+"</option>");
+              }
             });
             $("#itemsEntidadNot").val("19").change();
 
