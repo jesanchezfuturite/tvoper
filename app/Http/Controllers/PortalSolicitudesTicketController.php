@@ -299,6 +299,7 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')->where("firma", 1);
           }])->get()->toArray(); 
         }else{
+          dd($users);
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
@@ -666,6 +667,7 @@ class PortalSolicitudesTicketController extends Controller
           'id_transaccion_motor'=>$request->id_transaccion_motor,
           'json_envio'=>json_encode($request->json_envio),
           'json_recibo'=>json_encode($request->json_recibo),
+          'url_recibo'=>$request->url_recibo,
           'estatus'=> $request->status
 
           ]);
@@ -738,7 +740,14 @@ class PortalSolicitudesTicketController extends Controller
           ]);
           $id = $solTramites->id;
             
-        }          
+        }  
+        
+        if($request->has("url_recibo")){
+          $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+          ->update([          
+            'url_recibo'=> $request->url_recibo,
+            ]);
+        } 
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
