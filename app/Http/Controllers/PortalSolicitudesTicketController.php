@@ -728,15 +728,16 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){   
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
-            "estatus"=> $request->status,
-            "url_recibo"=> $request->url_recibo
+            "estatus"=> $request->status
+       
           ]);
 
           $id = $solTramites->id;
 
         }else{
           $solTramites= $this->solTramites->updateOrCreate(['id_transaccion_motor' => $request->id_transaccion_motor], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
           ]);
           $id = $solTramites->id;
             
