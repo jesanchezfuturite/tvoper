@@ -645,10 +645,20 @@ class PortalSolicitudesController extends Controller
     }
     public function getMensajes($id){      
       try{
-         $mensajes = $this->mensajes->where('ticket_id', $id)
+        $mensajes=array();
+         $findmensajes = $this->mensajes->where('ticket_id', $id)
                     ->orderBy('created_at', 'DESC')
                     ->get()
                     ->toArray();
+
+
+        $findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
+        //log::info($findSolicitudes[0]["ticket_relacionado"]);
+        $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
+                    ->orderBy('created_at', 'DESC')
+                    ->get()
+                    ->toArray();
+        $mensajes=array_merge($findmensajes,$findMensajesPadre);
       }catch(\Exception $e){
 
         Log::info('Error Obtener Mensajes '.$e->getMessage());
@@ -784,6 +794,40 @@ class PortalSolicitudesController extends Controller
           [
             "Code" => "400",
             "Message" => "Error al eliminar solicitud motivos"
+        ]);   
+      }
+    }
+    public function findFirmaTramite($tramite_id="")
+    {
+      try{
+        $findSoli = $this->solicitudes->findWhere(["tramite_id"=>$tramite_id]);
+        return json_encode($findSoli);
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error buscar firma: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al buscar firma"
+        ]);   
+      }
+    }
+    public function updateFirmaTramite(Request $request)
+    {
+      try{
+        $findSoli = $this->solicitudes->where('tramite_id',$request->tramite_id)->update(["firma"=>$request->firma]);
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Actualizado correctamente"
+        ]);
+      }
+      catch(\Exception $e) {
+        Log::info('Error Portal Solicitudes - error buscar firma: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al buscar firma"
         ]);   
       }
     }

@@ -170,7 +170,7 @@
                     <span class="help-block">&nbsp;</span> 
                     <label class="col-md-2">Motivos de Rechazo</label>
                      <div class="col-md-7">
-                      <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos">
+                      <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
                         <option value="0">------</option>  
                       </select>
                     </div>
@@ -254,10 +254,25 @@
   {
     if($("#checkbox1").prop("checked") == true){
       $(".selectMotivos").css("display", "block");
+      document.getElementById("message").disabled = true;     
     }else{
       $(".selectMotivos").css("display", "none");
-    }
+      document.getElementById("message").disabled = false;
+    } 
+    document.getElementById("message").value = "";
     $("#itemsMotivos").val("0").change();
+  }
+  function changeSelectMot()
+  {
+    var select=$("#itemsMotivos").val();
+    var mot=$("#itemsMotivos option:selected").text();
+    //console.log(select);
+    if(select=='0')
+    {
+      document.getElementById("message").value = "";
+    }else{
+      document.getElementById("message").value = mot;
+    }
   }
   function prelacion()
   {    
@@ -270,6 +285,7 @@
         var resp=$.parseJSON(JSON.stringify(response));
         document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
         saveMessage(1);
+        $(".btnPrelacion").css("display", "none");
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Guardar", "Notifications")   });
@@ -300,11 +316,12 @@
           method: "get",            
           url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
           data: {_token:'{{ csrf_token() }}'}  })
-          .done(function (response) {     
+          .done(function (response) {   
+          //console.log(response);  
             $("#itemsMotivos option").remove();
             $("#itemsMotivos").append("<option value='0'>-------</option>");
             $.each($.parseJSON(response), function(i, item) {                
-              $("#itemsMotivos").append("<option value='"+item.id+"'>"+item.motivo+"</option>");
+              $("#itemsMotivos").append("<option value='"+item.motivo_id+"'>"+item.motivo+"</option>");
             });
           })
       .fail(function( msg ) {
@@ -374,7 +391,7 @@
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
-      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
+      $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Solicitud</th><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
     function findAtender(id)
     {
@@ -390,7 +407,7 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          console.log(response);
+          //console.log(response);
           var Resp=response;
           var soli=Resp.solicitante;
           var tipo="";
@@ -426,9 +443,10 @@
          Command: toastr.warning("Error", "Notifications");
         });
     }
-     function findMessage(id_)
+     function findMessage(id_)    
     {
      // console.log(id_);
+     
       $.ajax({
            method: "GET", 
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,
@@ -459,6 +477,7 @@
               label="success";
             }
               $('#sample_7 tbody').append("<tr>"
+                  +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
                   +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
@@ -565,7 +584,9 @@
     $("#checkbox1").prop("checked", false);
     $("#checkbox30").prop("checked", false);
     $(".selectMotivos").css("display", "none");
-    $(".btnPrelacion").css("display", "none");
+    document.getElementById("message").value="";
+    document.getElementById("message").disabled=false;
+    
   }
 	</script>
 @endsection

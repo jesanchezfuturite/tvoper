@@ -43,7 +43,8 @@ class ApiController extends Controller
 	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 	protected $insumos_auth_produccion = 'https://insumos.nl.gob.mx/api/auth';
 
-	
+  protected $insumos_montop = 'https://insumos.nl.gob.mx/api/catastro_expediente';
+
 	// registro publico
 	protected $ws_rp = array(
 		"qa" 	=> "http://10.1.0.130:240/wsfolrpp/NR173",
@@ -66,7 +67,7 @@ class ApiController extends Controller
 
 	);
 
-	
+
 	//distritos esta pendiente
 
 	protected $ws_dis = array(
@@ -104,7 +105,7 @@ class ApiController extends Controller
 		PortalConfigUserNotaryOfficeRepositoryEloquent $usernotary
     )
     {
-        
+
         // inicializamos el api de insumos
         try
         {
@@ -113,17 +114,17 @@ class ApiController extends Controller
 	    	$response = $this->client->post(
 	    		$this->insumos_auth,
 	    		[
-	    			"form_params" => 
+	    			"form_params" =>
 		    			[
 			    			"username" => $this->insumos_user,
 			    			"password" => $this->insumos_pass,
 		    			]
-	    		]	
+	    		]
 	    	);
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+			$results = json_decode($results);
 
 			$this->key = $results->token;
 
@@ -134,8 +135,8 @@ class ApiController extends Controller
 			$this->campos  				= $campos;
 			$this->municipios 			= $municipios;
 			$this->usernotary 			= $usernotary;
-			
-            // obtengo la url para 
+
+            // obtengo la url para
             $this->url = $url;
 
         }catch (\Exception $e){
@@ -146,7 +147,7 @@ class ApiController extends Controller
 
     /**
      * Cambiar el estatus de las transacciones
-     * 
+     *
      * @param transaccion, estatus y key
      *
      *
@@ -172,7 +173,7 @@ class ApiController extends Controller
     			}
     			// actualizar el estatus
     			try{
-    				
+
     				$this->solicitudes_tramite->update(
     					[
     						"estatus" => $estatus
@@ -191,7 +192,7 @@ class ApiController extends Controller
 	    			[
 	    				"response" 	=> "Error al actualizar - " . $e->getMessage(),
 	    				"code"		=> 402
-	    			]	
+	    			]
     			);
     			}
 
@@ -200,7 +201,7 @@ class ApiController extends Controller
 	    			[
 	    				"response" 	=> "Existen el mismo numero de transaccion en mas de un registro",
 	    				"code"		=> 401
-	    			]	
+	    			]
     			);
     		}
 
@@ -209,7 +210,7 @@ class ApiController extends Controller
     			[
     				"response" 	=> "La llave es incorrecta",
     				"code"		=> 400
-    			]	
+    			]
     		);
     	}
 
@@ -238,7 +239,7 @@ class ApiController extends Controller
 
 
 	    	$response = $this->client->post(
-	    		$url	
+	    		$url
 	    	);
 
 	        $results = $response->getBody();
@@ -256,7 +257,7 @@ class ApiController extends Controller
 
     /**
      * Consultar expediente de catastro
-     * 
+     *
      * @param expediente
      *
      *
@@ -277,24 +278,24 @@ class ApiController extends Controller
 	    	$response = $this->client->get(
 	    		$this->insumos_url,
 	    		[
-	    			"query" => 
+	    			"query" =>
 		    			[
 		    				"method"		=> "GET",
 			    			"url" 			=> $url,
-			    			"access_token"	=> $this->key 
+			    			"access_token"	=> $this->key
 		    			]
-	    		]	
+	    		]
 	    	);
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+			$results = json_decode($results);
 
 			return json_encode($results->data[0]);
 
         }catch (\Exception $e){
         	dd("url",$url,"access_token",$this->key,$results,$e->getMessage());
-        	
+
         }
     }
  /**
@@ -312,10 +313,10 @@ class ApiController extends Controller
 		  {
 
 			$origen = $request->origen;
-			
+
 			$url = $this->ws_ent[$origen];
 
-	
+
 			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatef.wsbeans.iseries/">
 			<soapenv:Header/>
 			<soapenv:Body>
@@ -340,21 +341,21 @@ class ApiController extends Controller
 			curl_setopt($soap_do, CURLOPT_POST,           true );
 			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
 			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
-		
+
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
 			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
 			$xml = new SimpleXMLElement($response);
 			$body = $xml->xpath('//soapBody')[0];
-			$array = json_decode(json_encode((array)$body), TRUE); 
-		
+			$array = json_decode(json_encode((array)$body), TRUE);
+
 
 			foreach ($array["ns2soapwscatefResponse"]["return"]["WEFLISTA"] as $key => $value) {
 				$estados = $this->estados->updateOrCreate(["clave" =>$value['WEFCLAVE']], [
 					'clave' => $value['WEFCLAVE'],
 					'nombre' => $value['WEFNOMBRE']
-				]);       
-			}	
+				]);
+			}
 
 			return json_encode(
 				[
@@ -363,8 +364,8 @@ class ApiController extends Controller
 				]);
 
 
-		
-	
+
+
 
        }catch (\Exception $e){
                 dd($e->getMessage());
@@ -387,9 +388,9 @@ class ApiController extends Controller
 			$origen = $request->origen;
 
 			$EntidadFed =$request->clave_entidad;
-			
+
 			$url = $this->ws_mun[$origen];
-			
+
 
 			$request = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsc="http://wscatmuns.wsbeans.iseries/">
 			<soapenv:Header/>
@@ -416,27 +417,27 @@ class ApiController extends Controller
 			curl_setopt($soap_do, CURLOPT_POST,           true );
 			curl_setopt($soap_do, CURLOPT_POSTFIELDS,     $request);
 			curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $header);
-		
+
 			$result = curl_exec($soap_do);
 			curl_close($soap_do);
-		
+
 			$response = preg_replace("/(<\/?)(\w+):([^>]*>)/", "$1$2$3", $result);
 			$xml = new SimpleXMLElement($response);
 			$body = $xml->xpath('//soapBody')[0];
-			$array = json_decode(json_encode((array)$body), TRUE); 
-		
+			$array = json_decode(json_encode((array)$body), TRUE);
+
 
 			foreach ($array["ns2soapwscmunsResponse"]["return"]["WMUNSLISTA"] as $key => $value) {
 				$municipios = $this->municipios->firstOrNew([
 					'clave' => $value["WMUNSCLAVE"],
 					'clave_estado' => $EntidadFed,
 					'nombre'=>$value["WMUNSNOMBRE"]
-				
+
 				]);
 
 				$municipios->save();
-			       
-			}	
+
+			}
 
 			return json_encode(
 				[
@@ -445,7 +446,7 @@ class ApiController extends Controller
 				]);
 
 
-		
+
        }catch (\Exception $e){
                 dd($e->getMessage());
 
@@ -467,13 +468,13 @@ class ApiController extends Controller
 			$origen = $request->origen;
 
 			$Mun =$request->clave_municipio;
-			
+
 	        $url = $this->ws_mun[$origen].'/'.$Mun;
 
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->post(
-	    		$url	
+	    		$url
 	    	);
 
 	        $results = $response->getBody();
@@ -488,15 +489,15 @@ class ApiController extends Controller
 
        }
 	}
-	
+
 	public function curp($curp){
 		try
         {
 			$key = $this->consultar_token();
-			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;		
-			
-			$ch = curl_init();    
-			curl_setopt($ch, CURLOPT_URL, $url); 
+			$url = $this->insumos_curp.'?access_token='.$key.'&curp='.$curp;
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 			$response = curl_exec($ch);
@@ -512,7 +513,7 @@ class ApiController extends Controller
 
 
     /**
-     * Consultar todos los tramites que tenga una notaria de valor 
+     * Consultar todos los tramites que tenga una notaria de valor
      * catastral sin aviso de enajenacion
      *
      * @param notaria
@@ -549,7 +550,7 @@ class ApiController extends Controller
 
             $results = $response->getBody();
 
-            $results = json_decode($results);   
+            $results = json_decode($results);
 
             if(count($results) > 0)
             {
@@ -591,15 +592,15 @@ class ApiController extends Controller
                             "value" => $j,
                         );
                     }
-                    
+
                     unset($node->campos);
-                        
-                    $node->campos= (object)$new; 
+
+                    $node->campos= (object)$new;
 
                     $response[]= (array)$node;
 				}
-			
-                
+
+
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
             }else{
                 return json_encode(
@@ -609,7 +610,7 @@ class ApiController extends Controller
                 ]
             );
             }
-            
+
 
         }catch (\Exception $e){
             return json_encode(
@@ -618,8 +619,8 @@ class ApiController extends Controller
                     "message" => $e->getMessage()
                 ]
             );
-            
-            
+
+
         }
     }
 	public function consultar_token(){
@@ -628,30 +629,58 @@ class ApiController extends Controller
 	    	$response = $this->client->post(
 	    		$this->insumos_auth_produccion,
 	    		[
-	    			"form_params" => 
+	    			"form_params" =>
 		    			[
 			    			"username" => $this->insumos_user,
 			    			"password" => $this->insumos_pass,
 		    			]
-	    		]	
+	    		]
 	    	);
 
 	    	$results = $response->getBody();
 
-			$results = json_decode($results);	
+			$results = json_decode($results);
 
 			return  $results->token;
 	}
 
+  public function getMontoOperacion($expediente){
+
+    $url = $this->insumos_montop ."?expediente=".$expediente;
+
+    try{
+      $this->client = new \GuzzleHttp\Client();
+
+      $response = $this->client->get(
+      $this->insumos_url,
+      [
+        "query" =>
+          [
+            "method"		=> "GET",
+            "url" 			=> $url,
+            "access_token"	=> $this->key
+          ]
+      ]
+      );
+
+      $results = $response->getBody();
+
+      $results = json_decode($results);
+
+      return json_encode($results->data);
+    }catch(\Exception $e){
+
+    }
+  }
 
 	/********************* Metodos para validar **********************************/
 
 	/**
 	 *
 	 * Regresa el total de avisos de enajenacion de un expediente catastral
-	 * 
+	 *
 	 * @param expediente catastral
-	 * 
+	 *
 	 *
 	 * @return listado de tickets
 	 *
@@ -660,9 +689,9 @@ class ApiController extends Controller
 
 	public function getTicketsAviso(Request $request)
 	{
-	
-		$ec 	= $request->expediente; 
-		
+
+		$ec 	= $request->expediente;
+
 		$users = $this->getUsersbyID($request->userid);
 
 		$campos = $this->campos->all();
@@ -700,15 +729,15 @@ class ApiController extends Controller
                         "value" => $j,
                     );
                 }
-                
+
                 unset($node->campos);
-                    
-                $node->campos= (object)$new; 
+
+                $node->campos= (object)$new;
 
                 $response[]= (array)$node;
 			}
-		
-            
+
+
             return json_encode($response,JSON_UNESCAPED_SLASHES);
         }
 
