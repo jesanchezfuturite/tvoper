@@ -728,15 +728,16 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){   
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
-            "estatus"=> $request->status,
-            "url_recibo"=> $request->url_recibo
+            "estatus"=> $request->status
+       
           ]);
 
           $id = $solTramites->id;
 
         }else{
           $solTramites= $this->solTramites->updateOrCreate(['id_transaccion_motor' => $request->id_transaccion_motor], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
           ]);
           $id = $solTramites->id;
             
@@ -843,7 +844,7 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus'
+            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
@@ -890,7 +891,7 @@ class PortalSolicitudesTicketController extends Controller
                     "catalogo_id"=>$dato->catalogo_id,
                     "user_id"=>$dato->user_id,
                     "info"=>$info,
-                    "status"=>$dato->status
+                    "status_solicitud"=>$dato->status
                   );
                   array_push($datos, $data);
                   $tramite["solicitudes"]= $datos;
@@ -902,6 +903,8 @@ class PortalSolicitudesTicketController extends Controller
                   "id_transaccion_motor"=> $dato->id_transaccion_motor,
                   "fecha_pago"=> $dato->fecha_pago,
                   "referencia"=> $dato->referencia,
+                  "operacion_interna"=>$dato->operacion_interna,
+                  "estatus_tramite"=>$dato->estatus_tramite
                
                 );
               }
