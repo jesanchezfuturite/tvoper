@@ -608,8 +608,8 @@
         //console.log(response); 
 
           var resp=$.parseJSON(response);
-          if(resp==null || resp.response.status==422){
-            valido.innerText=resp.response.message;
+          if(resp.data=="error"){
+            valido.innerText=resp.error.message;
             valido.style.color = "red";
           }else{
             valido.innerText="";
