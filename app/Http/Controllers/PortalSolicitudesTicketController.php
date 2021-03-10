@@ -728,7 +728,8 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){   
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
           ]);
 
           $id = $solTramites->id;
@@ -840,7 +841,10 @@ class PortalSolicitudesTicketController extends Controller
         if($tramite->estatus==0){
           if($solicitudes->catalogo_id ==10){
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
-            ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+            ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
+            'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
+            'tm.id as operacion_interna', 'tm.estatus'
+            )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
