@@ -1465,8 +1465,13 @@ function changeComunidad()
                 status: 1,
                 reenvio:check
             };
-      if(check==true)
+      if(check==true || password_.length>0)
       {
+        if(!/[a-z]/.test(password_) || !/[A-Z]/.test(password_) || !/[0-9]/.test(password_) || password_.length < 8){
+          Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications")
+          $("#password").focus();  
+          return;
+        }
         Object.assign(user_,{password:password_});        
       }
       if(base64SAT.length>0)
@@ -1734,6 +1739,9 @@ function changeComunidad()
     document.getElementById("nameUser").disabled=false ;
     document.getElementById("apePatUser").disabled=false;
     document.getElementById("apeMatUser").disabled=false;
+    document.getElementById('emailNot').innerText="";
+    document.getElementById('emailOK').innerText="";
+    document.getElementById('userError').innerText="";
     $("#checkbox1").prop("checked", false);
 }
 function onechange2()
