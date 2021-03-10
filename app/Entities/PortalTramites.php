@@ -23,7 +23,7 @@ class PortalTramites extends Model implements Transformable
     
     protected $connection = "mysql6";
 
-    protected $fillable = ['id','id_transaccion_motor', 'estatus', 'json_envio', 'json_recibo'];
+    protected $fillable = ['id','id_transaccion_motor', 'estatus', 'json_envio', 'json_recibo', 'url_recibo'];
 
     protected $table = "solicitudes_tramite";
 
