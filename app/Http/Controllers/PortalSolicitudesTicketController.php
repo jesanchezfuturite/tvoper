@@ -740,13 +740,7 @@ class PortalSolicitudesTicketController extends Controller
           $id = $solTramites->id;
             
         }  
-        
-        if($request->has("url_recibo")){
-          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
-          ->update([          
-            'url_recibo'=> $request->url_recibo,
-            ]);
-        } 
+
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
@@ -815,12 +809,10 @@ class PortalSolicitudesTicketController extends Controller
     public function updateSolTramites(Request $request){      
       $error=null;
       try {
-        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-        ->update([          
-          'url_recibo'=> $request->url_recibo,
-          ]);
-          
-
+        $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
+          ->update([          
+            'url_recibo'=> $request->url_recibo,
+        ]);
       } catch (\Exception $e) {
         $error = $e;
       }         

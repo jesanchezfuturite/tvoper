@@ -18,7 +18,7 @@
         width: 100%; }
         table td {
           font-family: sans-serif;
-          font-size: 14px;
+          font-size: 16px;
           vertical-align: top; 
       }
       .body {
@@ -84,7 +84,7 @@
         font-weight: 400;
         line-height: 1.2;
         margin: 0;
-        margin-bottom: 30px; 
+        margin-bottom: 20px; 
       }
       h3{
         color: #000000;
@@ -92,7 +92,7 @@
         font-weight: 400;
         line-height: 1.2;
         margin: 0;
-        margin-bottom: 30px; 
+        margin-bottom: 12px; 
       }
       h4 {
         color: #000000;
@@ -100,7 +100,7 @@
         font-weight: 400;
         line-height: 1.2;
         margin: 0;
-        margin-bottom: 12px; 
+        margin-bottom: 10px; 
       }
       h5 {
         color: #000000;
@@ -330,14 +330,14 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td align="center"> 
-                        <div style="position: absolute;">
+                        <div style="position: relative;">
                           <img src="data:image/png;base64,<?php echo $img_irc ?>" width="195px" align="right"name="image_irc">
                           <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="195px" align="left"name="image_nl"> </div>
                        <center><h3><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h3></center> 
                        <br>
-                       <center><h4><strong>&nbsp;</strong></h4></center> 
-                       <center><h4><strong>DOCUMENTO PRELACIÓN</strong></h4></center> 
-                       <center><h4>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h4></center>                         
+                       <center><h3><strong>&nbsp;</strong></h3></center> 
+                       <center><h3><strong>DOCUMENTO PRELACIÓN</strong></h3></center> 
+                       <center><h3>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h3></center>                         
                       </td>
                     </tr>
                   </table>
@@ -364,15 +364,15 @@
                     </tr> 
                   </table><br>
                   <center>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:2px solid;width: 80%; padding:0px 0px 0px 40px;" >
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000;width: 90%; padding:0px 0px 0px 40px;" >
                     <tr>
                       <td>
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="5" style=" padding:0px 0px 0px 80px;"  >
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="5" style=" padding:0px 0px 0px 60px;"  >
                     <tbody>
                     <tr>
                         <td class="bl-lbl">
                             <label><strong>Nombre del trámite:</strong></label>
-                              <label>xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx </label>
+                              <label>xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx  </label>
                             
                         </td>
                     </tr> 
@@ -422,10 +422,10 @@
                             <label><strong>Hojas o lotes:</strong></label>
                             <label>xxxxxxxxxxxxx</label>
                         </td>
-                        <td width="15%">
+                        <td width="20%">
                             <label><strong>Derecho-15215900:</strong></label>
                         </td>
-                        <td width="15%">
+                        <td width="10%">
                             <label>$ 00.00</label>
                         </td>
                     </tr> 
@@ -434,7 +434,7 @@
                             <label><strong>Elaboró:</strong></label>
                             <label>xxxxxxxxxxxxx</label>
                         </td>
-                        <td width="10%">
+                        <td width="20%">
                             <label><strong>TOTAL:</strong></label>
                         </td>
                         <td width="10%">
@@ -486,9 +486,9 @@
                                       <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
                                       <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
                                     </div>
-                                   <center><h4><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h4></center>
+                                   <center><h5><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h5></center>
                                    <br> 
-                                   <center><h5><strong>DOCUMENTO PRELACION</strong></h5></center> 
+                                   <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
                                    <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
                                   </td>
                                 </tr>
@@ -516,7 +516,7 @@
                                 </tbody> 
                               </table><br>
                               <center>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:2px solid; width:98%; padding:0px 10px 0px 10px; " >
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>
@@ -626,9 +626,9 @@
                                       <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
                                       <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
                                     </div>
-                                   <center><h4><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h4></center> 
+                                   <center><h5><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h5></center> 
                                    <br>
-                                   <center><h5><strong>DOCUMENTO PRELACION</strong></h5></center> 
+                                   <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
                                    <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
                                   </td>
                                 </tr>
@@ -657,7 +657,7 @@
                               </table>
                               <br>
                               <center>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:2px solid; width:98%; padding:0px 10px 0px 10px; " >
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>

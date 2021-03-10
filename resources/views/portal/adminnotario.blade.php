@@ -595,6 +595,9 @@
     if(input=="emailOK"){
       message="El correo electrónico ya está en uso";
     }
+    if(input=="emailNot"){
+      message="El correo electrónico ya está en uso";
+    }
     $.ajax({
         method: "POST", 
            contentType: false,
@@ -1221,22 +1224,17 @@ function changeComunidad()
           //console.log(response);
           var resp=$.parseJSON(response);
           //console.log(resp);
-          if(resp.data=="response"){
+          if(resp.response.code=="422"){
+             Command: toastr.warning(resp.response.message, "Notifications");
+            return;
+          }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
-            return;
+            return;           
           }
           if(response==null || response=="null")
           {
-            changeComunidad();
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
-            return;
-          }
-          if(resp.error){
-            Command: toastr.warning(resp.error.message, "Notifications");
-          }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
@@ -1784,7 +1782,7 @@ document.getElementById('emailUser').addEventListener('input', function() {
       formdata.append("email",campo.value);
         formdata.append("_token",'{{ csrf_token() }}');
         valido.innerText = "";
-        findUserEmail(formdata,"emailOK")
+        findUserEmail(formdata,"emailOK");
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("emailOK").style.color = "red";
@@ -1792,10 +1790,14 @@ document.getElementById('emailUser').addEventListener('input', function() {
 });
 document.getElementById('emailNotario').addEventListener('input', function() {
     campo = event.target;
-    valido = document.getElementById('emailNot');        
+    valido = document.getElementById('emailNot'); 
+    var formdata = new FormData();       
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     if (emailRegex.test(campo.value)) {
+        formdata.append("email",campo.value);
+        formdata.append("_token",'{{ csrf_token() }}');
         valido.innerText = "";
+         findUserEmail(formdata,"emailNot");
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("emailNot").style.color = "red";
