@@ -728,7 +728,8 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){   
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
        
           ]);
 
@@ -746,7 +747,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
-        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
+        $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
