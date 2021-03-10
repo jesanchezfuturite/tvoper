@@ -502,10 +502,8 @@ class PortalSolicitudesTicketController extends Controller
 
         `tramites`.`id` as `tramites_id`,
         `tramites`.`id_transaccion_motor` as `tramites_id_transaccion_motor`,
-        `tramites`.`estatus` as `tramites_estatus`,".
-        // `tramites`.`json_envio` as `tramites_json_envio`,
-        // `tramites`.`json_recibo` as `tramites_json_recibo`,
-        "`tramites`.`url_recibo` as `tramites_url_recibo`,
+        `tramites`.`estatus` as `tramites_estatus`,
+        `tramites`.`url_recibo` as `tramites_url_recibo`,
         `tramites`.`created_at` as `tramites_created_at`,
         `tramites`.`updated_at` as `tramites_updated_at`
       ");
@@ -533,11 +531,6 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
       }
-  
-      if($request->has('estatus')){
-        $solicitudes->orWhere('solicitudes_ticket.status', $request->estatus);
-      }
-
       if($request->has('en_carrito')){
         $solicitudes->where('solicitudes_ticket.en_carrito', 1)
         ->where('solicitudes_ticket.status', 99);
@@ -562,10 +555,12 @@ class PortalSolicitudesTicketController extends Controller
         }   
         $solicitudes->whereIn('user_id', $users);
       }
-  
+      if($request->has('estatus')){
+        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      }
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
-      // dd($solicitudes);
+
    
       $campos = [];
       $response = [];
@@ -591,14 +586,17 @@ class PortalSolicitudesTicketController extends Controller
         $mensajes = [];
         $tramites = [];
         $sol = $search !== false ? $response[$search] : [];
+
         foreach($solicitud as $key => $val){
-          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);
-          if(count($matches) > 0){
-            if($val) ${$matches[1]}[$matches[2]] = $val;
-          }else{
+          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);   
+          if(count($matches) > 0){       
+            ${$matches[1]}[$matches[2]] = $val;
+          }else{                        
             $sol[$key] = $val;
           }
         }
+ 
+      
         if(count($mensajes) > 0) $sol['mensajes'][] = $mensajes;
         else $sol['mensajes'] = [];
         if(count($tramites) > 0) $sol['tramites'][] = $tramites;
@@ -668,6 +666,7 @@ class PortalSolicitudesTicketController extends Controller
           'id_transaccion_motor'=>$request->id_transaccion_motor,
           'json_envio'=>json_encode($request->json_envio),
           'json_recibo'=>json_encode($request->json_recibo),
+          'url_recibo'=>$request->url_recibo,
           'estatus'=> $request->status
 
           ]);
@@ -740,7 +739,14 @@ class PortalSolicitudesTicketController extends Controller
           ]);
           $id = $solTramites->id;
             
-        }          
+        }  
+        
+        if($request->has("url_recibo")){
+          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
+          ->update([          
+            'url_recibo'=> $request->url_recibo,
+            ]);
+        } 
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
