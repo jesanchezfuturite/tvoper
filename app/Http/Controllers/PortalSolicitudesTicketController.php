@@ -742,7 +742,7 @@ class PortalSolicitudesTicketController extends Controller
         }  
         
         if($request->has("url_recibo")){
-          $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+          $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
           ->update([          
             'url_recibo'=> $request->url_recibo,
             ]);
