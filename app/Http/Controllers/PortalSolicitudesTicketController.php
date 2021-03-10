@@ -299,7 +299,6 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')->where("firma", 1);
           }])->get()->toArray(); 
         }else{
-          dd($users);
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
