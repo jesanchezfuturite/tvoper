@@ -23,6 +23,10 @@ use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\MetodopagoRepositoryEloquent;
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 
+/*ultima modificacion*/
+use App\Repositories\OperpagosapiRepositoryEloquent;
+
+
 
 class ConsultasController extends Controller
 {
@@ -47,6 +51,7 @@ class ConsultasController extends Controller
     protected $users_entidad;
     protected $list_mp;
     protected $conciliacion;
+    protected $pagosapi;
     // In this method we ensure that the user is logged in using the middleware
 
 
@@ -63,8 +68,8 @@ class ConsultasController extends Controller
         TransaccionesRepositoryEloquent $oper_transaccionesdb,
         PagossolicitudRepositoryEloquent $pagossolicituddb,
         MetodopagoRepositoryEloquent $metodospago,
-        ProcessedregistersRepositoryEloquent $conciliacion
-
+        ProcessedregistersRepositoryEloquent $conciliacion,
+        OperpagosapiRepositoryEloquent $pagosapi
     )
     {
         $this->tiposerviciodb           = $tiposerviciodb;
@@ -79,6 +84,7 @@ class ConsultasController extends Controller
         $this->pagossolicituddb         = $pagossolicituddb;
         $this->metodospago              = $metodospago;
         $this->conciliacion             = $conciliacion;
+        $this->pagosapi                 = $pagosapi;
 
         $this->loadUserEntities();
         $this->loadMetodosPago();
@@ -461,15 +467,26 @@ class ConsultasController extends Controller
        
     }
 
+    /**
+     *
+     * Esta funcion modificada por JESV
+     *
+     * @return mixed array 
+     *
+     * @param same as ever
+     *
+     **/
+
     public function consultaPagos(Request $request)
     { 
         //log::info($request);
         $responseJson=array();
         $response=array();
-
+        $responseJson= $this->reponseVerf('202','Sin registros',array());
+        return response()->json($responseJson); 
         try
         {
-            $user = ( isset($request->user) ) ? $request->user : "externo";
+            $user = ( isset($request->user) ) ? $request->user : "user400";
             
             $entidad= $this->checkEntity($user);
 
@@ -482,25 +499,17 @@ class ConsultasController extends Controller
             }else{
                 
                 // obtener todos los registros que ya se arrojaron
-                $procesados = array();
+               $registros = $this->pagosapi->findWhere(
+                    [
+                        "entidad"   => $entidad,
+                        "procesado" => 0
+                    ]
+                );
 
-                $pro = $this->pagossolicituddb->all();
-
-                foreach($pro as $p)
-                {
-                    $procesados[]= $p->id_transaccion_motor;
-                }
-
-                $response=$this->oper_transaccionesdb
-                    ->where('entidad',$entidad)
-                    ->where('estatus',0)
-                    ->whereNotIn('id_transaccion_motor', $procesados)->get();
-               
-               //log::info('registros: ' . $response->count());
-                if($response->count() > 0)
+               if($registros->count() > 0)
                 {
                     $temp = array();
-                    foreach($response as $r)
+                    foreach($registros as $r)
                     {   
                         $temp[]= array(
                             "usuario"               => $user,
@@ -509,24 +518,23 @@ class ConsultasController extends Controller
                             "id_transaccion_motor"  => $r->id_transaccion_motor,
                             "id_transaccion"        => $r->id_transaccion,
                             "estatus"               => $r->estatus,
-                            "Total"                 => $r->importe_transaccion,
-                            "MetododePago"          => $this->list_mp[$r->metodo_pago_id],
-                            "cve_Banco"             => $r->tipo_pago,
-                            "FechaTransaccion"      => $r->fecha_transaccion,
-                            "FechaPago"             => $r->fecha_pago,
-                            "FechaConciliacion"     => $this->obtenerfechaConciliacion($r->referencia),
+                            "Total"                 => $r->Total,
+                            "MetododePago"          => $r->MetododePago,
+                            "cve_Banco"             => $r->cve_Banco,
+                            "FechaTransaccion"      => $r->FechaTransaccion,
+                            "FechaPago"             => $r->FechaPago,
+                            "FechaConciliacion"     => $r->FechaConciliacion,
                         );
                         
                     }
 
                     $responseJson= $this->reponseVerf('202','',$temp);
                 }else{
-                    $responseJson= $this->reponseVerf('202','Sin registros',$response);
+                    $responseJson= $this->reponseVerf('202','Sin registros',array());
                 }
             }
         }catch (\Exception $e) {
             log::info('consultaPagos ' . $e->getMessage());
-            dd($e->getMessage());
             $responseJson= $this->reponseVerf('400','ocurrio un error',[]);     
           return  response()->json($responseJson);            
         }
@@ -540,52 +548,40 @@ class ConsultasController extends Controller
         $responseJson=array();
         $noInsert=array();
         //log::info($request->request);
-        try{            
-            $insolicitud=array();            
+        
+        $responseJson= $this->reponseVerf('202','Sin registros',array());
+        return response()->json($responseJson);
+
+        try
+        {
             $folios=$request->id_transaccion_motor;
-            $user=$request->user;
-            if($user==null)
-            {
-                $responseJson= $this->reponseVerf('400','user requerido',$noInsert);
-                return response()->json($responseJson);
-            }
-            //(log::info(is_array($folios));
-            if(empty($folios))
-            {
-                $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
-                return response()->json($responseJson);
-            }
-            foreach ($folios as $f) {
-                $findEntTra=$this->oper_transaccionesdb->verifTransaccionesPagado($user,$f);                
-                if($findEntTra->count()>0)
-                {
-                    foreach ($findEntTra as $e) {                        
-                        if($e->existe<>null)
-                        {
-                            $noInsert []=array(
-                                "estatus"=>"Ya se encuentra registrado",
-                                "id_transaccion_motor"=>$f
-                            );
-                        }else{
-                            //$insolicitud []=array(
-                           // );
-                            $inserts=$this->pagossolicituddb->create([
-                                'id_transaccion_motor'=>$f
-                            ]);  
-                        }
-                        
-                    }
-                }else{
-                     $noInsert []=array(
-                        "estatus"=>"No pertenece a una entidad y/o no existe el folio",
-                        "id_transaccion_motor"=>$f
-                    );
-                }                       
-            }
-                //log::info($insolicitud);               
+
+            $user = ( isset($request->user) ) ? $request->user : "user400";
             
-            //$inserts=$this->pagossolicituddb->insert($insolicitud);              
-            $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);  
+            $entidad= $this->checkEntity($user);
+
+            if($entidad == 0)
+            {
+                $responseJson= $this->reponseVerf('400','user requerido',[]);
+                
+                return response()->json($responseJson);
+
+            }else{
+
+                if(empty($folios))
+                {
+                    $responseJson= $this->reponseVerf('400','id_transaccion_motor requerido',$noInsert);
+                    return response()->json($responseJson);
+                }else{
+
+                    $this->pagosapi->whereIn('id_transaccion_motor',$folios)->update(['procesado' => 1]);
+                    $responseJson= $this->reponseVerf('202','Guardado exitoso',$noInsert);
+
+                }
+                
+
+            }
+        
          }catch (\Exception $e) {
             $responseJson=$this->reponseVerf('400','ocurrio un error',[]);
             log::info('PagosVerificados insert' . $e->getMessage());
