@@ -843,7 +843,7 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tm.id as operacion_interna', 'tm.estatus'
+            'tmt.id as operacion_interna', 'tmt.estatus'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
