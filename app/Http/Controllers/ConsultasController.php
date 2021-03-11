@@ -482,8 +482,7 @@ class ConsultasController extends Controller
         //log::info($request);
         $responseJson=array();
         $response=array();
-        $responseJson= $this->reponseVerf('202','Sin registros',array());
-        return response()->json($responseJson); 
+        
         try
         {
             $user = ( isset($request->user) ) ? $request->user : "user400";
@@ -548,9 +547,6 @@ class ConsultasController extends Controller
         $responseJson=array();
         $noInsert=array();
         //log::info($request->request);
-        
-        $responseJson= $this->reponseVerf('202','Sin registros',array());
-        return response()->json($responseJson);
 
         try
         {
