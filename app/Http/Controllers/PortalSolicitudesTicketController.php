@@ -293,6 +293,7 @@ class PortalSolicitudesTicketController extends Controller
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
           ->where(function ($query) {
             $query->where('por_firmar', '=', 1)
+            ->where('firmado', null)
             ->whereNotNull('id_transaccion');
           })         
           ->with(['catalogo' => function ($query) {
