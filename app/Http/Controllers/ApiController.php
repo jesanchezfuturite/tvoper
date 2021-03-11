@@ -644,9 +644,13 @@ class ApiController extends Controller
 			return  $results->token;
 	}
 
-  public function getMontoOperacion($expediente){
+  public function getMontoOperacion(Request $request){
 
-    $url = $this->insumos_montop ."?expediente=".$expediente;
+    $expediente = $request->expediente;
+    $folio = $request->folio;
+    $id_notaria = $request->id_notaria;
+
+    $url = $this->insumos_montop ."?expediente=".$expediente."&folio=".$folio."&notaria=".$id_notaria;
 
     try{
       $this->client = new \GuzzleHttp\Client();
