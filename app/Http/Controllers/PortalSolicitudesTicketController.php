@@ -517,6 +517,7 @@ class PortalSolicitudesTicketController extends Controller
           
       if($request->has('pendiente_firma')){        
         $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->where('solicitudes_ticket.firmado', null)
         ->whereIn("solicitudes_ticket.status", [2,3])
         ->whereNotNull('solicitudes_ticket.id_transaccion');
       }
