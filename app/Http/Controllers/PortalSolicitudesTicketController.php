@@ -479,6 +479,7 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_catalogo`.`titulo`,
         `solicitudes_catalogo`.`tramite_id`,
         `solicitudes_catalogo`.`firma`,
+
         
         IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
         
@@ -492,6 +493,8 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`por_firmar`,
         `solicitudes_ticket`.`doc_firmado`,
         `solicitudes_ticket`.`firmado`,
+        `solicitudes_ticket`.`id_tramite`,
+        `solicitudes_ticket`.`recibo_referencia`,
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
@@ -675,7 +678,11 @@ class PortalSolicitudesTicketController extends Controller
          
         if($solTramites){
           $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-          ->update(['status'=> $statusTicket]);
+          ->update([
+            'status'=> $statusTicket,
+            'id_tramite'=>$request->id_tramite,
+            'recibo_referencia'=>$request->recibo_referencia
+          ]);
 
         
         }  
@@ -747,7 +754,12 @@ class PortalSolicitudesTicketController extends Controller
         }  
 
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
-        ->update(['status'=> $statusTicket]);
+        ->update([
+          'status'=> $statusTicket,
+          'id_tramite'=>$request->id_tramite,
+          'recibo_referencia'=>$request->recibo_referencia
+        
+        ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
         ->get(["id", "status"]);
