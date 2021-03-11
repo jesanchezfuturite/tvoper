@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
 
         /* carga las tablas para el api el endpoint de pagos */
         $schedule->command('procesar:pagosas400')
-                ->->everyMinute();
+                ->everyMinute();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
         $schedule->command('conciliacion:egobt')
