@@ -502,10 +502,8 @@ class PortalSolicitudesTicketController extends Controller
 
         `tramites`.`id` as `tramites_id`,
         `tramites`.`id_transaccion_motor` as `tramites_id_transaccion_motor`,
-        `tramites`.`estatus` as `tramites_estatus`,".
-        // `tramites`.`json_envio` as `tramites_json_envio`,
-        // `tramites`.`json_recibo` as `tramites_json_recibo`,
-        "`tramites`.`url_recibo` as `tramites_url_recibo`,
+        `tramites`.`estatus` as `tramites_estatus`,
+        `tramites`.`url_recibo` as `tramites_url_recibo`,
         `tramites`.`created_at` as `tramites_created_at`,
         `tramites`.`updated_at` as `tramites_updated_at`
       ");
@@ -533,9 +531,9 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has('tipo_solicitud')){
           $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
       }
-  
-      if($request->has('estatus')){
-        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      if($request->has('en_carrito')){
+        $solicitudes->where('solicitudes_ticket.en_carrito', 1)
+        ->where('solicitudes_ticket.status', 99);
       }
   
       if($request->has('id_solicitud')){        
@@ -557,9 +555,12 @@ class PortalSolicitudesTicketController extends Controller
         }   
         $solicitudes->whereIn('user_id', $users);
       }
-  
+      if($request->has('estatus')){
+        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      }
       $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
       $solicitudes = $solicitudes->get();
+
    
       $campos = [];
       $response = [];
@@ -585,14 +586,17 @@ class PortalSolicitudesTicketController extends Controller
         $mensajes = [];
         $tramites = [];
         $sol = $search !== false ? $response[$search] : [];
+
         foreach($solicitud as $key => $val){
-          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);
-          if(count($matches) > 0){
-            if($val) ${$matches[1]}[$matches[2]] = $val;
-          }else{
+          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);   
+          if(count($matches) > 0){       
+            ${$matches[1]}[$matches[2]] = $val;
+          }else{                        
             $sol[$key] = $val;
           }
         }
+ 
+      
         if(count($mensajes) > 0) $sol['mensajes'][] = $mensajes;
         else $sol['mensajes'] = [];
         if(count($tramites) > 0) $sol['tramites'][] = $tramites;
@@ -662,6 +666,7 @@ class PortalSolicitudesTicketController extends Controller
           'id_transaccion_motor'=>$request->id_transaccion_motor,
           'json_envio'=>json_encode($request->json_envio),
           'json_recibo'=>json_encode($request->json_recibo),
+          'url_recibo'=>$request->url_recibo,
           'estatus'=> $request->status
 
           ]);
@@ -723,22 +728,26 @@ class PortalSolicitudesTicketController extends Controller
       try { 
         if($request->id_transaccion){   
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
+       
           ]);
 
           $id = $solTramites->id;
 
         }else{
           $solTramites= $this->solTramites->updateOrCreate(['id_transaccion_motor' => $request->id_transaccion_motor], [
-            "estatus"=> $request->status
+            "estatus"=> $request->status,
+            "url_recibo"=> $request->url_recibo
           ]);
           $id = $solTramites->id;
             
-        }          
+        }  
+
         $solicitudTicket = $this->ticket->where('id_transaccion' , $id)
         ->update(['status'=> $statusTicket]);
 
-        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
+        $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
@@ -803,12 +812,10 @@ class PortalSolicitudesTicketController extends Controller
     public function updateSolTramites(Request $request){      
       $error=null;
       try {
-        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-        ->update([          
-          'url_recibo'=> $request->url_recibo,
-          ]);
-          
-
+        $solTramites = $this->solTramites->where('id_transaccion_motor' , $request->id_transaccion_motor)
+          ->update([          
+            'url_recibo'=> $request->url_recibo,
+        ]);
       } catch (\Exception $e) {
         $error = $e;
       }         
@@ -835,18 +842,39 @@ class PortalSolicitudesTicketController extends Controller
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
           if($solicitudes->catalogo_id ==10){
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
+            'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
+            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite'
+            )
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
+            ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
             
+            $notario = [];
+            foreach($solicitudes as $key => $value){
+              $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value->titular_id)->first();
+              $suplente = DB::connection('mysql6')->table("portal.users")->where("id", $value->substitute_id)->first();
+              
+              $notario["titular"] =array(
+                'nombre'=> $titular->name,
+                'apellido_paterno'=> $titular->fathers_surname,
+                'apellido_materno'=> $titular->mothers_surname,
 
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
+              );
+
+              $notario["suplente"] =array(
+                'nombre'=> $suplente->name,
+                'apellido_paterno'=> $suplente->fathers_surname,
+                'apellido_materno'=> $suplente->mothers_surname,
+              );
             }
+
+            $ids_tramites=[];   
 
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
@@ -856,19 +884,30 @@ class PortalSolicitudesTicketController extends Controller
             foreach($tramites as $t => $tramite){
               $datos=[];
               foreach ($solicitudes as $d => $dato) {
-                if($dato["tramite_id"]== $tramite["tramite_id"]){
-                  $info = $this->asignarClavesCatalogo($dato["info"]);
+                if($dato->tramite_id== $tramite["tramite_id"]){
+                  $info = $this->asignarClavesCatalogo($dato->info);
                   $data=array(
-                    "id"=>$dato["id"],
-                    "clave"=>$dato["clave"],
-                    "catalogo_id"=>$dato["catalogo_id"],
-                    "user_id"=>$dato["user_id"],
+                    "id"=>$dato->id,
+                    "clave"=>$dato->clave,
+                    "catalogo_id"=>$dato->catalogo_id,
+                    "user_id"=>$dato->user_id,
                     "info"=>$info,
-                    "status"=>$dato["status"]
+                    "status_solicitud"=>$dato->status
                   );
                   array_push($datos, $data);
                   $tramite["solicitudes"]= $datos;
+
+                 
                 }
+                $response["operaciones"]=array(
+                  "fecha_limite_referencia"=> $dato->fecha_limite_referencia,
+                  "id_transaccion_motor"=> $dato->id_transaccion_motor,
+                  "fecha_pago"=> $dato->fecha_pago,
+                  "referencia"=> $dato->referencia,
+                  "operacion_interna"=>$dato->operacion_interna,
+                  "estatus_tramite"=>$dato->estatus_tramite
+               
+                );
               }
               array_push($tmts, $tramite);
             }
@@ -876,21 +915,48 @@ class PortalSolicitudesTicketController extends Controller
 
             $response["tramite"] =$tmts[0];
 
+         
+            $response["notaria"]=$notario;
+
+
             return $response;     
           }else{
             $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
-            $solicitudes = PortalSolicitudesTicket::where('id', $id)
-            ->with(['catalogo' => function ($query) {
-              $query->select('id', 'tramite_id');
-            }])->get()->toArray();
-            
-            $ids_tramites=[];
-            foreach ($solicitudes as &$sol){
-              foreach($sol["catalogo"]  as $s){
-                $sol["tramite_id"]=$s["tramite_id"];            
-              }
-            }
 
+            $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
+            ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
+            'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
+            'tmt.id as operacion_interna', 'tmt.estatus'
+            )
+            ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
+            ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+            ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
+            ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
+            ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->where('tk.id', $id)
+            ->get()->toArray();
+
+            $notario = [];
+            foreach($solicitudes as $key => $value){
+              $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value->titular_id)->first();
+              $suplente = DB::connection('mysql6')->table("portal.users")->where("id", $value->substitute_id)->first();
+              
+              $notario["titular"] =array(
+                'nombre'=> $titular->name,
+                'apellido_paterno'=> $titular->fathers_surname,
+                'apellido_materno'=> $titular->mothers_surname,
+
+              );
+
+              $notario["suplente"] =array(
+                'nombre'=> $suplente->name,
+                'apellido_paterno'=> $suplente->fathers_surname,
+                'apellido_materno'=> $suplente->mothers_surname,
+              );
+            }
+          
+            $ids_tramites=[];
+     
             $ids_tramites= array_column($solicitudes, 'tramite_id');            
             $idstmts = array_unique($ids_tramites);           
             $tramites = $this->getTramites($idstmts);
@@ -903,6 +969,11 @@ class PortalSolicitudesTicketController extends Controller
             $tramites[0]["json_envio"]=json_decode($json_envio);
   
             $response["tramite"] =$tramites[0];
+            $response["operaciones"]=$solicitudes;
+            $response["notaria"]=$notario;
+
+ 
+
             return $response;
           }
         }else{
@@ -913,16 +984,13 @@ class PortalSolicitudesTicketController extends Controller
             ]
           );
         }
-      
-
   
       }catch(\Exception $e) {
-  
   
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener tramite",
+            "Message" => "Error al obtener tramite. -" . $e->getMessage(),
           ]
         );
       }

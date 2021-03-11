@@ -595,6 +595,9 @@
     if(input=="emailOK"){
       message="El correo electrónico ya está en uso";
     }
+    if(input=="emailNot"){
+      message="El correo electrónico ya está en uso";
+    }
     $.ajax({
         method: "POST", 
            contentType: false,
@@ -605,8 +608,8 @@
         //console.log(response); 
 
           var resp=$.parseJSON(response);
-          if(resp==null || resp.response.status==422){
-            valido.innerText=resp.response.message;
+          if(resp.data=="error"){
+            valido.innerText=resp.error.message;
             valido.style.color = "red";
           }else{
             valido.innerText="";
@@ -747,8 +750,10 @@
         //console.log(response);  
             $("#itemsEntidadNot option").remove();
             $('#itemsEntidadNot').append("<option value='0'>------</option>");
-            $.each(resp, function(i, item) {                
+            $.each(resp, function(i, item) { 
+              if(item.clave>0 && item.clave<33) {             
                 $('#itemsEntidadNot').append("<option value='"+item.clave+"'>"+item.nombre+"</option>");
+              }
             });
             $("#itemsEntidadNot").val("19").change();
 
@@ -1219,22 +1224,17 @@ function changeComunidad()
           //console.log(response);
           var resp=$.parseJSON(response);
           //console.log(resp);
-          if(resp.data=="response"){
+          if(resp.response.code=="422"){
+             Command: toastr.warning(resp.response.message, "Notifications");
+            return;
+          }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
-            return;
+            return;           
           }
           if(response==null || response=="null")
           {
-            changeComunidad();
-            limpiarNot();
-            Command: toastr.success("Success", "Notifications");
-            return;
-          }
-          if(resp.error){
-            Command: toastr.warning(resp.error.message, "Notifications");
-          }else{
             changeComunidad();
             limpiarNot();
             Command: toastr.success("Success", "Notifications");
@@ -1465,8 +1465,13 @@ function changeComunidad()
                 status: 1,
                 reenvio:check
             };
-      if(check==true)
+      if(check==true || password_.length>0)
       {
+        if(!/[a-z]/.test(password_) || !/[A-Z]/.test(password_) || !/[0-9]/.test(password_) || password_.length < 8){
+          Command: toastr.warning("Campo Contraseña, formato incorrecto!", "Notifications")
+          $("#password").focus();  
+          return;
+        }
         Object.assign(user_,{password:password_});        
       }
       if(base64SAT.length>0)
@@ -1734,6 +1739,9 @@ function changeComunidad()
     document.getElementById("nameUser").disabled=false ;
     document.getElementById("apePatUser").disabled=false;
     document.getElementById("apeMatUser").disabled=false;
+    document.getElementById('emailNot').innerText="";
+    document.getElementById('emailOK').innerText="";
+    document.getElementById('userError').innerText="";
     $("#checkbox1").prop("checked", false);
 }
 function onechange2()
@@ -1782,7 +1790,7 @@ document.getElementById('emailUser').addEventListener('input', function() {
       formdata.append("email",campo.value);
         formdata.append("_token",'{{ csrf_token() }}');
         valido.innerText = "";
-        findUserEmail(formdata,"emailOK")
+        findUserEmail(formdata,"emailOK");
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("emailOK").style.color = "red";
@@ -1790,10 +1798,14 @@ document.getElementById('emailUser').addEventListener('input', function() {
 });
 document.getElementById('emailNotario').addEventListener('input', function() {
     campo = event.target;
-    valido = document.getElementById('emailNot');        
+    valido = document.getElementById('emailNot'); 
+    var formdata = new FormData();       
     emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i;
     if (emailRegex.test(campo.value)) {
+        formdata.append("email",campo.value);
+        formdata.append("_token",'{{ csrf_token() }}');
         valido.innerText = "";
+         findUserEmail(formdata,"emailNot");
     } else {
       valido.innerText = "Incorrecto";
       document.getElementById("emailNot").style.color = "red";

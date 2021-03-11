@@ -252,21 +252,20 @@ class PortalNotaryOfficesController extends Controller
     public function searchUsername(Request $request){
         $data = $request->all();
         $url ="http://10.153.144.218/session-api/notary-offices/user";
-
-
+        try {
         $client = new \GuzzleHttp\Client();
+            $response = $client->get(
+                $url,
+                [
+                    "query" =>$data
+                ]   
+            );
+            $results = $response->getBody()->getContents();
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
 
-	    	$response = $client->get(
-	    		$url,
-	    		[
-	    			"query" =>$data
-	    		]	
-	    	);
-
-	    	$results = $response->getBody();
-
-		
-			return  $results;
+            $results = $e->getResponse()->getBody()->getContents();            
+        }
+        return  $results;
     }
 
 
