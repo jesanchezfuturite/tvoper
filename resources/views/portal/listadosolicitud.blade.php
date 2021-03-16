@@ -394,7 +394,7 @@
               {
                 bton="<td class='text-center' width='20%'></td>";
               }else{
-                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\")'> Atender </a></td>";
+                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\",\""+item.status+"\")'> Atender </a></td>";
               }
               if(item.ticket_relacionado!=null )
               {
@@ -424,7 +424,7 @@
       $("#addtableMsg div").remove();
       $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Solicitud</th><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
-    function findAtender(id)
+    function findAtender(id,estatus)
     {
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
