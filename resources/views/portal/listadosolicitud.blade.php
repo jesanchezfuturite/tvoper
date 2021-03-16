@@ -297,14 +297,12 @@
   }
   function prelacion()
   {    
-    
-    document.getElementById("message").value="Prelacion, Folio:00000 \n Fecha: 0000/00/00 ";
    $.ajax({
       method: "get",            
       url: "{{ url('/wsrp/qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        console.log(response);
+        //console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
         document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
         var data=dataPrelacion(JSON.stringify(response));
@@ -605,7 +603,7 @@
         formdata.append("rechazo", checkRechazo);
         formdata.append("data", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
-        console.log(Object.fromEntries(formdata));
+        //console.log(Object.fromEntries(formdata));
         $.ajax({
            method: "POST",
            contentType: false,
