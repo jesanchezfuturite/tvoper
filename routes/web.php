@@ -415,7 +415,7 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
-Route::post('/solicitudes-filtrado', 'PortalSolicitudesTicketController@filtrado');
+Route::post('/solicitudes-filtrar/array', 'PortalSolicitudesTicketController@filtrado');
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 
 
