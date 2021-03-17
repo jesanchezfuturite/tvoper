@@ -627,7 +627,7 @@ class PortalSolicitudesController extends Controller
           $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$id]);
           if($findTicket->count()>0)
           {
-            $solicitudTicket = $this->ticket->update(['status'=>1],$id);
+            //$solicitudTicket = $this->ticket->update(['status'=>1],$id);
             return response()->json(["Code" => "200", "Message" => "Ticket creado",]);
           }
           $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$id_catalogo]);
