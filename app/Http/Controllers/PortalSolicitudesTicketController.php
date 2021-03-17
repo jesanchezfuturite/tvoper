@@ -1155,10 +1155,16 @@ class PortalSolicitudesTicketController extends Controller
     }
 
   } 
-  public function filtrado(Request $request){    
-      $consultas = 1;
+  public function filtrado(Request $request){         
+      $request = $request->all();
+      if(!isset($request["data"])){
+        $body[] = $request;
+      }else{
+        $body = $request["data"];
+      }
       $data=[];
-      foreach($request->data as $key => $value){
+
+      foreach($body as $key => $value){
           $select = DB::raw("
           `solicitudes_ticket`.`id`,
           `servicio`.`Tipo_Descripcion` as `nombre_servicio`,
@@ -1268,12 +1274,16 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function countFiltrado(Request $request){
+      $request = $request->all();
+      if(!isset($request["data"])){
+        $body[] = $request;
+      }else{
+        $body = $request["data"];
+      }
       $data =[];
-      foreach($request->data as $key => $value){
+      foreach($body as $key => $value){
         
         $solicitudes = PortalSolicitudesTicket::select("*");
-  
-
 
         if(isset($value["pendiente_firma"])){        
             $solicitudes->where('solicitudes_catalogo.firma', "1")
