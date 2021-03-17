@@ -666,7 +666,12 @@
     Object.assign(data,{razonSocial:Resp.solicitante.razonSocial});
     Object.assign(data,{tramite_id:Resp.tramite_id}); 
     Object.assign(data,{tramite:Resp.tramite}); 
-    Object.assign(data,{costo_final:Resp.detalle.costo_final}); 
+    if(Resp.costo_final=="undefined")
+    {
+      Object.assign(data,{costo_final:Resp.detalle.costo_final});
+    }else{
+      Object.assign(data,{costo_final:Resp.costo_final});
+    }
     //console.log(data);
     return data;
 
