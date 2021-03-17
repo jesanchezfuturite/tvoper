@@ -335,7 +335,7 @@
                           <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="195px" align="left"name="image_nl"> </div>
                        <center><h3><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h3></center> 
                        <br>
-                       <center><h3><strong>&nbsp;</strong></h3></center> 
+                       <center><h3>&nbsp;</h3></center> 
                        <center><h3><strong>DOCUMENTO PRELACIÓN</strong></h3></center> 
                        <center><h3>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h3></center>                         
                       </td>
@@ -344,22 +344,22 @@
                   <table role="presentation" border="0" cellpadding="10" cellspacing="0" style="width: 100%; padding:0px 10px 0px 10px !important;">
                     <tr>
                       <td><label><strong>No. Notaria</strong></label>
-                        <br><label>0000</label>
+                        <br><label></label>
                       </td>
                       <td><label><strong>Municipio</strong></label>
-                        <br><label>0000</label>
+                        <br><label></label>
                       </td>
                       <td><label><strong>Fecha</strong></label>
-                        <br><label>0000/00/00</label>
+                        <br><label>{{$data->fecha}}</label>
                       </td>
                       <td><label><strong>Folio trámite</strong></label>
-                        <br><label>0000</label>
+                        <br><label></label>
                       </td>
                       <td><label><strong>No. Control</strong></label>
-                        <br><label>0000</label>
+                        <br><label></label>
                       </td>
                       <td><label><strong>Folio Pago</strong></label>
-                        <br><label>0000</label>
+                        <br><label></label>
                       </td>
                     </tr> 
                   </table><br>
@@ -367,25 +367,25 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000;width: 90%; padding:0px 0px 0px 40px;" >
                     <tr>
                       <td>
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="5" style=" padding:0px 0px 0px 60px;"  >
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style=" padding:0px 0px 0px 60px;"  >
                     <tbody>
                     <tr>
                         <td class="bl-lbl">
                             <label><strong>Nombre del trámite:</strong></label>
-                              <label>xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx xxxxxxxxxxxxx  </label>
+                              <label>{{$data->tramite}} </label>
                             
                         </td>
                     </tr> 
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Razon Social:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                            <label>{{$data->razonSocial}}</label>
                         </td>
                     </tr>
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Municipio destino:</strong></label>
-                            <label>xxxxxxxxxxxxxx</label>
+                            <label></label>
                         </td>
                     </tr>
                   </tbody>
@@ -399,66 +399,67 @@
                     <tr>
                         <td>
                             <label><strong>No. partida</strong></label>
-                            <label>0000000</label>
+                            <label>0000</label>
                         </td>
                         <td></td>
                     </tr> 
                     <tr>
                         <td>
                             <label><strong>Valor de operación:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                            <label></label>
                         </td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>
                             <label><strong>Unidad de calculo:</strong></label>
-                            <label>xxxxxxxxxxxxxx</label>
+                            <label></label>
                         </td>
                         <td></td>                        
                     </tr>
                     <tr>
                         <td width="70%">
                             <label><strong>Hojas o lotes:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                            <label></label>
                         </td>
                         <td width="20%">
                             <label><strong>Derecho-15215900:</strong></label>
                         </td>
                         <td width="10%">
-                            <label>$ 00.00</label>
+                            <label>$ {{number_format($data->costo_final,2)}}</label>
                         </td>
                     </tr> 
                     <tr>
                         <td width="70%">
-                            <label><strong>Elaboró:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                          <label><strong>Oficio o decreto:</strong></label>
+                          <label></label>
                         </td>
                         <td width="20%">
                             <label><strong>TOTAL:</strong></label>
                         </td>
                         <td width="10%">
-                            <label>$ 00.00</label>
+                            <label>$ {{number_format($data->costo_final,2)}}</label>
                         </td>
                     </tr>
                     <tr>
-                        <td >
-                            <label><strong>Razon Social:</strong></label>
-                            <label>xxxxxxxxxxxxxx</label>
+                        <td > 
+                          <label><strong>Elaboró:</strong></label>
+                          <label></label>
+                            
                         </td>
                         <td></td>                        
                     </tr>
                     <tr>
                         <td>
                             <label><strong>Recibe:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                            <label></label>
                         </td>
                         <td></td>
                     </tr> 
                     <tr>
                         <td>
                             <label><strong>IMPORTE CON LETRA:</strong></label>
-                            <label>xxxxxxxxxxxxx</label>
+                            <label>{{$importe_letra}}</label>
                         </td>
                         <td></td>
                     </tr>
@@ -466,11 +467,11 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         <td>    
-                            <center><label>0000/00/00 00:00:00</label></center> 
-                               <center> 
-                                <img src="" width="175px">
-                               </center>
-                            <center>0000000000000</center>                         
+                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                          <center> 
+                          <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="175px">
+                          </center>
+                          <center>{{$data->folio}}</center>                         
                       </td>
                     </tr>
                   </table>
@@ -506,33 +507,33 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000/00/00</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label">{{$data->fecha}}</td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
                                     </tr>
                                 </tbody> 
                               </table><br>
                               <center>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$data->tramite}}</label>
                                     </td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Razon Social:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Municipio destino:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                 </tr>
                               </table>
@@ -542,66 +543,66 @@
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>No. partida</strong></label>
-                                        <label>0000000</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Valor de operación:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Unidad de calculo:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>                        
                                 </tr>
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$data->lote}}</label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
-                                        <label>$ 00.00</label>
+                                        <label>$ {{number_format($data->costo_final,2)}}</label>
                                     </td>
                                 </tr> 
                                 <tr>
                                     <td width="70%" class="tbl-label">
-                                        <label><strong>Elaboró:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label><strong>Oficio o decreto:</strong></label>
+                                        <label></label><label>
                                     </td>
                                     <td width="10%" class="tbl-label">
                                         <label><strong>TOTAL:</strong></label>
                                     </td>
                                     <td width="10%" class="tbl-label">
-                                        <label>$ 00.00</label>
+                                        <label>$ {{number_format($data->costo_final,2)}}</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
-                                        <label><strong>Razon Social:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                        <strong>Elaboró:</strong></label>
+                                        <label></label>
                                     </td>
                                     <td></td>                        
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Recibe:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>IMPORTE CON LETRA:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$importe_letra}}</label>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -609,11 +610,11 @@
                               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="tbl-label">    
-                                        <center><label>0000/00/00 00:00:00</label></center> 
+                                        <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
                                            <center> 
-                                            <img src="" width="175px">
+                                            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="120px">
                                            </center>
-                                        <center>0000000000000</center>                         
+                                        <center>{{$data->folio}}</center>                         
                                   </td>
                                 </tr>
                             </table>
@@ -646,28 +647,28 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000/00/00</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
-                                      <td class="tbl-label">0000</td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label">{{$data->fecha}}</td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
+                                      <td class="tbl-label"></td>
                                     </tr>
                                 </tbody> 
                               </table>
                               <br>
                               <center>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$data->tramite}}</label>
                                     </td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Razon Social:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$data->razonSocial}}</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -683,66 +684,66 @@
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>No. partida</strong></label>
-                                        <label>0000000</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Valor de operación:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Unidad de calculo:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>                        
                                 </tr>
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$data->lote}}</label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
-                                        <label>$ 00.00</label>
+                                        <label>$ {{number_format($data->costo_final,2)}}</label>
                                     </td>
                                 </tr> 
                                 <tr>
                                     <td width="70%" class="tbl-label">
-                                        <label><strong>Elaboró:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label><strong>Oficio o decreto:</strong></label>
+                                        <label></label>
                                     </td>
                                     <td width="10%" class="tbl-label">
                                         <label><strong>TOTAL:</strong></label>
                                     </td>
                                     <td width="10%" class="tbl-label">
-                                        <label>$ 00.00</label>
+                                        <label>$ {{number_format($data->costo_final,2)}}</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
-                                        <label><strong>Razon Social:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                       <label><strong>Elaboró:</strong></label>
+                                        <label></label> 
                                     </td>
                                     <td></td>                        
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Recibe:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                     <td></td>
                                 </tr> 
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>IMPORTE CON LETRA:</strong></label>
-                                        <label>xxxxxxxxxxxxx</label>
+                                        <label>{{$importe_letra}}</label>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -750,11 +751,11 @@
                               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="tbl-label">    
-                                        <center><label>0000/00/00 00:00:00</label></center> 
+                                        <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
                                            <center> 
-                                            <img src="" width="175px">
+                                            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="120px">
                                            </center>
-                                        <center>0000000000000</center>                         
+                                        <center>{{$data->folio}}</center>                         
                                   </td>
                                 </tr>
                             </table>

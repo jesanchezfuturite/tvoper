@@ -40,7 +40,9 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
         $data = PortalSolicitudesTicket::where('solicitudes_ticket.id',$id)
         ->leftjoin('solicitudes_catalogo','solicitudes_catalogo.id','=','solicitudes_ticket.catalogo_id')
         ->leftjoin('tramites_prelacion','tramites_prelacion.tramite_id','=','solicitudes_catalogo.tramite_id')
-        ->select('tramites_prelacion.tramite_id')
+        ->leftjoin('mensaje_prelacion','mensaje_prelacion.solicitud_id','=','solicitudes_ticket.id')
+        ->leftjoin('egobierno.tipo_servicios','egobierno.tipo_servicios.Tipo_Code','=','solicitudes_catalogo.tramite_id')
+        ->select('solicitudes_ticket.id','tramites_prelacion.tramite_id as tramite_prelacion','mensaje_prelacion.solicitud_id as mensaje_prelacion','solicitudes_catalogo.tramite_id','egobierno.tipo_servicios.Tipo_Descripcion as tramite')
         ->get();
 
         return $data;
