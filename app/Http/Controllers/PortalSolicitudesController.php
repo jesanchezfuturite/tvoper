@@ -560,13 +560,12 @@ class PortalSolicitudesController extends Controller
       $attach ="";
     }
     if($prelacion==1)
-      {
-       $msprelacion =$this->msjprelaciondb->create([
-          'solicitud_id'=> $ticket_id
-        ]);
+      {       
         $attach= "documento_prelacion_".$request->id.".pdf";
         $this->savePdfprelacion($attach,$request->data);
-        
+        $msprelacion =$this->msjprelaciondb->create([
+          'solicitud_id'=> $ticket_id
+        ]);        
       }
     try {
       $mensajes =$this->mensajes->create([
