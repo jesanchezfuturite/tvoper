@@ -108,9 +108,13 @@
   <div class="modal-dialog" style="width: 80%;">
     <div class="modal-content" >
       <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
-        <h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4>
-        <div style="text-align: right !important;"><button type="button"  data-dismiss="modal" class="btn green right" style="text-align: right;" onclick="cerrarTicket()">Cerrar Ticket</button></div>
+       
+        <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
+        <div class="col-md-3"style="text-align: right;">
+          <button type="button"  data-dismiss="modal" class="btn green right" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
+        </div>
+      </div>
+        
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
@@ -118,7 +122,7 @@
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
-                <h4 class="form-section"><strong>Datos del Generales</strong></h4>
+                <h4 class="form-section"><strong>Datos generales</strong></h4>
               </div>
             </div>
           </div>
@@ -133,7 +137,7 @@
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
-                <h4 class="form-section"><strong>Datos del Solicitante</strong></h4>
+                <h4 class="form-section"><strong>Datos del solicitante</strong></h4>
               </div>
             </div>
           </div>
@@ -146,8 +150,10 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-12">
-            <hr>
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Nuevo mensaje</strong></h4>
+              </div>
             </div>
           </div>
         </div>
@@ -190,7 +196,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage(0)"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0,{})"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <span class="btn green fileinput-button">
                   <i class="fa fa-plus"></i>&nbsp;
@@ -202,7 +208,15 @@
           </div>        
         </div>
         <div class="row">
-          <span class="help-block">&nbsp;</span>
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Mensajes registrados</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-md-12">
             <div class="col-md-12">
               <div id="addtableMsg">
@@ -227,20 +241,25 @@
       </div>
       <div class="modal-footer">
         <div class="row">
-          <div class="col-md-9 "></div>
+          <div class="col-md-8" style="text-align: left;">
+            <div class="form-group">
+               <button type="button" data-dismiss="modal" class="btn red" onclick="limpiar()">Salir</button>
+            </div>
+          </div>
           <div class="col-md-1 ">
             <div class="form-group ">
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-          <div class="col-md-2">
-            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarTicket()" >Cerrar Ticket</button>
+          <div class="col-md-3">
+            <button type="button" data-dismiss="modal" class="btn green" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
           </div>
         </div>
       </div>   
     </div>
   </div>
 </div>
+<input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 
 @section('scripts')
@@ -270,25 +289,29 @@
     if(select=='0')
     {
       document.getElementById("message").value = "";
+      $("#checkbox30").prop("checked", false);
     }else{
-      document.getElementById("message").value = mot;
+      document.getElementById("message").value ="Motivo de rechazo: " + mot;
+      $("#checkbox30").prop("checked", true);
     }
   }
   function prelacion()
   {    
-    $.ajax({
+   $.ajax({
       method: "get",            
       url: "{{ url('/wsrp/qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
-        console.log(response);
+        //console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
-        document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha;
-        saveMessage(1);
+        document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
+        var data=dataPrelacion(JSON.stringify(response));
+        saveMessage(1,data);
         $(".btnPrelacion").css("display", "none");
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Guardar", "Notifications")   });
+      
   }
   function findSol()
   {
@@ -361,16 +384,22 @@
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
             var Resp=$.parseJSON(JSON.stringify(response));
-            var bton="";
+                       
             $.each(Resp, function(i, item) {
+              var bton=""; 
+              var padre="";
               if(item.status==2)
               {
                 bton="<td class='text-center' width='20%'></td>";
               }else{
-                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\")'> Atender </a></td>";
+                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\",\""+item.status+"\")'> Atender </a></td>";
+              }
+              if(item.ticket_relacionado!=null )
+              {
+                padre=item.ticket_relacionado + " / ";
               }
             	$('#sample_2 tbody').append("<tr>"
-                	+"<td>"+item.id+"</td>"
+                	+"<td>"+ padre + item.id+"</td>"
                 	+"<td>"+item.titulo+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
@@ -393,7 +422,7 @@
       $("#addtableMsg div").remove();
       $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Solicitud</th><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
-    function findAtender(id)
+    function findAtender(id,estatus)
     {
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
@@ -407,7 +436,8 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response);
+          console.log(response);
+          document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
           var tipo="";
@@ -432,11 +462,26 @@
           for (n in Resp.campos) {            
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
           }
-          if(Resp.prelacion==null || Resp.prelacion=="null" || Resp.mensaje_prelacion==1) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null) 
           {
-            $(".btnPrelacion").css("display", "none");
+            $(".btnPrelacion").css("display", "block");
           }else{
-             $(".btnPrelacion").css("display", "block");
+             $(".btnPrelacion").css("display", "none");
+          }
+         var btn_1=document.getElementById('btn_cerrar_1');
+         var btn_2=document.getElementById('btn_cerrar_2'); 
+          //console.log(btn_1);
+          if(Resp.continuar_solicitud==0)
+          {
+            btn_1.innerHTML="Cerrar Ticket";
+            btn_2.innerHTML="Cerrar Ticket";
+            btn_1.value="cerrar";
+            btn_2.value="cerrar";             
+          }else{
+            btn_1.innerHTML="Continuar Solicitud";
+            btn_2.innerHTML="Continuar Solicitud";
+            btn_1.value="continuar";
+            btn_2.value="continuar";
           }
         })
         .fail(function( msg ) {
@@ -497,10 +542,12 @@
     {
       var idT=$("#idTicket").val();
       var id_catalogo_=$("#opTipoSolicitud").val();
-      $.ajax({
+      var btn_2=$("#btn_cerrar_2").val();
+      //console.log(btn_2);
+     $.ajax({
            method: "POST", 
            url: "{{ url('/cerrar-ticket') }}",
-           data:{ id:idT ,id_catalogo:id_catalogo_,_token:'{{ csrf_token() }}'} })
+           data:{ id:idT ,id_catalogo:id_catalogo_,option:btn_2,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response.solicitante);
 
@@ -511,7 +558,6 @@
                findSol();
                chgopt(id_catalogo_);
                limpiar();
-
                return;
              }
           //TableManaged7.init7();   
@@ -519,7 +565,8 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
-    }async function chgopt(id)
+    }
+  async function chgopt(id)
   {  
     await sleep(2000);
     $("#opTipoSolicitud").val(id).change();
@@ -527,13 +574,16 @@
   function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
-    function saveMessage(prelacion_)
+    function saveMessage(prelacion_,data)
     {
+      //console.log(data);
       var mensaje=$("#message").val();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
       var check=$("#checkbox30").prop("checked");
+      var checkRechazo=$("#checkbox1").prop("checked");
       var msjpublic="1";
+      var rechazo=0;
       if(check==false){
         var msjpublic="0";
       }
@@ -550,7 +600,10 @@
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);
+        formdata.append("rechazo", checkRechazo);
+        formdata.append("data", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
+        //console.log(Object.fromEntries(formdata));
         $.ajax({
            method: "POST",
            contentType: false,
@@ -566,7 +619,7 @@
               limpiar();
               findMessage(id_);
                Command: toastr.success(response.Message, "Notifications")
-               
+               findSolicitudes();
                return;
              }
              else{
@@ -579,6 +632,45 @@
         });
       }
     }
+
+  function dataPrelacion(dataP)
+  {
+  
+    var tramiteMember=$("#itemsTramites option:selected").text();
+    var data={};
+    var jsn=$("#jsonCode").val();
+    var Resp=$.parseJSON(jsn);
+   //console.log(Resp);
+    for (n in Resp.campos) { 
+      if(n.toLowerCase()=="lote")
+      {
+        Object.assign(data,{lote:Resp.campos[n]});
+      }
+      if(n.toLowerCase()=="subsidio")
+      {
+        Object.assign(data,{subsidio:Resp.campos[n]});
+      } 
+    }
+    dataP=$.parseJSON(dataP); 
+    if(typeof(dataP.folio)=='undefined' || typeof(dataP.folio)==null)
+    {
+    Object.assign(data,{folio:null});
+    Object.assign(data,{fecha:null});
+    Object.assign(data,{hora:null});
+    }else{
+      Object.assign(data,{folio:dataP.folio});
+    Object.assign(data,{fecha:dataP.fecha});
+    Object.assign(data,{hora:dataP.hora});
+    }
+    
+    Object.assign(data,{razonSocial:Resp.solicitante.razonSocial});
+    Object.assign(data,{tramite_id:Resp.tramite_id}); 
+    Object.assign(data,{tramite:Resp.tramite}); 
+    Object.assign(data,{costo_final:Resp.detalle.costo_final}); 
+    //console.log(data);
+    return data;
+
+  }
   function limpiar()
   {
     $("#checkbox1").prop("checked", false);
