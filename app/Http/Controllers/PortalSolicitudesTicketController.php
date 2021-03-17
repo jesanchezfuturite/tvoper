@@ -872,18 +872,21 @@ class PortalSolicitudesTicketController extends Controller
               $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value->titular_id)->first();
               $suplente = DB::connection('mysql6')->table("portal.users")->where("id", $value->substitute_id)->first();
               
+              
               $notario["titular"] =array(
                 'nombre'=> $titular->name,
                 'apellido_paterno'=> $titular->fathers_surname,
                 'apellido_materno'=> $titular->mothers_surname,
 
               );
-
-              $notario["suplente"] =array(
-                'nombre'=> $suplente->name,
-                'apellido_paterno'=> $suplente->fathers_surname,
-                'apellido_materno'=> $suplente->mothers_surname,
-              );
+              if(isset($suplente)){
+                $notario["suplente"] =array(
+                  'nombre'=> $suplente->name,
+                  'apellido_paterno'=> $suplente->fathers_surname,
+                  'apellido_materno'=> $suplente->mothers_surname,
+                );
+              }
+          
             }
 
             $ids_tramites=[];   
@@ -959,12 +962,13 @@ class PortalSolicitudesTicketController extends Controller
                 'apellido_materno'=> $titular->mothers_surname,
 
               );
-
-              $notario["suplente"] =array(
-                'nombre'=> $suplente->name,
-                'apellido_paterno'=> $suplente->fathers_surname,
-                'apellido_materno'=> $suplente->mothers_surname,
-              );
+              if(isset($suplente)){
+                $notario["suplente"] =array(
+                  'nombre'=> $suplente->name,
+                  'apellido_paterno'=> $suplente->fathers_surname,
+                  'apellido_materno'=> $suplente->mothers_surname,
+                );
+              }
             }
           
             $ids_tramites=[];
