@@ -31,7 +31,7 @@ use App\Repositories\SolicitudesMotivoRepositoryEloquent;
 use App\Repositories\MotivosRepositoryEloquent;
 use App\Entities\SolicitudesMotivo;
 use Luecano\NumeroALetras\NumeroALetras;
-
+use Milon\Barcode\DNS1D;
 
 class PortalSolicitudesController extends Controller
 {
@@ -560,13 +560,12 @@ class PortalSolicitudesController extends Controller
       $attach ="";
     }
     if($prelacion==1)
-      {
-       $msprelacion =$this->msjprelaciondb->create([
-          'solicitud_id'=> $ticket_id
-        ]);
+      {       
         $attach= "documento_prelacion_".$request->id.".pdf";
         $this->savePdfprelacion($attach,$request->data);
-        
+        $msprelacion =$this->msjprelaciondb->create([
+          'solicitud_id'=> $ticket_id
+        ]);        
       }
     try {
       $mensajes =$this->mensajes->create([
@@ -628,7 +627,7 @@ class PortalSolicitudesController extends Controller
           $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$id]);
           if($findTicket->count()>0)
           {
-            $solicitudTicket = $this->ticket->update(['status'=>1],$id);
+            //$solicitudTicket = $this->ticket->update(['status'=>1],$id);
             return response()->json(["Code" => "200", "Message" => "Ticket creado",]);
           }
           $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$id_catalogo]);
@@ -861,16 +860,22 @@ class PortalSolicitudesController extends Controller
     }
     private function savePdfprelacion($path,$data)
     { 
-      log::info($data);
-
       $data=json_decode($data);      
       if($data->fecha==null)
       {
         $fecha=Carbon::now();
         $hora=$fecha->toTimeString();
         $fecha=$fecha->format('Y/m/d');
-        $data = (object) array_merge((array) $data, array('folio'=>9999999999,'fecha'=>$fecha,'hora'=>$hora));
+        $folio=999999999;
+        $data = (object) array_merge((array) $data, array('folio'=>$folio,'fecha'=>$fecha,'hora'=>$hora));
+      }else{
+        $fecha=Carbon::parse($data->fecha . " " . $data->hora);
+        $hora=$fecha->toTimeString();
+        $fecha=$fecha->format('Y/m/d');
+        $data = (object) array_merge((array) $data, array('fecha'=>$fecha,'hora'=>$hora));
       }
+      $barcode=DNS1D::getBarcodePNG($data->folio, 'C39',1,33);
+      $data = (object) array_merge((array) $data, array('barcode'=>$barcode));
       $formatter = new NumeroALetras();
       $letras= $formatter->toMoney($data->costo_final, 2,"PESOS","CENTAVOS");
       $importe_letra=$letras ." 00/100 M.N.";

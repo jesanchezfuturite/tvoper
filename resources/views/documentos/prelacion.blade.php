@@ -469,7 +469,7 @@
                         <td>    
                           <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
                           <center> 
-                          <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="175px">
+                          <img src="data:image/png;base64,{{$data->barcode}}"  width="175px">
                           </center>
                           <center>{{$data->folio}}</center>                         
                       </td>
@@ -612,7 +612,7 @@
                                     <td class="tbl-label">    
                                         <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
                                            <center> 
-                                            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="120px">
+                                            <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
                                            </center>
                                         <center>{{$data->folio}}</center>                         
                                   </td>
@@ -674,7 +674,7 @@
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Municipio destino:</strong></label>
-                                        <label>xxxxxxxxxxxxxx</label>
+                                        <label></label>
                                     </td>
                                 </tr>
                               </table>
@@ -753,7 +753,7 @@
                                     <td class="tbl-label">    
                                         <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
                                            <center> 
-                                            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($data->folio, 'C39',1,33)}}"  width="120px">
+                                            <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
                                            </center>
                                         <center>{{$data->folio}}</center>                         
                                   </td>
