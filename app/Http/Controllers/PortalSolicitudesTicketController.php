@@ -1136,7 +1136,7 @@ class PortalSolicitudesTicketController extends Controller
             $doc_firmado = $this->ticket->where('id',$value)->update(['doc_firmado'=>$body["urls"][$key]]);
 
         }
-        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar' => null, 'firmado'=>$body['status']]);
         $count = $this->ticket->where(["firmado" => 1, "status" => 2])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes firmadas";
       }
