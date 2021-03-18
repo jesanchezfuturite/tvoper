@@ -87,7 +87,7 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
-      $require_docs = $request->has("required_docs") ? 1 :  "";
+      $required_docs = $request->has("required_docs") ? 1 :  "";
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -129,7 +129,7 @@ class PortalSolicitudesTicketController extends Controller
                 "user_id"=>$user_id,
                 "status"=>$status,
                 "en_carrito"=>$carrito,
-                "required_docs"=>$require_docs
+                "required_docs"=>$required_docs
         
               ]);        
              array_push($ids, $ticket->id);
@@ -156,7 +156,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status,
               "en_carrito"=>$carrito,
-              "require_docs"=>$require_docs   
+              "required_docs"=>$required_docs   
             ]); 
             
             if($request->has("file")){
@@ -191,7 +191,7 @@ class PortalSolicitudesTicketController extends Controller
                 "user_id"=>$user_id,
                 "status"=>$status,
                 "en_carrito"=>$carrito,
-                "require_docs"=>$require_docs
+                "required_docs"=>$required_docs
         
               ]);   
         
@@ -218,7 +218,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status,
               "en_carrito"=>$carrito,
-              "require_docs"=>$require_docs  
+              "required_docs"=>$required_docs  
             ]); 
             
             if($request->has("file")){
@@ -458,9 +458,9 @@ class PortalSolicitudesTicketController extends Controller
 
         \Storage::disk('local')->put($attach,  \File::get($file));
         
-        if(!isset($data["require_docs"])){
+        if(!isset($data["required_docs"])){
           $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
-          ["require_docs"=>$data["require_docs"]]);   
+          ["required_docs"=>$data["required_docs"]]);   
         }
 
       } catch(\Exception $e) {
@@ -1197,7 +1197,7 @@ class PortalSolicitudesTicketController extends Controller
           `solicitudes_ticket`.`firmado`,
           `solicitudes_ticket`.`id_tramite`,
           `solicitudes_ticket`.`recibo_referencia`,
-          `solicitudes_ticket`.`require_docs`
+          `solicitudes_ticket`.`required_docs`
           ");
           $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
           ->select($select)
