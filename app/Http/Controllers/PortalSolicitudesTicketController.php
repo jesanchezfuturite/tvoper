@@ -1157,8 +1157,10 @@ class PortalSolicitudesTicketController extends Controller
   } 
   public function filtrado(Request $request){         
       $request = $request->all();
+      $flag=0;
       if(!isset($request["data"])){
         $body[] = $request;
+        $flag=1;
       }else{
         $body = $request["data"];
       }
@@ -1269,6 +1271,7 @@ class PortalSolicitudesTicketController extends Controller
               }
           }
       }
+      $data = $flag==1 ? $data[0] : $data;
 
       return $data;
   }
