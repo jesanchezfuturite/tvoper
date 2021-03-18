@@ -671,6 +671,7 @@ class PortalSolicitudesTicketController extends Controller
         default:
         $statusTicket = 3;
       }
+      $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
       try {
         $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
         ->update([
@@ -687,7 +688,7 @@ class PortalSolicitudesTicketController extends Controller
           ->update([
             'status'=> $statusTicket,
             'id_tramite'=>$request->id_tramite,
-            'recibo_referencia'=>$request->recibo_referencia
+            'recibo_referencia'=>$recibo_referencia
           ]);
 
         
@@ -738,7 +739,7 @@ class PortalSolicitudesTicketController extends Controller
         default:
         $statusTicket = 3;
       }
-      
+      $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
      
       try { 
         if($request->id_transaccion){   
@@ -763,7 +764,7 @@ class PortalSolicitudesTicketController extends Controller
         ->update([
           'status'=> $statusTicket,
           'id_tramite'=>$request->id_tramite,
-          'recibo_referencia'=>$request->recibo_referencia
+          'recibo_referencia'=>$recibo_referencia
         
         ]);
 
