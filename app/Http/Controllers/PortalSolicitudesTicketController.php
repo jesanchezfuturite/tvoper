@@ -86,11 +86,8 @@ class PortalSolicitudesTicketController extends Controller
         $status=99;
 
       }
-      if($request->has("en_carrito")){
-        $carrito =1;
-      }else{
-        $carrito="";
-      }
+      if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
+      $require_docs = $request->has("required_docs") ? 1 :  "";
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -131,7 +128,8 @@ class PortalSolicitudesTicketController extends Controller
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status,
-                "en_carrito"=>$carrito
+                "en_carrito"=>$carrito,
+                "required_docs"=>$require_docs
         
               ]);        
              array_push($ids, $ticket->id);
@@ -157,7 +155,8 @@ class PortalSolicitudesTicketController extends Controller
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
               "status"=>$status,
-              "en_carrito"=>$carrito   
+              "en_carrito"=>$carrito,
+              "require_docs"=>$require_docs   
             ]); 
             
             if($request->has("file")){
@@ -191,7 +190,8 @@ class PortalSolicitudesTicketController extends Controller
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status,
-                "en_carrito"=>$carrito
+                "en_carrito"=>$carrito,
+                "require_docs"=>$require_docs
         
               ]);   
         
@@ -217,7 +217,8 @@ class PortalSolicitudesTicketController extends Controller
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
               "status"=>$status,
-              "en_carrito"=>$carrito   
+              "en_carrito"=>$carrito,
+              "require_docs"=>$require_docs  
             ]); 
             
             if($request->has("file")){
@@ -293,6 +294,7 @@ class PortalSolicitudesTicketController extends Controller
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
           ->where(function ($query) {
             $query->where('por_firmar', '=', 1)
+            ->where('firmado', null)
             ->whereNotNull('id_transaccion');
           })         
           ->with(['catalogo' => function ($query) {
@@ -435,11 +437,11 @@ class PortalSolicitudesTicketController extends Controller
         return $informacion;
     }
 
-    public function saveFile($data){
+    public function saveFile($data=null){
+      if(!$data) $data = request()->all();
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
-
       $extension = $file->getClientOriginalExtension();
 
       try {
@@ -455,6 +457,11 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         \Storage::disk('local')->put($attach,  \File::get($file));
+        
+        if(!isset($data["require_docs"])){
+          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
+          ["require_docs"=>$data["require_docs"]]);   
+        }
 
       } catch(\Exception $e) {
         return response()->json(
@@ -520,6 +527,7 @@ class PortalSolicitudesTicketController extends Controller
           
       if($request->has('pendiente_firma')){        
         $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->where('solicitudes_ticket.firmado', null)
         ->whereIn("solicitudes_ticket.status", [2,3])
         ->whereNotNull('solicitudes_ticket.id_transaccion');
       }
@@ -1188,8 +1196,8 @@ class PortalSolicitudesTicketController extends Controller
           `solicitudes_ticket`.`doc_firmado`,
           `solicitudes_ticket`.`firmado`,
           `solicitudes_ticket`.`id_tramite`,
-          `solicitudes_ticket`.`recibo_referencia`
-
+          `solicitudes_ticket`.`recibo_referencia`,
+          `solicitudes_ticket`.`require_docs`
           ");
           $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
           ->select($select)
