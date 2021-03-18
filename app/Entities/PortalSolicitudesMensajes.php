@@ -26,5 +26,9 @@ class PortalSolicitudesMensajes extends Model implements Transformable
 
     protected $table = "solicitudes_mensajes";
 
+    public function ticket(){
+		return $this->hasMany('App\Entities\PortalSolicitudesTicket', 'ticket_id', 'id');
+	}
+ 
 
 }
