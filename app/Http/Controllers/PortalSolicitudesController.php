@@ -897,6 +897,24 @@ class PortalSolicitudesController extends Controller
   {
     return view('portal/permisosdocumentos');
   }
+
+  public  function findTicketidFolio(Request $request)
+  {
+    try {
+      $response=$this->ticket->findWhere(['clave'=>$request->folio]);
+         return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>$response
+        ]);  
+    } catch (Exception $e) {
+     return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>"Error al buscar el Folio"
+        ]);   
+    }
+  }
  
 }
 

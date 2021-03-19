@@ -117,10 +117,10 @@
 @endsection
 
 @section('scripts')
+
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
-    
     });
 
   function updatePermisos(id,folio)
@@ -138,42 +138,48 @@
   }
   function cerrarModal()
   {var id=$("#id_registro").val();
-    console.log($("#check_"+id).prop("checked") );
-    
-    if($("#check_"+id).prop("checked"))
+    //console.log("#check_"+id );
+    //console.log($("#check_"+id).prop("checked") );
+    $("#row_"+id).empty();    
+    if($("#check_"+id).prop("checked")==true)
     {
-       $("#check_1").prop("checked", false);
-
-    }else{
-       $("#check_1").prop("checked", true);
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"'>");
+    $('#check_'+id).prop('checked', true);
+    }else{      
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"' checked>");
+       $('#check_'+id).prop('checked', false);
     }
-
+     $("[name='check_permiso']").bootstrapSwitch();
+    //console.log($("#check_"+id).prop("checked") );
   }
   function findTramiteSolicitud(){
-    	var folio=$("#folio").val();
+    	var folio_=$("#folio").val();
     	 
     	$.ajax({
            method: "POST", 
-           url: "{{ url('/') }}",
-           data: formdata })
+           url: "{{ url('/ticket-find-folio') }}",
+           data: {folio:folio_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
-        	//var Resp=$.parseJSON(response);
+        	console.log(response);
             addtable();
-            if(JSON.stringify(response)=='[]')
+            if(response.status=='400')
             	{TableManaged2.init2();  return;}
-            var Resp=$.parseJSON(JSON.stringify(response));
                        
-            $.each(Resp, function(i, item) {
+            $.each(response.Message, function(i, item) {
              
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
                 	+"<td>"+item.titulo+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
-                	+ bton
+                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+")' id='check_"+item.id+"'></td>"
                 	+"</tr>"
                 );
-            });;
+              $('#check_'+item.id).prop('checked', false);
+              $("#check_"+item.id).bootstrapSwitch();
+            });
+            
+          
         	TableManaged2.init2();   
         })
         .fail(function( msg ) {
