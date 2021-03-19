@@ -893,6 +893,10 @@ class PortalSolicitudesController extends Controller
       $output=$dompdf->output();
       File::put($path,$output);
     }
+  public function viewpermisosdocumentos()
+  {
+    return view('portal/permisosdocumentos');
+  }
  
 }
 
