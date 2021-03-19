@@ -86,11 +86,8 @@ class PortalSolicitudesTicketController extends Controller
         $status=99;
 
       }
-      if($request->has("en_carrito")){
-        $carrito =1;
-      }else{
-        $carrito="";
-      }
+      if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
+      $required_docs = $request->has("required_docs") ? 1 :  "";
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -131,7 +128,8 @@ class PortalSolicitudesTicketController extends Controller
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status,
-                "en_carrito"=>$carrito
+                "en_carrito"=>$carrito,
+                "required_docs"=>$required_docs
         
               ]);        
              array_push($ids, $ticket->id);
@@ -157,7 +155,8 @@ class PortalSolicitudesTicketController extends Controller
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
               "status"=>$status,
-              "en_carrito"=>$carrito   
+              "en_carrito"=>$carrito,
+              "required_docs"=>$required_docs   
             ]); 
             
             if($request->has("file")){
@@ -191,7 +190,8 @@ class PortalSolicitudesTicketController extends Controller
                 "info"=> json_encode($info),              
                 "user_id"=>$user_id,
                 "status"=>$status,
-                "en_carrito"=>$carrito
+                "en_carrito"=>$carrito,
+                "required_docs"=>$required_docs
         
               ]);   
         
@@ -217,7 +217,8 @@ class PortalSolicitudesTicketController extends Controller
               "info"=> json_encode($info),              
               "user_id"=>$user_id,
               "status"=>$status,
-              "en_carrito"=>$carrito   
+              "en_carrito"=>$carrito,
+              "required_docs"=>$required_docs  
             ]); 
             
             if($request->has("file")){
@@ -293,6 +294,7 @@ class PortalSolicitudesTicketController extends Controller
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
           ->where(function ($query) {
             $query->where('por_firmar', '=', 1)
+            ->where('firmado', null)
             ->whereNotNull('id_transaccion');
           })         
           ->with(['catalogo' => function ($query) {
@@ -435,11 +437,11 @@ class PortalSolicitudesTicketController extends Controller
         return $informacion;
     }
 
-    public function saveFile($data){
+    public function saveFile($data=null){
+      if(!$data) $data = request()->all();
       $mensaje = $data["mensaje"];
       $ticket_id = $data["ticket_id"];    
       $file = $data['file']; 
-
       $extension = $file->getClientOriginalExtension();
 
       try {
@@ -455,6 +457,11 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         \Storage::disk('local')->put($attach,  \File::get($file));
+        
+        if(!isset($data["required_docs"])){
+          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
+          ["required_docs"=>$data["required_docs"]]);   
+        }
 
       } catch(\Exception $e) {
         return response()->json(
@@ -520,6 +527,7 @@ class PortalSolicitudesTicketController extends Controller
           
       if($request->has('pendiente_firma')){        
         $solicitudes->where('solicitudes_catalogo.firma', "1")
+        ->where('solicitudes_ticket.firmado', null)
         ->whereIn("solicitudes_ticket.status", [2,3])
         ->whereNotNull('solicitudes_ticket.id_transaccion');
       }
@@ -663,6 +671,7 @@ class PortalSolicitudesTicketController extends Controller
         default:
         $statusTicket = 3;
       }
+      $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
       try {
         $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
         ->update([
@@ -679,7 +688,7 @@ class PortalSolicitudesTicketController extends Controller
           ->update([
             'status'=> $statusTicket,
             'id_tramite'=>$request->id_tramite,
-            'recibo_referencia'=>$request->recibo_referencia
+            'recibo_referencia'=>$recibo_referencia
           ]);
 
         
@@ -730,7 +739,7 @@ class PortalSolicitudesTicketController extends Controller
         default:
         $statusTicket = 3;
       }
-      
+      $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
      
       try { 
         if($request->id_transaccion){   
@@ -755,7 +764,7 @@ class PortalSolicitudesTicketController extends Controller
         ->update([
           'status'=> $statusTicket,
           'id_tramite'=>$request->id_tramite,
-          'recibo_referencia'=>$request->recibo_referencia
+          'recibo_referencia'=>$recibo_referencia
         
         ]);
 
@@ -1188,8 +1197,8 @@ class PortalSolicitudesTicketController extends Controller
           `solicitudes_ticket`.`doc_firmado`,
           `solicitudes_ticket`.`firmado`,
           `solicitudes_ticket`.`id_tramite`,
-          `solicitudes_ticket`.`recibo_referencia`
-
+          `solicitudes_ticket`.`recibo_referencia`,
+          `solicitudes_ticket`.`required_docs`
           ");
           $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
           ->select($select)
