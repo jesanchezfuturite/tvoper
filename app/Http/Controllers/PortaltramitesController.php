@@ -105,7 +105,7 @@ class PortaltramitesController extends Controller
 		$id = $request->id_campo;
 
 		try{
-			$cmp = $this->campos->findWhere(['descripcion'=> $desc, 'status'=>'1']);
+			$cmp = $this->campos->Where('descripcion',$desc)->where('status','1')->where('id','<>',$id)->get();
 
 			if($cmp->count() > 0){
 

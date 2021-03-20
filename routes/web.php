@@ -327,7 +327,7 @@ Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
 Route::get('/solicitud-getUsers', 'PortalSolicitudesController@getUsers');
 Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
-
+Route::get('/permisos-documentos','PortalSolicitudesController@viewpermisosdocumentos');
 
 /*estas son para crear los tickets de solicitud*/
 Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
@@ -416,6 +416,9 @@ Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketControll
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
 
+Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
+Route::post('/save-files', 'PortalSolicitudesTicketController@saveFile');
+
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -450,7 +453,7 @@ Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos');
 Route::get('/consultar-curp/{curp}', 'ApiController@curp');
 Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
-Route::get('/insumos-montos/{expediente}', 'ApiController@getMontoOperacion');
+Route::get('/insumos-montos', 'ApiController@getMontoOperacion');
 
 Route::get('/aviso/{expediente}/{userid}', 'ApiController@getTicketsAviso');
 
