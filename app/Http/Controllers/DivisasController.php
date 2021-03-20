@@ -21,7 +21,7 @@ class DivisasController extends Controller
        }
        public function getDivisas(){
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/divisas");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/divisas");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listDivisas = curl_exec($ch);
 
@@ -34,7 +34,7 @@ class DivisasController extends Controller
         $json=json_encode($data);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,env("SESSION_HOSTNAME")."/session-api/divisas/saveDivisas");
+        curl_setopt($ch, CURLOPT_URL,env("SESSION_HOSTNAME")."/divisas/saveDivisas");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -54,7 +54,7 @@ class DivisasController extends Controller
         $json=json_encode($data);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/divisas/deleteDivisas");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/divisas/deleteDivisas");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -68,7 +68,7 @@ class DivisasController extends Controller
        }
        public function getDivisasSave(){
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/divisas/getDivisasSave");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/divisas/getDivisasSave");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $getDivisas = curl_exec($ch);
 
@@ -81,7 +81,7 @@ class DivisasController extends Controller
         $json=json_encode($data);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL,env("SESSION_HOSTNAME")."/session-api/divisas/getCambioDivisa");
+        curl_setopt($ch, CURLOPT_URL,env("SESSION_HOSTNAME")."/divisas/getCambioDivisa");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);

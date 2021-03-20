@@ -43,7 +43,7 @@ class PortalNotaryOfficesController extends Controller
         $datos;
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/notary-offices/");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/notary-offices/");
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
@@ -60,7 +60,7 @@ class PortalNotaryOfficesController extends Controller
 
     public function listNotary(){
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/notary-offices/");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/notary-offices/");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listNotary = curl_exec($ch);
 
@@ -72,7 +72,7 @@ class PortalNotaryOfficesController extends Controller
 
 
     public function getUsers($id){
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/". "$id/users";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/". "$id/users";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -90,7 +90,7 @@ class PortalNotaryOfficesController extends Controller
         $data = $request->user;
         $data["id"] = $user_id;
         $json=json_encode($data);
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/". "$notary_id/users/$user_id";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users/$user_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -112,7 +112,7 @@ class PortalNotaryOfficesController extends Controller
             "status"=>$request->status
         );
         $json = json_encode($data);
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/". "$notary_id/users_status/$user_id";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users_status/$user_id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -130,7 +130,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/"."$id/users";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
         $users=$request->users;
 
         $json = array("users"=>$users);
@@ -150,7 +150,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function getRolesPermission(){
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/session-api/notary-offices/roles");
+        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/notary-offices/roles");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listRoles = curl_exec($ch);
         curl_close($ch);
@@ -181,7 +181,7 @@ class PortalNotaryOfficesController extends Controller
             ]);
     }
     public function listNotaryCommunity($id){
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/notaryCommunity/"."$id";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/notaryCommunity/"."$id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -199,7 +199,7 @@ class PortalNotaryOfficesController extends Controller
     }
      public function createUsers(Request $request){
         $user = $request->user;
-        $link = env("SESSION_HOSTNAME")."/session-api/signup";
+        $link = env("SESSION_HOSTNAME")."/signup";
 
         $json = json_encode($user);
         $ch = curl_init();
@@ -220,7 +220,7 @@ class PortalNotaryOfficesController extends Controller
         $data = $request->all();
         $json=json_encode($data);
 
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/"."$id";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
@@ -239,7 +239,7 @@ class PortalNotaryOfficesController extends Controller
     }
 
     public function getNotary($id){
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/"."$id";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -251,7 +251,7 @@ class PortalNotaryOfficesController extends Controller
 
     public function searchUsername(Request $request){
         $data = $request->all();
-        $url = env("SESSION_HOSTNAME")."/session-api/notary-offices/user";
+        $url = env("SESSION_HOSTNAME")."/notary-offices/user";
         try {
         $client = new \GuzzleHttp\Client();
             $response = $client->get(
