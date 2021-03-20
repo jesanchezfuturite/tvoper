@@ -709,8 +709,8 @@ class PortalSolicitudesController extends Controller
       }
     }
     public function getFileRoute($id, $type){
-        $url= env("SESSION_HOSTNAME")."/session-api/";
-        $link = env("SESSION_HOSTNAME")."/session-api/notary-offices/file/"."$id/$type";
+        $url= env("SESSION_HOSTNAME");
+        $link = env("SESSION_HOSTNAME")."/notary-offices/file/"."$id/$type";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $link);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
