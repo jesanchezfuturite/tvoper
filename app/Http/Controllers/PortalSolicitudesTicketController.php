@@ -87,9 +87,11 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
-      $required_docs = $request->required_docs==true ? 1 : NULL;
-      // $status = $request->estatus;
 
+      $required_docs="";
+      if($request->required_docs){
+          $required_docs=1;
+      }
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
