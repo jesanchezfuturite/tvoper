@@ -327,7 +327,7 @@ Route::get('/solicitud-all', 'PortalSolicitudesController@getSolicitudes');
 Route::get('/solicitud-getUsers', 'PortalSolicitudesController@getUsers');
 Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
-
+Route::get('/permisos-documentos','PortalSolicitudesController@viewpermisosdocumentos');
 
 /*estas son para crear los tickets de solicitud*/
 Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
@@ -404,7 +404,7 @@ Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@elimi
 Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
-Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrado');
+Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
@@ -415,9 +415,9 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
+
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFile');
-
 
 
 
