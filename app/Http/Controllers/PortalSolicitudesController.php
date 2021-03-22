@@ -901,10 +901,16 @@ class PortalSolicitudesController extends Controller
   public  function findTicketidFolio(Request $request)
   {
     try {
-      $response=$this->ticket->findWhere(['clave'=>$request->folio]);
-         return response()->json(
+      $response=array();
+      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
+      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+
+      $response=array_merge($response,$findClav);
+      $response=array_merge($response,$findid);
+     
+        return response()->json(
           [
-            "Code" => "400",
+            "Code" => "200",
             "Message" =>$response
         ]);  
     } catch (Exception $e) {
@@ -912,6 +918,23 @@ class PortalSolicitudesController extends Controller
           [
             "Code" => "400",
             "Message" =>"Error al buscar el Folio"
+        ]);   
+    }
+  }
+  public function updatePermisoSolicitud(Request $request)
+  {
+    try {
+      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$id);
+         return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>"Actualizado correctamente"
+        ]);  
+    } catch (Exception $e) {
+     return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>"Error al actualizar permisos"
         ]);   
     }
   }

@@ -73,14 +73,7 @@
             			<th width="15%" align="center">Permiso descarga </th>
             			</tr>
           			</thead>
-          			<tbody>                   
-                      <tr>
-                    <td>ID</td>
-                    <td>Titulo</td>
-                    <td>Estatus</td>
-                    <td>Fecha de Ingreso</td>
-                  <td align="center"><input type="checkbox"   data-toggle='modal' href='#portlet-update' class="make-switch tooltips" checked data-on-color="success" data-off-color="danger" onchange="updatePermisos(1,22222)" id="check_1"></td>
-                  </tr> 
+          			<tbody> 
           			</tbody>
         		</table>  
       		</div>             
@@ -96,17 +89,15 @@
                 <h4 class="modal-title">Confirmation</h4>
             </div>
             <div class="modal-body">
-                <p>
-             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> permisos de descarga de documentos firmados?</p>
-              <span class="help-block">&nbsp;</span>
-             
-            <label>Folio: </label>  <label id="lbl_folio" style="color: #cb5a5e;"></label> 
+                <span class="help-block">&nbsp;</span> <p>
+             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> permisos de descarga de documentos firmados, Folio: <label id="lbl_folio" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
                 
             </div>
             <div class="modal-footer">
                 <div id="AddbuttonDeleted">
          <button type="button" data-dismiss="modal" class="btn default" onclick="cerrarModal()">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="eliminaRol()">Confirmar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="permisosUpdate()">Confirmar</button>
         </div>
             </div>
         </div>
@@ -124,15 +115,15 @@
     });
 
   function updatePermisos(id,folio)
-  {
-    
+  { 
+    var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
     $('#portlet-update').modal('show');    
      if($("#check_"+id).prop("checked") == true)
     {
-       document.getElementById("lbl_habilitar").textContent="Habilitar";
+       labl.textContent="Habilitar";
     }else{
-       document.getElementById("lbl_habilitar").textContent="Deshabilitar";
+       labl.textContent="Deshabilitar";
     }
     document.getElementById("id_registro").value=id;
   }
@@ -152,34 +143,62 @@
      $("[name='check_permiso']").bootstrapSwitch();
     //console.log($("#check_"+id).prop("checked") );
   }
+  function permisosUpdate()
+  {
+    var id_=$("#id_registro").val();
+    var docs=null;
+    if($("#check_"+id_).prop("checked"))
+    { docs=1; }
+      $.ajax({
+           method: "POST", 
+           url: "{{ url('/solicitud-update-permisos') }}",
+           data: {id:id_,required_docs:docs,_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+            if(response.status=='400')
+              {
+                Command: toastr.warning(response.Message, "Notifications");
+               return;
+             }else{
+              findTramiteSolicitud();
+              Command: toastr.success(response.Message, "Notifications");
+             }              
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+
+  }
   function findTramiteSolicitud(){
     	var folio_=$("#folio").val();
     	 
     	$.ajax({
            method: "POST", 
-           url: "{{ url('/ticket-find-folio') }}",
+           url: "{{ url('/solicitud-find-folio') }}",
            data: {folio:folio_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
         	console.log(response);
             addtable();
             if(response.status=='400')
-            	{TableManaged2.init2();  return;}
-                       
+            	{TableManaged2.init2();  return;}         
             $.each(response.Message, function(i, item) {
              
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
-                	+"<td>"+item.titulo+"</td>"
+                	+"<td>"+item.clave+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
                 	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+")' id='check_"+item.id+"'></td>"
                 	+"</tr>"
                 );
-              $('#check_'+item.id).prop('checked', false);
-              $("#check_"+item.id).bootstrapSwitch();
+              if(item.required_docs==1)
+                {
+                  $('#check_'+item.id).prop('checked', true);
+                }else{
+                  $('#check_'+item.id).prop('checked', false);
+                }
             });
             
-          
+          $("[name='check_permiso']").bootstrapSwitch();
         	TableManaged2.init2();   
         })
         .fail(function( msg ) {
@@ -188,7 +207,7 @@
   	}
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th> </tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
   {
