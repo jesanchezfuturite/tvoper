@@ -237,6 +237,7 @@ class PortalSolicitudesTicketController extends Controller
         }  
         
       } catch (\Exception $e) {
+        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
         $error = [
             "Code" => "400",
             "Message" => "Error al guardar la solicitud"
