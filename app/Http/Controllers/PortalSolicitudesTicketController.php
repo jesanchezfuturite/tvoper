@@ -88,7 +88,7 @@ class PortalSolicitudesTicketController extends Controller
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
-      $required_docs="";
+      $required_docs=0;
       if($request->required_docs){
           $required_docs=1;
       }
