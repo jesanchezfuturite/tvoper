@@ -87,9 +87,9 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
-      $required_docs = $request->required_docs==true ? 1 :  "";
+      $required_docs = $request->required_docs==true ? 1 : NULL;
       // $status = $request->estatus;
-    
+
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
@@ -502,6 +502,7 @@ class PortalSolicitudesTicketController extends Controller
         `solicitudes_ticket`.`firmado`,
         `solicitudes_ticket`.`id_tramite`,
         `solicitudes_ticket`.`recibo_referencia`,
+        `solicitudes_ticket`.`required_docs`,
 
         `mensajes`.`id` as `mensajes_id`,
         `mensajes`.`ticket_id` as `mensajes_ticket_id`,
