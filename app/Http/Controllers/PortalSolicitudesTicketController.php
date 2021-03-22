@@ -87,7 +87,7 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
-      $required_docs = $request->has("required_docs") ? 1 :  "";
+      $required_docs = $request->required_docs==true ? 1 :  "";
       // $status = $request->estatus;
     
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -237,6 +237,7 @@ class PortalSolicitudesTicketController extends Controller
         }  
         
       } catch (\Exception $e) {
+        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
         $error = [
             "Code" => "400",
             "Message" => "Error al guardar la solicitud"
@@ -546,7 +547,9 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudes->where('solicitudes_ticket.en_carrito', 1)
         ->where('solicitudes_ticket.status', 99);
       }
-  
+      if($request->has('required_docs')){
+        $solicitudes->where('solicitudes_ticket.required_docs', 1);
+      }
       if($request->has('id_solicitud')){        
         $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
       }
