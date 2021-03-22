@@ -329,7 +329,7 @@ Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud');
 Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
 Route::get('/solicitud-documentos','PortalSolicitudesController@viewpermisosdocumentos');
 Route::post('/solicitud-find-folio','PortalSolicitudesController@findTicketidFolio');
-Route::post('/solicitud-update-permisos','PortalSolicitudesController@findTicketidFolio');
+Route::post('/solicitud-update-permisos','PortalSolicitudesController@updatePermisoSolicitud');
 
 /*estas son para crear los tickets de solicitud*/
 Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud

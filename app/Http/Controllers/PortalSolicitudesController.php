@@ -925,7 +925,7 @@ class PortalSolicitudesController extends Controller
   public function updatePermisoSolicitud(Request $request)
   {
     try {
-      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$id);
+      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
          return response()->json(
           [
             "Code" => "200",
