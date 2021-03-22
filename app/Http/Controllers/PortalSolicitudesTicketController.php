@@ -88,10 +88,6 @@ class PortalSolicitudesTicketController extends Controller
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
-      $required_docs=0;
-      if($request->required_docs){
-          $required_docs=1;
-      }
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;        
       $error =null;
@@ -131,7 +127,7 @@ class PortalSolicitudesTicketController extends Controller
                 "user_id"=>$user_id,
                 "status"=>$status,
                 "en_carrito"=>$carrito,
-                "required_docs"=>$required_docs
+                "required_docs"=>$request->required_docs
         
               ]);        
              array_push($ids, $ticket->id);
@@ -158,7 +154,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status,
               "en_carrito"=>$carrito,
-              "required_docs"=>$required_docs   
+              "required_docs"=>$request->required_docs   
             ]); 
             
             if($request->has("file")){
@@ -193,7 +189,7 @@ class PortalSolicitudesTicketController extends Controller
                 "user_id"=>$user_id,
                 "status"=>$status,
                 "en_carrito"=>$carrito,
-                "required_docs"=>$required_docs
+                "required_docs"=>$request->required_docs
         
               ]);   
         
@@ -220,7 +216,7 @@ class PortalSolicitudesTicketController extends Controller
               "user_id"=>$user_id,
               "status"=>$status,
               "en_carrito"=>$carrito,
-              "required_docs"=>$required_docs  
+              "required_docs"=>$request->required_docs  
             ]); 
             
             if($request->has("file")){
