@@ -898,4 +898,45 @@ class PortalSolicitudesController extends Controller
     return view('portal/permisosdocumentos');
   }
 
+
+  public  function findTicketidFolio(Request $request)
+  {
+    try {
+      $response=array();
+      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
+      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+
+      $response=array_merge($response,$findClav);
+      $response=array_merge($response,$findid);
+     
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>$response
+        ]);  
+    } catch (Exception $e) {
+     return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>"Error al buscar el Folio"
+        ]);   
+    }
+  }
+  public function updatePermisoSolicitud(Request $request)
+  {
+    try {
+      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
+         return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>"Actualizado correctamente"
+        ]);  
+    } catch (Exception $e) {
+     return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>"Error al actualizar permisos"
+        ]);   
+    }
+  }
 }
