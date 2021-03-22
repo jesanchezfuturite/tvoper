@@ -1098,8 +1098,8 @@ function changeComunidad()
     }else if(itemsCiudadNot=="0"){
       Command: toastr.warning("Campo Ciudad, requerido!", "Notifications")
       //$("#itemsCiudadNot").focus(); 
-    }else if (calleNotario.length<1) {
-       Command: toastr.warning("Campo Calle, requerido!", "Notifications") 
+    }else if (calleNotario.length<2) {
+       Command: toastr.warning("Campo Calle min. 3 caracteres, requerido!", "Notifications") 
        $("#calleNotario").focus(); 
     }else if (numeroExtNotario.length<1) {
        Command: toastr.warning("Campo Número Exterior, requerido!", "Notifications")
