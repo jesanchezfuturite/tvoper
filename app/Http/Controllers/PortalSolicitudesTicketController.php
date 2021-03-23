@@ -1352,5 +1352,48 @@ class PortalSolicitudesTicketController extends Controller
       return $data;
   }
 
+  public function saveFiles(Request $request){
+    $files = $request["files"];
+    
+    try {
+      foreach ($files as $key => $value) {
+        
+        $mensaje = $value["mensaje"];
+        $ticket_id = $value["ticket_id"];    
+        $file = $value['file']; 
+        $extension = $file->getClientOriginalExtension();
+
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $ticket_id,
+          'mensaje' => $mensaje,
+        ]);
+
+        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+          'attach' => $attach,
+        ]);
+
+        \Storage::disk('local')->put($attach,  \File::get($file));
+        
+        if(!isset($value["required_docs"])){
+          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
+          ["required_docs"=>$value["required_docs"]]);   
+        }
+      }
+
+
+    } catch(\Exception $e) {
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+          
+        ]
+      ); 
+    }
+
+  }
+
+
     
 }

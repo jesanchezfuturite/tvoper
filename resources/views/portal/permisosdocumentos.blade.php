@@ -135,12 +135,10 @@
       $("#row_"+id).empty(); 
        $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"'>");
       $('#check_'+id).prop('checked', false);
-      console.log('falsoss');
     }else{
       $("#row_"+id).empty();       
        $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"' checked>");
        $('#check_'+id).prop('checked', true);
-       console.log('verdadero');
     }
      $("[name='check_permiso']").bootstrapSwitch();
     //console.log($("#check_"+id).prop("checked") );
@@ -178,7 +176,7 @@
            url: "{{ url('/solicitud-find-folio') }}",
            data: {folio:folio_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
-        	console.log(response);
+        	//console.log(response);
             addtable();
             if(response.status=='400')
             	{TableManaged2.init2();  return;}         
