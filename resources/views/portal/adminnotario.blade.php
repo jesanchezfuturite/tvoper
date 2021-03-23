@@ -687,8 +687,8 @@
           document.getElementById("numNotario").value=resp.response.notary_office.notary_number;
           $("#itemsEntidadNot").val(resp.response.notary_office.federal_entity_id).change();          
           document.getElementById("calleNotario").value=resp.response.notary_office.street;
-          document.getElementById("numeroExtNotario").value=resp.response.notary_office["outdoor-number"];
-          document.getElementById("numeroNotario").value=resp.response.notary_office.number;
+          document.getElementById("numeroNotario").value=resp.response.notary_office["indoor-number"];
+          document.getElementById("numeroExtNotario").value=resp.response.notary_office.number;
           document.getElementById("codigopostNotario").value=resp.response.notary_office.zip;
           document.getElementById("distritoNotario").value=resp.response.notary_office.district;
           document.getElementById("telNotario").value=resp.response.notary_office.phone;
@@ -1003,7 +1003,7 @@ function changeComunidad()
         formdata.append("email", emailNotario);
         formdata.append("street", calleNotario);
         formdata.append("number", numeroNotario);
-        formdata.append("outdoor-number", numeroExtNotario);
+        formdata.append("indoor-number", numeroExtNotario);
         formdata.append("district", distritoNotario);
         formdata.append("federal_entity_id", itemsEntidadNot);
         formdata.append("city_id", itemsCiudadNot);
@@ -1205,8 +1205,8 @@ function changeComunidad()
       fax: faxNotario,
       email: emailNotario,
       street: calleNotario,
-      number: numeroNotario,
-      "outdoor-number": numeroExtNotario,
+      number: numeroExtNotario,
+      "indoor-number": numeroNotario,
       district: distritoNotario,
       federal_entity_id: itemsEntidadNot,
       city_id: itemsCiudadNot,
