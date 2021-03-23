@@ -48,5 +48,32 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
         return $data;
        
     }
-    
+    public function findTicket($campo,$var)
+    {
+        $data = PortalSolicitudesTicket::where('solicitudes_ticket.'.$campo,$var)
+        ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')        
+        ->select('solicitudes_ticket.id',
+            'solicitudes_ticket.clave',
+            'solicitudes_ticket.id_tramite',
+            'solicitudes_ticket.recibo_referencia',
+            'solicitudes_ticket.catalogo_id',
+            'solicitudes_ticket.id_transaccion',
+            'solicitudes_ticket.info',
+            'solicitudes_ticket.relacionado_a',
+            'solicitudes_ticket.ticket_relacionado',
+            'solicitudes_ticket.user_id',
+            'solicitudes_ticket.creado_por',
+            'solicitudes_ticket.asignado_a',
+            'solicitudes_ticket.en_carrito',
+            'solicitudes_ticket.firmado',
+            'solicitudes_ticket.por_firmar',
+            'solicitudes_ticket.doc_firmado',
+            'solicitudes_ticket.required_docs',
+            'solicitudes_ticket.status',
+            'solicitudes_ticket.created_at',
+            'solicitudes_ticket.updated_at',
+            'solicitudes_status.descripcion'
+        )->get();
+        return $data;
+    }
 }
