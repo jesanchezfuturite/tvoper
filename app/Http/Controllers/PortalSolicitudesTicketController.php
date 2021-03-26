@@ -473,153 +473,7 @@ class PortalSolicitudesTicketController extends Controller
 
     }
 
- 
 
-    public function filtrarSolicitudes(Request $request){
-      $consultas = 1;
-      $select = DB::raw("
-        `solicitudes_ticket`.`id`,
-        `servicio`.`Tipo_Descripcion` as `nombre_servicio`,
-
-        `solicitudes_catalogo`.`titulo`,
-        `solicitudes_catalogo`.`tramite_id`,
-        `solicitudes_catalogo`.`firma`,
-
-        
-        IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
-        
-        `solicitudes_ticket`.`status`,
-        `solicitudes_ticket`.`en_carrito`,
-        `solicitudes_ticket`.`id_transaccion`,
-        `solicitudes_ticket`.`created_at`,
-        `solicitudes_ticket`.`user_id`,
-        `solicitudes_ticket`.`info`,
-        `solicitudes_ticket`.`clave`,
-        `solicitudes_ticket`.`por_firmar`,
-        `solicitudes_ticket`.`doc_firmado`,
-        `solicitudes_ticket`.`firmado`,
-        `solicitudes_ticket`.`id_tramite`,
-        `solicitudes_ticket`.`recibo_referencia`,
-        `solicitudes_ticket`.`required_docs`,
-
-        `mensajes`.`id` as `mensajes_id`,
-        `mensajes`.`ticket_id` as `mensajes_ticket_id`,
-        `mensajes`.`mensaje` as `mensajes_mensaje`,
-        `mensajes`.`attach` as `mensajes_attach`,
-        `mensajes`.`mensaje_para` as `mensajes_mensaje_para`,
-        `mensajes`.`created_at` as `mensajes_created_at`,
-        `mensajes`.`updated_at` as `mensajes_updated_at`,
-
-        `tramites`.`id` as `tramites_id`,
-        `tramites`.`id_transaccion_motor` as `tramites_id_transaccion_motor`,
-        `tramites`.`estatus` as `tramites_estatus`,
-        `tramites`.`url_recibo` as `tramites_url_recibo`,
-        `tramites`.`created_at` as `tramites_created_at`,
-        `tramites`.`updated_at` as `tramites_updated_at`
-      ");
-      $solicitudes = DB::connection('mysql6')->table('solicitudes_ticket')
-      ->select($select)
-      ->leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-      ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
-      ->leftJoin('solicitudes_tramite as tramites', 'tramites.id', 'solicitudes_ticket.id_transaccion')
-      ->leftJoin('solicitudes_mensajes as mensajes', 'mensajes.ticket_id', 'solicitudes_ticket.id')
-      ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
-          
-      if($request->has('pendiente_firma')){        
-        $solicitudes->where('solicitudes_catalogo.firma', "1")
-        ->where('solicitudes_ticket.firmado', null)
-        ->whereIn("solicitudes_ticket.status", [2,3])
-        ->whereNotNull('solicitudes_ticket.id_transaccion');
-      }
-
-      if($request->has('firmado')){        
-        $solicitudes->where('solicitudes_catalogo.firma', "1")
-        ->whereIn("solicitudes_ticket.status", [2,3])
-        ->whereNotNull('solicitudes_ticket.id_transaccion')
-        ->whereNotNull('solicitudes_ticket.firmado');
-      }
-      
-      if($request->has('tipo_solicitud')){
-          $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
-      }
-      if($request->has('en_carrito')){
-        $solicitudes->where('solicitudes_ticket.en_carrito', 1)
-        ->where('solicitudes_ticket.status', 99);
-      }
-      if($request->has('required_docs')){
-        $solicitudes->where('solicitudes_ticket.required_docs', 1);
-      }
-      if($request->has('id_solicitud')){        
-        $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
-      }
-      if($request->has('notary_id')){
-        $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
-        $solicitudes->whereIn('user_id', $users);
-      }
-      
-      if($request->has('id_usuario')){     
-        $relation = $this->configUserNotary->where('user_id', $request->id_usuario)->first(); 
-        if($relation){
-          $notary_id = $relation->notary_office_id;
-          $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
-            
-        }else{
-          $users = ["$user_id"];          
-        }   
-        $solicitudes->whereIn('user_id', $users);
-      }
-      if($request->has('estatus')){
-        $solicitudes->where('solicitudes_ticket.status', $request->estatus);
-      }
-      $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
-      $solicitudes = $solicitudes->get();
-
-   
-      $campos = [];
-      $response = [];
-      foreach($solicitudes as $key => $solicitud){
-        $solicitud->info = json_decode($solicitud->info);
-        if(isset($solicitud->info->campos))
-          $campos = array_merge($campos, array_keys((array)$solicitud->info->campos));
-      }
-      $campos = array_unique($campos);
-      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
-      foreach($solicitudes as $key => $solicitud){
-        if(isset($solicitud->info->campos)){
-          $campos = [];
-          foreach($solicitud->info->campos as $key => $val){
-            if(is_numeric($key)) $key = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
-            $campos[$key] = $val;
-          }
-          
-          $solicitud->info->campos = $campos;
-        }
-
-        $search = array_search($solicitud->id, array_column($response, 'id'));
-        $mensajes = [];
-        $tramites = [];
-        $sol = $search !== false ? $response[$search] : [];
-
-        foreach($solicitud as $key => $val){
-          preg_match('/^(tramites|mensajes)_(.*)/', $key, $matches);   
-          if(count($matches) > 0){       
-            ${$matches[1]}[$matches[2]] = $val;
-          }else{                        
-            $sol[$key] = $val;
-          }
-        }
- 
-      
-        if(count($mensajes) > 0) $sol['mensajes'][] = $mensajes;
-        else $sol['mensajes'] = [];
-        if(count($tramites) > 0) $sol['tramites'][] = $tramites;
-        else $sol['tramites'] = [];
-        if($search !== false) $response[$search] = $sol;
-        else $response[] = $sol;
-      }
-
-      return $response;
-    }
 
     public function saveTransaccion(Request $request){
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
@@ -1166,7 +1020,7 @@ class PortalSolicitudesTicketController extends Controller
     }
 
   } 
-  public function filtrado(Request $request){         
+  public function filtrarSolicitudes(Request $request){         
       $request = $request->all();
       $flag=0;
       if(!isset($request["data"])){
@@ -1255,10 +1109,12 @@ class PortalSolicitudesTicketController extends Controller
               $solicitudes->where('solicitudes_ticket.status', $value["estatus"]);
           }
           $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
-          $solicitudes = $solicitudes->get();
+          $solicitudes = $solicitudes->latest()->take(10)->get();
           $data[$key]=$solicitudes;
 
       } 
+
+      return $data;
       $campos = [];
       $response = [];
       foreach($data as $key => $solicitud){   
