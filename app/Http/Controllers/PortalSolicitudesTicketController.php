@@ -1215,7 +1215,7 @@ class PortalSolicitudesTicketController extends Controller
 
   public function saveFiles(Request $request){
     $files = $request->all();
-    dd($files);
+   
     
     try {
       foreach ($files as $key => $value) {
@@ -1223,6 +1223,7 @@ class PortalSolicitudesTicketController extends Controller
         $mensaje = $value["mensaje"];
         $ticket_id = $value["ticket_id"];    
         $file = $value['file']; 
+        dd($file);
         $extension = $file->getClientOriginalExtension();
 
         $mensajes =$this->mensajes->create([
