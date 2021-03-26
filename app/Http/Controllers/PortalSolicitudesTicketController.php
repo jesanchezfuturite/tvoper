@@ -1215,6 +1215,7 @@ class PortalSolicitudesTicketController extends Controller
 
   public function saveFiles(Request $request){
     $files = $request->all();
+    dd($files);
     
     try {
       foreach ($files as $key => $value) {
