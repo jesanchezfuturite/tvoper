@@ -406,7 +406,7 @@ Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@elimi
 Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
-Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
+Route::post('/solicitudes-filtrar/{max?}', 'PortalSolicitudesTicketController@filtrarSolicitudes');
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
