@@ -1223,7 +1223,7 @@ class PortalSolicitudesTicketController extends Controller
         $mensaje = $value["mensaje"];
         $ticket_id = $value["ticket_id"];    
         $file = $value['file']; 
-        dd($file);
+        dd($ticket_id, $file);
         $extension = $file->getClientOriginalExtension();
 
         $mensajes =$this->mensajes->create([
