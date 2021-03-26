@@ -14,6 +14,7 @@ use App\Repositories\TramitedetalleRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalTramitesRepositoryEloquent;
+use Illuminate\Support\Facades\Input;
 
 use DB;
 
@@ -1020,7 +1021,8 @@ class PortalSolicitudesTicketController extends Controller
     }
 
   } 
-  public function filtrarSolicitudes(Request $request){         
+  public function filtrarSolicitudes(Request $request){  
+      $max = Input::get('max');   
       $request = $request->all();
       $flag=0;
       if(!isset($request["data"])){
@@ -1109,12 +1111,15 @@ class PortalSolicitudesTicketController extends Controller
               $solicitudes->where('solicitudes_ticket.status', $value["estatus"]);
           }
           $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
-          $solicitudes = $solicitudes->latest()->take(10)->get();
+
+          if(isset($max)){
+              $solicitudes->latest()->take($max);
+          }
+          $solicitudes=$solicitudes->get();
           $data[$key]=$solicitudes;
 
       } 
 
-      return $data;
       $campos = [];
       $response = [];
       foreach($data as $key => $solicitud){   
