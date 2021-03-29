@@ -1222,7 +1222,8 @@ class PortalSolicitudesTicketController extends Controller
         $file = $value['file']; 
         
         $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id
+          'ticket_id'=> $ticket_id,
+          'mensaje'=>$mensaje
         ]);
 
         $new_file = str_replace('data:application/pdf;base64,', '', $file);
@@ -1238,6 +1239,14 @@ class PortalSolicitudesTicketController extends Controller
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
         ]);
+
+        return json_encode([
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200
+  
+        ]);
+
+     
 
      
       }
