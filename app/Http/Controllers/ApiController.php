@@ -696,6 +696,8 @@ class ApiController extends Controller
 
 		$ec 	= $request->expediente;
 
+		$tramite = $request->tramite;
+
 		$users = $this->getUsersbyID($request->userid);
 
 		$campos = $this->campos->all();
@@ -709,8 +711,9 @@ class ApiController extends Controller
 
 		// buscar las solicitudes del aviso de enajenacion de la notaria
 		$solicitudes = $this->tickets
-			->where('catalogo_id',$this->solicitudes_aviso_id)
+			->where('catalogo_id',$tramite)
 			->whereIn('user_id', $users)
+			->wherIn('status', [2,3, 5])
 			->get();
 
 
