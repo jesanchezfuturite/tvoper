@@ -1217,7 +1217,7 @@ class PortalSolicitudesTicketController extends Controller
     $ticket_id = $request->ticket_id;
     $files = $request->file;
 
-    // try {  
+    try {  
       foreach ($files as $key => $value) {  
         $extension = $value->getClientOriginalExtension();
 
@@ -1235,15 +1235,15 @@ class PortalSolicitudesTicketController extends Controller
       }
 
 
-    // } catch(\Exception $e) {
-    //   return response()->json(
-    //     [
-    //       "Code" => "400",
-    //       "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+    } catch(\Exception $e) {
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al guardar archivo - ".  $e->getMessage(),
           
-    //     ]
-    //   ); 
-    // }
+        ]
+      ); 
+    }
 
   }
 
