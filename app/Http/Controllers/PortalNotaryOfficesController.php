@@ -153,6 +153,9 @@ class PortalNotaryOfficesController extends Controller
         curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/notary-offices/roles");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listRoles = curl_exec($ch);
+        if ($listRoles === false) {
+            throw new Exception(curl_error($ch), curl_errno($ch));
+        }
         curl_close($ch);
         $json = json_decode($listRoles);
         $data = $json->response->notary_office;
