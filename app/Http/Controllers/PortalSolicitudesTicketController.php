@@ -1214,23 +1214,31 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function saveFiles(Request $request){
-    $ticket_id = $request->ticket_id;
-    $files = $request->file;
-
+    $files = $request->all();
     try {  
-      foreach ($files as $key => $value) {  
-        $extension = $value->getClientOriginalExtension();
-
+      foreach ($files as $key => $value) { 
+        $mensaje = $value["mensaje"];
+        $ticket_id = $value["ticket_id"];    
+        $file = $value['file']; 
+        
         $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id[$key]
+          'ticket_id'=> $ticket_id
         ]);
 
-        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $new_file = str_replace('data:application/pdf;base64,', '', $file);
+				$new_file = str_replace(' ', '+', $new_file);
+				$new_file = base64_decode($new_file);
+		  
+				$attach = "archivo_solicitud_".$mensajes->id.".pdf";			
+		  
+				// $path = storage_path('app/'.$attach);
+				\Storage::disk('local')->put($attach,  $new_file);
+
+
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($value));
      
       }
 
