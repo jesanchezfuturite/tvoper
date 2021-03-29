@@ -1214,25 +1214,15 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function saveFiles(Request $request){
-    $files = $request->all();
-   
-    
-    try {
-      foreach ($files as $key => $value) {
-        if(isset($value->mensaje)){
-          $mensaje = $value->mensaje;
-        }else{
-          $mensaje="";
-        }
-        
-        $mensaje = $mensaje;
-        $ticket_id = $value->ticket_id;    
-        $file = $value->file; 
-        $extension = $file->getClientOriginalExtension();
+    $ticket_id = $request->ticket_id;
+    $files = $request->file;
+
+    // try {  
+      foreach ($files as $key => $value) {  
+        $extension = $value->getClientOriginalExtension();
 
         $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id,
-          'mensaje' => $mensaje,
+          'ticket_id'=> $ticket_id[$key]
         ]);
 
         $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
@@ -1240,24 +1230,20 @@ class PortalSolicitudesTicketController extends Controller
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($file));
-        
-        if(!isset($value["required_docs"])){
-          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
-          ["required_docs"=>$value["required_docs"]]);   
-        }
+        \Storage::disk('local')->put($attach,  \File::get($value));
+     
       }
 
 
-    } catch(\Exception $e) {
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+    // } catch(\Exception $e) {
+    //   return response()->json(
+    //     [
+    //       "Code" => "400",
+    //       "Message" => "Error al guardar archivo - ".  $e->getMessage(),
           
-        ]
-      ); 
-    }
+    //     ]
+    //   ); 
+    // }
 
   }
 
