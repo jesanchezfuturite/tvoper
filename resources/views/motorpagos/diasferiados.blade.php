@@ -193,7 +193,9 @@
                  + "</tr>");
                 
                 });
+        sortTable();
          Command: toastr.success("Success", "Notifications") })
+
         .fail(function( msg ) {
          Command: toastr.warning("No deleted", "Notifications")  });
         toastr.options = {

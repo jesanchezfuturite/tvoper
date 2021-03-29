@@ -218,20 +218,20 @@ class SendEmails extends Command
                 $id_servicio=$e->id_tipo_servicio;
              //$correo='juancarlos96.15.02@gmail.com';             
             }
-            $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
+            /*$findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findRespuesta as $r) {
                 $url=json_decode($r->json_respuesta);
-            }
+            }*/
             $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=> $id_servicio]);
             foreach ($findServicio as $s) {
               $servicio=$s->Tipo_Descripcion;
             }
-            if($url==""){
+            /*if($url==""){
                 $url_recibo="#";
 
             }else{
                 $url_recibo=$url->url_recibo;
-            }
+            }*/
             if($correo=='' || $correo==null)
             {
               $updatetransaccion=$this->oper_transaccionesdb->updateEnvioCorreo(['email_referencia'=>'0'],['id_transaccion_motor'=>$id]); 
@@ -240,7 +240,7 @@ class SendEmails extends Command
                 $encabezado='Hemos recibido tu solicitud de pago';
                 $subencabezado='Por favor observa las instrucciones respecto a las formas de pago';
                 $transaccion_txt='Transaccion número: ' .(string)$id;
-                $url_txt='Formato de pago: ' .(string)$url_recibo;
+                $url_txt='Formato de pago: ' . env("URL_FORMATO_PAGO") .(string)$id;
                 $referencia_txt='Referencia de Pago: ' .(string)$referencia;
                 $servicio_txt='Servicio: ' .(string)$servicio;
                 $banco_txt='';
@@ -253,7 +253,7 @@ class SendEmails extends Command
                 $dompdf->setPaper('A4', 'portrait');
                 $dompdf->set_option('dpi', '160');
                 //$dompdf->setPaper('A2', 'portrait');
-                $dompdf->load_html( file_get_contents($url_recibo) );
+                $dompdf->load_html( file_get_contents( env("URL_FORMATO_PAGO") . (string)$id) );
                 $dompdf->render();
                 $output=$dompdf->output();
                 $pdf=$path1.'Formato_Pago_'.$id.'_'.$fechaIn.'.pdf';
@@ -337,7 +337,7 @@ class SendEmails extends Command
             $encabezado='Tu pago se ha realizado con éxito';
             $subencabezado='';
             $transaccion_txt='Transaccion número: ' .(string)$id;
-            $url_txt='Recibo de pago: https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id;
+            $url_txt='Recibo de pago: '+env("URL_FORMATO_RECIBO").(string)$id;
             $referencia_txt='Referencia Bancaria: ' .(string)$referencia;
             $servicio_txt='Servicio: ' .(string)$servicio;
             $banco_txt='Banco receptor del pago: '.$banco;
@@ -353,7 +353,7 @@ class SendEmails extends Command
 
                 $dompdf = new DOMPDF($options);
                 $dompdf->setPaper('A3', 'portrait');
-                $dompdf->load_html( file_get_contents('https://egobierno.nl.gob.mx/egob/recibopago.php?folio='.(string)$id) );
+                $dompdf->load_html( file_get_contents(env("URL_FORMATO_RECIBO").(string)$id) );
                 $dompdf->render();
                 $output=$dompdf->output();
                 $pdf=$path1.'Recibo_Pago_'.$id.'_'.$fechaIn.'.pdf';
