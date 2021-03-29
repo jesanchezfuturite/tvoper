@@ -149,12 +149,12 @@ class PortalNotaryOfficesController extends Controller
         return $response;
    }
    public function getRolesPermission(){
-        $url = env("SESSION_HOSTNAME")."/notary-offices/roles";
+        $url = getenv("SESSION_HOSTNAME")."/notary-offices/roles";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listRoles = curl_exec($ch);
-        if ($content === false) {
+        if ($listRoles === false) {
             throw new \Exception(curl_error($ch), curl_errno($ch));
         }
         curl_close($ch);
