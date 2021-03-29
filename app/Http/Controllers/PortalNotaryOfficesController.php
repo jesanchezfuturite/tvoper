@@ -154,7 +154,9 @@ class PortalNotaryOfficesController extends Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $listRoles = curl_exec($ch);
         curl_close($ch);
-        return response()->json($listRoles);
+        $jsonArrayResponse = json_decode($listRoles);
+        return $jsonArrayResponse;
+    
    }
    public function getRoles(){
         try{
