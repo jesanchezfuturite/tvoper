@@ -1219,11 +1219,15 @@ class PortalSolicitudesTicketController extends Controller
     
     try {
       foreach ($files as $key => $value) {
+        if(isset($value->mensaje)){
+          $mensaje = $value->mensaje;
+        }else{
+          $mensaje="";
+        }
         
-        $mensaje = $value["mensaje"];
-        $ticket_id = $value["ticket_id"];    
-        $file = $value['file']; 
-        dd($ticket_id, $file);
+        $mensaje = $mensaje;
+        $ticket_id = $value->ticket_id;    
+        $file = $value->file; 
         $extension = $file->getClientOriginalExtension();
 
         $mensajes =$this->mensajes->create([

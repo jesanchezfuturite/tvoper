@@ -457,7 +457,7 @@ Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
 Route::get('/insumos-montos', 'ApiController@getMontoOperacion');
 
-Route::get('/aviso/{expediente}/{userid}', 'ApiController@getTicketsAviso');
+Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAviso');
 
 
 
