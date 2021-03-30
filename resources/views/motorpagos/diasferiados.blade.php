@@ -23,19 +23,34 @@
     <strong>Info:</strong> Esta configuración te permite dar de alta un día feriado o inhábil para el cálculo de impuestos, o asignación de las fechas de vencimiento para una referencia.
 </div>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="form-group">
-            <label class="control-label col-md-3">Día feriado</label>
+            <label class="control-label col-md-1">Selecciona</label>
             <div class="col-md-3">
-                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
-                <span class="help-block">
-                 </span>
+                <select class="select2me form-control" name="itemsTipo" id="itemsTipo" onchange="findDiasferiados()">
+                  <option value="E">Estatal</option>
+                  <option value="F">Federal</option>
+                </select> 
+            </div>
+        </div>
+    </div>
+    <span class="help-block">&nbsp;</span>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label class="control-label col-md-1">Día feriado</label>
+            <div class="col-md-3">
+                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha" data-date-format='yyyy-mm-dd'>
+            </div>
+            <div class="col-md-1">
                 <button class="btn blue" onclick="guardar()" type="submit">
                     Agregar
                 </button>
             </div>
         </div>
     </div>
+    <span class="help-block">&nbsp;</span>
 </div>
 
 <div class="row">
@@ -49,28 +64,38 @@
             </div>
             <div class="portlet-body">
                 <div class="table-scrollable">
-                    <table id="table" class="table table-striped table-bordered table-advance table-hover">
+                  <table id="table" class="table table-striped table-bordered table-advance table-hover">
                     <thead>
                     <tr>
-                        <th>
-                            <i class="fa fa-calendar"></i> Fecha
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
+                        <th> <i class="fa fa-calendar"></i> Fecha </th>
+                        <th> Tipo </th>
+                        <th> </th>
+                      </tr>
                     </thead>
-                    <tbody>
+                  <tbody>
                         @foreach( $saved_days as $sd)
                         <tr>
-                            <td hidden>{{$sd["anio"]}}-{{$sd["mes"]}}-{{$sd["dia"]}}</td>
+                            <td hidden>{{$sd["Ano"]}}-{{$sd["Mes"]}}-{{$sd["Dia"]}}</td>
+                            <td class="highlight">                              
+                              <div class="success"></div>
+                              <a href="javascript:;"> 
+                                &nbsp; {{$sd["Ano"]}} - {{$sd["Mes"]}} - {{$sd["Dia"]}}  
+                              </a>                     
+                                
+                            </td>
                             <td class="highlight">
-                                <div class="success"></div>
-                                <a href="javascript:;"> 
-                                     &nbsp; {{$sd["anio"]}} - {{$sd["mes"]}} - {{$sd["dia"]}}  
+                               @if ($sd["tipo"]=="E")
+                              <a href="javascript:;" > 
+                                    Estatal  
                                 </a>
+                               @else
+                               <a href="javascript:;"> 
+                                    Federal  
+                                </a>
+                               @endif
                             </td>
                             <td>
-                                <a  class="btn default btn-xs black" data-toggle="modal" href="#static">
+                                <a  class='btn default btn-xs black' data-toggle='modal' href='#static' onclick='deleteDias("{{$sd->Ano}}","{{$sd->Mes}}","{{$sd->Dia}}" )'>
                                 <i class="fa fa-trash-o" ></i> Borrar </a>
                             </td>
                         </tr>
@@ -95,7 +120,9 @@
                 <p>
              ¿Eliminar Registro?
                 </p>
-                 <input hidden="true" type="text" name="idvalor" id="idvalor" class="idvalor">
+                 <input hidden="true" type="text" name="deldia" id="deldia" class="deldia">
+                 <input hidden="true" type="text" name="delmes" id="delmes" class="delmes">
+                 <input hidden="true" type="text" name="delano" id="delano" class="delano">
             </div>
             <div class="modal-footer">
          <button type="button" data-dismiss="modal" class="btn default">Cancelar</button>
@@ -117,127 +144,104 @@
     });   
 	function guardar() {
 	  
-		var date = $("#datetime1").datepicker("getDate");
-		 var anioj = date.getFullYear();
-         var mesj = date.getMonth()+1;
-		 var diaj = date.getDate();
+    var itemsTipo = $("#itemsTipo").val();
+		var date = $("#datetime1").val();
+    if(date.length==0)
+    {
+      Command: toastr.warning("Campo fecha, Requerido!", "Notifications")
+    return;
+    }
 		  $.ajax({
             method: "POST",
             url: "{{ url('/dias-feriados-insert') }}",
-            data: { anio: anioj, mes: mesj, dia: diaj, _token: '{{ csrf_token() }}' }
+            data: { fecha:date,tipo:itemsTipo, _token: '{{ csrf_token() }}' }
         })
           .done(function(response){ 
-           //alert(data);
-            var Resp=$.parseJSON(response);
-            var item = '';
-            $("#table tbody tr").remove();
-            /*agrega tabla*/
-                $.each(Resp, function(i, item) {                
-                 $('#table tbody').append("<tr>"  
-                 +"<td hidden>"+ item.anio +"-"+ item.mes +"-"+ item.dia + "</td>"                 
-                 + "<td class='highlight'><div class='success'></div><a href='javascript:;'> &nbsp;" + item.anio +" - "+ item.mes +" - "+ item.dia + "</a></td>"                 
-                 + "<td><a  class='btn default btn-xs black' data-toggle='modal' href='#static'><i class='fa fa-trash-o' ></i> Borrar </a></td>"                  
-                 + "</tr>");
-                 
-                });
-                sortTable();
-            Command: toastr.success("Success!", "Notifications")
+            if(response.Code =="200"){
+              Command: toastr.success(response.Message, "Notifications")
+              document.getElementById("datetime1").value="";
+              findDiasferiados();
+            }else{
+              Command: toastr.warning(response.Message, "Notifications")
+            }
            })
         .fail(function( msg ) {
             Command: toastr.warning("Failed to Add", "Notifications")
         });
-			toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "positionClass": "toast-top-right",
-            "onclick": null,
-            "showDuration": "1000",
-            "hideDuration": "1000",
-            "timeOut": "4000",
-            "extendedTimeOut": "1000"
-            }
+    
 	}
-	$('#table').on('click', 'tr td a', function (evt) {
-
-       var row = $(this).parent().parent();
-       var celdas = row.children();
-	   var com = new RegExp('\"','g'); 
-	   var valor=$(celdas[0]).html();
-        document.getElementById('idvalor').value =valor;
-    });
-
+  function findDiasferiados()
+  {   
+    var itemsTipo = $("#itemsTipo").val();
+      $.ajax({
+            method: "POST",
+            url: "{{ url('/dias-feriados-find') }}",
+            data: { tipo:itemsTipo, _token: '{{ csrf_token() }}' }
+        })
+        .done(function(response){ 
+            var Resp=$.parseJSON(response);
+            var tipo = '';
+            $("#table tbody tr").remove();
+              $.each(Resp, function(i, item) {  
+                if(item.tipo=="E")
+                {tipo="Estatal";
+                }else{tipo="Federal";}              
+                 $('#table tbody').append("<tr>"                
+                 + "<td class='highlight'><div class='success'></div><a href='javascript:;'> &nbsp;" + item.Ano +" - "+ item.Mes +" - "+ item.Dia + "</a></td>" 
+                 +"<td class='highlight'><a href='javascript:;'>"+tipo+"</a></td>"                
+                 + "<td><a  class='btn default btn-xs black' data-toggle='modal' href='#static' onclick='deleteDias(\""+item.Ano+"\",\""+item.Mes+"\",\""+item.Dia+"\")'><i class='fa fa-trash-o'></i> Borrar </a></td>"                  
+                 + "</tr>");
+                 
+                });
+                sortTable();
+           })
+        .fail(function( msg ) {
+            Command: toastr.warning("Failed to Add", "Notifications")
+        });
+  }
 	function deleted()
 	{
-        var fecha = $("#idvalor").val();
-        var fecha2= new Date(fecha+" 12:00:00"); 
-		var date = fecha2;
-		 var anioj = date.getFullYear();
-         var mesj = date.getMonth()+1;
-		 var diaj = date.getDate();
-        
+      var ano_ = $("#delano").val();
+      var mes_ = $("#delmes").val();
+      var dia_ = $("#deldia").val();
+      var itemsTipo = $("#itemsTipo").val(); 
 		$.ajax({
            method: "POST",
            url: "{{ url('/dias-feriados-eliminar') }}",
-           data: { anio: anioj, mes: mesj, dia: diaj, _token: '{{ csrf_token() }}' }
+           data: { ano: ano_, mes: mes_, dia: dia_,tipo:itemsTipo, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
-             var Resp=$.parseJSON(response);
-            var item = '';
-            $("#table tbody tr").remove();
-            /*agrega tabla*/
-                $.each(Resp, function(i, item) {                
-                 $('#table tbody').append("<tr>"  
-                 +"<td hidden>"+ item.anio +"-"+ item.mes +"-"+ item.dia + "</td>"                 
-                 + "<td class='highlight'><div class='success'></div><a href='javascript:;'> &nbsp;" + item.anio +" - "+ item.mes +" - "+ item.dia + "</a></td>"                 
-                 + "<td><a  class='btn default btn-xs black'  data-toggle='modal' href='#static'><i class='fa fa-trash-o'></i> Borrar </a></td>"                  
-                 + "</tr>");
-                
-                });
-        sortTable();
-         Command: toastr.success("Success", "Notifications") })
-
-        .fail(function( msg ) {
-         Command: toastr.warning("No deleted", "Notifications")  });
-        toastr.options = {
-        "closeButton": true,
-        "debug": false,
-        "positionClass": "toast-top-right",
-         "onclick": null,
-        "showDuration": "1000",
-        "hideDuration": "1000",
-        "timeOut": "4000",
-         "extendedTimeOut": "1000"
-        }
-    }
-    function sortTable() {
+            if(response.Code =="200"){
+              Command: toastr.success(response.Message, "Notifications")
+              findDiasferiados();
+            }else{
+              Command: toastr.warning(response.Message, "Notifications")
+            }
+         })
+  }
+  function deleteDias(ano,mes,dia)
+  {
+    document.getElementById("deldia").value=dia;
+    document.getElementById("delmes").value=mes;
+    document.getElementById("delano").value=ano;
+  }
+  function sortTable() {
   var table, rows, switching, i, x, y, shouldSwitch;
   table = document.getElementById("table");
   switching = true;
-  /*Make a loop that will continue until
-  no switching has been done:*/
   while (switching) {
-    //start by saying: no switching is done:
     switching = false;
     rows = table.rows;
-    /*Loop through all table rows (except the
-    first, which contains table headers):*/
     for (i = 1; i < (rows.length - 1); i++) {
-      //start by saying there should be no switching:
       shouldSwitch = false;
-      /*Get the two elements you want to compare,
-      one from current row and one from the next:*/
       x = rows[i].getElementsByTagName("TD")[0];
       y = rows[i + 1].getElementsByTagName("TD")[0];
-      //check if the two rows should switch place:
       if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-        //if so, mark as a switch and break the loop:
         shouldSwitch = true;
         break;
       }
     }
     if (shouldSwitch) {
-      /*If a switch has been marked, make the switch
-      and mark that a switch has been done:*/
       rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
       switching = true;
     }
