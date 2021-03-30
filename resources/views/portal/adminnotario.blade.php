@@ -874,10 +874,10 @@ function changeComunidad()
   { 
     $(".input-checkbox-reenvio").css("display", "none");
     var array=$("#arrayPermisos").val();
-    var resp=$.parseJSON(array);
+    // var resp=$.parseJSON(array);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
-          $.each(resp.response, function(i, item) {
+          $.each(response, function(i, item) {
             if( item.name=="notary_titular" || item.name=="notary_substitute" || item.name=="notary_capturist" || item.name=="notary_payments" || item.name=="notary_capturist_payments"){
               $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
             }
