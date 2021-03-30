@@ -23,7 +23,7 @@ class Egobiernodiasferiados extends Model implements Transformable
 
     protected $connection = "mysql3";
 
-    protected $fillable = ['Ano', 'Mes', 'Dia'];
+    protected $fillable = ['Ano', 'Mes', 'Dia','tipo'];
 
     protected $table = "diasferiados";
 
