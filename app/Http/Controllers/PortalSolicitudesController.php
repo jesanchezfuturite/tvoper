@@ -939,4 +939,23 @@ class PortalSolicitudesController extends Controller
         ]);   
     }
   }
+  public function findDetalleSolicitud($idticket)
+  {
+    $ticket = $this->ticket->where('id', $idticket)->first();
+
+    $informacion = json_decode($ticket->info);
+    $informacion = json_decode(json_encode($informacion), true);
+    $campos = $informacion["campos"];
+    $catalogo= $this->campo->select('id', 'descripcion')->get()->toArray();
+    $keys = array_column($catalogo, 'id');
+    $values = array_column($catalogo, 'descripcion');
+    $combine = array_combine($keys, $values);
+    $catalogue = array_intersect_key($combine, $campos);
+
+    $camposnuevos = array_combine($catalogue, $campos);
+    unset($informacion["campos"]);
+    $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
+
+    return $informacion;
+  }
 }
