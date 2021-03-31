@@ -31,6 +31,7 @@ Route::post('/conciliacion-detalle-anomalia','ConciliacionController@getAnomalia
 Route::get('/dias-feriados-inicio','MotorpagosController@diasferiados');
 Route::post('/dias-feriados-insert','MotorpagosController@insertDiasFeriados');
 Route::post('/dias-feriados-eliminar','MotorpagosController@deletediasferiados');
+Route::post('/dias-feriados-find','MotorpagosController@findDiasFeriados');
 Route::get('/crud-metodos-pago','MotorpagosController@crudmetodospago');
 Route::get('/bancos','MotorpagosController@bancos');
 Route::get('/cambiar-status-transaccion','MotorpagosController@cambiarstatustransaccion');
@@ -330,6 +331,7 @@ Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
 Route::get('/solicitud-documentos','PortalSolicitudesController@viewpermisosdocumentos');
 Route::post('/solicitud-find-folio','PortalSolicitudesController@findTicketidFolio');
 Route::post('/solicitud-update-permisos','PortalSolicitudesController@updatePermisoSolicitud');
+Route::get('/solicitud-find-detalle/{idticket?}','PortalSolicitudesController@findDetalleSolicitud');
 
 /*estas son para crear los tickets de solicitud*/
 Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
@@ -406,7 +408,7 @@ Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@elimi
 Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo');
 Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite');
 Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite');
-Route::post('/solicitudes-filtrar', 'PortalSolicitudesTicketController@filtrarSolicitudes');
+Route::post('/solicitudes-filtrar/{max?}', 'PortalSolicitudesTicketController@filtrarSolicitudes');
 Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion');
 Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor');
 Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite');
@@ -419,7 +421,7 @@ Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile'
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
-Route::post('/save-files', 'PortalSolicitudesTicketController@saveFile');
+Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
 
 
 
@@ -457,7 +459,7 @@ Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral');
 
 Route::get('/insumos-montos', 'ApiController@getMontoOperacion');
 
-Route::get('/aviso/{expediente}/{userid}', 'ApiController@getTicketsAviso');
+Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAviso');
 
 
 

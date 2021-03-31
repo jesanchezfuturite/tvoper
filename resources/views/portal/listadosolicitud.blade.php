@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
 <h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -198,11 +198,19 @@
                 <span class="help-block">&nbsp;</span>                
                 <button type="button" class="btn blue" onclick="saveMessage(0,{})"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
-                <span class="btn green fileinput-button">
-                  <i class="fa fa-plus"></i>&nbsp;
-                  <span>Adjuntar</span>
-                  <input type="file" name="file" id="file">
-                </span>
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
+                        <input type="file" name="file" accept="application/pdf" id="file">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
+                        </a></div>
+                        
+                </div>
               </div>
             </div>
           </div>        
@@ -263,6 +271,7 @@
 @endsection
 
 @section('scripts')
+<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
@@ -273,10 +282,10 @@
   {
     if($("#checkbox1").prop("checked") == true){
       $(".selectMotivos").css("display", "block");
-      document.getElementById("message").disabled = true;     
+      //document.getElementById("message").disabled = true;     
     }else{
       $(".selectMotivos").css("display", "none");
-      document.getElementById("message").disabled = false;
+      //document.getElementById("message").disabled = false;
     } 
     document.getElementById("message").value = "";
     $("#itemsMotivos").val("0").change();
@@ -288,10 +297,8 @@
     //console.log(select);
     if(select=='0')
     {
-      document.getElementById("message").value = "";
       $("#checkbox30").prop("checked", false);
     }else{
-      document.getElementById("message").value ="Motivo de rechazo: " + mot;
       $("#checkbox30").prop("checked", true);
     }
   }
@@ -578,6 +585,8 @@
     {
       //console.log(data);
       var mensaje=$("#message").val();
+      var select=$("#itemsMotivos").val();
+      var mot=$("#itemsMotivos option:selected").text();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
       var check=$("#checkbox30").prop("checked");
@@ -585,7 +594,19 @@
       var msjpublic="1";
       var rechazo=0;
       if(check==false){
-        var msjpublic="0";
+        var msjpublic="0";        
+      }
+      if(checkRechazo==true){
+        if(select==0)
+        {
+          Command: toastr.warning("Motivo de rechazo, Requerido!", "Notifications")
+          return;
+        }
+        if(mensaje.length>0)
+        {
+          mensaje=', Nota: '+mensaje;
+        } 
+        mensaje="Motivo de rechazo: "+mot +mensaje;
       }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
@@ -683,6 +704,7 @@
     $(".selectMotivos").css("display", "none");
     document.getElementById("message").value="";
     document.getElementById("message").disabled=false;
+    document.getElementById('delFile').click();
     
   }
 	</script>

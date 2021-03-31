@@ -290,10 +290,10 @@ function ItemsPermisos()
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         //console.log(response);
-        var resp=$.parseJSON(response);
+        // var resp=$.parseJSON(response);
         $("#itemsPermiso option").remove();
         $('#itemsPermiso').append("<option value='0'>------</option>");
-          $.each(resp.response, function(i, item) {
+          $.each(response, function(i, item) {
             $('#itemsPermiso').append("<option value='"+item.id+"'>"+item.description+"</option>");
           });
         })

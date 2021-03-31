@@ -191,73 +191,78 @@ class MotorpagosController extends Controller
     {
     	try
     	{
-    		$info = $this->diasferiadosdb->all();
+    		$info = $this->diasferiadosdb->findWhere(["tipo"=>"E"]);
     	}catch( \Exception $e ){
     		Log::info('Error Method diasferiados: '.$e->getMessage());
     	}
-
-    	$response = array();
-    	foreach($info as $i)
-    	{
-    		$response []= array(
-    			"anio" 	=> $i->Ano,
-    			"mes" 	=> $i->Mes,
-    			"dia"	=> $i->Dia
-    		);
-    	}
-
-    	return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
+    	return view('motorpagos/diasferiados', [ "saved_days" => $info ]);
     }
 	public function insertDiasFeriados(Request $request)
 	{
 		$response = array();
 		try
-    	{		
-			$anio = $request->anio;$mes = $request->mes;$dia = $request->dia;			
-			$info2 = $this->diasferiadosdb->create(['Ano' => $anio,'Mes' => $mes,'Dia' => $dia] );    		
+    	{			
+			$fecha=Carbon::parse($request->fecha);
+            $findDias=$this->diasferiadosdb->findWhere(['Ano'=>$fecha->format('Y'),'Mes'=>$fecha->format('m'),'Dia'=>$fecha->format('d'),'tipo'=>$request->tipo]);
+            if($findDias->count()>0)
+            {
+                 return response()->json([
+                    "Code" => "400",
+                    "Message" => "Ya se encuentra registrado"
+                ]);
+            }
+            $info = $this->diasferiadosdb->create([
+                'Ano'=>$fecha->format('Y'),
+                'Mes'=>$fecha->format('m'),
+                'Dia'=>$fecha->format('d'),
+                'tipo'=>$request->tipo
+            ]);    
+            return response()->json([
+                "Code" => "200",
+                "Message" => "Guardado correctamente"
+            ]);		
     	}catch( \Exception $e ){
-    		Log::info2('Error Method diasferiados: '.$e->getMessage());
+    		Log::info('Error Method diasferiados: '.$e->getMessage());
+            return response()->json([
+            "Code" => "400",
+            "Message" => "Error al guardar"
+            ]);
     	}		
-    	$info = $this->diasferiadosdb->all();
-    	foreach($info as $i)
-    	{
-    		$response []= array(
-    			"anio" 	=> $i->Ano,
-    			"mes" 	=> $i->Mes,
-    			"dia"	=> $i->Dia
-    		);
-    	}
-		//return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
-    	return json_encode($response);
 	}
 	public function deleteDiasFeriados(Request $request) 
 	{
 		try
     	{
-			$anio = $request->anio;$mes = $request->mes;$dia = $request->dia;
-			$info2 = $this->diasferiadosdb->deleteWhere([
-				'Ano'=>$anio,
-				'Mes'=>$mes,
-				'Dia'=>$dia
+			$info = $this->diasferiadosdb->deleteWhere([
+				'Ano'=>$request->ano,
+				'Mes'=>$request->mes,
+				'Dia'=>$request->dia,
+                'tipo'=>$request->tipo
 			]);
-    		
+    		return response()->json([
+            "Code" => "200",
+            "Message" => "Eliminado correctamente"
+            ]);
     	}catch( \Exception $e ){
     		Log::info('Error Method diasferiados: '.$e->getMessage());
+            return response()->json([
+            "Code" => "400",
+            "Message" => "Error al eliminar dia feriado"
+            ]);
     	}
-        $info = $this->diasferiadosdb->all();
-    	$response = array();
-
-    	foreach($info as $i)
-    	{
-    		$response []= array(
-    			"anio" 	=> $i->Ano,
-    			"mes" 	=> $i->Mes,
-    			"dia"	=> $i->Dia
-    		);
-    	}
-return json_encode($response);
-    	//return view('motorpagos/diasferiados', [ "saved_days" => $response ]);
 	}
+    public function findDiasFeriados(Request $request) 
+    {
+        try
+        {
+            $info = $this->diasferiadosdb->findWhere(['tipo'=>$request->tipo]);
+            return json_encode($info);
+            
+        }catch( \Exception $e ){
+            Log::info('Error Method findDiasFeriados: '.$e->getMessage());
+            return response()->json(["Code" => "400","Message" => "Error al buscar dias feriados"]);
+        }
+    }
     /**
      * Muestra la vista para capturar nuevos metodos de pago y el listado de los que ya estan capturados
      *
