@@ -18,7 +18,7 @@ use GuzzleHttp\Client;
  */
 class PortalNotaryOfficesController extends Controller
 {
-    /**
+       /**
      * @var PortalNotaryOfficesRepository
      */
     protected $notary;
@@ -32,6 +32,7 @@ class PortalNotaryOfficesController extends Controller
     {
         $this->notary = $notary;
         $this->roles = $roles;
+        $this->middleware('auth');
     }
     public function createNotary(Request $request){
         $error =null;
