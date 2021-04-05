@@ -1,6 +1,6 @@
 @extends('layout.app')
 @section('content')
-<h3 class="page-title">portal<small>Porcentajes</small></h3>
+<h3 class="page-title">portal <small>Recargos</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -13,7 +13,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Porcentajes</a>
+            <a href="#">Recargos</a>
         </li>
     </ul>
 </div>
@@ -23,7 +23,7 @@
     <div class="portlet box blue" >
         <div class="portlet-title">
             <div class="caption">
-                <i class="fa fa-cogs"></i>Registros porcentaje
+                <i class="fa fa-cogs"></i>Registros recargos
             </div>
             <div class="tools" >                
                 <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo">
@@ -123,7 +123,7 @@
                     <br>   
                     <div class="row">
                         <div class="form-group">
-                            <label class="col-md-3 control-label">Federal Vencido</label>
+                            <label class="col-md-3 control-label">% Federal Vencido</label>
                             <div class="col-md-8">
                                 <input id="fed_vencido" class="valida-decimal form-control"   autocomplete="off" placeholder="Ingresar Indice">
                             </div>
@@ -184,8 +184,11 @@
         document.getElementById('requerido').value="";
         document.getElementById('fed_vencido').value="";
         document.getElementById('idupdate').value="";
-        document.getElementById('iddeleted').value="";
+        document.getElementById('mes_up').value="";
+        document.getElementById('anio_up').value="";
         $("#mes").val("limpia").change();
+        document.getElementById("anio").disabled=false;
+        document.getElementById("mes").disabled=false;
     }
     function addTable()
     {
@@ -209,13 +212,23 @@
             return;
          }
         $.each(response.Message, function(i, item) {
+            var mesd_=meses(item.mes);
+            var fed_v=item.federal_vencido;
+            var v_=item.vencido;
+            var requ_=item.requerido;
+            if(fed_v==null || fed_v=="null")
+                {fed_v="N/A";}
+            if(v_==null || v_=="null")
+                {v_="N/A";}
+            if(requ_==null || requ_=="null")
+                {requ_="N/A";}
             $('#sample_2 tbody').append("<tr>"
                 +"<td>"+item.anio+"</td>"
-                +"<td>"+item.mes+"</td>"
-                +"<td>"+item.vencido+"</td>"
-                +"<td>"+item.requerido+"</td>"
-                +"<td>"+item.federal_vencido+"</td>"
-                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='portlet-config' onclick='porcentajeUpdate("+JSON.stringify(item)+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' onclick='porcentajeDeleted("+item.anio+","+item.mes+")'><i class='fa fa-minus'></i></a></td>"
+                +"<td>"+mesd_+"</td>"
+                +"<td>"+v_+"</td>"
+                +"<td>"+requ_+"</td>"
+                +"<td>"+fed_v+"</td>"
+                + "<td class='text-center' width='20%'><a class='btn btn-icon-only blue' href='#portlet-config' data-toggle='modal' data-original-title='' title='Editar' onclick='porcentajeUpdate("+JSON.stringify(item)+")'><i class='fa fa-pencil'></i></a><a class='btn btn-icon-only red' data-toggle='modal' href='#static' title='Eliminar'  onclick='porcentajeDeleted("+item.anio+","+item.mes+")'><i class='fa fa-minus'></i></a></td>"
                 +"</tr>"
                 );
             });
@@ -250,7 +263,6 @@
     function actualizarPorcentaje()
     {
         var anio_=$("#anio").val();
-        var id_=$("#idupdate").val();
         var mes_=$("#mes").val();
         var vencido_=$("#vencido").val();
         var requerido_=$("#requerido").val();
@@ -264,7 +276,7 @@
             {
                 Command: toastr.success(response.Message, "Notifications")
                 Cargartablaporcentajes();
-                limpiar();
+                //limpiar();
             }else{
                 Command: toastr.warning(response.Message, "Notifications")
             }
@@ -276,12 +288,14 @@
     function porcentajeUpdate(djson)
     {
        
-        document.getElementById('idupdate').value=djson.id;                      
+        document.getElementById('idupdate').value=djson.anio;                       
         document.getElementById('anio').value=djson.anio;
         document.getElementById('vencido').value=djson.vencido;
         document.getElementById('requerido').value=djson.requerido;
         document.getElementById('fed_vencido').value=djson.federal_vencido;
-        $("#mes").val(djson.mes).change();
+        $("#mes").val(djson.mes).change();        
+        document.getElementById("anio").disabled=true;
+        document.getElementById("mes").disabled=true;
            
     } 
     function VerificaInsert()
@@ -388,6 +402,50 @@
     link.click();
     document.body.removeChild(link);
 }
-
+function meses(mes)
+{ var mes_;
+    console.log(mes);
+    switch(parseInt(mes)) {
+        case 1:
+            mes_="ENERO";
+            break;
+        case 2:
+            mes_="FEBRERO";
+            break;
+        case 3:
+            mes_="MARZO";
+            break;
+        case 4:
+            mes_="ABRIL";
+            break;
+        case 5:
+            mes_="MAYO";
+            break;
+        case 6:
+            mes_="JUNIO";
+            break;
+        case 7:
+            mes_="JULIO";
+            break;
+        case 8:
+            mes_="AGOSTO";
+            break;
+        case 9:
+            mes_="SEPTIEMBRE";
+            break;
+        case 10:
+            mes_="OCTUBRE";
+            break;
+        case 11:
+            mes_="NOVIEMBRE";
+            break;
+        case 12:
+            mes_="DICIEMBRE";
+            break;
+        default:
+        mes_="N/A";
+    }
+    return mes_;
+}
 </script>
 @endsection
