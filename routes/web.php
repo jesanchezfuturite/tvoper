@@ -465,3 +465,10 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+
+Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
+Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');
+Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes');
+Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes');
+Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes');
+

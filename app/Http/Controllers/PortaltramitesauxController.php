@@ -13,6 +13,7 @@ use App\Repositories\PortalcampotypeRepositoryEloquent;
 use App\Repositories\PortalcamporelationshipRepositoryEloquent;
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
+use App\Repositories\EgobiernoporcentajesRepositoryEloquent;
 // add
 use App\Repositories\PortalcamposagrupacionesRepositoryEloquent;
 use App\Repositories\PortalreglaoperativaRepositoryEloquent;
@@ -46,6 +47,7 @@ class PortaltramitesauxController extends Controller
 	protected $relcat;
 	protected $tramiteprelaciondb;
 	protected $tramitedivisas;
+	protected $porcentajesdb;
 
 
     public function __construct(
@@ -63,7 +65,8 @@ class PortaltramitesauxController extends Controller
 			PortaltramitecategoriaRepositoryEloquent $category,
 			PortaltramitecategoriarelacionRepositoryEloquent $relcat,
 			PortaltramiteprelacionRepositoryEloquent $tramiteprelaciondb,
-			TramitesDivisasRepositoryEloquent $tramitedivisas
+			TramitesDivisasRepositoryEloquent $tramitedivisas,
+			EgobiernoporcentajesRepositoryEloquent $porcentajesdb
 
 
     )
@@ -84,6 +87,7 @@ class PortaltramitesauxController extends Controller
 			$this->relcat = $relcat;
 			$this->tramiteprelaciondb = $tramiteprelaciondb;
 			$this->tramitedivisas = $tramitedivisas;
+			$this->porcentajesdb=$porcentajesdb;
     }
 
 
@@ -836,4 +840,61 @@ class PortaltramitesauxController extends Controller
 			return response()->json(["Code" => "200","Message" => "Error Configuración Divisa."]);
 		}
 	}
+	public function viewPorcentajes()
+	{
+		return view('portal/porcentajesrecargos');
+	}
+	public function findPorcentajes()
+	{
+		try {
+
+			$findPorc=$this->porcentajesdb->all();
+			return response()->json(["Code" => "200","Message" => $findPorc]);;
+
+		} catch (\Exception $e) {
+			Log::info('Error findPorcentajes: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error obtner registros."]);
+		}
+	}
+	public function insertPorcentajes(Request $request)
+	{
+		try {
+			$findPorc=$this->porcentajesdb->findWhere(['anio'=>$request->anio,'mes'=>$request->mes]);
+			if($findPorc->count()>0)
+			{
+				return response()->json(["Code" => "400","Message" => "Ya se encuentra registrado con el mismo mes y año"]);
+			}
+			$createPorc=$this->porcentajesdb->create(['anio'=>$request->anio,'mes'=>$request->mes,'federal_vencido'=>$request->federal_vencido,'vencido'=>$request->vencido,'requerido'=>$request->requerido]);
+			return response()->json(["Code" => "200","Message" => "Agregado correctamente"]);
+
+		} catch (\Exception $e) {
+			Log::info('Error findPorcentajes: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error al guardar."]);
+		}
+	}
+	public function updatePorcentajes(Request $request)
+	{
+		try {
+			$updatePorc = $this->porcentajesdb->where(['anio'=>$request->anio,'mes'=>$request->mes])->update(['federal_vencido'=>$request->federal_vencido,'vencido'=>$request->vencido,'requerido'=>$request->requerido]);
+       
+			return response()->json(["Code" => "200","Message" => "Actualizado correctamente"]);;
+
+		} catch (\Exception $e) {
+			Log::info('Error findPorcentajes: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error al actualizar."]);
+		}
+	}
+	public function deletePorcentajes(Request $request)
+	{
+		try {
+
+			$findPorc=$this->porcentajesdb->deleteWhere(['anio'=>$request->anio,'mes'=>$request->mes]);
+			return response()->json(["Code" => "200","Message" => "Eliminado correctamente"]);
+
+		} catch (\Exception $e) {
+			Log::info('Error findPorcentajes: '.$e->getMessage());
+			return response()->json(["Code" => "400","Message" => "Error al eliminar."]);
+		}
+	}
+
 }
