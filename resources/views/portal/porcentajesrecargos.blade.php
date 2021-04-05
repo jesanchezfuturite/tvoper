@@ -204,7 +204,7 @@
            url: "{{ url('/porcentaje-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
-            document.getElementById('jsonCode').value=response.Message;          
+            document.getElementById('jsonCode').value=JSON.stringify(response.Message);          
          addTable();
          if(response.Code=="400")
          {
