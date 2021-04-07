@@ -15,8 +15,9 @@ use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use Illuminate\Support\Facades\Input;
-
+use Illuminate\Routing\UrlGenerator;
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -30,6 +31,7 @@ class PortalSolicitudesTicketController extends Controller
     protected $campo;
     protected $mensajes;
     protected $solTramites;
+    protected $url;
 
 
 
@@ -43,7 +45,8 @@ class PortalSolicitudesTicketController extends Controller
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
         PortalcampoRepositoryEloquent $campo,
         PortalSolicitudesMensajesRepositoryEloquent $mensajes,
-        PortalTramitesRepositoryEloquent $solTramites
+        PortalTramitesRepositoryEloquent $solTramites,
+        UrlGenerator $url
         
        )
        {
@@ -56,6 +59,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->campo = $campo;
          $this->mensajes = $mensajes;
          $this->solTramites = $solTramites;
+         $this->url = $url;
    
        }
     
@@ -451,12 +455,15 @@ class PortalSolicitudesTicketController extends Controller
           'mensaje' => $mensaje,
         ]);
 
-        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $name = "archivo_solicitud_".$mensajes->id.".".$extension;
+        \Storage::disk('local')->put($attach,  \File::get($file));
+        $attach = $this->url->to('/') . '/download/'.$name;
+
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-        'attach' => $attach,
+          'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($file));
+        // \Storage::disk('local')->put($attach,  \File::get($file));
         
         if(!isset($data["required_docs"])){
           $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
@@ -897,9 +904,9 @@ class PortalSolicitudesTicketController extends Controller
 
     public function downloadFile($file)
     {
-      try{
-      $pathtoFile = storage_path('app/'.$file);
-      return response()->download($pathtoFile);
+      try{      
+        $pathtoFile = storage_path('app/'.$file);
+        return response()->download($pathtoFile);
       }catch(\Exception $e){
         log::info("error PortalSolicitudesTicketController@downloadFile");
       }
@@ -1245,9 +1252,6 @@ class PortalSolicitudesTicketController extends Controller
           "code"		=> 200
   
         ]);
-
-     
-
      
       }
 
@@ -1263,7 +1267,21 @@ class PortalSolicitudesTicketController extends Controller
     }
 
   }
+  public function getFileNotary($id){	
+		$notary = NotaryOffice::find($id);
+		if($type=='sat'){
+			$sat=$notary->sat_constancy_file;			
+			$path =\Storage::url($sat);
+			return $path;	
+			
+		}else{			
+			$notary=$notary->notary_constancy_file;
+			$path =\Storage::url($notary);
+			return $path;
+			
+		}
 
+	}
 
     
 }
