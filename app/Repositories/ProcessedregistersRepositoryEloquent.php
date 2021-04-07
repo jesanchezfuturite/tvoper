@@ -419,7 +419,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
             return false;
         }    
     }
-     public function findnoconc($cuenta,$alias,$f,$origen,$status,$opcion)
+     public function findnoconc($cuenta,$alias,$f,$origen,$status,$opcion,$banco_id)
     {
        try{        
         $data = Processedregisters::where('fecha_ejecucion','=',$f)
@@ -443,6 +443,7 @@ class ProcessedregistersRepositoryEloquent extends BaseRepository implements Pro
         ->where('cuenta_banco',$cuenta)
         ->where('cuenta_alias',$alias)
         ->where('status',$opcion,$status)
+        ->where('banco_id',$banco_id)
         ->whereIn('origen',$origen)
         ->groupBy('referencia')
         ->get();
