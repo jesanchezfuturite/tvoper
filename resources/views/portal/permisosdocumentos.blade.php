@@ -38,7 +38,7 @@
 		            <div class="col-md-1 col-ms-12">
                     	<div class="form-group">
                     		<span class="help-block">&nbsp;</span>
-                    		<button type="button" class="btn green" onclick="findTramiteSolicitud()">Buscar</button>
+                    		<button type="button" class="btn green"id="btnbuscar" onclick="findTramiteSolicitud()">Buscar</button>
                     	</div>
             		</div>
 		            
@@ -102,6 +102,52 @@
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="portlet-detalle" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog" style="width: 80%;">
+    <div class="modal-content" >
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+        <h4 class="modal-title">Detalle de la Solicitud </h4>        
+      </div>
+      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
+        <input type="text" name="idTicket" id="idTicket" hidden="true">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos generales</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="detalles">
+            <div id="addDetalles">
+            </div>
+          </div>    
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos del solicitante</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="solicitante">
+            <div id="addSolicitante">
+            </div>
+          </div>    
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn default">Cerrar</button>          
+      </div>   
+    </div>
+  </div>
 </div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
@@ -168,6 +214,13 @@
         });
 
   }
+  var input = document.getElementById("folio");
+  input.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+    event.preventDefault();
+    document.getElementById("btnbuscar").click();
+    }
+  });
   function findTramiteSolicitud(){
     	var folio_=$("#folio").val();
     	 
@@ -187,7 +240,7 @@
                 	+"<td>"+item.clave+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
-                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+")' id='check_"+item.id+"'></td>"
+                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+")' id='check_"+item.id+"'>&nbsp;&nbsp;&nbsp;<a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
               if(item.required_docs==1)
@@ -204,7 +257,45 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
-  	}
+  }
+  function findDetalles(id)
+  {
+      $("#detalles div").remove();
+      $("#detalles").append("<div id='addDetalles'></div>");
+      $("#solicitante div").remove();
+      $("#solicitante").append("<div id='addSolicitante'></div>");
+      $.ajax({
+           method: "GET", 
+           url: "{{ url('/solicitud-find-detalle') }}" + "/"+id,
+           data:{ _token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+          console.log(response);
+          document.getElementById("jsonCode").value=JSON.stringify(response);
+          var Resp=response;
+          var soli=Resp.solicitante;
+          var tipo="";
+          var obj="";
+          for (n in soli) {  
+            obj=n;
+            tipo=soli[n];    
+            if(tipo=="pm")
+            {tipo="Moral";}
+            if(tipo=="pf")
+            {tipo="Fisica";}
+            if(obj=="tipoPersona"){
+              obj="Tipo Persona";
+            }
+
+              $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
+          }
+          for (n in Resp.campos) {            
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
+          }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+  }
   function addtable(){
     $("#addtables div").remove();
     $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th> </tr></thead> <tbody></tbody> </table></div>");

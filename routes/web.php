@@ -331,6 +331,7 @@ Route::post('/solicitud-delete', 'PortalSolicitudesController@delete');
 Route::get('/solicitud-documentos','PortalSolicitudesController@viewpermisosdocumentos');
 Route::post('/solicitud-find-folio','PortalSolicitudesController@findTicketidFolio');
 Route::post('/solicitud-update-permisos','PortalSolicitudesController@updatePermisoSolicitud');
+Route::get('/solicitud-find-detalle/{idticket?}','PortalSolicitudesController@findDetalleSolicitud');
 
 /*estas son para crear los tickets de solicitud*/
 Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
@@ -464,3 +465,10 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+
+Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
+Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');
+Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes');
+Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes');
+Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes');
+
