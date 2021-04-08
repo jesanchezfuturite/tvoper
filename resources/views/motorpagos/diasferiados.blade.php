@@ -41,7 +41,7 @@
         <div class="form-group">
             <label class="control-label col-md-1">Día feriado</label>
             <div class="col-md-3">
-                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha" data-date-format='yyyy-mm-dd'>
+                <input id="datetime1" class="form-control form-control-inline input-medium date-picker" size="16" type="text" value="" autocomplete="off" placeholder="Selecciona una fecha">
             </div>
             <div class="col-md-1">
                 <button class="btn blue" onclick="guardar()" type="submit">
@@ -67,7 +67,7 @@
                   <table id="table" class="table table-striped table-bordered table-advance table-hover">
                     <thead>
                     <tr>
-                        <th> <i class="fa fa-calendar"></i> Fecha </th>
+                        <th> <i id="yearpicker" class="yearpicker fa fa-calendar" style="cursor: pointer;">&nbsp;</i> &nbsp;Fecha </th>
                         <th> Tipo </th>
                         <th> </th>
                       </tr>
@@ -134,14 +134,39 @@
 @endsection
 
 @section('scripts')
-<script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
-<script src="assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
+
+   <link rel="stylesheet" href="css/yearpicker.css" />
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/yearpicker.js"></script>
+    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
 
 <script>
-    jQuery(document).ready(function() {       
-       ComponentsPickers.init();
-       sortTable();
-    });   
+  jQuery(document).ready(function() {       
+    ComponentsPickers.init();
+    sortTable();     
+  });  
+    var fecha = new Date();
+    var ano = fecha. getFullYear();
+  $(".yearpicker").yearpicker({
+    year: ano,
+    startYear: 2000,
+    endYear: 2050
+  });
+   $(".yearpicker-year").on("click", function() {
+    selectYear();
+  });
+  async function selectYear()
+  {
+    await sleep(500);
+     _this=document.getElementById('yearpicker').innerHTML;
+    $.each($("#table tbody tr"), function() {
+    if($(this).text().toLowerCase().indexOf(_this.toLowerCase()) === -1)
+        $(this).hide();
+      else
+        $(this).show();
+    });
+  }  
 	function guardar() {
 	  
     var itemsTipo = $("#itemsTipo").val();
@@ -247,6 +272,8 @@
     }
   }
 }
-
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 </script>
 @endsection
