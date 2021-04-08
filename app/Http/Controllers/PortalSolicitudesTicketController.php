@@ -903,7 +903,7 @@ class PortalSolicitudesTicketController extends Controller
         $pathtoFile = storage_path('app/'.$file);
         return response()->download($pathtoFile);
       }catch(\Exception $e){
-        log::info("error PortalSolicitudesTicketController@downloadFile");
+        log::info("error PortalSolicitudesTicketController@downloadFile" .$e->getMessage());
       }
     }
     public function tramites_finalizados($id){
@@ -1241,6 +1241,7 @@ class PortalSolicitudesTicketController extends Controller
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
         ]);
+        
 
         return json_encode([
           "response" 	=> "Archivo guardado",
@@ -1252,6 +1253,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
     } catch(\Exception $e) {
+      Log::info('Error Guardar archivo: '.$e->getMessage());
       return response()->json(
         [
           "Code" => "400",
