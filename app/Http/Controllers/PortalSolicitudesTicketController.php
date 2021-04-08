@@ -462,7 +462,7 @@ class PortalSolicitudesTicketController extends Controller
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($name,  $file);
+        \Storage::disk('local')->put($attach,  \File::get($file));
 
       } catch(\Exception $e) {
         Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
