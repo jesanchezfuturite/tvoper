@@ -462,12 +462,7 @@ class PortalSolicitudesTicketController extends Controller
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($file));
-        
-        if(!isset($data["required_docs"])){
-          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
-          ["required_docs"=>$data["required_docs"]]);   
-        }
+        \Storage::disk('local')->put($name,  \File::get($file));
 
       } catch(\Exception $e) {
         Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
@@ -908,7 +903,7 @@ class PortalSolicitudesTicketController extends Controller
         $pathtoFile = storage_path('app/'.$file);
         return response()->download($pathtoFile);
       }catch(\Exception $e){
-        log::info("error PortalSolicitudesTicketController@downloadFile");
+        log::info("error PortalSolicitudesTicketController@downloadFile" .$e->getMessage());
       }
     }
     public function tramites_finalizados($id){
@@ -991,7 +986,7 @@ class PortalSolicitudesTicketController extends Controller
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-        $count = $this->ticket->where("en_carrito", 1)->whereIn('user_id', $users)->count();
+        $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes en el carrito";
         
       }
@@ -1001,14 +996,14 @@ class PortalSolicitudesTicketController extends Controller
             $doc_firmado = $this->ticket->where('id',$value)->update(['doc_firmado'=>$body["urls"][$key]]);
 
         }
-        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
-        $count = $this->ticket->where("firmado", 1)->whereIn('user_id', $users)->count();
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar' => null, 'firmado'=>$body['status']]);
+        $count = $this->ticket->where(["firmado" => 1, "status" => 2])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes firmadas";
       }
 
       if($body["type"]=="por_firmar"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar'=>$body['status']]);
-        $count = $this->ticket->where("por_firmar", 1)->whereIn('user_id', $users)->count();
+        $count = $this->ticket->where(["por_firmar" => 1, "firmado" => null])->whereIn('status', [2,3])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes por firmar";
 
 
@@ -1221,50 +1216,65 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function saveFiles(Request $request){
+    $error=null;
     $files = $request->all();
     try {  
-      foreach ($files as $key => $value) { 
-        $mensaje = $value["mensaje"];
-        $ticket_id = $value["ticket_id"];    
-        $file = $value['file']; 
-        
-        $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id,
-          'mensaje'=>$mensaje
-        ]);
-
-        $new_file = str_replace('data:application/pdf;base64,', '', $file);
-				$new_file = str_replace(' ', '+', $new_file);
-				$new_file = base64_decode($new_file);
-		  
-				$attach = "archivo_solicitud_".$mensajes->id.".pdf";			
-		  
-				// $path = storage_path('app/'.$attach);
-				\Storage::disk('local')->put($attach,  $new_file);
-
-
-        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-          'attach' => $attach,
-        ]);
-
-        return json_encode([
-          "response" 	=> "Archivo guardado",
-          "code"		=> 200
+      if(!empty($files)){
+        foreach ($files as $key => $value) { 
+          $mensaje = $value["mensaje"];
+          $ticket_id = $value["ticket_id"];    
+          $file = $value['file']; 
+          
+          $mensajes =$this->mensajes->create([
+            'ticket_id'=> $ticket_id,
+            'mensaje'=>$mensaje
+          ]);
   
-        ]);
-     
+          $new_file = str_replace('data:application/pdf;base64,', '', $file);
+          $new_file = str_replace(' ', '+', $new_file);
+          $new_file = base64_decode($new_file);
+        
+          $attach = "archivo_solicitud_".$mensajes->id.".pdf";			
+        
+          \Storage::disk('local')->put($attach,  $new_file);
+  
+  
+          $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+            'attach' => $attach,
+          ]);
+        }
+  
+      }else{
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+            
+          ]
+        );
       }
-
-
     } catch(\Exception $e) {
+      $error = $e;
+      Log::info('Error Guardar archivo: '.$e->getMessage());      
+    }
+
+    if ($error) {
       return response()->json(
         [
           "Code" => "400",
           "Message" => "Error al guardar archivo - ".  $e->getMessage(),
           
         ]
-      ); 
-    }
+      );
+    }else { 
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+    }    
+     
 
   }
   public function getFileNotary($id){	
