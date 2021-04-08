@@ -1219,7 +1219,7 @@ class PortalSolicitudesTicketController extends Controller
     $error=null;
     $files = $request->all();
     try {  
-      if($files){
+      if(!empty($files)){
         foreach ($files as $key => $value) { 
           $mensaje = $value["mensaje"];
           $ticket_id = $value["ticket_id"];    
@@ -1244,6 +1244,14 @@ class PortalSolicitudesTicketController extends Controller
           ]);
         }
   
+      }else{
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+            
+          ]
+        );
       }
     } catch(\Exception $e) {
       $error = $e;
