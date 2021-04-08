@@ -456,14 +456,13 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $name = "archivo_solicitud_".$mensajes->id.".".$extension;
-        \Storage::disk('local')->put($attach,  \File::get($file));
         $attach = $this->url->to('/') . '/download/'.$name;
 
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
         ]);
 
-        // \Storage::disk('local')->put($attach,  \File::get($file));
+        \Storage::disk('local')->put($attach,  \File::get($file));
         
         if(!isset($data["required_docs"])){
           $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
@@ -471,6 +470,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
       } catch(\Exception $e) {
+        Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
