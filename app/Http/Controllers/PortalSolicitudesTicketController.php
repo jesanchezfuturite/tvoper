@@ -1216,52 +1216,57 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function saveFiles(Request $request){
+    $error=null;
     $files = $request->all();
     try {  
-      foreach ($files as $key => $value) { 
-        $mensaje = $value["mensaje"];
-        $ticket_id = $value["ticket_id"];    
-        $file = $value['file']; 
-        
-        $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id,
-          'mensaje'=>$mensaje
-        ]);
-
-        $new_file = str_replace('data:application/pdf;base64,', '', $file);
-				$new_file = str_replace(' ', '+', $new_file);
-				$new_file = base64_decode($new_file);
-		  
-				$attach = "archivo_solicitud_".$mensajes->id.".pdf";			
-		  
-				// $path = storage_path('app/'.$attach);
-				\Storage::disk('local')->put($attach,  $new_file);
-
-
-        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-          'attach' => $attach,
-        ]);
-        
-
-        return json_encode([
-          "response" 	=> "Archivo guardado",
-          "code"		=> 200
+      if($files){
+        foreach ($files as $key => $value) { 
+          $mensaje = $value["mensaje"];
+          $ticket_id = $value["ticket_id"];    
+          $file = $value['file']; 
+          
+          $mensajes =$this->mensajes->create([
+            'ticket_id'=> $ticket_id,
+            'mensaje'=>$mensaje
+          ]);
   
-        ]);
-     
+          $new_file = str_replace('data:application/pdf;base64,', '', $file);
+          $new_file = str_replace(' ', '+', $new_file);
+          $new_file = base64_decode($new_file);
+        
+          $attach = "archivo_solicitud_".$mensajes->id.".pdf";			
+        
+          \Storage::disk('local')->put($attach,  $new_file);
+  
+  
+          $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+            'attach' => $attach,
+          ]);
+        }
+  
       }
-
-
     } catch(\Exception $e) {
-      Log::info('Error Guardar archivo: '.$e->getMessage());
+      $error = $e;
+      Log::info('Error Guardar archivo: '.$e->getMessage());      
+    }
+
+    if ($error) {
       return response()->json(
         [
           "Code" => "400",
           "Message" => "Error al guardar archivo - ".  $e->getMessage(),
           
         ]
-      ); 
-    }
+      );
+    }else { 
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+    }    
+     
 
   }
   public function getFileNotary($id){	
