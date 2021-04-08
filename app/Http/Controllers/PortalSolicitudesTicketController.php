@@ -462,12 +462,7 @@ class PortalSolicitudesTicketController extends Controller
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($file));
-        
-        if(!isset($data["required_docs"])){
-          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
-          ["required_docs"=>$data["required_docs"]]);   
-        }
+        \Storage::disk('local')->put($attach,  $file);
 
       } catch(\Exception $e) {
         Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
