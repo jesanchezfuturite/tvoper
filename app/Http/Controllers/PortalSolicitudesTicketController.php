@@ -462,7 +462,7 @@ class PortalSolicitudesTicketController extends Controller
           'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  $file);
+        \Storage::disk('local')->put($name,  $file);
 
       } catch(\Exception $e) {
         Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
@@ -986,7 +986,7 @@ class PortalSolicitudesTicketController extends Controller
     try{
       if($body["type"]=="en_carrito"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-        $count = $this->ticket->where("en_carrito", 1)->whereIn('user_id', $users)->count();
+        $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes en el carrito";
         
       }
@@ -996,14 +996,14 @@ class PortalSolicitudesTicketController extends Controller
             $doc_firmado = $this->ticket->where('id',$value)->update(['doc_firmado'=>$body["urls"][$key]]);
 
         }
-        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['firmado'=>$body['status']]);
-        $count = $this->ticket->where("firmado", 1)->whereIn('user_id', $users)->count();
+        $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar' => null, 'firmado'=>$body['status']]);
+        $count = $this->ticket->where(["firmado" => 1, "status" => 2])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes firmadas";
       }
 
       if($body["type"]=="por_firmar"){
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar'=>$body['status']]);
-        $count = $this->ticket->where("por_firmar", 1)->whereIn('user_id', $users)->count();
+        $count = $this->ticket->where(["por_firmar" => 1, "firmado" => null])->whereIn('status', [2,3])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes por firmar";
 
 
