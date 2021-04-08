@@ -1137,7 +1137,7 @@ class PortalSolicitudesTicketController extends Controller
           } 
       }
       $campos = array_unique($campos);
-      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
+      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'alias')->whereIn('id', $campos)->get()->toArray();
       foreach($data as $key => $solicitud){
           foreach($solicitud as $key2 => $value){
               if(isset($value->info->campos)){
@@ -1282,6 +1282,12 @@ class PortalSolicitudesTicketController extends Controller
 		}
 
 	}
-
+  public function updateAlias()
+  {
+    $findallCamp=$this->campo->all();
+    foreach ($findallCamp as $e) {
+      $updateCamp=$this->campo->update(['alias'=>'f_' . $e->id],$e->id);
+    }
+  }
     
 }
