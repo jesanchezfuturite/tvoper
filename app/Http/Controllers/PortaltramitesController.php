@@ -68,10 +68,10 @@ class PortaltramitesController extends Controller
 
 		try{
 			$cmp = $this->campos->findWhere(['descripcion'=> $desc, 'status'=>'1']);
-			log::info($cmp);
+			//log::info($cmp);
 			if($cmp->count() > 0){
 
-				Log::info($cmp->count());
+				//Log::info($cmp->count());
 
 				return response()->json(
 					[
@@ -81,8 +81,8 @@ class PortaltramitesController extends Controller
 				);
 			} else {
 
-				$this->campos->create( ["descripcion" => $desc, "status" => 1] );
-
+				$insert=$this->campos->create( ["descripcion" => $desc, "status" => 1, "alias"=>'0'] );
+				$this->campos->update(['alias'=>'f_' . $insert->id],$insert->id);
 				return response()->json(
 					[
 						"Code" => "200",
