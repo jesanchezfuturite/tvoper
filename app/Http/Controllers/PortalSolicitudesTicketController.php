@@ -1293,5 +1293,34 @@ class PortalSolicitudesTicketController extends Controller
 
 	}
 
+  public function editInfo(Request $request){
+    $body = $request->data;
+    try {
+      foreach ($body as $key => $value) {
+        $ticket = $this->ticket->where("id" , $value->id)->update([
+          "info"=> json_encode($value->info)           
+          
+        ]);  
+      }
+      
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+      
+    } catch (\Exception $e) {
+        Log::info('Error Editar solicitud '.$e->getMessage());
+
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al editar la solicitud",
+          ]
+        );
+    }
+  }
+
     
 }
