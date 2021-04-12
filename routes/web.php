@@ -422,7 +422,7 @@ Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
-
+Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -472,3 +472,5 @@ Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes
 Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes');
 Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes');
 
+
+Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');

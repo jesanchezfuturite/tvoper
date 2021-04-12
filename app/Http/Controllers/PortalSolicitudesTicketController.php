@@ -1132,7 +1132,8 @@ class PortalSolicitudesTicketController extends Controller
           } 
       }
       $campos = array_unique($campos);
-      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
+      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
+      $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
       foreach($data as $key => $solicitud){
           foreach($solicitud as $key2 => $value){
               if(isset($value->info->campos)){
@@ -1142,6 +1143,15 @@ class PortalSolicitudesTicketController extends Controller
                       $campos[$key2] = $val;
                   }
                   $value->info->campos = $campos;
+              }
+              if(isset($value->info->camposConfigurados)){
+                  $alias = array();
+                  foreach($value->info->camposConfigurados as $k => $val){
+                    $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias; 
+                    $alias = array('alias'=>$al);
+                    $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                  }
+                  
               }
           }
       }
@@ -1293,5 +1303,39 @@ class PortalSolicitudesTicketController extends Controller
 
 	}
 
-    
+  public function updateAlias()
+  {
+    $findallCamp=$this->campo->all();
+    foreach ($findallCamp as $e) {
+      $updateCamp=$this->campo->update(['alias'=>'f_' . $e->id],$e->id);
+    }
+  }
+  public function editInfo(Request $request){
+    $body = $request->data;
+    try {
+      foreach ($body as $key => $value) {
+        $ticket = $this->ticket->where("id" , $value->id)->update([
+          "info"=> json_encode($value->info)           
+          
+        ]);  
+      }
+      
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+      
+    } catch (\Exception $e) {
+        Log::info('Error Editar solicitud '.$e->getMessage());
+
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al editar la solicitud",
+          ]
+        );
+    }
+  }
 }
