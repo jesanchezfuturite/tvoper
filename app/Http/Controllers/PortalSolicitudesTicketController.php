@@ -1314,8 +1314,8 @@ class PortalSolicitudesTicketController extends Controller
     $body = $request->data;
     try {
       foreach ($body as $key => $value) {
-        $ticket = $this->ticket->where("id" , $value->id)->update([
-          "info"=> json_encode($value->info)           
+        $ticket = $this->ticket->where("id" , $value["id"])->update([
+          "info"=> json_encode($value["info"])           
           
         ]);  
       }
