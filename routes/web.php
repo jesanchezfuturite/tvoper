@@ -472,3 +472,5 @@ Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes
 Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes');
 Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes');
 
+
+Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
