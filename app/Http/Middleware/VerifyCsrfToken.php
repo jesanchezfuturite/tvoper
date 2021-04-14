@@ -32,7 +32,8 @@ class VerifyCsrfToken extends Middleware
         'save-transaccion-motor*',
         'solicitudes-guardar-carrito*',
         'solicitudes-filtrar/count*',
-        'save-files*'
+        'save-files*',
+        'edit-solicitudes-info*'
 
     ];
 }

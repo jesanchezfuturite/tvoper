@@ -422,7 +422,7 @@ Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
-
+Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
