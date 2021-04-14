@@ -713,7 +713,7 @@ class ApiController extends Controller
 		$solicitudes = $this->tickets
 			->where('catalogo_id',$tramite)
 			->whereIn('user_id', $users)
-			->wherIn('status', [2,3, 5])
+			->whereIn('status', [2,3,5])
 			->get();
 
 
