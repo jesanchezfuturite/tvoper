@@ -32,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/register';
     protected $menudb;
     /**
      * Create a new controller instance.
@@ -69,7 +69,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $this->registerMenu($data['email']);
+        $this->registerMenu($data['email'], $data['rol']);
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -84,16 +84,17 @@ class RegisterController extends Controller
     {
         try
         {
-            return view("home");    
+            return view("register");    
         }catch( \Exception $e){
             dd($e-getMessage());
         }
         
     }
 
-    private function registerMenu($name)
+    private function registerMenu($name, $rol)
     {
-        $this->menudb->create(["name"=>$name,"is_admin"=>0,"extra"=>"[]","menu"=>"[]"]);
+        $user_id = auth()->user()->id;
+        $this->menudb->create(["name"=>$name,"is_admin"=>$rol,"extra"=>"[]","menu"=>"[]","creado_por"=>$user_id]);
     }
 
 }

@@ -38,7 +38,29 @@
                                 @enderror
                             </div>
                         </div>
-
+                        @if(session('is_admin') == 1)
+                        
+                            <div class="form-group row">
+                                <label for="rol" class="col-md-4 col-form-label text-md-right">{{ __('Rol usuario') }}</label>
+                                <div class="col-md-6">
+                                    <select class="select2me form-control"name="rol" id="rol" required>
+                                        <option value="">Selecciona</option>
+                                            <option value="0">Usuario</option>
+                                            <option value="2">Administrador</option>                                       
+                                      </select> 
+                                </div>
+                            </div>
+                            
+                            @else
+                            <div class="form-group row" hidden="true">
+                                <label for="rol" class="col-md-4 col-form-label text-md-right">{{ __('Rol Usuario') }}</label>
+                                <div class="col-md-6">
+                                    <select class="select2me form-control"name="rol" id="rol" required>
+                                        <option value="0">Usuario</option>                                       
+                                     </select> 
+                                </div>
+                            </div>
+                        @endif
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
