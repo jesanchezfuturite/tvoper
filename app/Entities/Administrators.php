@@ -21,6 +21,6 @@ class Administrators extends Model implements Transformable
      * @var array
      */
     protected $table = 'oper_administrators';
-    protected $fillable = ['name', 'is_admin', 'extra', 'menu'];
+    protected $fillable = ['name', 'is_admin', 'extra', 'menu','creado_por'];
 
 }
