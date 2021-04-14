@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
 use SoapClient;
 use SimpleXMLElement;
+use App\Entities\PortalSolicitudesTicket;
 
 // repositorios para afectar la base de datos
 
@@ -710,11 +711,12 @@ class ApiController extends Controller
         }
 
 		// buscar las solicitudes del aviso de enajenacion de la notaria
-		$solicitudes = $this->tickets
-			->where('catalogo_id',$tramite)
-			->whereIn('user_id', $users)
-			->whereIn('status', [2,3,5])
+		$solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_tramite', 'solicitudes_ticket.id_transaccion', '=', 'solicitudes_tramite.id')
+			->where('solicitudes_ticket.catalogo_id',$tramite)
+			->whereIn('solicitudes_ticket.user_id', $users)
+			->whereIn('solicitudes_tramite.estatus', [0, 60])
 			->get();
+
 
 
 		if($solicitudes->count() > 0)
@@ -746,7 +748,13 @@ class ApiController extends Controller
 
 
             return json_encode($response,JSON_UNESCAPED_SLASHES);
-        }
+        }else{
+			return json_encode(
+                [
+                    "code" => 402,
+                    "message" => "No hay solicitudes de aviso de enajenacion" 
+				]);
+		}
 
 	}
 
