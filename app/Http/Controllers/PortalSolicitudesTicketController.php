@@ -725,13 +725,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite'
+            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite', 'st.Descripcion'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
             
@@ -788,7 +789,7 @@ class PortalSolicitudesTicketController extends Controller
                   "fecha_pago"=> $dato->fecha_pago,
                   "referencia"=> $dato->referencia,
                   "operacion_interna"=>$dato->operacion_interna,
-                  "estatus_tramite"=>$dato->estatus_tramite
+                  "estatus_tramite"=>$dato->Descripcion
                
                 );
               }
@@ -809,13 +810,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus'
+            'tmt.id as operacion_interna',  'st.Descripcion as estatus_tramite'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
 
