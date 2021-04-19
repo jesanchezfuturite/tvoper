@@ -1148,7 +1148,19 @@ class PortalSolicitudesTicketController extends Controller
               }
               if(isset($value->info->camposConfigurados)){
                   $alias = array();
+                  $doc=[];
                   foreach($value->info->camposConfigurados as $k => $val){
+                    if($val->tipo=="file"){
+                      $attach=[];
+                      foreach ($value->mensajes as $m => $msje) {
+                          if($msje->attach!=null){
+                            $attach[$m] =$msje->attach;
+                          }
+
+                      }
+                     
+                      $val->documento=$attach;
+                    }
                     $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias; 
                     $alias = array('alias'=>$al);
                     $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
