@@ -118,7 +118,7 @@
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
-        <div class="row">
+        <div class="row divDetalles">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
@@ -133,7 +133,7 @@
             </div>
           </div>    
         </div>
-        <div class="row">
+        <div class="row divSolicitante">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
@@ -444,21 +444,24 @@
       $("#addtableMsg div").remove();
       $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Solicitud</th><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
     }
+    function addInfo()
+    {
+      $("#addDetalles").empty();
+      $("#addSolicitante").empty();
+      $("#addnotaria").empty();
+      $(".divNotaria").css("display", "none");
+    }
     function findAtender(id,estatus)
     {
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       findMessage(id);
-      $("#detalles div").remove();
-      $("#detalles").append("<div id='addDetalles'></div>");
-      $("#solicitante div").remove();
-      $("#solicitante").append("<div id='addSolicitante'></div>");
+      addInfo();
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -478,7 +481,7 @@
             }            
           }
           if(typeof(Resp.solicitante.notary)){
-            console.log(Resp.solicitante.notary);
+            $(".divNotaria").css("display", "block");
             for (not in Resp.solicitante.notary) {  
               if(not=='notary_number' || not=='email' || not=='phone')
               {             
@@ -486,8 +489,10 @@
               }
             }
           }
-          for (n in Resp.campos) {            
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
+          for (n in Resp.campos) {  
+            if(typeof (Resp.campos[n]) !== 'object') {         
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
+            }          
           }
           if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null) 
           {
