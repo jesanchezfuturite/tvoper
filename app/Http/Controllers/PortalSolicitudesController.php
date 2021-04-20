@@ -450,7 +450,7 @@ class PortalSolicitudesController extends Controller
     ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
     "solicitudes_status.descripcion","solicitudes_ticket.status", 
     "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
-    "solicitudes_ticket.created_at", )
+    "solicitudes_ticket.created_at")
     ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
 
