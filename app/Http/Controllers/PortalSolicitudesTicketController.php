@@ -1258,9 +1258,11 @@ class PortalSolicitudesTicketController extends Controller
           $new_file = str_replace(' ', '+', $new_file);
           $new_file = base64_decode($new_file);
         
-          $attach = "archivo_solicitud_".$mensajes->id.".pdf";			
+          $name = "archivo_solicitud_".$mensajes->id.".pdf";			
         
-          \Storage::disk('local')->put($attach,  $new_file);
+          \Storage::disk('local')->put($name,  $new_file);
+
+          $attach = $this->url->to('/') . '/download/'.$name;
   
   
           $guardar =$this->mensajes->where("id", $mensajes->id)->update([
