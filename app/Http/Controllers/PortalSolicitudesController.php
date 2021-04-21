@@ -447,7 +447,10 @@ class PortalSolicitudesController extends Controller
   public function filtrar(Request $request){
 
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo", "solicitudes_status.descripcion","solicitudes_ticket.status", "solicitudes_ticket.ticket_relacionado","solicitudes_ticket.created_at")
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
+    "solicitudes_status.descripcion","solicitudes_ticket.status", 
+    "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
+    "solicitudes_ticket.created_at")
     ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
 
@@ -459,15 +462,32 @@ class PortalSolicitudesController extends Controller
       $solicitudes->where('solicitudes_ticket.status', $request->estatus);
     }
 
-    if($request->has('id_solicitud')){
-      $solicitudes->where('solicitudes_ticket.id',  $request->id_solicitud);
+    if($request->has('id_transaccion')){
+      $solicitudes->where('solicitudes_ticket.id_transaccion',  $request->id_transaccion);
 
     }
     $solicitudes->where('solicitudes_ticket.status', '!=', 99)
+    ->whereNull('solicitudes_ticket.asignado_a')
+    ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->orderBy('solicitudes_ticket.created_at', 'DESC');
     $solicitudes = $solicitudes->get();
-    return $solicitudes;
+    $ids = $solicitudes->pluck("id_transaccion")->toArray();
+    $ids = array_unique($ids);
+
+    $newDato=[];
+    foreach($ids as $t => $id){
+      $datos=[];
+      foreach ($solicitudes as $d => $value) { 
+        if($value->id_transaccion== $id){
+          array_push($datos, $value);
+          $newDato[$id]=$datos;
+        }
+      
+      }
+    }
+    return $newDato;
   }
+
   public function listSolicitudes(){
 
     $tipoSolicitud=$this->findSol();
@@ -520,6 +540,9 @@ class PortalSolicitudesController extends Controller
   public function atenderSolicitud($id){
     $ticket = $this->ticket->where('id', $id)->first();
     $findP=$this->ticket->findPrelacion($id);
+    $id_transaccion = $ticket["id_transaccion"];
+    $user_id = auth()->user()->id;
+    $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
 
     $msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
@@ -958,4 +981,6 @@ class PortalSolicitudesController extends Controller
 
     return $informacion;
   }
+
+  
 }

@@ -634,6 +634,7 @@ class ConciliacionController extends Controller
                 
                 $final [$bd]= array(
                     "descripcion"               => $info["descripcion"],
+                    "banco_id"                  =>$bank_id,
                     "resumen"                   => $nuevo_resumen,
                     "grand"                     => 
                         array(
@@ -823,6 +824,7 @@ class ConciliacionController extends Controller
         $cuenta = (string)$request->cuenta;
 
         $fuente = $request->fuente;
+        $id_banco = $request->id_banco;
 
         Log::info("Fuente = " . $fuente);
         
@@ -832,7 +834,7 @@ class ConciliacionController extends Controller
         {
             try{
 
-                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(1),'p',$option);
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(1),'p',$option,$id_banco);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -903,7 +905,7 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(2,5,7,20) ,'p',$option);
+                $data = $this->pr->findnoconc($cuenta,$alias,$f,array(2,5,7,20) ,'p',$option,$id_banco);
 
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
@@ -930,7 +932,7 @@ class ConciliacionController extends Controller
             // son todos los movimientos en el repositorio
             try{
 
-                $data = $this->pr->findnoconcNotIn($cuenta,$alias,$f,array(1,2,5,7,11,20) ,'p',$option);
+                $data = $this->pr->findnoconcNotIn($cuenta,$alias,$f,array(1,2,5,7,11,20) ,'p',$option,$id_banco);
             }catch( \Exception $e){
                Log::info('[Conciliacion:getAnomalia] ERROR buscando anomalías... ' . $e->getMessage()); 
             }

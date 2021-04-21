@@ -15,8 +15,9 @@ use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalTramitesRepositoryEloquent;
 use Illuminate\Support\Facades\Input;
-
+use Illuminate\Routing\UrlGenerator;
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -30,6 +31,7 @@ class PortalSolicitudesTicketController extends Controller
     protected $campo;
     protected $mensajes;
     protected $solTramites;
+    protected $url;
 
 
 
@@ -43,7 +45,8 @@ class PortalSolicitudesTicketController extends Controller
         PortalConfigUserNotaryOfficeRepositoryEloquent $configUserNotary,
         PortalcampoRepositoryEloquent $campo,
         PortalSolicitudesMensajesRepositoryEloquent $mensajes,
-        PortalTramitesRepositoryEloquent $solTramites
+        PortalTramitesRepositoryEloquent $solTramites,
+        UrlGenerator $url
         
        )
        {
@@ -56,6 +59,7 @@ class PortalSolicitudesTicketController extends Controller
          $this->campo = $campo;
          $this->mensajes = $mensajes;
          $this->solTramites = $solTramites;
+         $this->url = $url;
    
        }
     
@@ -451,19 +455,17 @@ class PortalSolicitudesTicketController extends Controller
           'mensaje' => $mensaje,
         ]);
 
-        $attach = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $name = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $attach = $this->url->to('/') . '/download/'.$name;
+
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-        'attach' => $attach,
+          'attach' => $attach,
         ]);
 
-        \Storage::disk('local')->put($attach,  \File::get($file));
-        
-        if(!isset($data["required_docs"])){
-          $ticket = $this->ticket->updateOrCreate(["id" =>$ticket_id],
-          ["required_docs"=>$data["required_docs"]]);   
-        }
+        \Storage::disk('local')->put($name,  \File::get($file));
 
       } catch(\Exception $e) {
+        Log::info('Error Portal - Guardar Archivo: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
@@ -723,13 +725,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite'
+            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite', 'st.Descripcion'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
             
@@ -786,7 +789,7 @@ class PortalSolicitudesTicketController extends Controller
                   "fecha_pago"=> $dato->fecha_pago,
                   "referencia"=> $dato->referencia,
                   "operacion_interna"=>$dato->operacion_interna,
-                  "estatus_tramite"=>$dato->estatus_tramite
+                  "estatus_tramite"=>$dato->Descripcion
                
                 );
               }
@@ -807,13 +810,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus'
+            'tmt.id as operacion_interna',  'st.Descripcion as estatus_tramite'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
 
@@ -897,11 +901,11 @@ class PortalSolicitudesTicketController extends Controller
 
     public function downloadFile($file)
     {
-      try{
-      $pathtoFile = storage_path('app/'.$file);
-      return response()->download($pathtoFile);
+      try{      
+        $pathtoFile = storage_path('app/'.$file);
+        return response()->download($pathtoFile);
       }catch(\Exception $e){
-        log::info("error PortalSolicitudesTicketController@downloadFile");
+        log::info("error PortalSolicitudesTicketController@downloadFile" .$e->getMessage());
       }
     }
     public function tramites_finalizados($id){
@@ -1130,7 +1134,8 @@ class PortalSolicitudesTicketController extends Controller
           } 
       }
       $campos = array_unique($campos);
-      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
+      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
+      $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
       foreach($data as $key => $solicitud){
           foreach($solicitud as $key2 => $value){
               if(isset($value->info->campos)){
@@ -1140,6 +1145,27 @@ class PortalSolicitudesTicketController extends Controller
                       $campos[$key2] = $val;
                   }
                   $value->info->campos = $campos;
+              }
+              if(isset($value->info->camposConfigurados)){
+                  $alias = array();
+                  $doc=[];
+                  foreach($value->info->camposConfigurados as $k => $val){
+                    if($val->tipo=="file"){
+                      $attach=[];
+                      foreach ($value->mensajes as $m => $msje) {
+                          if($msje->attach!=null){
+                            $attach[$m] =$msje->attach;
+                          }
+
+                      }
+                     
+                      $val->documento=$attach;
+                    }
+                    $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias; 
+                    $alias = array('alias'=>$al);
+                    $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                  }
+                  
               }
           }
       }
@@ -1214,56 +1240,118 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function saveFiles(Request $request){
+    $error=null;
     $files = $request->all();
     try {  
-      foreach ($files as $key => $value) { 
-        $mensaje = $value["mensaje"];
-        $ticket_id = $value["ticket_id"];    
-        $file = $value['file']; 
-        
-        $mensajes =$this->mensajes->create([
-          'ticket_id'=> $ticket_id,
-          'mensaje'=>$mensaje
-        ]);
-
-        $new_file = str_replace('data:application/pdf;base64,', '', $file);
-				$new_file = str_replace(' ', '+', $new_file);
-				$new_file = base64_decode($new_file);
-		  
-				$attach = "archivo_solicitud_".$mensajes->id.".pdf";			
-		  
-				// $path = storage_path('app/'.$attach);
-				\Storage::disk('local')->put($attach,  $new_file);
-
-
-        $guardar =$this->mensajes->where("id", $mensajes->id)->update([
-          'attach' => $attach,
-        ]);
-
-        return json_encode([
-          "response" 	=> "Archivo guardado",
-          "code"		=> 200
+      if(!empty($files)){
+        foreach ($files as $key => $value) { 
+          $mensaje = $value["mensaje"];
+          $ticket_id = $value["ticket_id"];    
+          $file = $value['file']; 
+          
+          $mensajes =$this->mensajes->create([
+            'ticket_id'=> $ticket_id,
+            'mensaje'=>$mensaje
+          ]);
   
-        ]);
+          $new_file = str_replace('data:application/pdf;base64,', '', $file);
+          $new_file = str_replace(' ', '+', $new_file);
+          $new_file = base64_decode($new_file);
+        
+          $name = "archivo_solicitud_".$mensajes->id.".pdf";			
+        
+          \Storage::disk('local')->put($name,  $new_file);
 
-     
-
-     
+          $attach = $this->url->to('/') . '/download/'.$name;
+  
+  
+          $guardar =$this->mensajes->where("id", $mensajes->id)->update([
+            'attach' => $attach,
+          ]);
+        }
+  
+      }else{
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar archivo - ".  $e->getMessage(),
+            
+          ]
+        );
       }
-
-
     } catch(\Exception $e) {
+      $error = $e;
+      Log::info('Error Guardar archivo: '.$e->getMessage());      
+    }
+
+    if ($error) {
       return response()->json(
         [
           "Code" => "400",
           "Message" => "Error al guardar archivo - ".  $e->getMessage(),
           
         ]
-      ); 
-    }
+      );
+    }else { 
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+    }    
+     
 
   }
+  public function getFileNotary($id){	
+		$notary = NotaryOffice::find($id);
+		if($type=='sat'){
+			$sat=$notary->sat_constancy_file;			
+			$path =\Storage::url($sat);
+			return $path;	
+			
+		}else{			
+			$notary=$notary->notary_constancy_file;
+			$path =\Storage::url($notary);
+			return $path;
+			
+		}
 
+	}
 
-    
+  public function updateAlias()
+  {
+    $findallCamp=$this->campo->all();
+    foreach ($findallCamp as $e) {
+      $updateCamp=$this->campo->update(['alias'=>'f_' . $e->id],$e->id);
+    }
+  }
+  public function editInfo(Request $request){
+    $body = $request->data;
+    try {
+      foreach ($body as $key => $value) {
+        $ticket = $this->ticket->where("id" , $value["id"])->update([
+          "info"=> json_encode($value["info"])           
+          
+        ]);  
+      }
+      
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+      
+    } catch (\Exception $e) {
+        Log::info('Error Editar solicitud '.$e->getMessage());
+
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al editar la solicitud",
+          ]
+        );
+    }
+  }
 }

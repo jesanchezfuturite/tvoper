@@ -148,6 +148,21 @@
             </div>
           </div>    
         </div>
+        <div class="row divNotaria">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos de la Notaria</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="notaria">
+            <div id="addnotaria">
+            </div>
+          </div>    
+        </div>
         <div class="row">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -452,19 +467,24 @@
           for (n in soli) {  
             obj=n;
             tipo=soli[n];    
-            if(tipo=="pm")
-            {tipo="Moral";}
-            if(tipo=="pf")
-            {tipo="Fisica";}
-            if(obj=="tipoPersona"){
-              obj="Tipo Persona";
-            }if(obj=="rfc"){
-              obj="RFC";
-            }if(obj=="razonSocial"){
-              obj="Razón Social";
-            }
-
+            if(tipo=="pm"){tipo="Moral";}
+            if(tipo=="pf"){tipo="Fisica";}
+            if(obj=="tipoPersona"){obj="Tipo Persona";}
+            if(obj=="rfc"){obj="RFC";}
+            if(obj=="razonSocial"){obj="Razón Social";}
+            if (obj!="notary" && obj!="id")
+            {
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
+            }            
+          }
+          if(typeof(Resp.solicitante.notary)){
+            console.log(Resp.solicitante.notary);
+            for (not in Resp.solicitante.notary) {  
+              if(not=='notary_number' || not=='email' || not=='phone')
+              {             
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+not+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+              }
+            }
           }
           for (n in Resp.campos) {            
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            

@@ -21,6 +21,7 @@ class Egobiernoporcentajes extends Model implements Transformable
      * @var array
      */
     protected $connection = "mysql3";
+     protected $fillable = ['anio','mes','vencido','federal_vencido','requerido'];
 
 	protected $table = "porcentajes";
 

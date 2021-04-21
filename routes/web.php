@@ -422,7 +422,7 @@ Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
-
+Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
@@ -465,3 +465,12 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+
+Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
+Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');
+Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes');
+Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes');
+Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes');
+
+
+Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
