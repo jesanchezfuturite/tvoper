@@ -85,19 +85,14 @@
         </div>
          <div class="portlet-body" id="addtables">
     		<div id="removetable">
-          		<table class="table table-hover" id="sample_2">
-            		<thead>
-              			<tr>
-              			<th>ID</th>
-              			<th>Titulo</th>
-              			<th>Estatus</th>
-              			<th>Fecha de Ingreso</th>
-            			<th>&nbsp;</th>
-            			</tr>
-          			</thead>
-          			<tbody>                   
-                         
-          			</tbody>
+          		<table class="table table-hover" id="example">
+            	<thead>
+                <tr>
+                    <th></th>
+                    <th>Titulo</th>
+                    <th></th>
+                </tr>
+            </thead>
         		</table>  
       		</div>             
     	</div>
@@ -245,16 +240,13 @@
               <div id="addtableMsg">
                 <div class="removeMsg"> 
                   <table class="table table-hover" id="sample_7">
-                    <thead>
-                      <tr>
-                        <th>Mensajes</th>
-                        <th>Archivo</th>
-                        <th>Estatus</th>
-                        <th>Fecha</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
+                   <thead>
+                <tr>
+                    <th></th>
+                    <th>Titulo</th>
+                    <th></th>
+                </tr>
+            </thead>
                   </table>
                 </div>
               </div>
@@ -289,7 +281,7 @@
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 	<script>
 	jQuery(document).ready(function() {
-    TableManaged2.init2();
+   // TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
       $(".selectMotivos").css("display", "none");
     });
@@ -400,14 +392,14 @@
            data: formdata })
         .done(function (response) {
         	//var Resp=$.parseJSON(response);
-            addtable();
+            //addtable();
             //console.log(response);
             //console.log(JSON.stringify(response));
             if(JSON.stringify(response)=='[]')
             	{TableManaged2.init2();  return;}
             var Resp=$.parseJSON(JSON.stringify(response));
                        
-            $.each(Resp, function(i, item) {
+            /*$.each(Resp, function(i, item) {
               var bton=""; 
               var padre="";
               if(item.status==2)
@@ -428,17 +420,76 @@
                 	+ bton
                 	+"</tr>"
                 );
-            });
+            });*/
             findMotivosSelect();
-        	TableManaged2.init2();   
+            createTable(response);
+        	//TableManaged2.init2();   
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
   	}
-  	function addtable(){
-    	$("#addtables div").remove();
-    	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+    function createTable( dataS){
+      //console.log(dataS);
+      var table = $('#example').DataTable();
+                table.destroy();    
+
+      $('#example').DataTable( {
+               "data": dataS,
+                "columns": [
+                  {
+                "data": "id_transaccion",
+                "class": 'detectarclick',
+                "width": "3%",
+                "render": function ( data, type, row, meta ) {
+                  
+                  return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
+                }
+              },
+                  { "data": "id_transaccion" },
+                  {
+                    "data": "id_transaccion",
+                    "render": getTemplateAcciones
+                  }
+              ]
+        });
+      $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
+    }
+    function buildTemplateChild(){
+      var table = $('#example').DataTable();
+          var tr = $(this).parents('tr');
+          var row = table.row( tr );
+          if(row.data() && row.data().grupo.length > 0){
+            if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+              $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+            } else {
+              console.log(row.data());
+                $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
+                row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
+                tr.addClass('shown');
+            }
+        }
+    }
+    function getTemplateAcciones( data, type, row, meta  ){
+      let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
+  
+      return botonAtender;  
+    }
+    function format ( d ) {       
+        let html = '<table class="table table-hover">';
+        html += "<tr><th></th><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        d.grupo.forEach( (solicitud) =>{          
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'> Atender </a></td>";
+       
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
+        
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
+        
+        });
+        html+='</table>';
+        return html;
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
