@@ -475,12 +475,13 @@ class PortalSolicitudesController extends Controller
     $ids = array_unique($ids);
 
     $newDato=[];
-    foreach($ids as $t => $id){
+    foreach($ids as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) { 
         if($value->id_transaccion== $id){
           array_push($datos, $value);
-          $newDato[$id]=$datos;
+          $newDato[$i]["id_transaccion"]=$id;
+          $newDato[$i]["grupo"]=$datos;
         }
       
       }
