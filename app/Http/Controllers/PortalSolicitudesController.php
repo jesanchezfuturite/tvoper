@@ -22,7 +22,6 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
-
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
@@ -475,12 +474,13 @@ class PortalSolicitudesController extends Controller
     $ids = array_unique($ids);
 
     $newDato=[];
-    foreach($ids as $t => $id){
+    foreach($ids as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) { 
         if($value->id_transaccion== $id){
           array_push($datos, $value);
-          $newDato[$id]=$datos;
+          $newDato[$i]["id_transaccion"]=$id;
+          $newDato[$i]["grupo"]=$datos;
         }
       
       }
@@ -980,6 +980,25 @@ class PortalSolicitudesController extends Controller
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
 
     return $informacion;
+  }
+
+  public function getInfoNotary($user){
+    try {
+      $users = $this->configUserNotary->where("user_id" , $user)->first();
+      $notary = $this->notary->where("id", $users->notary_office_id)->first();
+         return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>"Informacion de la notaria",
+            "data"=> $notary
+        ]);  
+    } catch (Exception $e) {
+     return response()->json(
+          [
+            "Code" => "400",
+            "Message" =>"Error al encontrar notaria"
+        ]);   
+    }
   }
 
   
