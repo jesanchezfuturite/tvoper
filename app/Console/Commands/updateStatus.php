@@ -81,12 +81,12 @@ class updateStatus extends Command
          try{
 
             $json=json_encode($array);
-            $link = env("REFERENCEPAYMENT_HOSTNAME")."/".$json;
+            $link = env("REFERENCEPAYMENT_HOSTNAME");
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $link);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-           //curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+           curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $jsonArrayResponse = curl_exec($ch);
