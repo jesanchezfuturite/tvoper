@@ -486,15 +486,21 @@ class PortalSolicitudesTicketController extends Controller
         "estatus" => $request->status    
       ]); 
       $id_transaccion=$solTramites->id;
-      try {            
+      try {
+        $array_tramites=[];            
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
-
+              array_push($array_tramites, $value->id);
               $this->guardarCarrito($value->id, 1);
           }
         }        
+        $arraytramites = json_encode($array_tramites);
+        $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
+          'id_ticket'=>$arrayTramites
+        ]);
+         
 
       } catch (\Exception $e) {
           $error = $e;
