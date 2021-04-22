@@ -2,6 +2,7 @@
 
 @section('content')
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
+<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -279,6 +280,9 @@
 
 @section('scripts')
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
+<script src="assets/global/dataTable/dataTables.min.js"></script>
+  <script src="assets/global/dataTable/jszip.min.js"></script>
+  <script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
 	jQuery(document).ready(function() {
    // TableManaged2.init2();
@@ -368,62 +372,38 @@
     	var noSolicitud=$("#noSolicitud").val();
     	var opTipoSolicitud=$("#opTipoSolicitud").val();
     	var opEstatus=$("#opEstatus").val();
-    	var formdata = new FormData();
-
+      var formdata={            };
     	if(noSolicitud.length>0){
-    		formdata.append("id_solicitud", noSolicitud);  
+         Object.assign(formdata,{id_solicitud:noSolicitud});  
     	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
-    		formdata.append("estatus", opEstatus);    
-    		formdata.append("tipo_solicitud", opTipoSolicitud);   
-    	}else if(opTipoSolicitud != "0"){
-    		formdata.append("tipo_solicitud", opTipoSolicitud);  
-    	}else if( opEstatus != "0"){
-    		formdata.append("estatus", opEstatus);    
+    		Object.assign(formdata,{id_solicitud:noSolicitud}); 
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});    
+    	}else if(opTipoSolicitud != "0"){ 
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
+    	}else if( opEstatus != "0"){   
+        Object.assign(formdata,{estatus:opEstatus}); 
     	}else{
     		Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
     		return;
     	}
-    	formdata.append("_token", '{{ csrf_token() }}');  
+      Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     	$.ajax({
            method: "POST", 
-           contentType: false,
-            processData: false,
            url: "{{ url('/filtrar-solicitudes') }}",
            data: formdata })
         .done(function (response) {
-        	//var Resp=$.parseJSON(response);
-            //addtable();
-            //console.log(response);
-            //console.log(JSON.stringify(response));
-            if(JSON.stringify(response)=='[]')
-            	{TableManaged2.init2();  return;}
-            var Resp=$.parseJSON(JSON.stringify(response));
-                       
-            /*$.each(Resp, function(i, item) {
-              var bton=""; 
-              var padre="";
-              if(item.status==2)
-              {
-                bton="<td class='text-center' width='20%'></td>";
-              }else{
-                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\",\""+item.status+"\")'> Atender </a></td>";
-              }
-              if(item.ticket_relacionado!=null )
-              {
-                padre=item.ticket_relacionado + " / ";
-              }
-            	$('#sample_2 tbody').append("<tr>"
-                	+"<td>"+ padre + item.id+"</td>"
-                	+"<td>"+item.titulo+"</td>"
-                	+"<td>"+item.descripcion+"</td>"
-                	+"<td>"+item.created_at+"</td>"
-                	+ bton
-                	+"</tr>"
-                );
-            });*/
+        var objectResponse=[];
+            if(typeof response=== 'object')
+            {
+            for (n in response) {                 
+                  objectResponse.push(response[n]); 
+              }  
+              //console.log(objectResponse);
+             response=objectResponse;
+            }
+            
             findMotivosSelect();
-            createTable(response);
-        	//TableManaged2.init2();   
+            createTable(response);  
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -465,7 +445,6 @@
                 tr.removeClass('shown');
               $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
             } else {
-              console.log(row.data());
                 $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
                 row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
@@ -473,7 +452,7 @@
         }
     }
     function getTemplateAcciones( data, type, row, meta  ){
-      let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
   
       return botonAtender;  
     }

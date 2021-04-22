@@ -56,15 +56,45 @@ class updateStatus extends Command
         $fechaActual=Carbon::now()->subDay(1);
         $date=$fechaActual->format('Y-m-d');
         $limite=$date." "."00:00:00";
+        $limite2=$date." "."23:59:59";
+        $array=[];
         try{  
         $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite]);
+        $find_ref = $this->oper_transaccionesdb->where('fecha_limite_referencia','>=',$limite)->where('fecha_limite_referencia','<=',$limite2)->get();
+        foreach ($find_ref as $k) {
+            array_push($array,$k->referencia);
+        }
+        
+        $this->referencepayment($array);
+            Log::info("update from oper_transacciones set estatus=65 where estatus=60 and fecha_limite_referencia=".$limite);
+            Log::info("Resgitros Actualizados: ".$find_oper);
 
-        Log::info("update from oper_transacciones set estatus=65 where estatus=60 and fecha_limite_referencia=".$limite);Log::info("Resgitros Actualizados: ".$find_oper);
         } catch( \Exception $e ){
             Log::info('Error console/updateStatus-> Method UpdateStatusTransaccion: '.$e->getMessage());
        
         }
         //log::info($limite);
 
+    }
+     private function referencepayment($array)
+    {
+         try{
+
+            $json=json_encode($array);
+            $link = env("REFERENCEPAYMENT_HOSTNAME")."/".$json;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $link);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+           //curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $jsonArrayResponse = curl_exec($ch);
+            curl_close($ch);
+            //log::info($jsonArrayResponse);
+        }
+        catch(\Exception $e) {
+            Log::info('Command Operaciontransacciones - referencepayment: '.$e->getMessage());
+        }
     }
 }
