@@ -504,8 +504,10 @@ class PortalSolicitudesTicketController extends Controller
 
       } catch (\Exception $e) {
           $error = $e;
+          Log::info('Error Portal - Error al actualizar transacción: '.$e->getMessage());
       }  
       if ($error) {
+        
         return response()->json(
           [
             "Code" => "400",
