@@ -44,9 +44,13 @@ class AsignaHerramientasController extends Controller
     public function index()
     {
         /* get the user list */
+        $user_id = auth()->user()->id;
 
-        $users = $this->users->findWhere( [ 'status' => 1 ] );
+        $name = $this->admins->where("creado_por", $user_id)->pluck('name')->toArray();             
 
+        $users = $this->users->whereIn("email", $name)->where( [ 'status' => 1 ] )->get();
+     
+        
     	$menu_info = $this->menu->find(1);
 
     	if($menu_info->count() > 0)

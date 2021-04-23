@@ -486,20 +486,27 @@ class PortalSolicitudesTicketController extends Controller
         "estatus" => $request->status    
       ]); 
       $id_transaccion=$solTramites->id;
-      try {            
+      try {
+        $array_tramites=[];            
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
-
+              array_push($array_tramites, $value->id);
               $this->guardarCarrito($value->id, 1);
           }
         }        
+        $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
+          'id_ticket'=>json_encode($array_tramites)
+        ]);
+         
 
       } catch (\Exception $e) {
           $error = $e;
+          Log::info('Error Portal - Error al actualizar transacción: '.$e->getMessage());
       }  
       if ($error) {
+        
         return response()->json(
           [
             "Code" => "400",
@@ -725,13 +732,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite'
+            'tmt.id as operacion_interna', 'tmt.estatus as estatus_tramite', 'st.Descripcion'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
             
@@ -788,7 +796,7 @@ class PortalSolicitudesTicketController extends Controller
                   "fecha_pago"=> $dato->fecha_pago,
                   "referencia"=> $dato->referencia,
                   "operacion_interna"=>$dato->operacion_interna,
-                  "estatus_tramite"=>$dato->estatus_tramite
+                  "estatus_tramite"=>$dato->Descripcion
                
                 );
               }
@@ -809,13 +817,14 @@ class PortalSolicitudesTicketController extends Controller
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
-            'tmt.id as operacion_interna', 'tmt.estatus'
+            'tmt.id as operacion_interna',  'st.Descripcion as estatus_tramite'
             )
             ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
             ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
             ->leftJoin('portal.config_user_notary_offices as config', 'tk.user_id', '=', 'config.user_id')
             ->leftJoin('portal.notary_offices as not', 'config.notary_office_id', '=', 'not.id')
             ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+            ->leftjoin('egobierno.status as st', 'tmt.estatus', '=', 'st.Status')
             ->where('tk.id', $id)
             ->get()->toArray();
 
@@ -1132,7 +1141,8 @@ class PortalSolicitudesTicketController extends Controller
           } 
       }
       $campos = array_unique($campos);
-      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion')->whereIn('id', $campos)->get()->toArray();
+      $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
+      $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
       foreach($data as $key => $solicitud){
           foreach($solicitud as $key2 => $value){
               if(isset($value->info->campos)){
@@ -1142,6 +1152,27 @@ class PortalSolicitudesTicketController extends Controller
                       $campos[$key2] = $val;
                   }
                   $value->info->campos = $campos;
+              }
+              if(isset($value->info->camposConfigurados)){
+                  $alias = array();
+                  $doc=[];
+                  foreach($value->info->camposConfigurados as $k => $val){
+                    if($val->tipo=="file"){
+                      $attach=[];
+                      foreach ($value->mensajes as $m => $msje) {
+                          if($msje->attach!=null){
+                            $attach[$m] =$msje->attach;
+                          }
+
+                      }
+                     
+                      $val->documento=$attach;
+                    }
+                    $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias; 
+                    $alias = array('alias'=>$al);
+                    $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                  }
+                  
               }
           }
       }
@@ -1234,9 +1265,11 @@ class PortalSolicitudesTicketController extends Controller
           $new_file = str_replace(' ', '+', $new_file);
           $new_file = base64_decode($new_file);
         
-          $attach = "archivo_solicitud_".$mensajes->id.".pdf";			
+          $name = "archivo_solicitud_".$mensajes->id.".pdf";			
         
-          \Storage::disk('local')->put($attach,  $new_file);
+          \Storage::disk('local')->put($name,  $new_file);
+
+          $attach = $this->url->to('/') . '/download/'.$name;
   
   
           $guardar =$this->mensajes->where("id", $mensajes->id)->update([
@@ -1292,6 +1325,7 @@ class PortalSolicitudesTicketController extends Controller
 		}
 
 	}
+
   public function updateAlias()
   {
     $findallCamp=$this->campo->all();
@@ -1299,5 +1333,32 @@ class PortalSolicitudesTicketController extends Controller
       $updateCamp=$this->campo->update(['alias'=>'f_' . $e->id],$e->id);
     }
   }
-    
+  public function editInfo(Request $request){
+    $body = $request->data;
+    try {
+      foreach ($body as $key => $value) {
+        $ticket = $this->ticket->where("id" , $value["id"])->update([
+          "info"=> json_encode($value["info"])           
+          
+        ]);  
+      }
+      
+      return response()->json(
+        [
+          "response" 	=> "Archivo guardado",
+          "code"		=> 200  
+        ]
+      );
+      
+    } catch (\Exception $e) {
+        Log::info('Error Editar solicitud '.$e->getMessage());
+
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al editar la solicitud",
+          ]
+        );
+    }
+  }
 }

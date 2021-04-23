@@ -66,14 +66,14 @@ class HomeController extends Controller
 	
         $results = $results [0];
 
-        if($results->is_admin == 1)
+        /*if($results->is_admin == 1)
         {
             $var = true;
         }else{
             $var = false;
-        }
+        }*/
 	
-        session( ["is_admin" => $var, "menu" => $this->configureMenu($results->menu) ] );
+        session( ["is_admin" => $results->is_admin, "menu" => $this->configureMenu($results->menu) ] );
 
     }
 

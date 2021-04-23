@@ -2,6 +2,7 @@
 
 @section('content')
 <link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
+<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -85,19 +86,14 @@
         </div>
          <div class="portlet-body" id="addtables">
     		<div id="removetable">
-          		<table class="table table-hover" id="sample_2">
-            		<thead>
-              			<tr>
-              			<th>ID</th>
-              			<th>Titulo</th>
-              			<th>Estatus</th>
-              			<th>Fecha de Ingreso</th>
-            			<th>&nbsp;</th>
-            			</tr>
-          			</thead>
-          			<tbody>                   
-                         
-          			</tbody>
+          		<table class="table table-hover" id="example">
+            	<thead>
+                <tr>
+                    <th></th>
+                    <th>Titulo</th>
+                    <th></th>
+                </tr>
+            </thead>
         		</table>  
       		</div>             
     	</div>
@@ -118,7 +114,7 @@
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
-        <div class="row">
+        <div class="row divDetalles">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
@@ -133,7 +129,7 @@
             </div>
           </div>    
         </div>
-        <div class="row">
+        <div class="row divSolicitante">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
@@ -145,6 +141,21 @@
         <div class="row">
           <div class="col-md-12" id="solicitante">
             <div id="addSolicitante">
+            </div>
+          </div>    
+        </div>
+        <div class="row divNotaria">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos de la Notaria</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="notaria">
+            <div id="addnotaria">
             </div>
           </div>    
         </div>
@@ -230,16 +241,13 @@
               <div id="addtableMsg">
                 <div class="removeMsg"> 
                   <table class="table table-hover" id="sample_7">
-                    <thead>
-                      <tr>
-                        <th>Mensajes</th>
-                        <th>Archivo</th>
-                        <th>Estatus</th>
-                        <th>Fecha</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
+                   <thead>
+                <tr>
+                    <th></th>
+                    <th>Titulo</th>
+                    <th></th>
+                </tr>
+            </thead>
                   </table>
                 </div>
               </div>
@@ -272,9 +280,12 @@
 
 @section('scripts')
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
+<script src="assets/global/dataTable/dataTables.min.js"></script>
+  <script src="assets/global/dataTable/jszip.min.js"></script>
+  <script src="assets/global/dataTable/vfs_fonts.js"></script>
 	<script>
 	jQuery(document).ready(function() {
-    TableManaged2.init2();
+   // TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
       $(".selectMotivos").css("display", "none");
     });
@@ -361,89 +372,126 @@
     	var noSolicitud=$("#noSolicitud").val();
     	var opTipoSolicitud=$("#opTipoSolicitud").val();
     	var opEstatus=$("#opEstatus").val();
-    	var formdata = new FormData();
-
+      var formdata={            };
     	if(noSolicitud.length>0){
-    		formdata.append("id_solicitud", noSolicitud);  
+         Object.assign(formdata,{id_solicitud:noSolicitud});  
     	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
-    		formdata.append("estatus", opEstatus);    
-    		formdata.append("tipo_solicitud", opTipoSolicitud);   
-    	}else if(opTipoSolicitud != "0"){
-    		formdata.append("tipo_solicitud", opTipoSolicitud);  
-    	}else if( opEstatus != "0"){
-    		formdata.append("estatus", opEstatus);    
+    		Object.assign(formdata,{id_solicitud:noSolicitud}); 
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});    
+    	}else if(opTipoSolicitud != "0"){ 
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
+    	}else if( opEstatus != "0"){   
+        Object.assign(formdata,{estatus:opEstatus}); 
     	}else{
     		Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
     		return;
     	}
-    	formdata.append("_token", '{{ csrf_token() }}');  
+      Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     	$.ajax({
            method: "POST", 
-           contentType: false,
-            processData: false,
            url: "{{ url('/filtrar-solicitudes') }}",
            data: formdata })
         .done(function (response) {
-        	//var Resp=$.parseJSON(response);
-            addtable();
-            //console.log(response);
-            //console.log(JSON.stringify(response));
-            if(JSON.stringify(response)=='[]')
-            	{TableManaged2.init2();  return;}
-            var Resp=$.parseJSON(JSON.stringify(response));
-                       
-            $.each(Resp, function(i, item) {
-              var bton=""; 
-              var padre="";
-              if(item.status==2)
-              {
-                bton="<td class='text-center' width='20%'></td>";
-              }else{
-                bton="<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+item.id+"\",\""+item.status+"\")'> Atender </a></td>";
-              }
-              if(item.ticket_relacionado!=null )
-              {
-                padre=item.ticket_relacionado + " / ";
-              }
-            	$('#sample_2 tbody').append("<tr>"
-                	+"<td>"+ padre + item.id+"</td>"
-                	+"<td>"+item.titulo+"</td>"
-                	+"<td>"+item.descripcion+"</td>"
-                	+"<td>"+item.created_at+"</td>"
-                	+ bton
-                	+"</tr>"
-                );
-            });
+        var objectResponse=[];
+            if(typeof response=== 'object')
+            {
+            for (n in response) {                 
+                  objectResponse.push(response[n]); 
+              }  
+              //console.log(objectResponse);
+             response=objectResponse;
+            }
+            
             findMotivosSelect();
-        	TableManaged2.init2();   
+            createTable(response);  
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
   	}
-  	function addtable(){
-    	$("#addtables div").remove();
-    	$("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th><th>&nbsp;</th> </tr></thead> <tbody></tbody> </table></div>");
+    function createTable( dataS){
+      //console.log(dataS);
+      var table = $('#example').DataTable();
+                table.destroy();    
+
+      $('#example').DataTable( {
+               "data": dataS,
+                "columns": [
+                  {
+                "data": "id_transaccion",
+                "class": 'detectarclick',
+                "width": "3%",
+                "render": function ( data, type, row, meta ) {
+                  
+                  return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
+                }
+              },
+                  { "data": "id_transaccion" },
+                  {
+                    "data": "id_transaccion",
+                    "render": getTemplateAcciones
+                  }
+              ]
+        });
+      $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
+    }
+    function buildTemplateChild(){
+      var table = $('#example').DataTable();
+          var tr = $(this).parents('tr');
+          var row = table.row( tr );
+          if(row.data() && row.data().grupo.length > 0){
+            if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+              $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+            } else {
+                $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
+                row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
+                tr.addClass('shown');
+            }
+        }
+    }
+    function getTemplateAcciones( data, type, row, meta  ){
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
+  
+      return botonAtender;  
+    }
+    function format ( d ) {       
+        let html = '<table class="table table-hover">';
+        html += "<tr><th></th><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        d.grupo.forEach( (solicitud) =>{          
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'> Atender </a></td>";
+       
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
+        
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
+        
+        });
+        html+='</table>';
+        return html;
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
       $("#addtableMsg").append("<div class='removeMsg'> <table class='table table-hover' id='sample_7'> <thead><tr><th>Solicitud</th><th>Mensajes</th><th>Archivo</th> <th>Estatus</th><th>Fecha</th> </tr></thead> <tbody></tbody> </table></div>");
+    }
+    function addInfo()
+    {
+      $("#addDetalles").empty();
+      $("#addSolicitante").empty();
+      $("#addnotaria").empty();
+      $(".divNotaria").css("display", "none");
     }
     function findAtender(id,estatus)
     {
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       findMessage(id);
-      $("#detalles div").remove();
-      $("#detalles").append("<div id='addDetalles'></div>");
-      $("#solicitante div").remove();
-      $("#solicitante").append("<div id='addSolicitante'></div>");
+      addInfo();
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -452,22 +500,29 @@
           for (n in soli) {  
             obj=n;
             tipo=soli[n];    
-            if(tipo=="pm")
-            {tipo="Moral";}
-            if(tipo=="pf")
-            {tipo="Fisica";}
-            if(obj=="tipoPersona"){
-              obj="Tipo Persona";
-            }if(obj=="rfc"){
-              obj="RFC";
-            }if(obj=="razonSocial"){
-              obj="Razón Social";
-            }
-
+            if(tipo=="pm"){tipo="Moral";}
+            if(tipo=="pf"){tipo="Fisica";}
+            if(obj=="tipoPersona"){obj="Tipo Persona";}
+            if(obj=="rfc"){obj="RFC";}
+            if(obj=="razonSocial"){obj="Razón Social";}
+            if (obj!="notary" && obj!="id")
+            {
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
+            }            
           }
-          for (n in Resp.campos) {            
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
+          if(typeof(Resp.solicitante.notary)){
+            $(".divNotaria").css("display", "block");
+            for (not in Resp.solicitante.notary) {  
+              if(not=='notary_number' || not=='email' || not=='phone')
+              {             
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+not+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+              }
+            }
+          }
+          for (n in Resp.campos) {  
+            if(typeof (Resp.campos[n]) !== 'object') {         
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
+            }          
           }
           if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null) 
           {

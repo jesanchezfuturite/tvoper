@@ -564,37 +564,25 @@ License: You must have a valid license purchased only from themeforest(the above
 				</li>
 				@endif
 				<!-- BEGIN ANGULARJS LINK -->
+			
 
-				@if(session('is_admin') == true)
-				<li class="start ">
-					<a href="javascript:;">
-							<!--<i class="icon-home"></i>-->
-						<span class="title">Control</span>
-						<span class="arrow "></span>
-					</a>
-					<ul class="sub-menu">
-						<li>
-							<a href="/acceso-servicios">Control Acceso
-							</a>
-						</li>
-						<li>
-							<a href="/alta-partidas-servicios">Partidas
-							</a>
-						</li>
-					</ul>
-				</li>
+				@if(session('is_admin')==1)
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
 					<a href="{{ url('/adminmenu') }}" >
 						<i class="icon-paper-plane"></i>
-						<span class="title">Menu </span>
+						<span class="title">Menu</span>
 					</a>
 				</li>
+				@endif
+				@if(session('is_admin')==1 || session('is_admin')==2)
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
 					<a href="{{ url('/asignaherramientas') }}" >
 						<i class="icon-paper-plane"></i>
 						<span class="title">Asignar Herramientas </span>
 					</a>
 				</li>
+				@endif
+				@if(session('is_admin')==1 || session('is_admin')==2)
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
 					<a href="{{ url('/register') }}">
 						<i class="icon-paper-plane"></i>
