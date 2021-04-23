@@ -482,6 +482,7 @@ class PortalSolicitudesTicketController extends Controller
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
       $error=null;
+      $arraytramites=null;
       $solTramites = $this->solTramites->create([
         "estatus" => $request->status    
       ]); 
