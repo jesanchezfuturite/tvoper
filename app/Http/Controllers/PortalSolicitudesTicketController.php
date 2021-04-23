@@ -482,7 +482,6 @@ class PortalSolicitudesTicketController extends Controller
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
       $error=null;
-      $arraytramites=null;
       $solTramites = $this->solTramites->create([
         "estatus" => $request->status    
       ]); 
@@ -497,9 +496,8 @@ class PortalSolicitudesTicketController extends Controller
               $this->guardarCarrito($value->id, 1);
           }
         }        
-        $arraytramites = json_encode($array_tramites);
         $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
-          'id_ticket'=>$arrayTramites
+          'id_ticket'=>json_encode($array_tramites)
         ]);
          
 
