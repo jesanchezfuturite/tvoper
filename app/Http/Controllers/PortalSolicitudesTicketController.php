@@ -487,17 +487,22 @@ class PortalSolicitudesTicketController extends Controller
       ]); 
       $id_transaccion=$solTramites->id;
       try {            
+        $array_tramites=[];            
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {  
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
-
+              array_push($array_tramites, $value->id);
               $this->guardarCarrito($value->id, 1);
           }
         }        
+        $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
+          'id_ticket'=>json_encode($array_tramites)
+        ]);                
 
       } catch (\Exception $e) {
           $error = $e;
+          Log::info('Error Portal - Error al actualizar transacción '.$e->getMessage());
       }  
       if ($error) {
         return response()->json(
