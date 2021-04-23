@@ -643,7 +643,13 @@ class ApiController extends Controller
 
 			return  $results->token;
 	}
-
+  /**
+	 * Regresa el valor del monto de operación correspondiente al folio informativo ingresado
+	 * @param expediente catastral
+	 * @param folio folio informativo
+	 * @param id_notaria Id de la notaria en la que se hace el trámite
+	 * @return data
+	 */
   public function getMontoOperacion(Request $request){
 
     $expediente = $request->expediente;
