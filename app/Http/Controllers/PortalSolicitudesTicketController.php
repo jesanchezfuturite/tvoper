@@ -1407,9 +1407,10 @@ class PortalSolicitudesTicketController extends Controller
             $zip->addFromString(basename($file),$download_file);
           }     
         }
-        if(public_path($zipFileName)){
+        if($zip->numFiles!=0){
           $zip->close();
         }
+        
         // close zip
     }
 
