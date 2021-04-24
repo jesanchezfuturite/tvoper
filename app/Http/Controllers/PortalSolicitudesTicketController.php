@@ -1362,17 +1362,6 @@ class PortalSolicitudesTicketController extends Controller
   }
 
   public function getFilesNotary($notary_number){
-    //obtener el id de la transaccion de la tabla tramites
-    // $id_tramite = $this->solTramites->where("id_transaccion_motor", $id_transaccion)->first();
-
-    // //Obtener las solicitudes englobadas a la transaccion y obtener usuario
-
-    // $user_id = $this->ticket->where("id_transaccion", $id_tramite->id)->first();
-
-    // $notary = $this->configUserNotary->where("user_id", $user_id->user_id)->first();
-
-    // $users = $this->configUserNotary->where("notary_office_id", $notary->notary_office_id)->pluck("user_id")->toArray();
-
     $notary = $this->notary->where("notary_number", $notary_number)->first();
     $users = $this->configUserNotary->where("notary_office_id", $notary->id)->pluck("user_id")->toArray();
 
