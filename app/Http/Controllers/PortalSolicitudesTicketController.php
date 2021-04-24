@@ -1407,22 +1407,24 @@ class PortalSolicitudesTicketController extends Controller
             $zip->addFromString(basename($file),$download_file);
           }     
         }
-
-        if($zip->numFiles==0){
-          return response()->json(
-            [
-              "Code" => "400",
-              "Message" => "No hay archivos para esta notaria",
-            ]
-          );
-        }
+      
         // close zip
         $zip->close();
     }
 
     // Download Zip
     $filePath = public_path($zipFileName);
-    return response()->download($filePath);
+
+    if(is_dir($filePath)){
+      return response()->download($filePath);
+    }else{
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "No hay archivos en esta notaria",
+        ]
+      );
+    }
   }
 
 }
