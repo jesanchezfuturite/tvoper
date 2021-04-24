@@ -1334,6 +1334,7 @@ class PortalSolicitudesTicketController extends Controller
     }
   }
   public function editInfo(Request $request){
+    
     $body = $request->data;
     try {
       foreach ($body as $key => $value) {
@@ -1361,4 +1362,63 @@ class PortalSolicitudesTicketController extends Controller
         );
     }
   }
+
+  public function getFilesNotary($notary_number){
+    //obtener el id de la transaccion de la tabla tramites
+    // $id_tramite = $this->solTramites->where("id_transaccion_motor", $id_transaccion)->first();
+
+    // //Obtener las solicitudes englobadas a la transaccion y obtener usuario
+
+    // $user_id = $this->ticket->where("id_transaccion", $id_tramite->id)->first();
+
+    // $notary = $this->configUserNotary->where("user_id", $user_id->user_id)->first();
+
+    // $users = $this->configUserNotary->where("notary_office_id", $notary->notary_office_id)->pluck("user_id")->toArray();
+
+    $notary = $this->notary->where("notary_number", $notary_number)->first();
+    $users = $this->configUserNotary->where("notary_office_id", $notary->id)->pluck("user_id")->toArray();
+
+    $tickets = $this->ticket->whereIn("user_id", $users)->pluck("id")->toArray();
+    $ids_archivos = $this->mensajes->whereIn("ticket_id", $tickets)->whereNotNull("attach")
+    ->where("attach", "<>", "")->pluck("attach")->toArray();
+    $files=[];
+    foreach ($ids_archivos as $key => $value) {
+      if (strpos($value, 'download') !== false) {
+        $newvalue = explode( 'download/', $value );
+          array_push($files, $newvalue[1]);
+
+      }else{
+          array_push($files, $value);
+      } 
+
+    }
+
+      // inicializar zip
+      $zip = new \ZipArchive();
+
+      // path
+      $publicDir = public_path();  
+      
+      // Nombre del zip
+      $zipFileName = 'Documentos.zip';
+  
+      // Crear zip
+      if ($zip->open(public_path($zipFileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+          // Loop archivos
+          foreach($files as $file){ 
+            $path = storage_path('app/'.$file);       
+            $download_file = file_get_contents($path); 
+            $zip->addFromString(basename($file),$download_file);
+    
+          }
+  
+          // close zip
+          $zip->close();
+      }
+
+      // Download Zip
+      $filePath = public_path($zipFileName);
+      return response()->download($filePath);
+  }
+
 }
