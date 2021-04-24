@@ -1403,12 +1403,21 @@ class PortalSolicitudesTicketController extends Controller
     if ($zip->open(public_path($zipFileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
         // Loop archivos
         foreach($files as $file){ 
-          $path = storage_path('app/'.$file);       
-          $download_file = file_get_contents($path); 
-          $zip->addFromString(basename($file),$download_file);
-  
+          $path = storage_path('app/'.$file);
+          if(is_dir($path)){
+            $download_file = file_get_contents($path); 
+            $zip->addFromString(basename($file),$download_file);
+          }     
         }
 
+        if($zip->numFiles==0){
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => "No hay archivos para esta notaria",
+            ]
+          );
+        }
         // close zip
         $zip->close();
     }
