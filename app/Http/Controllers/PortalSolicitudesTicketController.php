@@ -1400,7 +1400,7 @@ class PortalSolicitudesTicketController extends Controller
     $zipFileName = 'Documentos.zip';
 
     // Crear zip
-    if ($zip->open(public_path($zipFileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+    if ($zip->open(storage_path('app/'.$zipFileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
         // Loop archivos
         foreach($files as $file){ 
           $path = storage_path('app/'.$file);
@@ -1417,7 +1417,7 @@ class PortalSolicitudesTicketController extends Controller
     }
 
     // Download Zip
-    $filePath = public_path($zipFileName);
+    $filePath = storage_path('app/'.$zipFileName);
 
     if(is_dir($filePath)){
       return response()->download($filePath);
