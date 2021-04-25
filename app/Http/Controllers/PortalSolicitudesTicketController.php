@@ -1404,7 +1404,7 @@ class PortalSolicitudesTicketController extends Controller
         // Loop archivos
         foreach($files as $file){ 
           $path = storage_path('app/'.$file);
-          if(is_dir($path)){
+          if(file_exists($path)){
             $download_file = file_get_contents($path); 
             $zip->addFromString(basename($file),$download_file);
           }     
@@ -1419,7 +1419,7 @@ class PortalSolicitudesTicketController extends Controller
     // Download Zip
     $filePath = storage_path('app/'.$zipFileName);
 
-    if(is_dir($filePath)){
+    if(file_exists($filePath)){
       return response()->download($filePath);
     }else{
       return response()->json(
