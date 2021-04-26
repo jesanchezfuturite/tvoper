@@ -1375,8 +1375,11 @@ class PortalSolicitudesTicketController extends Controller
       }
 
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->get()->toArray();
-
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) {
+        $query->select('id', 'titulo', 'tramite_id')->where("id", 10);
+      }])->get()->toArray();
+      //->get()->toArray();
+      //dd($solicitudes);
       $ids_tramites=[];
       foreach ($solicitudes as &$sol){
         foreach($sol["catalogo"]  as $s){ //aquí es el error
@@ -1429,6 +1432,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
     } catch (\Exception $e) {
+      Log::info('Get Normales :'.$e->getMessage());
       return response()->json(
         [
           "Code" => "400",
