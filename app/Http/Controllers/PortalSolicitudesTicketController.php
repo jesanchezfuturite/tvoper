@@ -448,14 +448,17 @@ class PortalSolicitudesTicketController extends Controller
       $file = $data['file']; 
       $extension = $file->getClientOriginalExtension();
 
-      try {
-     
+      $ticket = $this->ticket->where("id", $ticket_id)->first();
+      $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first(); 
+      $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
+
+      try {     
         $mensajes =$this->mensajes->create([
           'ticket_id'=> $ticket_id,
           'mensaje' => $mensaje,
         ]);
 
-        $name = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;
         $attach = $this->url->to('/') . '/download/'.$name;
 
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
@@ -1253,6 +1256,10 @@ class PortalSolicitudesTicketController extends Controller
           $mensaje = $value["mensaje"];
           $ticket_id = $value["ticket_id"];    
           $file = $value['file']; 
+
+          $ticket = $this->ticket->where("id", $ticket_id)->first();
+          $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first(); 
+          $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
           
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
@@ -1262,8 +1269,10 @@ class PortalSolicitudesTicketController extends Controller
           $new_file = str_replace('data:application/pdf;base64,', '', $file);
           $new_file = str_replace(' ', '+', $new_file);
           $new_file = base64_decode($new_file);
+
+          $extension = explode('/', mime_content_type($file))[1];
         
-          $name = "archivo_solicitud_".$mensajes->id.".pdf";			
+          $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;			
         
           \Storage::disk('local')->put($name,  $new_file);
 
