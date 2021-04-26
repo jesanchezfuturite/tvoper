@@ -490,13 +490,8 @@ class PortalSolicitudesTicketController extends Controller
         "estatus" => $request->status
       ]);
       $id_transaccion=$solTramites->id;
-<<<<<<< HEAD
-      try {
-        $array_tramites=[];
-=======
       try {            
         $array_tramites=[];            
->>>>>>> origin/portal
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {
               $solicitudTicket = $this->ticket->where('id' , $value->id)
@@ -504,18 +499,6 @@ class PortalSolicitudesTicketController extends Controller
               array_push($array_tramites, $value->id);
               $this->guardarCarrito($value->id, 1);
           }
-<<<<<<< HEAD
-        }
-        $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
-          'id_ticket'=>json_encode($array_tramites)
-        ]);
-
-
-      } catch (\Exception $e) {
-          $error = $e;
-          Log::info('Error Portal - Error al actualizar transacción: '.$e->getMessage());
-      }
-=======
         }        
         $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
           'id_ticket'=>json_encode($array_tramites)
@@ -525,7 +508,6 @@ class PortalSolicitudesTicketController extends Controller
           $error = $e;
           Log::info('Error Portal - Error al actualizar transacción '.$e->getMessage());
       }  
->>>>>>> origin/portal
       if ($error) {
 
         return response()->json(
@@ -1378,22 +1360,8 @@ class PortalSolicitudesTicketController extends Controller
           ]
         );
 
-<<<<<<< HEAD
-  public function getFilesNotary($notary_number){
-    $notary = $this->notary->where("notary_number", $notary_number)->first();
-    if(!$notary){
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "El número de notaria no existe",
-        ]
-      );
-    }
-    $users = $this->configUserNotary->where("notary_office_id", $notary->id)->pluck("user_id")->toArray();
-=======
       } catch (\Exception $e) {
           Log::info('Error Editar solicitud '.$e->getMessage());
->>>>>>> origin/portal
 
           return response()->json(
             [
@@ -1418,31 +1386,7 @@ class PortalSolicitudesTicketController extends Controller
         //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
         $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo'])->get()->toArray();
 
-<<<<<<< HEAD
-    if(file_exists($filePath)){
-      return response()->download($filePath);
-    }else{
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "No hay archivos en esta notaria",
-        ]
-      );
-    }
-  }
-
-  public function getNormales($folio){
-    try {
-
-      $id_tramite = env("TRAMITE_5_ISR");
-      $solicitud = $this->solTramites->where("id_transaccion_motor", $folio)->get();
-      foreach ($solicitud as $s) {
-        $id_transaccion = $s->id;
-        $catalogo_id = $s->catalogo_id;
-      }
-=======
       
->>>>>>> origin/portal
 
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
@@ -1531,16 +1475,6 @@ class PortalSolicitudesTicketController extends Controller
             array_push($files, $value);
         } 
 
-<<<<<<< HEAD
-    } catch (\Exception $e) {
-      Log::info('Get Normales :'.$e->getMessage());
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "Error al obtener información",
-        ]
-      );
-=======
       }
 
       // inicializar zip
@@ -1583,11 +1517,6 @@ class PortalSolicitudesTicketController extends Controller
           ]
         );
       }
->>>>>>> origin/portal
     }
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/portal
