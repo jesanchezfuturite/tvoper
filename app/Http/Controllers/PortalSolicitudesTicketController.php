@@ -1363,50 +1363,72 @@ class PortalSolicitudesTicketController extends Controller
     }
   }
 
+
   public function getNormales($folio){
     try {
 
       $id_tramite = env("TRAMITE_5_ISR");
-
-      //Se busca el tramite dentro de la tabla catalogo
-      $cat_data = $this->solicitudes->where("tramite_id", $id_tramite)->get();
-      foreach ($cat_data as $cat) {
-        $id_cat = $cat->id;
-        $titulo = $cat->titulo;
-        $catalogo [] = array(
-          "id" => $id_cat,
-          "titulo" =>$titulo
-        );
-      }
-      //Buscamos el folio dentro de la tabla solicitudes_tramite
       $solicitud = $this->solTramites->where("id_transaccion_motor", $folio)->get();
-
       foreach ($solicitud as $s) {
         $id_transaccion = $s->id;
         $catalogo_id = $s->catalogo_id;
       }
-      $sol["folio"] = $id_transaccion;
 
-      //if(in_array())
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->get()->toArray();
 
-      $tickets = $this->ticket->where("id_transaccion", $id_transaccion)->get();
+      $ids_tramites=[];
+      foreach ($solicitudes as &$sol){
+        foreach($sol["catalogo"]  as $s){ //aquí es el error
+          $sol["tramite_id"]=$s["tramite_id"];
 
-      //$tmts = array();
-      foreach ($tickets as $t) {
-        $info = json_decode($t->info);
-        $cat = $t->catalogo_id;
-        $tmts["solcitudes"] = array(
-          "info"=>$info
-        );
+        }
       }
-      //$tmts["tramites"] = $tmts;
-      //dd($tmts);
-      return $tmts;
+
+      $ids_tramites= array_column((array)$solicitudes, 'tramite_id');
+
+      $idstmts = array_unique($ids_tramites);
+
+
+      $tramites = $this->getTramites($idstmts);
+
+      $tmts=[];
+      $response =[];
+      foreach($tramites as $t => $tramite){
+        $datos=[];
+        foreach ($solicitudes as $d => $dato) {
+          if($dato["tramite_id"]== $tramite["tramite_id"]){
+            if(empty($info)){
+              $info=json_decode($dato["info"]);
+            }else{
+              $info = $this->asignarClavesCatalogo($dato["info"]);
+            }
+            $data=array(
+              "id"=>$dato["id"],
+              "clave"=>$dato["clave"],
+              "catalogo_id"=>$dato["catalogo_id"],
+              "user_id"=>$dato["user_id"],
+              "info"=>$info,
+              "status"=>$dato["status"]
+            );
+
+            array_push($datos, $data);
+            $tramite["solicitudes"]= $datos;
+
+          }
+
+        }
+          array_push($tmts, $tramite);
+
+      }
+
+      // $response["notary_offices"]=$notary_offices;
+      $response["tramites"] =$tmts;
+
+      return $response;
 
 
     } catch (\Exception $e) {
-      Log::info('Get Normales :'.$e->getMessage());
       return response()->json(
         [
           "Code" => "400",
