@@ -320,24 +320,24 @@ class SendEmails extends Command
              
              $id_servicio=$e->id_tipo_servicio;
             }
-            $findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
+            /*$findRespuesta=$this->respuestatransacciondb->findWhere(['id_transaccion_motor'=>$id]);
             foreach ($findRespuesta as $r) {
                 $url=json_decode($r->json_respuesta);
-            }
+            }*/
             $findServicio=$this->tiposerviciodb->findWhere(['Tipo_Code'=> $id_servicio]);
             foreach ($findServicio as $s) {
               $servicio=$s->Tipo_Descripcion;
             }
-            if($url==""){
+            /*if($url==""){
                 $url_recibo="#";
 
             }else{
                 $url_recibo=$url->url_recibo;
-            }
+            }*/
             $encabezado='Tu pago se ha realizado con éxito';
             $subencabezado='';
             $transaccion_txt='Transaccion número: ' .(string)$id;
-            $url_txt='Recibo de pago: '+env("URL_FORMATO_RECIBO").(string)$id;
+            $url_txt='Recibo de pago: ' . env("URL_FORMATO_RECIBO") . (string)$id;
             $referencia_txt='Referencia Bancaria: ' .(string)$referencia;
             $servicio_txt='Servicio: ' .(string)$servicio;
             $banco_txt='Banco receptor del pago: '.$banco;
