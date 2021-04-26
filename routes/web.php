@@ -423,7 +423,7 @@ Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNor
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
 Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo');
-
+Route::get('/get-files-notary/{notary_number}', 'PortalSolicitudesTicketController@getFilesNotary');
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');
 Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites');
