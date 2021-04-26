@@ -1431,6 +1431,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
     } catch (\Exception $e) {
+      Log::info('Get Normales :'.$e->getMessage());
       return response()->json(
         [
           "Code" => "400",
