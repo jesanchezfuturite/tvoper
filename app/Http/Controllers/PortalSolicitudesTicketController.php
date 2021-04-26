@@ -1375,7 +1375,9 @@ class PortalSolicitudesTicketController extends Controller
       }
 
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->get()->toArray();
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo'])->get()->toArray();
+
+     
 
       $ids_tramites=[];
       foreach ($solicitudes as &$sol){
@@ -1386,7 +1388,7 @@ class PortalSolicitudesTicketController extends Controller
       }
 
       $ids_tramites= array_column((array)$solicitudes, 'tramite_id');
-
+     
       $idstmts = array_unique($ids_tramites);
 
 
