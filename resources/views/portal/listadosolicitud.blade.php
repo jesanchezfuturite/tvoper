@@ -86,7 +86,7 @@
         </div>
          <div class="portlet-body" id="addtables">
     		<div id="removetable">
-          		<table class="table table-hover" id="example">
+          		<table class="table table-hover" cellspacing="0" width="100%"  id="example">
             	<thead>
                 <tr>
                     <th></th>
@@ -446,7 +446,7 @@
               $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:100px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
