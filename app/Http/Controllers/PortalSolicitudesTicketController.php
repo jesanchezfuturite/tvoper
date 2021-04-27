@@ -1360,6 +1360,13 @@ class PortalSolicitudesTicketController extends Controller
             );
   
           }
+
+          if(!empty($value["grupo_clave"])){
+            $data=array(
+              "grupo_clave"=>$value["grupo_clave"]
+            );
+  
+          }
         
           $ticket = $this->ticket->where("id" , $value["id"])->update($data);
         }
