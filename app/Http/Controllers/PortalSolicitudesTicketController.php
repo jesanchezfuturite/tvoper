@@ -1347,9 +1347,12 @@ class PortalSolicitudesTicketController extends Controller
       $body = $request->data;
       try {
         foreach ($body as $key => $value) {
+          $info = !empty($value["info"]) ?  json_encode($value["info"]):  "";
+          $clave = !empty($value["clave"])? $value["clave"] :  "";
+
           $ticket = $this->ticket->where("id" , $value["id"])->update([
-            "info"=> json_encode($value["info"]),
-            "clave"=> $value["clave"]
+            "info"=> $info,
+            "clave"=> $clave
 
           ]);
         }
