@@ -349,7 +349,7 @@ class Operaciontransacciones extends Command
            
         }
         catch(\Exception $e) {
-            Log::info('Command Operaciontransacciones - referencepayment: '.$e->getMessage());
+            Log::info('Command conciliacion:operaciont - referencepayment: '.$e->getMessage());
         }
     }  
 

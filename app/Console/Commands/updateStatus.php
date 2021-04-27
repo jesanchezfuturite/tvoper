@@ -94,7 +94,7 @@ class updateStatus extends Command
             //log::info($jsonArrayResponse);
         }
         catch(\Exception $e) {
-            Log::info('Command Operaciontransacciones - referencepayment: '.$e->getMessage());
+            Log::info('Command updateStatus:status dailyAt(3:00) - referencepayment: '.$e->getMessage());
         }
     }
 }
