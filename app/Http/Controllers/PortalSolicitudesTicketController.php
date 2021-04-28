@@ -788,6 +788,14 @@ class PortalSolicitudesTicketController extends Controller
               foreach ($solicitudes as $d => $dato) {
                 if($dato->tramite_id== $tramite["tramite_id"]){
                   $info = $this->asignarClavesCatalogo($dato->info);
+                  if($info->tipoTramite=="complementaria"){
+                    $solTicketAnterior = $this->ticket->where("id", $info->idTicketNormal)->first();
+                    $expedientes = json_decode($solTicketAnterior->info);
+                    $campos = $expedientes->campos;
+                    $camposConfigurados = $expedientes->camposConfigurados;
+                    $info->campos=$campos;
+                    $info->camposConfigurados=$camposConfigurados;
+                  }
                   $data=array(
                     "id"=>$dato->id,
                     "clave"=>$dato->clave,
@@ -1155,7 +1163,7 @@ class PortalSolicitudesTicketController extends Controller
         $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
         $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
         foreach($data as $key => $solicitud){
-            foreach($solicitud as $key2 => $value){
+            foreach($solicitud as $key2 => $value){                
                 if(isset($value->info->campos)){
                     $campos = [];
                     foreach($value->info->campos as $key2 => $val){
@@ -1184,6 +1192,14 @@ class PortalSolicitudesTicketController extends Controller
                       $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
                     }
 
+                }
+                if($value->info->tipoTramite=="complementaria"){
+                  $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
+                  $expedientes = json_decode($solTicketAnterior->info);
+                  $campos = $expedientes->campos;
+                  $camposConfigurados = $expedientes->camposConfigurados;
+                  $value->info->campos=$campos;
+                  $value->info->camposConfigurados=$camposConfigurados;
                 }
             }
         }
