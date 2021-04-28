@@ -724,9 +724,10 @@ class PortalSolicitudesTicketController extends Controller
     public function getDataTramite($id){        
       try {
         $solicitudes = $this->ticket->where('id', $id)->first();
+        $tramite_id = $this->solicitudes->where('id', $solicitudes->catalogo_id)->first();
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
-          if($solicitudes->catalogo_id ==10){
+          if($tramite_id->tramite_id ==399){
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia', 
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
