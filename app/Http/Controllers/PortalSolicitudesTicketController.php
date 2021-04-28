@@ -788,13 +788,14 @@ class PortalSolicitudesTicketController extends Controller
               foreach ($solicitudes as $d => $dato) {
                 if($dato->tramite_id== $tramite["tramite_id"]){
                   $info = $this->asignarClavesCatalogo($dato->info);
-                  if($info->tipoTramite=="complementaria"){
-                    $solTicketAnterior = $this->ticket->where("id", $info->idTicketNormal)->first();
-                    $expedientes = json_decode($solTicketAnterior->info);
-                    $campos = $expedientes->campos;
-                    $camposConfigurados = $expedientes->camposConfigurados;
-                    $info->campos=$campos;
-                    $info->camposConfigurados=$camposConfigurados;
+                  if($info->tipoTramite=="complementaria" && isset($info->idTicketNormal)){
+                      $solTicketAnterior = $this->ticket->where("id", $info->idTicketNormal)->first();
+                      $expedientes = json_decode($solTicketAnterior->info);
+                      $campos = $expedientes->campos;
+                      $camposConfigurados = $expedientes->camposConfigurados;
+                      $info->campos=$campos;
+                      $info->camposConfigurados=$camposConfigurados;
+                    
                   }
                   $data=array(
                     "id"=>$dato->id,
@@ -1193,13 +1194,15 @@ class PortalSolicitudesTicketController extends Controller
                     }
 
                 }
-                if($value->info->tipoTramite=="complementaria"){
-                  $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
-                  $expedientes = json_decode($solTicketAnterior->info);
-                  $campos = $expedientes->campos;
-                  $camposConfigurados = $expedientes->camposConfigurados;
-                  $value->info->campos=$campos;
-                  $value->info->camposConfigurados=$camposConfigurados;
+
+                if(isset($value->info->tipoTramite) && $value->info->tipoTramite=="complementaria" && isset($value->info->idTicketNormal)){
+                    $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
+                    $expedientes = json_decode($solTicketAnterior->info);
+                    $campos = $expedientes->campos;
+                    $camposConfigurados = $expedientes->camposConfigurados;
+                    $value->info->campos=$campos;
+                    $value->info->camposConfigurados=$camposConfigurados;                 
+                  
                 }
             }
         }
