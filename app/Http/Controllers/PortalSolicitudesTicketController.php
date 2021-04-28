@@ -93,6 +93,8 @@ class PortalSolicitudesTicketController extends Controller
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
+      if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
+
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;
       $error =null;
@@ -127,6 +129,7 @@ class PortalSolicitudesTicketController extends Controller
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
                 "clave" => $clave,
+                "grupo_clave" => $grupo,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
@@ -154,6 +157,7 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
+              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -189,6 +193,7 @@ class PortalSolicitudesTicketController extends Controller
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
+                "grupo_clave" => $grupo,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
@@ -216,6 +221,7 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
+              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -343,6 +349,7 @@ class PortalSolicitudesTicketController extends Controller
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "grupo_clave"=>$dato["grupo_clave"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
