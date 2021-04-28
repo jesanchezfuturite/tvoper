@@ -790,7 +790,7 @@ class PortalSolicitudesTicketController extends Controller
                   $info = $this->asignarClavesCatalogo($dato->info);
                   if($info->tipoTramite=="complementaria" && isset($info->idTicketNormal)){
                       $solTicketAnterior = $this->ticket->where("id", $info->idTicketNormal)->first();
-                      $expedientes = json_decode($solTicketAnterior->info);
+                      $expedientes =  $this->asignarClavesCatalogo($solTicketAnterior->info);
                       $campos = $expedientes->campos;
                       $camposConfigurados = $expedientes->camposConfigurados;
                       $info->campos=$campos;
@@ -1197,7 +1197,7 @@ class PortalSolicitudesTicketController extends Controller
 
                 if(isset($value->info->tipoTramite) && $value->info->tipoTramite=="complementaria" && isset($value->info->idTicketNormal)){
                     $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
-                    $expedientes = json_decode($solTicketAnterior->info);
+                    $expedientes = $this->asignarClavesCatalogo($solTicketAnterior->info);
                     $campos = $expedientes->campos;
                     $camposConfigurados = $expedientes->camposConfigurados;
                     $value->info->campos=$campos;
