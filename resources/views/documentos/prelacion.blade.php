@@ -379,7 +379,7 @@
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Razon Social:</strong></label>
-                            <label>{{$data->razonSocial}}</label>
+                            <label></label>
                         </td>
                     </tr>
                     <tr>
@@ -478,7 +478,7 @@
                   <br>
                   <br>
                   @for ($i = 0; $i < 6; $i++)
-                  @if( $i==1)
+                  @if( $i==1 || $i==3 || $i==5)
                       <div style="page-break-after:always;">
                     @else
                       <div>
@@ -571,7 +571,7 @@
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>{{$data->lote}}</label>
+                                        <label></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>

@@ -419,16 +419,18 @@
                 "columns": [
                   {
                 "data": "id_transaccion",
+                "grupo":"grupo",
                 "class": 'detectarclick',
                 "width": "3%",
-                "render": function ( data, type, row, meta ) {
+                "render": function ( data, type, row, meta , grupo) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data": "id_transaccion" },
+                  { "data":"id_transaccion"},
                   {
                     "data": "id_transaccion",
+                    
                     "render": getTemplateAcciones
                   }
               ]
@@ -451,10 +453,14 @@
             }
         }
     }
-    function getTemplateAcciones( data, type, row, meta  ){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
-  
-      return botonAtender;  
+    function getTemplateAcciones( data, type, row, meta ,grupo ){
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+grupo+"\",\""+grupo+"\")'> Atender </a></td>";
+      console.log(grupo);
+      if(grupo.status==1)
+        return botonAtender;  
+      else{
+        return "<td class='text-center' width='10%'></td>"
+      }
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';

@@ -1203,7 +1203,14 @@ class PortalSolicitudesTicketController extends Controller
                     $camposConfigurados = $expedientes->camposConfigurados;
                     $value->info->campos=$campos;
                     $value->info->camposConfigurados=$camposConfigurados;                 
-                  
+                   if(isset($value->info->camposConfigurados)){
+                    
+                      foreach($value->info->camposConfigurados as $k => $val){
+                        $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
+                        $alias = array('alias'=>$al);
+                        $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                      }
+                    }
                 }
             }
         }
