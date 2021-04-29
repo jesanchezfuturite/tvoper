@@ -1151,8 +1151,7 @@ class PortalSolicitudesTicketController extends Controller
             $data[$key]=$solicitudes;
 
         }
-        dd($solicitudes->toArray());
-
+      
         $campos = [];
         $response = [];
         foreach($data as $key => $solicitud){
