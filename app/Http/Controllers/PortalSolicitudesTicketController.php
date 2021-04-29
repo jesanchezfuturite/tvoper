@@ -1098,7 +1098,8 @@ class PortalSolicitudesTicketController extends Controller
 
             if(isset($value["pendiente_firma"])){
                 $solicitudes->where('solicitudes_catalogo.firma', "1")
-                ->whereIn("solicitudes_ticket.status", [2,3])
+                ->whereNull("solicitudes_ticket.firmado")
+                ->where("solicitudes_ticket.status", [2,3])
                 ->whereNotNull('solicitudes_ticket.id_transaccion');
             }
 
@@ -1150,6 +1151,7 @@ class PortalSolicitudesTicketController extends Controller
             $data[$key]=$solicitudes;
 
         }
+        dd($solicitudes->toArray());
 
         $campos = [];
         $response = [];
