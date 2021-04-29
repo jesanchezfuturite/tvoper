@@ -1174,6 +1174,23 @@ class PortalSolicitudesTicketController extends Controller
                   }
 
               }
+              if(isset($value->info->tipoTramite) && $value->info->tipoTramite=="complementaria" && isset($value->info->idTicketNormal)){
+                $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
+                $expedientes = $this->asignarClavesCatalogo($solTicketAnterior->info);
+                $campos = $expedientes->campos;
+                $camposConfigurados = $expedientes->camposConfigurados;
+                $value->info->campos=$campos;
+                $value->info->camposConfigurados=$camposConfigurados;                 
+                if(isset($value->info->camposConfigurados)){
+                
+                  foreach($value->info->camposConfigurados as $k => $val){
+                    $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
+                    $alias = array('alias'=>$al);
+                    $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                  }
+                }
+              }
+
           }
       }
       $data = $flag==1 ? $data[0] : $data;
