@@ -1371,9 +1371,10 @@ class PortalSolicitudesTicketController extends Controller
         $catalogo_id = $s->catalogo_id;
       }
 
+      $id_catalogo = env("CATALOG_ID");
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
       $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) {
-        $query->select('id', 'titulo', 'tramite_id')->where("id", 1);
+        $query->select('id', 'titulo', 'tramite_id')->where("id", $id_catalogo);
       }])->get()->toArray();
       //->get()->toArray();
       //dd($solicitudes);
