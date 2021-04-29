@@ -478,7 +478,7 @@
                   <br>
                   <br>
                   @for ($i = 0; $i < 6; $i++)
-                  @if( $i==1)
+                  @if( $i==1 || $i==3 || $i==5)
                       <div style="page-break-after:always;">
                     @else
                       <div>
