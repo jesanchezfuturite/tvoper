@@ -93,6 +93,8 @@ class PortalSolicitudesTicketController extends Controller
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
+      if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
+
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;
       $error =null;
@@ -127,6 +129,7 @@ class PortalSolicitudesTicketController extends Controller
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
                 "clave" => $clave,
+                "grupo_clave" => $grupo,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
@@ -154,6 +157,7 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
+              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -189,6 +193,7 @@ class PortalSolicitudesTicketController extends Controller
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
+                "grupo_clave" => $grupo,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
@@ -216,6 +221,7 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
+              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -343,6 +349,7 @@ class PortalSolicitudesTicketController extends Controller
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "grupo_clave"=>$dato["grupo_clave"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
@@ -729,9 +736,10 @@ class PortalSolicitudesTicketController extends Controller
     public function getDataTramite($id){
       try {
         $solicitudes = $this->ticket->where('id', $id)->first();
+        $tramite_id = $this->solicitudes->where('id', $solicitudes->catalogo_id)->first();
         $tramite = $this->solTramites->where('id', $solicitudes->id_transaccion)->first();
         if($tramite->estatus==0){
-          if($solicitudes->catalogo_id ==10){
+          if($tramite_id->tramite_id ==399){
             $solicitudes = DB::connection('mysql6')->table("portal.solicitudes_ticket as tk")
             ->select('tk.*','not.titular_id','not.substitute_id','c.id', 'c.tramite_id','op.fecha_limite_referencia',
             'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia',
@@ -780,6 +788,15 @@ class PortalSolicitudesTicketController extends Controller
               foreach ($solicitudes as $d => $dato) {
                 if($dato->tramite_id== $tramite["tramite_id"]){
                   $info = $this->asignarClavesCatalogo($dato->info);
+                  if($info->tipoTramite=="complementaria" && isset($info->idTicketNormal)){
+                      $solTicketAnterior = $this->ticket->where("id", $info->idTicketNormal)->first();
+                      $expedientes =  $this->asignarClavesCatalogo($solTicketAnterior->info);
+                      $campos = $expedientes->campos;
+                      $camposConfigurados = $expedientes->camposConfigurados;
+                      $info->campos=$campos;
+                      $info->camposConfigurados=$camposConfigurados;
+                    
+                  }
                   $data=array(
                     "id"=>$dato->id,
                     "clave"=>$dato->clave,
@@ -1147,7 +1164,7 @@ class PortalSolicitudesTicketController extends Controller
         $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
         $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
         foreach($data as $key => $solicitud){
-            foreach($solicitud as $key2 => $value){
+            foreach($solicitud as $key2 => $value){                
                 if(isset($value->info->campos)){
                     $campos = [];
                     foreach($value->info->campos as $key2 => $val){
@@ -1176,6 +1193,16 @@ class PortalSolicitudesTicketController extends Controller
                       $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
                     }
 
+                }
+
+                if(isset($value->info->tipoTramite) && $value->info->tipoTramite=="complementaria" && isset($value->info->idTicketNormal)){
+                    $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
+                    $expedientes = $this->asignarClavesCatalogo($solTicketAnterior->info);
+                    $campos = $expedientes->campos;
+                    $camposConfigurados = $expedientes->camposConfigurados;
+                    $value->info->campos=$campos;
+                    $value->info->camposConfigurados=$camposConfigurados;                 
+                  
                 }
             }
         }
@@ -1347,10 +1374,28 @@ class PortalSolicitudesTicketController extends Controller
       $body = $request->data;
       try {
         foreach ($body as $key => $value) {
-          $ticket = $this->ticket->where("id" , $value["id"])->update([
-            "info"=> json_encode($value["info"])
+          if(!empty($value["info"])){
+            $data=array(
+              "info"=>json_encode($value["info"])
+            );
+  
+          }
 
-          ]);
+          if(!empty($value["clave"])){
+            $data=array(
+              "clave"=>$value["clave"]
+            );
+  
+          }
+
+          if(!empty($value["grupo_clave"])){
+            $data=array(
+              "grupo_clave"=>$value["grupo_clave"]
+            );
+  
+          }
+        
+          $ticket = $this->ticket->where("id" , $value["id"])->update($data);
         }
 
         return response()->json(
