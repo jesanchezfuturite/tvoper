@@ -379,7 +379,7 @@
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Razon Social:</strong></label>
-                            <label>{{$data->razonSocial}}</label>
+                            <label></label>
                         </td>
                     </tr>
                     <tr>
@@ -571,7 +571,7 @@
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>{{$data->lote}}</label>
+                                        <label></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>

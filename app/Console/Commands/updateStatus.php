@@ -60,12 +60,16 @@ class updateStatus extends Command
         $array=[];
         try{  
         $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite]);
-        $find_ref = $this->oper_transaccionesdb->where('fecha_limite_referencia','>=',$limite)->where('fecha_limite_referencia','<=',$limite2)->get();
+         $find_ref = $this->oper_transaccionesdb->where('fecha_limite_referencia','>=',$limite)->where('fecha_limite_referencia','<=',$limite2)->where('estatus','60')->get();
+        $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite2]);
+       
         foreach ($find_ref as $k) {
             array_push($array,$k->referencia);
         }
-        
-        $this->referencepayment($array);
+        $json=json_encode($array);
+         //  log::info($json);
+        //log::info($array);
+       $this->referencepayment($array);
             Log::info("update from oper_transacciones set estatus=65 where estatus=60 and fecha_limite_referencia=".$limite);
             Log::info("Resgitros Actualizados: ".$find_oper);
 
@@ -91,7 +95,8 @@ class updateStatus extends Command
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $jsonArrayResponse = curl_exec($ch);
             curl_close($ch);
-            //log::info($jsonArrayResponse);
+            log::info("REFERENCEPAYMENT Respuesta: "$jsonArrayResponse);
+            Log::info("REFERENCEPAYMENT Resgitros Enviados: ".count($array));
         }
         catch(\Exception $e) {
             Log::info('Command updateStatus:status dailyAt(3:00) - referencepayment: '.$e->getMessage());
