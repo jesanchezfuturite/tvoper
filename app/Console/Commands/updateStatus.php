@@ -95,7 +95,7 @@ class updateStatus extends Command
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $jsonArrayResponse = curl_exec($ch);
             curl_close($ch);
-            log::info("REFERENCEPAYMENT Respuesta: "$jsonArrayResponse);
+            log::info("REFERENCEPAYMENT Respuesta: ".$jsonArrayResponse);
             Log::info("REFERENCEPAYMENT Resgitros Enviados: ".count($array));
         }
         catch(\Exception $e) {
