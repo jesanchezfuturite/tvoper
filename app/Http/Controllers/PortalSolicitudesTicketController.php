@@ -1391,14 +1391,14 @@ class PortalSolicitudesTicketController extends Controller
 
       $id_catalogo = env("CATALOG_ID");
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) {
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) use ($id_catalogo) {
         $query->select('id', 'titulo', 'tramite_id')->where("id", $id_catalogo);
       }])->get()->toArray();
       //->get()->toArray();
       //dd($solicitudes);
       $ids_tramites=[];
       foreach ($solicitudes as &$sol){
-        foreach($sol["catalogo"]  as $s){ //aquí es el error
+        foreach($sol["catalogo"]  as $s){
           $sol["tramite_id"]=$s["tramite_id"];
 
         }
