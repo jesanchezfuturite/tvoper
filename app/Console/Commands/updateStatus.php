@@ -61,7 +61,7 @@ class updateStatus extends Command
         try{  
         $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite]);
          $find_ref = $this->oper_transaccionesdb->where('fecha_limite_referencia','>=',$limite)->where('fecha_limite_referencia','<=',$limite2)->where('estatus','60')->get();
-        $find_oper = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite2]);
+        $find_oper_api = $this->oper_transaccionesdb->updateTransacciones(['estatus'=>'65'],['estatus'=>'60','fecha_limite_referencia'=>$limite2]);
        
         foreach ($find_ref as $k) {
             array_push($array,$k->referencia);
