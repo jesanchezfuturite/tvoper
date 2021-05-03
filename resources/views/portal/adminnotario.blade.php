@@ -1663,6 +1663,7 @@ function changeComunidad()
         formdata.append("file[0]",pdfSAT); 
         formdata.append("file[1]",pdfNot);
       }  
+       formdata.append("_token",'{{ csrf_token() }}');
       $.ajax({
            method: "POST",  
           contentType:false,
