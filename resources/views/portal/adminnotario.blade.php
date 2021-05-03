@@ -1668,7 +1668,7 @@ function changeComunidad()
           contentType:false,
            processData:false,   
            url: "{{ url('/notary-offices-create-users') }}",
-           data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
+           data: formdata })
         .done(function (response) { 
           //console.log(response);
           response=$.parseJSON(response);  
