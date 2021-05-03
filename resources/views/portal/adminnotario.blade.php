@@ -1185,46 +1185,46 @@ function changeComunidad()
 
     var base64SAT=$("#base64pdf1").val();
     var base64Notario=$("#base64pdf2").val();
+    var formdata =new FormData();
 
-   
-    var titular_={username: users,
-                email: emailUser,
-                password: password,
-                name: nameUser,
-                mothers_surname: apeMatUser,
-                fathers_surname: apePatUser,
-                curp: curpUser,
-                rfc: rfcUser,
-                phone: telUser,
-                person_type: TipoUser,
-                config_id: itemsCofigNotario,
-                role_id: 2 };
-
-    var notary_off= {notary_number: numNotario,
-      phone: telNotario,
-      fax: faxNotario,
-      email: emailNotario,
-      street: calleNotario,
-      number: numeroExtNotario,
-      "indoor-number": numeroNotario,
-      district: distritoNotario,
-      federal_entity_id: itemsEntidadNot,
-      city_id: itemsCiudadNot,
-      zip: codigopostNotario,
-      sat_constancy_file: base64SAT,
-      notary_constancy_file: base64Notario,
-      titular: titular_
-      }; 
+    formdata.append("notary_office[notary_number]",numNotario);
+    formdata.append("notary_office[phone]",telNotario);
+    formdata.append("notary_office[fax]",faxNotario);
+    formdata.append("notary_office[email]",emailNotario);
+    formdata.append("notary_office[street]",calleNotario);
+    formdata.append("notary_office[number]",numeroExtNotario);
+    formdata.append("notary_office[indoor-number]",numeroNotario); 
+    formdata.append("notary_office[district]",distritoNotario);
+    formdata.append("notary_office[federal_entity_id]",itemsEntidadNot);
+    formdata.append("notary_office[city_id]",itemsCiudadNot);
+    formdata.append("notary_office[zip]",codigopostNotario);
+    formdata.append("notary_office[titular][username]",users );
+    formdata.append("notary_office[titular][email]",emailUser);
+    formdata.append("notary_office[titular][password]",password);
+    formdata.append("notary_office[titular][name]",nameUser);
+    formdata.append("notary_office[titular][mothers_surname]",apeMatUser);
+    formdata.append("notary_office[titular][fathers_surname]",apePatUser);
+    formdata.append("notary_office[titular][curp]",curpUser);
+    formdata.append("notary_office[titular][rfc]",rfcUser);
+    formdata.append("notary_office[titular][phone]",telUser);
+    formdata.append("notary_office[titular][person_type]",TipoUser);
+    formdata.append("notary_office[titular][config_id]",itemsCofigNotario);
+    formdata.append("notary_office[titular][role_id]",2);
+    formdata.append("file[0]",pdfSAT); 
+    formdata.append("file[1]",pdfNot);
+    formdata.append("_token",'{{ csrf_token() }}');
     //console.log(notary_off);
     $.ajax({
            method: "POST", 
+           contentType:false,
+           processData:false,
            url: "{{ url('/notary-offices') }}",
-           data:{notary_office:notary_off,_token:'{{ csrf_token() }}'}  })
+           data:formdata  })
         .done(function (response) {
           //console.log(response);
           var resp=$.parseJSON(response);
           //console.log(resp);
-          if(resp.response.code=="422"){
+          if(resp.error.code=="422"){
              Command: toastr.warning(resp.response.message, "Notifications");
             return;
           }else{
@@ -1452,19 +1452,25 @@ function changeComunidad()
       var base64SAT=$("#base64pdf1").val();
       var base64Notario=$("#base64pdf2").val();
       var check=$("#checkbox1").prop("checked"); 
-      var user_={username: users,
-                email: emailUser,
-                name: nameUser,
-                mothers_surname: apeMatUser,
-                fathers_surname: apePatUser,
-                curp: curpUser,
-                rfc: rfcUser,
-                phone: telUser,
-                config_id: itemsConfigUser,
-                role_id: itemsPermiso,
-                status: 1,
-                reenvio:check
-            };
+      
+      var pdfSAT = $("#fileSAT")[0].files[0]; 
+      var pdfNot = $("#fileNotario")[0].files[0]; 
+      var formdata = new FormData();
+
+      formdata.append("notary_id",id_notary);
+      formdata.append("user_id",id_user);     
+      
+      formdata.append("user[username]",users);
+      formdata.append("user[email]",emailUser);
+      formdata.append("user[name]",nameUser);
+      formdata.append("user[mothers_surname]",apeMatUser);
+      formdata.append("user[fathers_surname]",apePatUser);
+      formdata.append("user[curp]",curpUser);
+      formdata.append("user[rfc]",rfcUser);
+      formdata.append("user[phone]",telUser);
+      formdata.append("user[config_id]",itemsConfigUser);
+      formdata.append("user[role_id]",itemsPermiso);
+      formdata.append("user[reenvio]",1);      
       if(check==true || password_.length>0)
       {
         if(!/[a-z]/.test(password_) || !/[A-Z]/.test(password_) || !/[0-9]/.test(password_) || password_.length < 8){
@@ -1472,21 +1478,24 @@ function changeComunidad()
           $("#password").focus();  
           return;
         }
-        Object.assign(user_,{password:password_});        
+        formdata.append("user[password]",password_);      
       }
       if(base64SAT.length>0)
       {
-        Object.assign(user_,{sat_constancy_file:base64SAT});
+        formdata.append("file[0]",pdfSAT);
       } 
        if(base64Notario.length>0)
       {
-        Object.assign(user_,{notary_constancy_file:base64Notario});
-      }
-      console.log(user_);
+        formdata.append("file[1]",pdfNot);
+      }      
+      
+      formdata.append("_token",'{{ csrf_token() }}');
       $.ajax({
-           method: "POST",           
+           method: "POST",
+           contentType:false,
+           processData:false,           
            url: "{{ url('/notary-offices-edit-user') }}",
-           data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
+           data: formdata  })
         .done(function (response) {          
              //limpiarNot();
              Command: toastr.success("Success", "Notifications")
@@ -1631,26 +1640,33 @@ function changeComunidad()
       }
       var base64SAT=$("#base64pdf1").val();
       var base64Notario=$("#base64pdf2").val();
-      var user_={username: users,
-                email: emailUser,
-                password: password,
-                name: nameUser,
-                mothers_surname: apeMatUser,
-                fathers_surname: apePatUser,
-                curp: curpUser,
-                rfc: rfcUser,
-                phone: telUser,
-                person_type: TipoUser,
-                config_id: itemsConfigUser,
-                role_id: itemsPermiso
-            };
-            
+
+      var pdfSAT = $("#fileSAT")[0].files[0]; 
+      var pdfNot = $("#fileNotario")[0].files[0]; 
+      var formdata = new FormData();
+      formdata.append("notary_id",id_notary);
+      formdata.append("user[username]",users);
+      formdata.append("user[email]",emailUser);
+      formdata.append("user[password]",password);
+      formdata.append("user[name]",nameUser);
+      formdata.append("user[mothers_surname]",apeMatUser);
+      formdata.append("user[fathers_surname]",apePatUser);
+      formdata.append("user[curp]",curpUser);
+      formdata.append("user[rfc]",rfcUser);
+      formdata.append("user[phone]",telUser);
+      formdata.append("user[person_type]",TipoUser);
+      formdata.append("user[config_id]",itemsConfigUser);
+      formdata.append("user[role_id]",itemsPermiso);
+        
         if(base64SAT.length>0 && base64Notario.length>0)
       {
-        Object.assign(user_,{sat_constancy_file:base64SAT,notary_constancy_file:base64Notario});
+        formdata.append("file[0]",pdfSAT); 
+        formdata.append("file[1]",pdfNot);
       }  
       $.ajax({
-           method: "POST",            
+           method: "POST",  
+          contentType:false,
+           processData:false,   
            url: "{{ url('/notary-offices-create-users') }}",
            data: {notary_id:id_notary,users:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
