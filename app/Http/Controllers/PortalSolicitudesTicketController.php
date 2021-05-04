@@ -1571,5 +1571,37 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
     }
+    public function getTramiteRechazado($user_id){
+      $primer =  PortalSolicitudesticket::where('user_id', $user_id)
+      ->where("status", 3)
+      ->whereNotNull("id_transaccion")
+      ->groupBy('id_transaccion')->get()->pluck('id_transaccion')->toArray();
+
+      $solicitudes = PortalSolicitudesticket::whereIn('id_transaccion',$primer)
+      ->leftjoin("solicitudes_mensajes", "solicitudes_ticket.id", "=", "solicitudes_mensajes.ticket_id")->get();
+
+     $ids = $solicitudes->pluck("id_transaccion")->toArray();
+     $solicitudes = $solicitudes; 
+      $ids = array_unique($ids);
+      $newDato=[];
+      foreach($ids as $i => $id){
+        $datos=[];
+        foreach ($solicitudes as $d => $value) { 
+          if($value->id_transaccion== $id){
+            if(!empty($value->info)){
+              $info=$this->asignarClavesCatalogo($value->info);
+              $value->info=$info;
+
+            }
+            array_push($datos, $value);
+            $newDato[$i]["id_transaccion"]=$id;
+            $newDato[$i]["tramites"]=$datos;
+          }
+        
+        }
+      }
+      return $newDato;
+
+    }
 
 }

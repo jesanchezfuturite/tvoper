@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use SoapClient;
 use GuzzleHttp\Client;
+use File;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
+
 
 /**
  * Class PortalNotaryOfficesController.
@@ -82,6 +87,7 @@ class PortalNotaryOfficesController extends Controller
 
         $jsonArrayResponse = json_decode($listUsers);
         $data = $jsonArrayResponse->response->notary_office_users;
+
         return $data;
     }
 
@@ -132,21 +138,45 @@ class PortalNotaryOfficesController extends Controller
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
         $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
-        $users=$request->users;
+        $users=$request->user;
+        $files=$request->file;
+  
 
-        $json = array("users"=>$users);
+        foreach ($files as $key => $file) {
+            $file = $file;
+			$extension = $file->getClientOriginalExtension();
+		
+			$attach = "archivo_temporal_".date("U").".".$extension;
+            
+			\Storage::disk('local')->put($attach,  \File::get($file));
+            $data[$key] = [
+                'name'     => "file[]",
+                'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
+                'filename' => $attach
+            ];
 
-        $json = json_encode($json);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $link);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $remote_server_output = curl_exec($ch);
-        curl_close ($ch);
-        $response =$remote_server_output;
+      
+        }
+        $data = array_merge($data, $this->flatten([ "users" => $users ]));
+        
+        try {
+            $res = (new Client())->request(
+                'POST',
+                 $link,
+                [
+                    'multipart' =>$data
+                ]
+            );
+            $response = $res->getBody();
+        } catch (ClientException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+        catch (ServerException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+   
         return $response;
    }
    public function getRolesPermission(){
@@ -273,6 +303,34 @@ class PortalNotaryOfficesController extends Controller
         }
         return  $results;
     }
-
+    private function flatten($array, $prefix = "[", $suffix = "]") {
+        global $i;
+        $result = array();
+        foreach($array as $key=>$value) {
+            if(is_array($value)) {
+                if($i == 0) {
+                    $result = $result + $this->flatten($value, $key.$prefix, $suffix);
+                }
+                else {
+                    foreach ($this->flatten($value, $prefix . $key . $suffix."[", $suffix) as $k => $v){
+                        $result[] = $v;
+                    }
+                }
+            }
+            else {                
+                if($value instanceof UploadedFile){
+                    $result[] = ["name" => $prefix.$key.$suffix,
+                        "filename" => $value->getClientOriginalName(),
+                        "Mime-Type" => $value->getMimeType(),
+                        "contents" => fopen($value->getPathname(), "r")];
+                }
+                else {
+                    $result[] = ["name" => $prefix . $key . $suffix, "contents" => $value];
+                }
+            }
+            $i++;
+        }
+        return $result;
+    }
 
 }
