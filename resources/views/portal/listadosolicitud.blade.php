@@ -90,7 +90,7 @@
             	<thead>
                 <tr>
                     <th></th>
-                    <th>Titulo</th>
+                    <th>ID Grupo</th>
                     <th></th>
                 </tr>
             </thead>
@@ -106,14 +106,14 @@
       <div class="modal-header">
        
         <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
-        <div class="col-md-3"style="text-align: right;">
-          <button type="button"  data-dismiss="modal" class="btn green right" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
-        </div>
-      </div>
-        
+          <div class="col-md-3 group-btn1">
+            <button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
+          </div>
+        </div>        
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
+        <div class="content-detalle">
         <div class="row divDetalles">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -159,6 +159,8 @@
             </div>
           </div>    
         </div>
+      </div>
+      <div class="content-mensajes">
         <div class="row">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -255,9 +257,10 @@
           </div>          
         </div>
       </div>
+    </div>
       <div class="modal-footer">
         <div class="row">
-          <div class="col-md-8" style="text-align: left;">
+          <div class="col-md-8">
             <div class="form-group">
                <button type="button" data-dismiss="modal" class="btn red" onclick="limpiar()">Salir</button>
             </div>
@@ -267,8 +270,8 @@
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-          <div class="col-md-3">
-            <button type="button" data-dismiss="modal" class="btn green" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
+          <div class="col-md-3 group-btn2">
+            <button type="button" data-dismiss="modal" class="btn green btn_cerrar_2" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
           </div>
         </div>
       </div>   
@@ -453,10 +456,9 @@
             }
         }
     }
-    function getTemplateAcciones( data, type, row, meta ,grupo ){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+grupo+"\",\""+grupo+"\")'> Atender </a></td>";
-      console.log(grupo);
-      if(grupo.status==1)
+    function getTemplateAcciones( data, type, row, meta){
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findMessage(\""+row.id_transaccion+"\")'> <strong>Atender ("+row.grupo.length+")</strong> </a></td>";
+      if(row.grupo[0].status==1)
         return botonAtender;  
       else{
         return "<td class='text-center' width='10%'></td>"
@@ -464,9 +466,9 @@
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'> Atender </a></td>";
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn btn-icon-only green' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalle' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",0)'><i class='fa fa-list'></i> </a></td>";
        
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
@@ -486,13 +488,19 @@
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
+      $(".btn_cerrar_1").css("display", "none");
+      $(".btn_cerrar_2").css("display", "none");
+      $(".content-detalle").css("display", "none");
+      $(".content-mensajes").css("display", "none");
+      $(".group-btn1").css("display", "none");
+      $(".group-btn2").css("display", "none");
     }
     function findAtender(id,estatus)
-    {
+    {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
-      findMessage(id);
-      addInfo();
+      $(".content-detalle").css("display", "block");
+      
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
@@ -536,8 +544,10 @@
           }else{
              $(".btnPrelacion").css("display", "none");
           }
+
          var btn_1=document.getElementById('btn_cerrar_1');
          var btn_2=document.getElementById('btn_cerrar_2'); 
+         
           //console.log(btn_1);
           if(Resp.continuar_solicitud==0)
           {
@@ -551,15 +561,17 @@
             btn_1.value="continuar";
             btn_2.value="continuar";
           }
+          $(".group-btn1").css("display", "block");
+          $(".group-btn2").css("display", "block");
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
     }
-     function findMessage(id_)    
+    function findMessage(id_)    
     {
-     // console.log(id_);
-     
+      addInfo();
+     $(".content-mensajes").css("display", "block");
       $.ajax({
            method: "GET", 
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,
