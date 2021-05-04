@@ -170,11 +170,11 @@ class PortalNotaryOfficesController extends Controller
             $response = $res->getBody();
         } catch (ClientException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            \Logs::error($responseBody);
         }
         catch (ServerException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            \Logs::error($responseBody);
         }
    
         return $response;
