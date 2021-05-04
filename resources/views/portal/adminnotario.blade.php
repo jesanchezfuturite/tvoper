@@ -1484,11 +1484,11 @@ function changeComunidad()
       }
       if(base64SAT.length>0)
       {
-        formdata.append("file[0]",pdfSAT);
+        formdata.append("file[sat]",pdfSAT);
       } 
        if(base64Notario.length>0)
       {
-        formdata.append("file[1]",pdfNot);
+        formdata.append("file[notaria]",pdfNot);
       }      
       
       formdata.append("_token",'{{ csrf_token() }}');

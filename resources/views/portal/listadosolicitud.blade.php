@@ -457,7 +457,7 @@
         }
     }
     function getTemplateAcciones( data, type, row, meta){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findMessage(\""+row.id_transaccion+"\")'> <strong>Asignar ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Asignar' onclick=''> <strong>Asignar ("+row.grupo.length+")</strong> </a></td>";
       console.log(row.grupo[0]);
       if(row.grupo[0].status==1)
         return botonAtender;  
