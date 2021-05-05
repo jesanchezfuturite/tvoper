@@ -1185,6 +1185,8 @@ function changeComunidad()
 
     var base64SAT=$("#base64pdf1").val();
     var base64Notario=$("#base64pdf2").val();
+    var pdfSAT = $("#fileSAT")[0].files[0]; 
+    var pdfNot = $("#fileNotario")[0].files[0]; 
     var formdata =new FormData();
 
     formdata.append("notary_office[notary_number]",numNotario);
@@ -1470,7 +1472,7 @@ function changeComunidad()
       formdata.append("user[phone]",telUser);
       formdata.append("user[config_id]",itemsConfigUser);
       formdata.append("user[role_id]",itemsPermiso);
-      formdata.append("user[reenvio]",1);      
+      formdata.append("user[reenvio]",check);      
       if(check==true || password_.length>0)
       {
         if(!/[a-z]/.test(password_) || !/[A-Z]/.test(password_) || !/[0-9]/.test(password_) || password_.length < 8){
@@ -1482,11 +1484,11 @@ function changeComunidad()
       }
       if(base64SAT.length>0)
       {
-        formdata.append("file[0]",pdfSAT);
+        formdata.append("file[sat]",pdfSAT);
       } 
        if(base64Notario.length>0)
       {
-        formdata.append("file[1]",pdfNot);
+        formdata.append("file[notaria]",pdfNot);
       }      
       
       formdata.append("_token",'{{ csrf_token() }}');

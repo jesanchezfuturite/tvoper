@@ -41,25 +41,47 @@ class PortalNotaryOfficesController extends Controller
     }
     public function createNotary(Request $request){
         $error =null;
-        $data = $request->all();
+        $notary_office=$request->notary_office;
+        $files=$request->file;
+        $link = env("SESSION_HOSTNAME")."/notary-offices/";
 
-        $json=json_encode($data);
+        foreach ($files as $key => $file) {
+            $file = $file;
+			$extension = $file->getClientOriginalExtension();
+		
+			$attach = "archivo_temporal_".date("U").".".$extension;
+            
+			\Storage::disk('local')->put($attach,  \File::get($file));
+            $data[$key] = [
+                'name'     => "file[]",
+                'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
+                'filename' => $attach
+            ];
 
-        $repuesta;
-        $datos;
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, env("SESSION_HOSTNAME")."/notary-offices/");
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $remote_server_output = curl_exec($ch);
-        curl_close ($ch);
-        $response =json_decode($remote_server_output);
-
-        return json_encode($response);
+      
+        }
+        $data = array_merge($data, $this->flatten([ "notary_office" => $notary_office ]));
+        
+        try {
+            $res = (new Client())->request(
+                'POST',
+                 $link,
+                [
+                    'multipart' =>$data
+                ]
+            );
+            $response = $res->getBody();
+        } catch (ClientException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+        catch (ServerException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+   
+        return $response;
+   
 
 
     }
@@ -94,23 +116,51 @@ class PortalNotaryOfficesController extends Controller
     public function editUsersNotary(Request $request){
         $notary_id = $request->notary_id;
         $user_id = $request->user_id;
-        $data = $request->user;
-        $data["id"] = $user_id;
-        $json=json_encode($data);
+        $users = $request->user;
+        $users["id"] = $user_id;
+        if($request->file){
+			$files= $request->file;
+            foreach ($files as $key => $file) {
+                $file = $file;
+                $extension = $file->getClientOriginalExtension();
+            
+                $attach = "archivo_temporal_".date("U").".".$extension;
+                
+                \Storage::disk('local')->put($attach,  \File::get($file));
+                $data[$key] = [
+                    'name'     => "file[$key]",
+                    'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
+                    'filename' => $attach
+                ];
+    
+          
+            }
+            $data = array_merge($data, $this->flatten([ "users" => $users ]));
+
+		}else{
+            $data = $this->flatten([ "users" => $users ]);
+        }
         $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users/$user_id";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $link);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $jsonArrayResponse = curl_exec($ch);
-        curl_close($ch);
-
-        $response = json_decode($jsonArrayResponse);
-
-        return json_encode($response);
+        
+        try {
+            $res = (new Client())->request(
+                'POST',
+                 $link,
+                [
+                    'multipart' =>$data
+                ]
+            );
+            $response = $res->getBody();
+        } catch (ClientException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+        catch (ServerException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+            dd(json_decode($responseBody));
+        }
+        return $response;
     }
    public function status(Request $request){
         $notary_id = $request->notary_id;
@@ -137,7 +187,8 @@ class PortalNotaryOfficesController extends Controller
    }
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
-        $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
+        // $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
+        $link = "http://localhost/session-api/public/notary-offices/"."$id/users";
         $users=$request->user;
         $files=$request->file;
   
@@ -158,6 +209,7 @@ class PortalNotaryOfficesController extends Controller
       
         }
         $data = array_merge($data, $this->flatten([ "users" => $users ]));
+        // dd($data);
         
         try {
             $res = (new Client())->request(

@@ -260,7 +260,7 @@
     </div>
       <div class="modal-footer">
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-8" style="text-align: left;">
             <div class="form-group">
                <button type="button" data-dismiss="modal" class="btn red" onclick="limpiar()">Salir</button>
             </div>
@@ -457,7 +457,8 @@
         }
     }
     function getTemplateAcciones( data, type, row, meta){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findMessage(\""+row.id_transaccion+"\")'> <strong>Atender ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Asignar' onclick=''> <strong>Asignar ("+row.grupo.length+")</strong> </a></td>";
+      console.log(row.grupo[0]);
       if(row.grupo[0].status==1)
         return botonAtender;  
       else{
@@ -468,7 +469,7 @@
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn btn-icon-only green' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalle' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",0)'><i class='fa fa-list'></i> </a></td>";
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
@@ -488,19 +489,12 @@
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
-      $(".btn_cerrar_1").css("display", "none");
-      $(".btn_cerrar_2").css("display", "none");
-      $(".content-detalle").css("display", "none");
-      $(".content-mensajes").css("display", "none");
-      $(".group-btn1").css("display", "none");
-      $(".group-btn2").css("display", "none");
     }
     function findAtender(id,estatus)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
-      $(".content-detalle").css("display", "block");
-      
+      findMessage(id);
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
@@ -561,8 +555,6 @@
             btn_1.value="continuar";
             btn_2.value="continuar";
           }
-          $(".group-btn1").css("display", "block");
-          $(".group-btn2").css("display", "block");
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -570,8 +562,6 @@
     }
     function findMessage(id_)    
     {
-      addInfo();
-     $(".content-mensajes").css("display", "block");
       $.ajax({
            method: "GET", 
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,
