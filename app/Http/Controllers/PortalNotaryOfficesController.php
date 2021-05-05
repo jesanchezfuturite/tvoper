@@ -72,12 +72,11 @@ class PortalNotaryOfficesController extends Controller
             );
             $response = $res->getBody();
         } catch (ClientException $exception) {
-            $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            return $exception->getResponse()->getBody(true);
         }
         catch (ServerException $exception) {
-            $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            return $exception->getResponse()->getBody(true);
+            
         }
    
         return $response;
@@ -154,11 +153,11 @@ class PortalNotaryOfficesController extends Controller
             $response = $res->getBody();
         } catch (ClientException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            return json_decode($responseBody);
         }
         catch (ServerException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            dd(json_decode($responseBody));
+            return json_decode($responseBody);
         }
         return $response;
     }
@@ -222,11 +221,13 @@ class PortalNotaryOfficesController extends Controller
             $response = $res->getBody();
         } catch (ClientException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            \Logs::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
+            Log::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
+            return $responseBody;
         }
         catch (ServerException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
-            \Logs::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
+            Log::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
+            return $responseBody;
         }
    
         return $response;
