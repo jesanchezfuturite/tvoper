@@ -186,8 +186,7 @@ class PortalNotaryOfficesController extends Controller
    }
    public function createUsersNotary(Request $request){
         $id = $request->notary_id;
-        // $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
-        $link = "http://localhost/session-api/public/notary-offices/"."$id/users";
+        $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
         $users=$request->user;
         $files=$request->file;
   
