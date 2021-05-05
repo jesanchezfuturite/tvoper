@@ -188,27 +188,29 @@ class PortalNotaryOfficesController extends Controller
         $id = $request->notary_id;
         $link = env("SESSION_HOSTNAME")."/notary-offices/"."$id/users";
         $users=$request->user;
-        $files=$request->file;
-  
+        if($request->file){
+            $files=$request->file;
 
-        foreach ($files as $key => $file) {
-            $file = $file;
-			$extension = $file->getClientOriginalExtension();
-		
-			$attach = "archivo_temporal_".date("U").".".$extension;
+            foreach ($files as $key => $file) {
+                $file = $file;
+                $extension = $file->getClientOriginalExtension();
             
-			\Storage::disk('local')->put($attach,  \File::get($file));
-            $data[$key] = [
-                'name'     => "file[]",
-                'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
-                'filename' => $attach
-            ];
-
-      
+                $attach = "archivo_temporal_".date("U").".".$extension;
+                
+                \Storage::disk('local')->put($attach,  \File::get($file));
+                $data[$key] = [
+                    'name'     => "file[]",
+                    'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
+                    'filename' => $attach
+                ];
+    
+          
+            }
+            $data = array_merge($data, $this->flatten([ "users" => $users ]));
+        }else{
+            $data = $this->flatten([ "users" => $users ]);
         }
-        $data = array_merge($data, $this->flatten([ "users" => $users ]));
-        // dd($data);
-        
+  
         try {
             $res = (new Client())->request(
                 'POST',
