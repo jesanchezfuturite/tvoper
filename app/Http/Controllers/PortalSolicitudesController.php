@@ -1016,8 +1016,7 @@ class PortalSolicitudesController extends Controller
            return response()->json(
             [
               "Code" => "200",
-              "Message" =>"Solicitud asignada",
-              "data"=> $notary
+              "Message" =>"Solicitud asignada"
           ]);  
       } catch (Exception $e) {
         Log::info('Error Portal - asignar solicitud: '.$e->getMessage());
