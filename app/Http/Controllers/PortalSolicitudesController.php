@@ -467,7 +467,7 @@ class PortalSolicitudesController extends Controller
 
     }
     $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-    ->where(function($q) {
+    ->where(function($q) use ($user_id){
       $q->whereNull('solicitudes_ticket.asignado_a')
         ->orwhere('solicitudes_ticket.asignado_a', $user_id);
     })
@@ -475,7 +475,7 @@ class PortalSolicitudesController extends Controller
     ->orderBy('solicitudes_ticket.created_at', 'DESC');
     $solicitudes = $solicitudes->get();
     $ids = $solicitudes->pluck("id_transaccion")->toArray();
-    
+
     $ids = array_unique($ids);
 
     $newDato=[];
