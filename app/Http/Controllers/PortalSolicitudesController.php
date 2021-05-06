@@ -467,7 +467,7 @@ class PortalSolicitudesController extends Controller
 
     }
     $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-    // ->whereNull('solicitudes_ticket.asignado_a')
+    ->whereNull('solicitudes_ticket.asignado_a')
     ->where('solicitudes_ticket.asignado_a', $user_id)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->orderBy('solicitudes_ticket.created_at', 'DESC');
