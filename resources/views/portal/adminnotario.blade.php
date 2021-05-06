@@ -1226,8 +1226,8 @@ function changeComunidad()
           //console.log(response);
           var resp=$.parseJSON(response);
           //console.log(resp);
-          if(resp.error.code=="422"){
-             Command: toastr.warning(resp.response.message, "Notifications");
+          if(resp.data=="error"){
+             Command: toastr.warning(resp.error.message, "Notifications");
             return;
           }else{
             changeComunidad();
