@@ -401,6 +401,7 @@ Route::post('/delete-solicitudes-motivos' , 'PortalSolicitudesController@deleteS
 Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite');
 Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite');
 Route::get('/get-info-notary/{user_id}', 'PortalSolicitudesController@getInfoNotary');
+Route::get('/asignar-solicitudes/{id}', 'PortalSolicitudesController@asignarSolicitud');
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
