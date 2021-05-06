@@ -448,7 +448,7 @@ class PortalSolicitudesController extends Controller
 
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
     ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
-    "solicitudes_status.descripcion","solicitudes_ticket.status", 
+    "solicitudes_status.descripcion","solicitudes_ticket.status","solicitudes_ticket.info",
     "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
     "solicitudes_ticket.created_at")
     ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
@@ -482,6 +482,11 @@ class PortalSolicitudesController extends Controller
     foreach($ids as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) { 
+        if(!empty($value->info)){
+          $info=$this->asignarClavesCatalogo($value->info);
+          $value->info=$info;
+
+        }
         if($value->id_transaccion== $id){
           array_push($datos, $value);
           $newDato[$i]["id_transaccion"]=$id;
@@ -1028,6 +1033,26 @@ class PortalSolicitudesController extends Controller
       }
      
   }
+
+  public function asignarClavesCatalogo($info){
+    $informacion = json_decode($info);
+    $campos = [];
+    if(isset($informacion->campos)){
+      foreach($informacion->campos as $key=>$value){
+        if(is_numeric($key)){
+          $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
+          $campos[$catalogo->descripcion] = $value;
+        }else{
+          $campos[$key] = $value;
+        }
+
+      }
+      $informacion->campos = $campos;
+    }
+
+    return $informacion;
+}
+
 
   
 }

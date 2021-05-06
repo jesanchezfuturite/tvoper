@@ -545,7 +545,7 @@ class PortalSolicitudesTicketController extends Controller
           $statusTicket = 99;
           break;
         default:
-        $statusTicket = 3;
+        $statusTicket = 1;
       }
       $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
       try {
@@ -613,7 +613,7 @@ class PortalSolicitudesTicketController extends Controller
           $statusTicket = 99;
           break;
         default:
-        $statusTicket = 3;
+        $statusTicket = 1;
       }
       $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
 
