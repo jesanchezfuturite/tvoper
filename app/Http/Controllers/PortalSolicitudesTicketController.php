@@ -1131,9 +1131,8 @@ class PortalSolicitudesTicketController extends Controller
                 if($relation){
                     $notary_id = $relation->notary_office_id;
                     $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
-
                 }else{
-                    $users = ["$user_id"];
+                    $users = [$value["id_usuario"]];
                 }
 
                 $solicitudes->whereIn('user_id', $users);
