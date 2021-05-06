@@ -124,16 +124,31 @@ class FacturacionOperaciones extends Command
      */
     private function obtenerPendientes()
     {
-        $info = $this->pr->findWhere(
+        // $info = $this->pr->findWhere(
+        //     [
+        //         "facturado" => 0,
+        //         "origen"    => 11,
+        //         "status"   => 'p',
+        //     ],
+        //     [
+        //         'referencia'
+        //     ]
+        // );
+
+        // $info = $this->pr->whereIn("origen",[5,11])->where(
+        //     [
+        //         "facturado" => 1,
+        //         "status"    => 'p',
+        //         "referencia" => '050000205513555555555529481215'
+        //     ]
+        // );
+
+        $info = $this->pr->select(['referencia'])->whereIn("origen",[5,11])->where(
             [
                 "facturado" => 0,
-                "origen"    => 11,
-                "status"   => 'p',
-            ],
-            [
-                'referencia'
+                "status"    => 'p'
             ]
-        );
+        )->distinct()->get();
 
         if($info->count() > 0)
         {
