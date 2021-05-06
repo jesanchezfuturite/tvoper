@@ -278,6 +278,28 @@
     </div>
   </div>
 </div>
+<div id="portlet-asignar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cerrarModal()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> Asignar gurpo de solicitudes, id grupo: <label id="lbl_idgrupo" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="cerrarModal()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="AsignarGrupo()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 @endsection
 
@@ -315,6 +337,19 @@
     }else{
       $("#checkbox30").prop("checked", true);
     }
+  }
+  function AsignarGrupo(id,grupo)
+  { 
+    var labl=document.getElementById("lbl_habilitar");    
+    document.getElementById("lbl_folio").textContent=folio;
+    $('#portlet-update').modal('show');    
+     if($("#check_"+id).prop("checked") == true)
+    {
+       //labl.textContent="Habilitar";
+    }else{
+       //labl.textContent="Deshabilitar";
+    }
+    document.getElementById("id_registro").value=id;
   }
   function prelacion()
   {    
@@ -457,20 +492,32 @@
         }
     }
     function getTemplateAcciones( data, type, row, meta){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Asignar' onclick=''> <strong>Asignar ("+row.grupo.length+")</strong> </a></td>";
-      console.log(row.grupo[0]);
-      if(row.grupo[0].status==1)
-        return botonAtender;  
+    var  color_btn='green';
+    var  label_btn='Asignar';
+      if(row.grupo.asignado_a==null)
+      {
+        color_btn="default";
+        label_btn="Asignado";
+
+      }
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs "+color_btn+"' href='#portlet-atender' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick=''> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+     
+      /*if(row.grupo[0].status==1)
+         
       else{
         return "<td class='text-center' width='10%'></td>"
-      }
+      }*/
+       return botonAtender;
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-       
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs green-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+       if(solicitud.status==2)
+       {
+         botonAtender="<td class='text-center' width='20%'></td>";
+       } console.log(solicitud.grupo);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
             html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
