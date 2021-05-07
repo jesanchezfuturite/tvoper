@@ -107,7 +107,7 @@
       <div class="modal-header">
        
         <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
-          <div class="col-md-3 group-btn1">
+          <div class="col-md-3 group-btn1" style="text-align: right; ">
             <button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
           </div>
         </div>        
@@ -178,33 +178,36 @@
                 <label>Mensaje</label>
                 <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
                 <span class="help-block">&nbsp;</span>
-                <div class='md-checkbox'>
-                  <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
-                    <label for='checkbox1'>
-                    <span></span>
-                    <span class='check'></span> <span class='box'>
-                    </span> Rechazo. </label>
+                <div class="form-group form-md-checkboxes">
+                  <div class="md-checkbox-inline">
+                    <div class='md-checkbox'>
+                      <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
+                        <label for='checkbox1'>
+                        <span></span>
+                        <span class='check'></span> <span class='box'>
+                        </span> Rechazo. </label>
+                    </div>
+                  
+                    <div class='md-checkbox'>
+                      <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
+                        <label for='checkbox30'>
+                        <span></span>
+                        <span class='check'></span> <span class='box'>
+                        </span>  Mensaje Publico. </label>
+                    </div>
+                  </div>
                 </div>
-                <div class="row selectMotivos">
-                  <div class="col-md-12">
+                  <div class="row selectMotivos">
+                    <div class="col-md-12">
                     <span class="help-block">&nbsp;</span> 
                     <label class="col-md-2">Motivos de Rechazo</label>
-                     <div class="col-md-7">
+                      <div class="col-md-7">
                       <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
                         <option value="0">------</option>  
                       </select>
                     </div>
                   </div>
                 </div>
-                <span class="help-block">&nbsp;</span>
-                <div class='md-checkbox'>
-                  <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
-                    <label for='checkbox30'>
-                    <span></span>
-                    <span class='check'></span> <span class='box'>
-                    </span>  Mensaje Publico. </label>
-                </div>
-                
               </div>
             </div>
             <div class="col-md-3">             
@@ -534,7 +537,7 @@
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        if(solicitud.status==2)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -558,7 +561,7 @@
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
     }
-    function findAtender(id,estatus)
+    function findAtender(id,estatus,asignado_a)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
@@ -600,7 +603,7 @@
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
             }          
           }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
@@ -611,21 +614,23 @@
          var btn_2=document.getElementById('btn_cerrar_2'); 
          
           //console.log(btn_1);
-          if(Resp.continuar_solicitud==0)
+          if(asignado_a=="null")
           {
+            btn_1.innerHTML="N/A";
+            btn_2.innerHTML="N/A";
+            btn_2.value="return";             
+          }else if(Resp.continuar_solicitud==0){
             btn_1.innerHTML="Cerrar Ticket";
             btn_2.innerHTML="Cerrar Ticket";
-            btn_1.value="cerrar";
-            btn_2.value="cerrar";             
+            btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_2.innerHTML="Continuar Solicitud";
             btn_1.value="continuar";
             btn_2.value="continuar";
           }
         })
         .fail(function( msg ) {
-         Command: toastr.warning("Error", "Notifications");
+         Command: toastr.warning("Error al obtener el registro", "Notifications");
         });
     }
     function findMessage(id_)    
