@@ -1364,9 +1364,10 @@ class PortalSolicitudesTicketController extends Controller
   }
 
 
-  public function getNormales($folio){
+  public function getNormales($folio, $idTicket){
     try {
-
+      $id_catalogo = env("CATALOG_ID");
+      Log::info('Get Normales :'.$id_catalogo);
       $id_tramite = env("TRAMITE_5_ISR");
       $solicitud = $this->solTramites->where("id_transaccion_motor", $folio)->get();
       foreach ($solicitud as $s) {
@@ -1375,14 +1376,14 @@ class PortalSolicitudesTicketController extends Controller
       }
 
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) {
-        $query->select('id', 'titulo', 'tramite_id')->where("id", 10);
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->where("id", $idTicket)->with(['catalogo' => function ($query) use ($id_catalogo) {
+        $query->select('id', 'titulo', 'tramite_id')->where("id", $id_catalogo);
       }])->get()->toArray();
       //->get()->toArray();
       //dd($solicitudes);
       $ids_tramites=[];
       foreach ($solicitudes as &$sol){
-        foreach($sol["catalogo"]  as $s){ //aquí es el error
+        foreach($sol["catalogo"]  as $s){
           $sol["tramite_id"]=$s["tramite_id"];
 
         }
