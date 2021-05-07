@@ -401,6 +401,7 @@ Route::post('/delete-solicitudes-motivos' , 'PortalSolicitudesController@deleteS
 Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite');
 Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite');
 Route::get('/get-info-notary/{user_id}', 'PortalSolicitudesController@getInfoNotary');
+Route::get('/asignar-solicitudes/{id}', 'PortalSolicitudesController@asignarSolicitud');
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
@@ -423,6 +424,8 @@ Route::get('/getInfoNormales/{folio}/{idticket}', 'PortalSolicitudesTicketContro
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');
 Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo');
+Route::get('/get-files-notary/{notary_number}', 'PortalSolicitudesTicketController@getFilesNotary');
+Route::get('/get-solicitudes-rechazadas/{user_id}', 'PortalSolicitudesTicketController@getTramiteRechazado');
 
 
 Route::get('/reglas-operativas', 'PortalReglaOperativaController@index');

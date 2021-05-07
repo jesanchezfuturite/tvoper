@@ -324,7 +324,7 @@
       <tr>
         <td class="container">
           <div class="content">
-            <table role="presentation" class="main">
+            <table role="presentation" class="main" style="table-layout: fixed; word-break:break-all; word-wrap:break-word;" width="100%">
               <tr>
                 <td class="wrapper">
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -379,7 +379,7 @@
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Razon Social:</strong></label>
-                            <label>{{$data->razonSocial}}</label>
+                            <label></label>
                         </td>
                     </tr>
                     <tr>
@@ -476,10 +476,17 @@
                     </tr>
                   </table>
                   <br>
-                  <br>@for ($i = 0; $i < 6; $i++)
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="width:50%;float: left;">
+                  <br>
+                  @for ($i = 0; $i < 6; $i++)
+                  @if( $i==1 || $i==3 || $i==5)
+                      <div style="page-break-after:always;">
+                    @else
+                      <div>
+                  @endif
+                 
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
                     <tr>                      
-                      <td >{{$i}}
+                      <td >
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                   <td> 
@@ -487,7 +494,7 @@
                                       <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
                                       <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
                                     </div>
-                                   <center><h5><strong>GOBIERNO DEL ESTADO DE NUEVO LEÓN</strong></h5></center>
+                                   <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
                                    <br> 
                                    <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
                                    <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
@@ -564,7 +571,7 @@
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>{{$data->lote}}</label>
+                                        <label></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>
@@ -623,9 +630,8 @@
                     </tr>
 
                   </table> 
-                  @if(is_float($i/2))
-                  <br>
-                  @endif
+                  </div>
+                  
                   @endfor 
                 </td>
               </tr>

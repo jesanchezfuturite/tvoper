@@ -86,11 +86,11 @@
         </div>
          <div class="portlet-body" id="addtables">
     		<div id="removetable">
-          		<table class="table table-hover" id="example">
+          		<table class="table table-hover" cellspacing="0" width="100%"  id="example">
             	<thead>
                 <tr>
                     <th></th>
-                    <th>Titulo</th>
+                    <th>ID Grupo</th>
                     <th></th>
                 </tr>
             </thead>
@@ -106,14 +106,14 @@
       <div class="modal-header">
        
         <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
-        <div class="col-md-3"style="text-align: right;">
-          <button type="button"  data-dismiss="modal" class="btn green right" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
-        </div>
-      </div>
-        
+          <div class="col-md-3 group-btn1">
+            <button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
+          </div>
+        </div>        
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
+        <div class="content-detalle">
         <div class="row divDetalles">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -159,6 +159,8 @@
             </div>
           </div>    
         </div>
+      </div>
+      <div class="content-mensajes">
         <div class="row">
           <div class="col-md-12">
             <div class="portlet-body form">
@@ -255,6 +257,7 @@
           </div>          
         </div>
       </div>
+    </div>
       <div class="modal-footer">
         <div class="row">
           <div class="col-md-8" style="text-align: left;">
@@ -267,15 +270,38 @@
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-          <div class="col-md-3">
-            <button type="button" data-dismiss="modal" class="btn green" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
+          <div class="col-md-3 group-btn2">
+            <button type="button" data-dismiss="modal" class="btn green btn_cerrar_2" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
           </div>
         </div>
       </div>   
     </div>
   </div>
 </div>
+<div id="portlet-asignar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cerrarModal()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> Asignar grupo de solicitudes, con id grupo: <label id="lbl_idgrupo" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="cerrarModal()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="Asignar()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
+<input type="text" name="id_registro" id="id_registro" hidden="true">
 @endsection
 
 @section('scripts')
@@ -312,6 +338,33 @@
     }else{
       $("#checkbox30").prop("checked", true);
     }
+  }
+  function AsignarGrupo(id,grupo)
+  { 
+    var labl=document.getElementById("lbl_habilitar");    
+    document.getElementById("lbl_idgrupo").textContent=grupo;
+    $('#portlet-asignar').modal('show');    
+     
+    document.getElementById("id_registro").value=id;
+  }
+  function Asignar()
+  {
+    var id_=$("#id_registro").val();
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/asignar-solicitudes') }}"+"/"+id_,
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        if(response.Code=='200')
+        {
+          findSolicitudes();
+          Command: toastr.success(response.Message, "Notifications")
+        }else{
+          Command: toastr.warning(response.Message, "Notifications")
+        }
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al Guardar", "Notifications")   });
   }
   function prelacion()
   {    
@@ -419,16 +472,18 @@
                 "columns": [
                   {
                 "data": "id_transaccion",
+                "grupo":"grupo",
                 "class": 'detectarclick',
                 "width": "3%",
-                "render": function ( data, type, row, meta ) {
+                "render": function ( data, type, row, meta , grupo) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data": "id_transaccion" },
+                  { "data":"id_transaccion"},
                   {
                     "data": "id_transaccion",
+                    
                     "render": getTemplateAcciones
                   }
               ]
@@ -446,22 +501,38 @@
               $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:25px; margin-right:200px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:100px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
     }
-    function getTemplateAcciones( data, type, row, meta  ){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+data.id+"\",\""+data.status+"\")'> Atender </a></td>";
-  
-      return botonAtender;  
+    function getTemplateAcciones( data, type, row, meta){
+    var  color_btn='default';
+    var  label_btn='Asignado';
+      if(row.grupo[0].asignado_a==null)
+      {
+        color_btn="green";
+        label_btn="Asignar";
+
+      }
+      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs "+color_btn+"' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+     
+      /*if(row.grupo[0].status==1)
+         
+      else{
+        return "<td class='text-center' width='10%'></td>"
+      }*/
+       return botonAtender;
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>ID</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'> Atender </a></td>";
-       
+          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs green-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+       if(solicitud.status==2)
+       {
+         botonAtender="<td class='text-center' width='20%'></td>";
+       } //console.log(solicitud.grupo);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
             html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
@@ -482,11 +553,10 @@
       $(".divNotaria").css("display", "none");
     }
     function findAtender(id,estatus)
-    {
+    {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       findMessage(id);
-      addInfo();
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
@@ -530,8 +600,10 @@
           }else{
              $(".btnPrelacion").css("display", "none");
           }
+
          var btn_1=document.getElementById('btn_cerrar_1');
          var btn_2=document.getElementById('btn_cerrar_2'); 
+         
           //console.log(btn_1);
           if(Resp.continuar_solicitud==0)
           {
@@ -550,10 +622,8 @@
          Command: toastr.warning("Error", "Notifications");
         });
     }
-     function findMessage(id_)    
+    function findMessage(id_)    
     {
-     // console.log(id_);
-     
       $.ajax({
            method: "GET", 
            url: "{{ url('/listado-mensajes') }}" + "/"+id_,

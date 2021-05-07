@@ -444,6 +444,7 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
+    $user_id = auth()->user()->id;
 
     $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
     ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
@@ -466,11 +467,15 @@ class PortalSolicitudesController extends Controller
 
     }
     $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-    ->whereNull('solicitudes_ticket.asignado_a')
+    ->where(function($q) use ($user_id){
+      $q->whereNull('solicitudes_ticket.asignado_a')
+        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    })
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->orderBy('solicitudes_ticket.created_at', 'DESC');
     $solicitudes = $solicitudes->get();
     $ids = $solicitudes->pluck("id_transaccion")->toArray();
+
     $ids = array_unique($ids);
 
     $newDato=[];
@@ -542,7 +547,7 @@ class PortalSolicitudesController extends Controller
     $findP=$this->ticket->findPrelacion($id);
     $id_transaccion = $ticket["id_transaccion"];
     $user_id = auth()->user()->id;
-    $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
+    // $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
 
     $msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
@@ -999,6 +1004,29 @@ class PortalSolicitudesController extends Controller
             "Message" =>"Error al encontrar notaria"
         ]);   
     }
+  }
+
+  public function asignarSolicitud($id){
+      $ticket = $this->ticket->where('id', $id)->first();
+      $findP=$this->ticket->findPrelacion($id);
+      $id_transaccion = $ticket["id_transaccion"];
+      $user_id = auth()->user()->id;
+      try {
+        $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
+           return response()->json(
+            [
+              "Code" => "200",
+              "Message" =>"Solicitud asignada"
+          ]);  
+      } catch (Exception $e) {
+        Log::info('Error Portal - asignar solicitud: '.$e->getMessage());
+       return response()->json(
+            [
+              "Code" => "400",
+              "Message" =>"Error al asignar solicitud"
+          ]);   
+      }
+     
   }
 
   
