@@ -90,7 +90,8 @@
             	<thead>
                 <tr>
                     <th></th>
-                    <th>ID Grupo</th>
+                    <th>Grupo</th>
+                    <th>Total</th>
                     <th></th>
                 </tr>
             </thead>
@@ -339,12 +340,14 @@
       $("#checkbox30").prop("checked", true);
     }
   }
-  function AsignarGrupo(id,grupo)
+  function AsignarGrupo(id,grupo,val)
   { 
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_idgrupo").textContent=grupo;
-    $('#portlet-asignar').modal('show');    
-     
+    if(val==1)
+    {
+      $('#portlet-asignar').modal('show');
+    }
     document.getElementById("id_registro").value=id;
   }
   function Asignar()
@@ -472,18 +475,20 @@
                 "columns": [
                   {
                 "data": "id_transaccion",
+                "data": "id_transaccion",
                 "grupo":"grupo",
                 "class": 'detectarclick',
-                "width": "3%",
+                "width": "2%",
                 "render": function ( data, type, row, meta , grupo) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
                   { "data":"id_transaccion"},
+                  { "data":"id_transaccion"},
                   {
                     "data": "id_transaccion",
-                    
+                    "data": "id_transaccion",
                     "render": getTemplateAcciones
                   }
               ]
@@ -501,21 +506,22 @@
               $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:100px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
     }
     function getTemplateAcciones( data, type, row, meta){
-    var  color_btn='default';
+    var  color_btn='red';
     var  label_btn='Asignado';
+    var val=0;
       if(row.grupo[0].asignado_a==null)
       {
         color_btn="green";
         label_btn="Asignar";
-
+        val=1;
       }
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs "+color_btn+"' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
      
       /*if(row.grupo[0].status==1)
          
@@ -526,16 +532,16 @@
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs green-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        if(solicitud.status==2)
        {
-         botonAtender="<td class='text-center' width='20%'></td>";
+         botonAtender="<td class='text-center' width='5%'></td>";
        } //console.log(solicitud.grupo);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td></td><td></td><td></td><td>'+ botonAtender + '</td></tr>'
         
         });
         html+='</table>';
