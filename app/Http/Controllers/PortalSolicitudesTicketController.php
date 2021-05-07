@@ -1361,7 +1361,7 @@ class PortalSolicitudesTicketController extends Controller
     }
   }
 
-  public function getNormales($folio){
+  public function getNormales($folio, $idTicket){
     try {
 
       $id_tramite = env("TRAMITE_5_ISR");
@@ -1373,7 +1373,7 @@ class PortalSolicitudesTicketController extends Controller
 
       $id_catalogo = env("CATALOG_ID");
       //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo' => function ($query) use ($id_catalogo) {
+      $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->where("id", $idTicket)->with(['catalogo' => function ($query) use ($id_catalogo) {
         $query->select('id', 'titulo', 'tramite_id')->where("id", $id_catalogo);
       }])->get()->toArray();
       //->get()->toArray();
