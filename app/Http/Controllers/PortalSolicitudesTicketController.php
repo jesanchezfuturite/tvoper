@@ -457,10 +457,10 @@ class PortalSolicitudesTicketController extends Controller
       $extension = $file->getClientOriginalExtension();
 
       $ticket = $this->ticket->where("id", $ticket_id)->first();
-      $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first(); 
+      $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
       $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
 
-      try {     
+      try {
         $mensajes =$this->mensajes->create([
           'ticket_id'=> $ticket_id,
           'mensaje' => $mensaje,
@@ -497,8 +497,8 @@ class PortalSolicitudesTicketController extends Controller
         "estatus" => $request->status
       ]);
       $id_transaccion=$solTramites->id;
-      try {            
-        $array_tramites=[];            
+      try {
+        $array_tramites=[];
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {
               $solicitudTicket = $this->ticket->where('id' , $value->id)
@@ -506,15 +506,15 @@ class PortalSolicitudesTicketController extends Controller
               array_push($array_tramites, $value->id);
               $this->guardarCarrito($value->id, 1);
           }
-        }        
+        }
         $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
           'id_ticket'=>json_encode($array_tramites)
-        ]);                
+        ]);
 
       } catch (\Exception $e) {
           $error = $e;
           Log::info('Error Portal - Error al actualizar transacción '.$e->getMessage());
-      }  
+      }
       if ($error) {
 
         return response()->json(
@@ -795,7 +795,7 @@ class PortalSolicitudesTicketController extends Controller
                       $camposConfigurados = $expedientes->camposConfigurados;
                       $info->campos=$campos;
                       $info->camposConfigurados=$camposConfigurados;
-                    
+
                   }
                   $data=array(
                     "id"=>$dato->id,
@@ -1150,7 +1150,7 @@ class PortalSolicitudesTicketController extends Controller
             $data[$key]=$solicitudes;
 
         }
-      
+
         $campos = [];
         $response = [];
         foreach($data as $key => $solicitud){
@@ -1164,7 +1164,7 @@ class PortalSolicitudesTicketController extends Controller
         $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
         $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
         foreach($data as $key => $solicitud){
-            foreach($solicitud as $key2 => $value){                
+            foreach($solicitud as $key2 => $value){
                 if(isset($value->info->campos)){
                     $campos = [];
                     foreach($value->info->campos as $key2 => $val){
@@ -1201,9 +1201,9 @@ class PortalSolicitudesTicketController extends Controller
                     $campos = $expedientes->campos;
                     $camposConfigurados = $expedientes->camposConfigurados;
                     $value->info->campos=$campos;
-                    $value->info->camposConfigurados=$camposConfigurados;                 
+                    $value->info->camposConfigurados=$camposConfigurados;
                    if(isset($value->info->camposConfigurados)){
-                    
+
                       foreach($value->info->camposConfigurados as $k => $val){
                         $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
                         $alias = array('alias'=>$al);
@@ -1290,13 +1290,13 @@ class PortalSolicitudesTicketController extends Controller
         if(!empty($files)){
           foreach ($files as $key => $value) {
             $mensaje = $value["mensaje"];
-            $ticket_id = $value["ticket_id"];    
-            $file = $value['file']; 
+            $ticket_id = $value["ticket_id"];
+            $file = $value['file'];
 
             $ticket = $this->ticket->where("id", $ticket_id)->first();
-            $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first(); 
+            $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
             $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
-            
+
             $mensajes =$this->mensajes->create([
               'ticket_id'=> $ticket_id,
               'mensaje'=>$mensaje
@@ -1307,9 +1307,9 @@ class PortalSolicitudesTicketController extends Controller
             $new_file = base64_decode($new_file);
 
             $extension = explode('/', mime_content_type($file))[1];
-          
-            $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;			
-          
+
+            $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;
+
             \Storage::disk('local')->put($name,  $new_file);
 
             $attach = $this->url->to('/') . '/download/'.$name;
@@ -1377,7 +1377,7 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function editInfo(Request $request){
-      
+
       $body = $request->data;
       try {
         foreach ($body as $key => $value) {
@@ -1385,23 +1385,23 @@ class PortalSolicitudesTicketController extends Controller
             $data=array(
               "info"=>json_encode($value["info"])
             );
-  
+
           }
 
           if(!empty($value["clave"])){
             $data=array(
               "clave"=>$value["clave"]
             );
-  
+
           }
 
           if(!empty($value["grupo_clave"])){
             $data=array(
               "grupo_clave"=>$value["grupo_clave"]
             );
-  
+
           }
-        
+
           $ticket = $this->ticket->where("id" , $value["id"])->update($data);
         }
 
@@ -1425,7 +1425,7 @@ class PortalSolicitudesTicketController extends Controller
     }
 
 
-    public function getNormales($folio){
+    public function getNormales($folio, $idTicket){
       try {
 
         $id_tramite = env("TRAMITE_5_ISR");
@@ -1436,9 +1436,9 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
-        $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->with(['catalogo'])->get()->toArray();
+        $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->where("id", $idTicket)->with(['catalogo'])->get()->toArray();
 
-      
+
 
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
@@ -1449,7 +1449,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         $ids_tramites= array_column((array)$solicitudes, 'tramite_id');
-      
+
         $idstmts = array_unique($ids_tramites);
 
 
@@ -1525,7 +1525,7 @@ class PortalSolicitudesTicketController extends Controller
 
         }else{
             array_push($files, $value);
-        } 
+        }
 
       }
 
@@ -1533,25 +1533,25 @@ class PortalSolicitudesTicketController extends Controller
       $zip = new \ZipArchive();
 
       // path
-      $publicDir = public_path();  
-      
+      $publicDir = public_path();
+
       // Nombre del zip
       $zipFileName = 'Documentos.zip';
 
       // Crear zip
       if ($zip->open(storage_path('app/'.$zipFileName), \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
           // Loop archivos
-          foreach($files as $file){ 
+          foreach($files as $file){
             $path = storage_path('app/'.$file);
             if(file_exists($path)){
-              $download_file = file_get_contents($path); 
+              $download_file = file_get_contents($path);
               $zip->addFromString(basename($file),$download_file);
-            }     
+            }
           }
           if($zip->numFiles!=0){
             $zip->close();
           }
-          
+
           // close zip
       }
 
@@ -1580,12 +1580,12 @@ class PortalSolicitudesTicketController extends Controller
       ->leftjoin("solicitudes_mensajes", "solicitudes_ticket.id", "=", "solicitudes_mensajes.ticket_id")->get();
 
      $ids = $solicitudes->pluck("id_transaccion")->toArray();
-     $solicitudes = $solicitudes; 
+     $solicitudes = $solicitudes;
       $ids = array_unique($ids);
       $newDato=[];
       foreach($ids as $i => $id){
         $datos=[];
-        foreach ($solicitudes as $d => $value) { 
+        foreach ($solicitudes as $d => $value) {
           if($value->id_transaccion== $id){
             if(!empty($value->info)){
               $info=$this->asignarClavesCatalogo($value->info);
@@ -1596,7 +1596,7 @@ class PortalSolicitudesTicketController extends Controller
             $newDato[$i]["id_transaccion"]=$id;
             $newDato[$i]["tramites"]=$datos;
           }
-        
+
         }
       }
       return $newDato;
