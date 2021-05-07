@@ -444,44 +444,73 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    $user_id = auth()->user()->id;
+    // $user_id = auth()->user()->id;
+    $user_id = 113;
 
-    $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
-    ->select("tk.id", "c.titulo","tk.id_transaccion",
-    "status.descripcion","tk.status","tk.info",
-    "tk.ticket_relacionado", "tk.asignado_a",
-    "tk.created_at", "op.importe_transaccion")
-    ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
-    ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
-    ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
-    ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor');
+    $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->where('solicitudes_ticket.status', '!=', 99)
+     ->where(function($q) use ($user_id){
+      $q->whereNull('solicitudes_ticket.asignado_a')
+        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    })
+    ->whereNotNull('solicitudes_ticket.id_transaccion')
+    ->groupBy('solicitudes_ticket.id_transaccion');
+ 
     if($request->has('tipo_solicitud')){
-        $solicitudes->where('c.id', $request->tipo_solicitud);
+        $filtro->where('c.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
-      $solicitudes->where('tk.status', $request->estatus);
+      $filtro->where('solicitudes_ticket.status', $request->estatus);
     }
 
     if($request->has('id_transaccion')){
-      $solicitudes->where('tk.id_transaccion',  $request->id_transaccion);
+      $filtro->where('solicitudes_ticket.id_transaccion',  $request->id_transaccion);
 
     }
-    $solicitudes->where('tk.status', '!=', 99)
-    ->where(function($q) use ($user_id){
-      $q->whereNull('tk.asignado_a')
-        ->orwhere('tk.asignado_a', $user_id);
-    })
-    ->whereNotNull('tk.id_transaccion')
-    ->orderBy('tk.created_at', 'DESC');
-    $solicitudes = $solicitudes->get();
-    $ids = $solicitudes->pluck("id_transaccion")->toArray();
-    $ids = array_unique($ids);
+    $filtro = $filtro->get()->pluck('id_transaccion')->toArray();
+
+
+    $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
+    ->select("tk.id", "c.titulo","tk.id_transaccion",
+    "status.descripcion","tk.status",
+    "tk.ticket_relacionado", "tk.asignado_a",
+    "c.id as catalogo", "tk.info",
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite")
+    ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
+    ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
+    ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+    ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+    ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
+    // if($request->has('tipo_solicitud')){
+    //     $solicitudes->orwhere('c.id', $request->tipo_solicitud);
+    // }
+
+    // if($request->has('estatus')){
+    //   $solicitudes->where('tk.status', $request->estatus);
+    // }
+
+    // if($request->has('id_transaccion')){
+    //   $solicitudes->where('tk.id_transaccion',  $request->id_transaccion);
+
+    // }
+    // $solicitudes->where('tk.status', '!=', 99)
+    // ->where(function($q) use ($user_id){
+    //   $q->whereNull('tk.asignado_a')
+    //     ->orwhere('tk.asignado_a', $user_id);
+    // })
+    // ->whereNotNull('tk.id_transaccion')
+    ->orderBy('tk.created_at', 'DESC')
+
+    ->whereIn('tk.id_transaccion',$filtro)->get();
+
+    // $ids = $solicitudes->pluck("id_transaccion")->toArray();
+    // $ids = array_unique($ids);
     
     $newDato=[];
-    foreach($ids as $i => $id){
+    foreach($filtro as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) {        
+      foreach ($solicitudes as $d => $value) {     
         if($value->id_transaccion== $id){
           if(isset($value->info)){            
             $info=$this->asignarClavesCatalogo($value->info);
@@ -1034,7 +1063,7 @@ class PortalSolicitudesController extends Controller
   }
 
   public function asignarClavesCatalogo($info){
-    $informacion = json_decode($info, true);
+    $informacion = json_decode($info);
     $campos = [];
     if(isset($informacion->campos)){
       foreach($informacion->campos as $key=>$value){
