@@ -444,8 +444,7 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    // $user_id = auth()->user()->id;
-    $user_id = 113;
+    $user_id = auth()->user()->id;
 
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
     ->select("tk.id", "c.titulo","tk.id_transaccion",
