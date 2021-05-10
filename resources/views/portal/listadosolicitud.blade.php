@@ -304,8 +304,10 @@
         </div>
     </div>
 </div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
+<input type="text" name="configP" id="configP" hidden="true">
 @endsection
 
 @section('scripts')
@@ -317,8 +319,22 @@
 	jQuery(document).ready(function() {
    // TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
-      $(".selectMotivos").css("display", "none");
-    });
+      $(".selectMotivos").css("display", "none")
+      configprelacion();
+    }); 
+function configprelacion()
+{
+  $.ajax({
+      method: "get",            
+      url: "{{ url('/configprelacion') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        document.getElementById("configP").value=response;
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Config", "Notifications") 
+      })
+  }
   function changeMotivos()
   {
     if($("#checkbox1").prop("checked") == true){
@@ -382,7 +398,9 @@
         //console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
         document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
+        //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
         var data=dataPrelacion(JSON.stringify(response));
+        //var data=dataPrelacion({namd:"asd"});
         saveMessage(1,data);
         $(".btnPrelacion").css("display", "none");
         })
@@ -455,6 +473,13 @@
             if(typeof response=== 'object')
             {
             for (n in response) {                 
+                  var total=0;
+                  for(k in response[n].grupo)
+                  {
+                    total=total+parseFloat(response[n].grupo[k].info.costo_final);
+                  }
+                  console.log(response[n]);
+                  Object.assign(response[n],{"costo_final":formatter.format(total)});
                   objectResponse.push(response[n]); 
               }  
               //console.log(objectResponse);
@@ -478,7 +503,7 @@
                 "columns": [
                   {
                 "data": "id_transaccion",
-                "data": "id_transaccion",
+                "data": "costo_final",
                 "grupo":"grupo",
                 "class": 'detectarclick',
                 "width": "2%",
@@ -488,10 +513,10 @@
                 }
               },
                   { "data":"id_transaccion"},
-                  { "data":"id_transaccion"},
+                  { "data":"costo_final"},
                   {
                     "data": "id_transaccion",
-                    "data": "id_transaccion",
+                    "data": "costo_final",
                     "render": getTemplateAcciones
                   }
               ]
@@ -541,14 +566,37 @@
        if(solicitud.status==2)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
-       } //console.log(solicitud.grupo);
+       } 
+       var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+       var lote=searchIndex('lote',solicitud.info.campos);
+       var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
+       var municipio=searchIndex('municipio',solicitud.info.campos);
+       
+       if(typeof (municipio) !== 'object')
+       {
+        Mp=municipio;
+       }else{          
+         Mp=conctenaM(municipio);
+       }
+       var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
+       var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td></td><td></td><td></td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ botonAtender + '</td></tr>'
         
         });
         html+='</table>';
         return html;
+    }
+    function conctenaM(municipio)
+    {
+       var coma='';var Mp='';
+          $.each(municipio, function(i, item) {
+            Mp=Mp + coma + item.nombre;
+            coma=', ';
+          });
+          Mp=Mp+'.';
+        return Mp;
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
@@ -571,6 +619,7 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
+            console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -601,8 +650,16 @@
           for (n in Resp.campos) {  
             if(typeof (Resp.campos[n]) !== 'object') {         
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
-            }          
+            }              
           }
+          var municipio=searchIndex('municipio',Resp.campos);
+            if(typeof (municipio) !== 'object')
+            {
+              Mp=municipio;
+            }else{
+              Mp=conctenaM(municipio);
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
+            }
           if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
           {
             $(".btnPrelacion").css("display", "block");
@@ -729,6 +786,7 @@
       var checkRechazo=$("#checkbox1").prop("checked");
       var msjpublic="1";
       var rechazo=0;
+      var formdata = new FormData();
       if(check==false){
         var msjpublic="0";        
       }
@@ -743,12 +801,13 @@
           mensaje=', Nota: '+mensaje;
         } 
         mensaje="Motivo de rechazo: "+mot +mensaje;
+        formdata.append("rechazo_id",select);
       }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
       }else{
         var fileV = $("#file")[0].files[0];                  
-        var formdata = new FormData();
+        
 
         if(file.length>0){ 
           formdata.append("file", fileV);
@@ -792,23 +851,27 @@
 
   function dataPrelacion(dataP)
   {
-  
     var tramiteMember=$("#itemsTramites option:selected").text();
     var data={};
     var jsn=$("#jsonCode").val();
     var Resp=$.parseJSON(jsn);
-   //console.log(Resp);
-    for (n in Resp.campos) { 
-      if(n.toLowerCase()=="lote")
-      {
-        Object.assign(data,{lote:Resp.campos[n]});
-      }
-      if(n.toLowerCase()=="subsidio")
-      {
-        Object.assign(data,{subsidio:Resp.campos[n]});
-      } 
+    var subsidio_=searchIndex('subsidio',Resp.campos);
+    var municipio_=searchIndex('municipio',Resp.campos);
+    if(typeof (municipio_) !== 'object')
+    {
+        municipio_=[{nombre:municipio_}];
     }
-    dataP=$.parseJSON(dataP); 
+    Mp=conctenaM(municipio_);
+    Object.assign(data,{municipioConc:Mp});    
+    Object.assign(data,{municipio:municipio_});    
+    Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
+    if(typeof (subsidio_) !== 'object' || typeof(dataP.folio)=='undefined' )
+    {
+      Object.assign(data,{subsidio:null});
+    }else{
+      Object.assign(data,{subsidio:subsidio_.nombre});
+    }
+    //dataP=$.parseJSON(dataP); 
     if(typeof(dataP.folio)=='undefined' || typeof(dataP.folio)==null)
     {
     Object.assign(data,{folio:null});
@@ -820,9 +883,16 @@
     Object.assign(data,{hora:dataP.hora});
     }
     
-    Object.assign(data,{razonSocial:Resp.solicitante.razonSocial});
+    Object.assign(data,{Municipio:"Monterrey, NL."});
+    Object.assign(data,{elaboro:"{{ Auth::user()->name }}"});
+    Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
+    Object.assign(data,{folioTramite:$("#idTicket").val()});
+    Object.assign(data,{hojas:searchIndex('hojas',Resp.campos)});
     Object.assign(data,{tramite_id:Resp.tramite_id}); 
     Object.assign(data,{tramite:Resp.tramite}); 
+    Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.campos)});
+    Object.assign(data,{noNotaria:Resp.solicitante.notary.notary_number});
+    Object.assign(data,{recibe:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     if(Resp.costo_final=="undefined")
     {
       Object.assign(data,{costo_final:Resp.detalle.costo_final});
@@ -843,5 +913,26 @@
     document.getElementById('delFile').click();
     
   }
+  function searchIndex(key,jarray)
+  {
+    //console.log(jarray);
+    var config=$.parseJSON($("#configP").val());
+    var response='';
+    $.each(config.solicitudes[key], function(i, item) {  
+
+      if(typeof (jarray[item])!=='undefined')
+      {       
+        response=jarray[item];        
+      }       
+    });  
+    return response;
+  }
+
+   const formatter = new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 2
+    })
 	</script>
+
 @endsection
