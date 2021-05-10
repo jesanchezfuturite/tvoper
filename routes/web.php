@@ -384,7 +384,7 @@ Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarR
 Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles');
 Route::get('/operacion-roles-get-tramites', 'OperacionRolesController@listTramites');
 
-Route::get('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
+Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar');
 Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes');
 Route::get('/atender-solicitudes/{id}', 'PortalSolicitudesController@atenderSolicitud');
 Route::post('/guardar-solicitudes', 'PortalSolicitudesController@guardarSolicitud');
