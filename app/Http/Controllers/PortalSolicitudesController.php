@@ -637,7 +637,20 @@ class PortalSolicitudesController extends Controller
       ]);
       if($request->rechazo==true)
       {
-        $this->updateStatusTicket($ticket_id,3);
+        $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
+        $rch=0;
+        switch ($request->rechazo_id) {
+          case '50':
+            $rch=7;
+            break;
+          case '51':
+            $rch=8;
+            break;
+          default:
+            $rch=3;
+            break;
+        }
+        $this->updateStatusTicket($ticket_id,$rch);
       }
       return response()->json(
         [
@@ -920,8 +933,9 @@ class PortalSolicitudesController extends Controller
       }
     }
     private function savePdfprelacion($path,$data)
-    {
+    {log::info($data);
       $data=json_decode($data);
+
       if($data->fecha==null)
       {
         $fecha=Carbon::now();
@@ -1080,7 +1094,10 @@ class PortalSolicitudesController extends Controller
 
     return $informacion;
 }
-
+ public   function configdocprelacion()
+ {
+    return json_encode(config('docprelacion'));
+ }
 
   
 }
