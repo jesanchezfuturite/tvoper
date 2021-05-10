@@ -213,7 +213,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage(0,{})"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn green btn-file">
@@ -329,7 +329,7 @@ function configprelacion()
       url: "{{ url('/configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
-      console.log(response);   
+      //console.log(response);   
         document.getElementById("configP").value=response;
         })
       .fail(function( msg ) {
@@ -479,7 +479,7 @@ function configprelacion()
                   {
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }
-                  console.log(response[n]);
+                  //console.log(response[n]);
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                   objectResponse.push(response[n]); 
               }  
@@ -505,10 +505,9 @@ function configprelacion()
                   {
                 "data": "id_transaccion",
                 "data": "costo_final",
-                "grupo":"grupo",
                 "class": 'detectarclick',
                 "width": "2%",
-                "render": function ( data, type, row, meta , grupo) {
+                "render": function ( data, type, row, meta) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
@@ -620,7 +619,7 @@ function configprelacion()
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-            console.log(response);
+            //console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -661,11 +660,15 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=null) 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
              $(".btnPrelacion").css("display", "none");
+          }
+          if( asignado_a!=null )
+          {
+
           }
 
          var btn_1=document.getElementById('btn_cerrar_1');
@@ -683,7 +686,7 @@ function configprelacion()
             btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_1.value="continuar";
+            btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
         })
