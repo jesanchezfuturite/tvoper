@@ -445,41 +445,75 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
-
-    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
-    "solicitudes_status.descripcion","solicitudes_ticket.status", 
-    "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
-    "solicitudes_ticket.created_at")
-    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
-
+    $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->where('solicitudes_ticket.status', '!=', 99)
+     ->where(function($q) use ($user_id){
+      $q->whereNull('solicitudes_ticket.asignado_a')
+        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    })
+    ->whereNotNull('solicitudes_ticket.id_transaccion')
+    ->groupBy('solicitudes_ticket.id_transaccion');
+ 
     if($request->has('tipo_solicitud')){
-        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
+        $filtro->where('c.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
-      $solicitudes->where('solicitudes_ticket.status', $request->estatus);
+      $filtro->where('solicitudes_ticket.status', $request->estatus);
     }
 
     if($request->has('id_transaccion')){
-      $solicitudes->where('solicitudes_ticket.id_transaccion',  $request->id_transaccion);
+      $filtro->where('solicitudes_ticket.id_transaccion',  $request->id_transaccion);
 
     }
-    $solicitudes->where('solicitudes_ticket.status', '!=', 99)
-    // ->whereNull('solicitudes_ticket.asignado_a')
-    ->where('solicitudes_ticket.asignado_a', $user_id)
-    ->whereNotNull('solicitudes_ticket.id_transaccion')
-    ->orderBy('solicitudes_ticket.created_at', 'DESC');
-    $solicitudes = $solicitudes->get();
-    $ids = $solicitudes->pluck("id_transaccion")->toArray();
-    $ids = array_unique($ids);
+    $filtro = $filtro->get()->pluck('id_transaccion')->toArray();
 
+
+    $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
+    ->select("tk.id", "c.titulo","tk.id_transaccion",
+    "status.descripcion","tk.status",
+    "tk.ticket_relacionado", "tk.asignado_a",
+    "c.id as catalogo", "tk.info",
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite")
+    ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
+    ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
+    ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
+    ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+    ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
+    // if($request->has('tipo_solicitud')){
+    //     $solicitudes->orwhere('c.id', $request->tipo_solicitud);
+    // }
+
+    // if($request->has('estatus')){
+    //   $solicitudes->where('tk.status', $request->estatus);
+    // }
+
+    // if($request->has('id_transaccion')){
+    //   $solicitudes->where('tk.id_transaccion',  $request->id_transaccion);
+
+    // }
+    // $solicitudes->where('tk.status', '!=', 99)
+    // ->where(function($q) use ($user_id){
+    //   $q->whereNull('tk.asignado_a')
+    //     ->orwhere('tk.asignado_a', $user_id);
+    // })
+    // ->whereNotNull('tk.id_transaccion')
+    ->orderBy('tk.created_at', 'DESC')
+
+    ->whereIn('tk.id_transaccion',$filtro)->get();
+
+    // $ids = $solicitudes->pluck("id_transaccion")->toArray();
+    // $ids = array_unique($ids);
+    
     $newDato=[];
-    foreach($ids as $i => $id){
+    foreach($filtro as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) { 
+      foreach ($solicitudes as $d => $value) {     
         if($value->id_transaccion== $id){
+          if(isset($value->info)){            
+            $info=$this->asignarClavesCatalogo($value->info);
+            $value->info=$info;
+          }
           array_push($datos, $value);
           $newDato[$i]["id_transaccion"]=$id;
           $newDato[$i]["grupo"]=$datos;
@@ -544,7 +578,7 @@ class PortalSolicitudesController extends Controller
     $findP=$this->ticket->findPrelacion($id);
     $id_transaccion = $ticket["id_transaccion"];
     $user_id = auth()->user()->id;
-    $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
+    // $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
 
     $msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
@@ -601,7 +635,20 @@ class PortalSolicitudesController extends Controller
       ]);
       if($request->rechazo==true)
       {
-        $this->updateStatusTicket($ticket_id,3);
+        $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
+        $rch=0;
+        switch ($request->rechazo_id) {
+          case '50':
+            $rch=7;
+            break;
+          case '51':
+            $rch=8;
+            break;
+          default:
+            $rch=3;
+            break;
+        }
+        $this->updateStatusTicket($ticket_id,$rch);
       }
       return response()->json(
         [
@@ -884,8 +931,9 @@ class PortalSolicitudesController extends Controller
       }
     }
     private function savePdfprelacion($path,$data)
-    {
+    {log::info($data);
       $data=json_decode($data);
+
       if($data->fecha==null)
       {
         $fecha=Carbon::now();
@@ -1002,6 +1050,52 @@ class PortalSolicitudesController extends Controller
         ]);   
     }
   }
+
+  public function asignarSolicitud($id){
+      $ticket = $this->ticket->where('id', $id)->first();
+      $findP=$this->ticket->findPrelacion($id);
+      $id_transaccion = $ticket["id_transaccion"];
+      $user_id = auth()->user()->id;
+      try {
+        $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
+           return response()->json(
+            [
+              "Code" => "200",
+              "Message" =>"Solicitud asignada"
+          ]);  
+      } catch (Exception $e) {
+        Log::info('Error Portal - asignar solicitud: '.$e->getMessage());
+       return response()->json(
+            [
+              "Code" => "400",
+              "Message" =>"Error al asignar solicitud"
+          ]);   
+      }
+     
+  }
+
+  public function asignarClavesCatalogo($info){
+    $informacion = json_decode($info);
+    $campos = [];
+    if(isset($informacion->campos)){
+      foreach($informacion->campos as $key=>$value){
+        if(is_numeric($key)){
+          $catalogo= $this->campo->select('descripcion')->where('id',$key)->first();
+          $campos[$catalogo->descripcion] = $value;
+        }else{
+          $campos[$key] = $value;
+        }
+
+      }
+      $informacion->campos = $campos;
+    }
+
+    return $informacion;
+}
+ public   function configdocprelacion()
+ {
+    return json_encode(config('docprelacion'));
+ }
 
   
 }

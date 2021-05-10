@@ -401,6 +401,7 @@ Route::post('/delete-solicitudes-motivos' , 'PortalSolicitudesController@deleteS
 Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite');
 Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite');
 Route::get('/get-info-notary/{user_id}', 'PortalSolicitudesController@getInfoNotary');
+Route::get('/asignar-solicitudes/{id}', 'PortalSolicitudesController@asignarSolicitud');
 
 Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name("RegistrarSolicitud");
 Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
@@ -418,7 +419,7 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
-Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales');
+Route::get('/getInfoNormales/{folio}/{idticket}', 'PortalSolicitudesTicketController@getNormales');
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
 Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles');

@@ -90,7 +90,8 @@
             	<thead>
                 <tr>
                     <th></th>
-                    <th>ID Grupo</th>
+                    <th>Grupo</th>
+                    <th>Total</th>
                     <th></th>
                 </tr>
             </thead>
@@ -106,7 +107,7 @@
       <div class="modal-header">
        
         <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
-          <div class="col-md-3 group-btn1">
+          <div class="col-md-3 group-btn1" style="text-align: right; ">
             <button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
           </div>
         </div>        
@@ -177,33 +178,36 @@
                 <label>Mensaje</label>
                 <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
                 <span class="help-block">&nbsp;</span>
-                <div class='md-checkbox'>
-                  <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
-                    <label for='checkbox1'>
-                    <span></span>
-                    <span class='check'></span> <span class='box'>
-                    </span> Rechazo. </label>
+                <div class="form-group form-md-checkboxes">
+                  <div class="md-checkbox-inline">
+                    <div class='md-checkbox'>
+                      <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
+                        <label for='checkbox1'>
+                        <span></span>
+                        <span class='check'></span> <span class='box'>
+                        </span> Rechazo. </label>
+                    </div>
+                  
+                    <div class='md-checkbox'>
+                      <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
+                        <label for='checkbox30'>
+                        <span></span>
+                        <span class='check'></span> <span class='box'>
+                        </span>  Mensaje Publico. </label>
+                    </div>
+                  </div>
                 </div>
-                <div class="row selectMotivos">
-                  <div class="col-md-12">
+                  <div class="row selectMotivos">
+                    <div class="col-md-12">
                     <span class="help-block">&nbsp;</span> 
                     <label class="col-md-2">Motivos de Rechazo</label>
-                     <div class="col-md-7">
+                      <div class="col-md-7">
                       <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
                         <option value="0">------</option>  
                       </select>
                     </div>
                   </div>
                 </div>
-                <span class="help-block">&nbsp;</span>
-                <div class='md-checkbox'>
-                  <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
-                    <label for='checkbox30'>
-                    <span></span>
-                    <span class='check'></span> <span class='box'>
-                    </span>  Mensaje Publico. </label>
-                </div>
-                
               </div>
             </div>
             <div class="col-md-3">             
@@ -278,7 +282,32 @@
     </div>
   </div>
 </div>
+<div id="portlet-asignar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cerrarModal()"></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> Asignar grupo de solicitudes, con id grupo: <label id="lbl_idgrupo" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" onclick="cerrarModal()">Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="Asignar()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
+<input type="text" name="id_registro" id="id_registro" hidden="true">
+<input type="text" name="configP" id="configP" hidden="true">
 @endsection
 
 @section('scripts')
@@ -290,8 +319,22 @@
 	jQuery(document).ready(function() {
    // TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
-      $(".selectMotivos").css("display", "none");
-    });
+      $(".selectMotivos").css("display", "none")
+      configprelacion();
+    }); 
+function configprelacion()
+{
+  $.ajax({
+      method: "get",            
+      url: "{{ url('/configprelacion') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        document.getElementById("configP").value=response;
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Config", "Notifications") 
+      })
+  }
   function changeMotivos()
   {
     if($("#checkbox1").prop("checked") == true){
@@ -316,6 +359,35 @@
       $("#checkbox30").prop("checked", true);
     }
   }
+  function AsignarGrupo(id,grupo,val)
+  { 
+    var labl=document.getElementById("lbl_habilitar");    
+    document.getElementById("lbl_idgrupo").textContent=grupo;
+    if(val==1)
+    {
+      $('#portlet-asignar').modal('show');
+    }
+    document.getElementById("id_registro").value=id;
+  }
+  function Asignar()
+  {
+    var id_=$("#id_registro").val();
+    $.ajax({
+      method: "get",            
+      url: "{{ url('/asignar-solicitudes') }}"+"/"+id_,
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {     
+        if(response.Code=='200')
+        {
+          findSolicitudes();
+          Command: toastr.success(response.Message, "Notifications")
+        }else{
+          Command: toastr.warning(response.Message, "Notifications")
+        }
+        })
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al Guardar", "Notifications")   });
+  }
   function prelacion()
   {    
    $.ajax({
@@ -326,7 +398,9 @@
         //console.log(response);
         var resp=$.parseJSON(JSON.stringify(response));
         document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
+        //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
         var data=dataPrelacion(JSON.stringify(response));
+        //var data=dataPrelacion({namd:"asd"});
         saveMessage(1,data);
         $(".btnPrelacion").css("display", "none");
         })
@@ -399,6 +473,13 @@
             if(typeof response=== 'object')
             {
             for (n in response) {                 
+                  var total=0;
+                  for(k in response[n].grupo)
+                  {
+                    total=total+parseFloat(response[n].grupo[k].info.costo_final);
+                  }
+                  console.log(response[n]);
+                  Object.assign(response[n],{"costo_final":formatter.format(total)});
                   objectResponse.push(response[n]); 
               }  
               //console.log(objectResponse);
@@ -422,18 +503,20 @@
                 "columns": [
                   {
                 "data": "id_transaccion",
+                "data": "costo_final",
                 "grupo":"grupo",
                 "class": 'detectarclick',
-                "width": "3%",
+                "width": "2%",
                 "render": function ( data, type, row, meta , grupo) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
                   { "data":"id_transaccion"},
+                  { "data":"costo_final"},
                   {
                     "data": "id_transaccion",
-                    
+                    "data": "costo_final",
                     "render": getTemplateAcciones
                   }
               ]
@@ -451,33 +534,69 @@
               $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:100px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
     }
     function getTemplateAcciones( data, type, row, meta){
-      let botonAtender = "<td class='text-center' width='10%'><a class='btn default btn-xs blue' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Asignar' onclick=''> <strong>Asignar ("+row.grupo.length+")</strong> </a></td>";
-      console.log(row.grupo[0]);
-      if(row.grupo[0].status==1)
-        return botonAtender;  
+    var  color_btn='red';
+    var  label_btn='Asignado';
+    var val=0;
+      if(row.grupo[0].asignado_a==null)
+      {
+        color_btn="green";
+        label_btn="Asignar";
+        val=1;
+      }
+      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+     
+      /*if(row.grupo[0].status==1)
+         
       else{
         return "<td class='text-center' width='10%'></td>"
-      }
+      }*/
+       return botonAtender;
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>ID Solicitud</th><th>Titulo</th><th>Estatus</th><th>Fecha Ingreso</th> <th></th></tr>";
+        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='20%'><a class='btn default btn-xs blue-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+       if(solicitud.status==2)
+       {
+         botonAtender="<td class='text-center' width='5%'></td>";
+       } 
+       var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+       var lote=searchIndex('lote',solicitud.info.campos);
+       var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
+       var municipio=searchIndex('municipio',solicitud.info.campos);
        
+       if(typeof (municipio) !== 'object')
+       {
+        Mp=municipio;
+       }else{          
+         Mp=conctenaM(municipio);
+       }
+       var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
+       var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.titulo  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ solicitud.created_at  + '</td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ botonAtender + '</td></tr>'
         
         });
         html+='</table>';
         return html;
+    }
+    function conctenaM(municipio)
+    {
+       var coma='';var Mp='';
+          $.each(municipio, function(i, item) {
+            Mp=Mp + coma + item.nombre;
+            coma=', ';
+          });
+          Mp=Mp+'.';
+        return Mp;
     }
     function tableMsg(){
       $("#addtableMsg div").remove();
@@ -490,7 +609,7 @@
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
     }
-    function findAtender(id,estatus)
+    function findAtender(id,estatus,asignado_a)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
@@ -500,6 +619,7 @@
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
+            console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -530,9 +650,17 @@
           for (n in Resp.campos) {  
             if(typeof (Resp.campos[n]) !== 'object') {         
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
-            }          
+            }              
           }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null) 
+          var municipio=searchIndex('municipio',Resp.campos);
+            if(typeof (municipio) !== 'object')
+            {
+              Mp=municipio;
+            }else{
+              Mp=conctenaM(municipio);
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
+            }
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
@@ -543,21 +671,23 @@
          var btn_2=document.getElementById('btn_cerrar_2'); 
          
           //console.log(btn_1);
-          if(Resp.continuar_solicitud==0)
+          if(asignado_a=="null")
           {
+            btn_1.innerHTML="N/A";
+            btn_2.innerHTML="N/A";
+            btn_2.value="return";             
+          }else if(Resp.continuar_solicitud==0){
             btn_1.innerHTML="Cerrar Ticket";
             btn_2.innerHTML="Cerrar Ticket";
-            btn_1.value="cerrar";
-            btn_2.value="cerrar";             
+            btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_2.innerHTML="Continuar Solicitud";
             btn_1.value="continuar";
             btn_2.value="continuar";
           }
         })
         .fail(function( msg ) {
-         Command: toastr.warning("Error", "Notifications");
+         Command: toastr.warning("Error al obtener el registro", "Notifications");
         });
     }
     function findMessage(id_)    
@@ -656,6 +786,7 @@
       var checkRechazo=$("#checkbox1").prop("checked");
       var msjpublic="1";
       var rechazo=0;
+      var formdata = new FormData();
       if(check==false){
         var msjpublic="0";        
       }
@@ -670,12 +801,13 @@
           mensaje=', Nota: '+mensaje;
         } 
         mensaje="Motivo de rechazo: "+mot +mensaje;
+        formdata.append("rechazo_id",select);
       }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
       }else{
         var fileV = $("#file")[0].files[0];                  
-        var formdata = new FormData();
+        
 
         if(file.length>0){ 
           formdata.append("file", fileV);
@@ -719,23 +851,27 @@
 
   function dataPrelacion(dataP)
   {
-  
     var tramiteMember=$("#itemsTramites option:selected").text();
     var data={};
     var jsn=$("#jsonCode").val();
     var Resp=$.parseJSON(jsn);
-   //console.log(Resp);
-    for (n in Resp.campos) { 
-      if(n.toLowerCase()=="lote")
-      {
-        Object.assign(data,{lote:Resp.campos[n]});
-      }
-      if(n.toLowerCase()=="subsidio")
-      {
-        Object.assign(data,{subsidio:Resp.campos[n]});
-      } 
+    var subsidio_=searchIndex('subsidio',Resp.campos);
+    var municipio_=searchIndex('municipio',Resp.campos);
+    if(typeof (municipio_) !== 'object')
+    {
+        municipio_=[{nombre:municipio_}];
     }
-    dataP=$.parseJSON(dataP); 
+    Mp=conctenaM(municipio_);
+    Object.assign(data,{municipioConc:Mp});    
+    Object.assign(data,{municipio:municipio_});    
+    Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
+    if(typeof (subsidio_) !== 'object' || typeof(dataP.folio)=='undefined' )
+    {
+      Object.assign(data,{subsidio:null});
+    }else{
+      Object.assign(data,{subsidio:subsidio_.nombre});
+    }
+    //dataP=$.parseJSON(dataP); 
     if(typeof(dataP.folio)=='undefined' || typeof(dataP.folio)==null)
     {
     Object.assign(data,{folio:null});
@@ -747,9 +883,16 @@
     Object.assign(data,{hora:dataP.hora});
     }
     
-    Object.assign(data,{razonSocial:Resp.solicitante.razonSocial});
+    Object.assign(data,{Municipio:"Monterrey, NL."});
+    Object.assign(data,{elaboro:"{{ Auth::user()->name }}"});
+    Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
+    Object.assign(data,{folioTramite:$("#idTicket").val()});
+    Object.assign(data,{hojas:searchIndex('hojas',Resp.campos)});
     Object.assign(data,{tramite_id:Resp.tramite_id}); 
     Object.assign(data,{tramite:Resp.tramite}); 
+    Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.campos)});
+    Object.assign(data,{noNotaria:Resp.solicitante.notary.notary_number});
+    Object.assign(data,{recibe:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     if(Resp.costo_final=="undefined")
     {
       Object.assign(data,{costo_final:Resp.detalle.costo_final});
@@ -770,5 +913,26 @@
     document.getElementById('delFile').click();
     
   }
+  function searchIndex(key,jarray)
+  {
+    //console.log(jarray);
+    var config=$.parseJSON($("#configP").val());
+    var response='';
+    $.each(config.solicitudes[key], function(i, item) {  
+
+      if(typeof (jarray[item])!=='undefined')
+      {       
+        response=jarray[item];        
+      }       
+    });  
+    return response;
+  }
+
+   const formatter = new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 2
+    })
 	</script>
+
 @endsection
