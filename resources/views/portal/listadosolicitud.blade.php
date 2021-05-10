@@ -221,7 +221,7 @@
                         <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                        <input type="file" name="file" accept="application/pdf" id="file">
+                        <input type="file" name="file" accept="application/pdf" id="file" >
                         </span>
                         <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
                         </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
@@ -571,13 +571,15 @@ function configprelacion()
        var lote=searchIndex('lote',solicitud.info.campos);
        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
        var municipio=searchIndex('municipio',solicitud.info.campos);
-       
+       var Mp='';
        if(typeof (municipio) !== 'object')
        {
         Mp=municipio;
        }else{          
          Mp=conctenaM(municipio);
        }
+       console.log(solicitud.info.campos);
+       console.log(Mp);
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
@@ -608,6 +610,8 @@ function configprelacion()
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
+      document.getElementById("btn_guardar").disabled = true;
+      document.getElementById("file").disabled = true;
     }
     function findAtender(id,estatus,asignado_a)
     {addInfo();
@@ -666,9 +670,10 @@ function configprelacion()
           }else{
              $(".btnPrelacion").css("display", "none");
           }
-          if( asignado_a!=null )
+          if( asignado_a!='null' )
           {
-
+            document.getElementById("btn_guardar").disabled = false;
+            document.getElementById("file").disabled = false;
           }
 
          var btn_1=document.getElementById('btn_cerrar_1');
@@ -864,8 +869,11 @@ function configprelacion()
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
+        Mp=conctenaM(municipio_);
+    }else{
+       Mp=municipio_;
     }
-    Mp=conctenaM(municipio_);
+    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
@@ -927,10 +935,8 @@ function configprelacion()
       if(typeof jarray[item]!=='undefined')
       {       
         response=jarray[item];        
-      }else{
-        response='';
-      }      
-    });  
+      }    
+    });
     return response;
   }
 

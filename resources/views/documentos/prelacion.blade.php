@@ -502,7 +502,7 @@
                                     </td>
                                   </tr>
                                 </table>
-                                <table role="presentation" border="0" cellpadding="5" cellspacing="0">
+                                <table role="presentation" border="0" cellpadding="1" cellspacing="0">
                                   <thead>
                                       <tr>
                                           <th class="tbl-label">No. Notaria</th>
@@ -642,7 +642,7 @@
                         <div>
                     @endif
                    
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="1"style="width:50%;float: left;position:relative;">
                       <tr>                      
                         <td >
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -659,7 +659,7 @@
                                     </td>
                                   </tr>
                                 </table>
-                                <table role="presentation" border="0" cellpadding="5" cellspacing="0">
+                                <table role="presentation" border="0" cellpadding="1" cellspacing="0">
                                   <thead>
                                       <tr>
                                           <th class="tbl-label">No. Notaria</th>
