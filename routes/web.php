@@ -477,4 +477,3 @@ Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentaje
 
 
 Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
-Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
