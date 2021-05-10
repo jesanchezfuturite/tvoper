@@ -931,7 +931,7 @@ class PortalSolicitudesController extends Controller
       }
     }
     private function savePdfprelacion($path,$data)
-    {log::info($data);
+    {//log::info($data);
       $data=json_decode($data);
 
       if($data->fecha==null)

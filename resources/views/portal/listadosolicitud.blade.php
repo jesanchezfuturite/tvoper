@@ -328,7 +328,8 @@ function configprelacion()
       method: "get",            
       url: "{{ url('/configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {     
+      .done(function (response) { 
+      console.log(response);   
         document.getElementById("configP").value=response;
         })
       .fail(function( msg ) {
@@ -920,10 +921,12 @@ function configprelacion()
     var response='';
     $.each(config.solicitudes[key], function(i, item) {  
 
-      if(typeof (jarray[item])!=='undefined')
+      if(typeof jarray[item]!=='undefined')
       {       
         response=jarray[item];        
-      }       
+      }else{
+        response='';
+      }      
     });  
     return response;
   }
