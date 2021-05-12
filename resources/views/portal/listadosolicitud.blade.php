@@ -429,12 +429,12 @@ function configprelacion()
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  function findMotivosSelect()
+  function findMotivosSelect(catalogo_id)
   {
-    var id_catalogo_=$("#opTipoSolicitud").val();
+    //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
+          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -488,7 +488,7 @@ function configprelacion()
              response=objectResponse;
             }
             
-            findMotivosSelect();
+            //findMotivosSelect();
             createTable(response);  
         })
         .fail(function( msg ) {
@@ -561,7 +561,7 @@ function configprelacion()
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        if(solicitud.status==2)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -617,7 +617,7 @@ function configprelacion()
       document.getElementById("btn_guardar").disabled = true;
       document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a,folioPago)
+    function findAtender(id,estatus,asignado_a,folioPago,catalogo_id)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
@@ -699,6 +699,7 @@ function configprelacion()
             btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
+          findMotivosSelect(catalogo_id);
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al obtener el registro", "Notifications");
