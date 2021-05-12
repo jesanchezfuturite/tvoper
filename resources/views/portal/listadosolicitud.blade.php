@@ -505,7 +505,6 @@ function configprelacion()
                 "columns": [
                   {
                 "data": "id_transaccion",
-                "data": "costo_final",
                 "class": 'detectarclick',
                 "width": "2%",
                 "render": function ( data, type, row, meta) {
@@ -517,7 +516,6 @@ function configprelacion()
                   { "data":"costo_final"},
                   {
                     "data": "id_transaccion",
-                    "data": "costo_final",
                     "render": getTemplateAcciones
                   }
               ]
