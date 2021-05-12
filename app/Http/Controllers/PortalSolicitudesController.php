@@ -609,7 +609,7 @@ class PortalSolicitudesController extends Controller
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
-
+    //log::info($request->all());
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
@@ -633,7 +633,7 @@ class PortalSolicitudesController extends Controller
         'mensaje_para' => $mensaje_para,
         'attach'    =>  $attach
       ]);
-      if($request->rechazo==true)
+      if($request->rechazo===true)
       {
         $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
         $rch=0;
@@ -645,10 +645,12 @@ class PortalSolicitudesController extends Controller
             $rch=8;
             break;
           default:
-            $rch=3;
+            $rch=0;
             break;
         }
-        $this->updateStatusTicket($ticket_id,$rch);
+        if($rch<>0){
+          $this->updateStatusTicket($ticket_id,$rch);
+        }
       }
       return response()->json(
         [
