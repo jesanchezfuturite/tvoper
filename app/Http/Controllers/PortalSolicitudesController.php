@@ -473,7 +473,7 @@ class PortalSolicitudesController extends Controller
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
-    "c.id as catalogo", "tk.info", "tm.id_transaccion_motor",
+    "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
     "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite")
     ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
