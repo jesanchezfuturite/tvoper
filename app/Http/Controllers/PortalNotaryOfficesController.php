@@ -140,6 +140,7 @@ class PortalNotaryOfficesController extends Controller
             $data = $this->flatten([ "users" => $users ]);
         }
         $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users/$user_id";
+
         
         try {
             $res = (new Client())->request(
