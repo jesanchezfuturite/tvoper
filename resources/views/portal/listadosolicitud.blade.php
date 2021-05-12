@@ -213,7 +213,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage(0,{})"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn green btn-file">
@@ -221,7 +221,7 @@
                         <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                        <input type="file" name="file" accept="application/pdf" id="file">
+                        <input type="file" name="file" accept="application/pdf" id="file" >
                         </span>
                         <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
                         </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
@@ -329,7 +329,7 @@ function configprelacion()
       url: "{{ url('/configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
-      console.log(response);   
+      //console.log(response);   
         document.getElementById("configP").value=response;
         })
       .fail(function( msg ) {
@@ -479,7 +479,7 @@ function configprelacion()
                   {
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }
-                  console.log(response[n]);
+                  //console.log(response[n]);
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                   objectResponse.push(response[n]); 
               }  
@@ -505,10 +505,9 @@ function configprelacion()
                   {
                 "data": "id_transaccion",
                 "data": "costo_final",
-                "grupo":"grupo",
                 "class": 'detectarclick',
                 "width": "2%",
-                "render": function ( data, type, row, meta , grupo) {
+                "render": function ( data, type, row, meta) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
@@ -572,13 +571,15 @@ function configprelacion()
        var lote=searchIndex('lote',solicitud.info.campos);
        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
        var municipio=searchIndex('municipio',solicitud.info.campos);
-       
+       var Mp='';
        if(typeof (municipio) !== 'object')
        {
         Mp=municipio;
        }else{          
          Mp=conctenaM(municipio);
        }
+       console.log(solicitud.info.campos);
+       console.log(Mp);
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
@@ -609,6 +610,8 @@ function configprelacion()
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
+      document.getElementById("btn_guardar").disabled = true;
+      document.getElementById("file").disabled = true;
     }
     function findAtender(id,estatus,asignado_a)
     {addInfo();
@@ -620,7 +623,7 @@ function configprelacion()
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-            console.log(response);
+            //console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -661,11 +664,16 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=null) 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
              $(".btnPrelacion").css("display", "none");
+          }
+          if( asignado_a!='null' )
+          {
+            document.getElementById("btn_guardar").disabled = false;
+            document.getElementById("file").disabled = false;
           }
 
          var btn_1=document.getElementById('btn_cerrar_1');
@@ -683,7 +691,7 @@ function configprelacion()
             btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_1.value="continuar";
+            btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
         })
@@ -861,8 +869,11 @@ function configprelacion()
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
+        Mp=conctenaM(municipio_);
+    }else{
+       Mp=municipio_;
     }
-    Mp=conctenaM(municipio_);
+    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
@@ -924,10 +935,8 @@ function configprelacion()
       if(typeof jarray[item]!=='undefined')
       {       
         response=jarray[item];        
-      }else{
-        response='';
-      }      
-    });  
+      }    
+    });
     return response;
   }
 
