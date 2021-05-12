@@ -609,7 +609,7 @@ class PortalSolicitudesController extends Controller
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
-    log::info($request->all());
+    //log::info($request->all());
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
