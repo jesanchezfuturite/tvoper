@@ -378,8 +378,8 @@
                     </tr> 
                     <tr>
                         <td  class="bl-lbl">
-                            <label><strong>Razon Social:</strong></label>
-                            <label>{{$data->razonSocial}}</label>
+                            <label><strong>Nombre del solicitante:</strong></label>
+                            <label>{{$data->solicitanteNombre}}</label>
                         </td>
                     </tr>
                     <tr>
@@ -406,7 +406,7 @@
                     <tr>
                         <td>
                             <label><strong>Valor de operación:</strong></label>
-                            <label>{{$data->valorOperacion}}</label>
+                            <label>{{ is_numeric($data->valorOperacion) ? '$'  .number_format($data->valorOperacion,2) : ' ' }}</label>
                         </td>
                         <td></td>
                     </tr>
@@ -534,8 +534,8 @@
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
-                                          <label><strong>Razon Social:</strong></label>
-                                          <label>{{$data->razonSocial}}</label>
+                                          <label><strong>Nombre del solicitante:</strong></label>
+                                          <label>{{$data->solicitanteNombre}}</label>
                                       </td>
                                   </tr>
                                   <tr>
@@ -558,7 +558,7 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Valor de operación:</strong></label>
-                                          <label>{{$data->valorOperacion}}</label>
+                                          <label>$ {{ is_numeric($data->valorOperacion) ? '$'.  number_format($data->valorOperacion,2) : ' ' }}</label>
                                       </td>
                                       <td></td>
                                   </tr>
@@ -691,8 +691,8 @@
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
-                                          <label><strong>Razon Social:</strong></label>
-                                          <label>{{$data->razonSocial}}</label>
+                                          <label><strong>Nombre del solicitante:</strong></label>
+                                          <label>{{$data->solicitanteNombre}}</label>
                                       </td>
                                   </tr>
                                   <tr>
@@ -715,7 +715,7 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Valor de operación:</strong></label>
-                                          <label>{{$data->valorOperacion}}</label>
+                                          <label> {{ is_numeric($data->valorOperacion) ? '$' . number_format($data->valorOperacion,2) : ' ' }}</label>
                                       </td>
                                       <td></td>
                                   </tr>

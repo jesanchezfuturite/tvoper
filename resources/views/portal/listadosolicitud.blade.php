@@ -578,8 +578,8 @@ function configprelacion()
        }else{          
          Mp=conctenaM(municipio);
        }
-       console.log(solicitud.info.campos);
-       console.log(Mp);
+       //console.log(solicitud.info.campos);
+       //console.log(Mp);
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
@@ -591,13 +591,18 @@ function configprelacion()
         return html;
     }
     function conctenaM(municipio)
-    {
-       var coma='';var Mp='';
-          $.each(municipio, function(i, item) {
+    {var coma='';var Mp='';
+      if(typeof municipio.nombre !=='undefined')
+       {
+        Mp=municipio.nombre;
+       }else{
+         $.each(municipio, function(i, item) {
             Mp=Mp + coma + item.nombre;
             coma=', ';
           });
           Mp=Mp+'.';
+       }
+         
         return Mp;
     }
     function tableMsg(){
@@ -664,7 +669,7 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=null) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
@@ -866,14 +871,24 @@ function configprelacion()
     var Resp=$.parseJSON(jsn);
     var subsidio_=searchIndex('subsidio',Resp.campos);
     var municipio_=searchIndex('municipio',Resp.campos);
+    var nombre_=searchIndex('nombre',Resp.campos);
+    var apellidoMat_=searchIndex('apellidoMat',Resp.campos);
+    var apellidoPat_=searchIndex('apellidoPat',Resp.campos);
+    var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
-        Mp=conctenaM(municipio_);
     }else{
        Mp=municipio_;
     }
-    
+    if(typeof(municipio_.nombre)!=='undefined')
+    {
+      municipio_=[municipio_];
+    }
+    Mp=conctenaM(municipio_);
+    //console.log(municipio_);
+    Object.assign(data,{solicitanteNombre:nombreSolicitante});    
+    Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
@@ -896,7 +911,7 @@ function configprelacion()
     }
     
     Object.assign(data,{Municipio:"Monterrey, NL."});
-    Object.assign(data,{elaboro:"{{ Auth::user()->name }}"});
+    Object.assign(data,{elaboro:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
     Object.assign(data,{folioTramite:$("#idTicket").val()});
     Object.assign(data,{hojas:searchIndex('hojas',Resp.campos)});
@@ -904,7 +919,7 @@ function configprelacion()
     Object.assign(data,{tramite:Resp.tramite}); 
     Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.campos)});
     Object.assign(data,{noNotaria:Resp.solicitante.notary.notary_number});
-    Object.assign(data,{recibe:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
+    Object.assign(data,{recibe:"{{ Auth::user()->name }}"});
     if(Resp.costo_final=="undefined")
     {
       Object.assign(data,{costo_final:Resp.detalle.costo_final});
