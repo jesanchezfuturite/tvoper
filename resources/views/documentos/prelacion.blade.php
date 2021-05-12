@@ -359,7 +359,7 @@
                         <br><label></label>
                       </td>
                       <td><label><strong>Folio Pago</strong></label>
-                        <br><label></label>
+                        <br><label>{{$data->folioPago='null' ? '': $data->folioPago}}</label>
                       </td>
                     </tr> 
                   </table><br>
@@ -520,7 +520,7 @@
                                         <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;"></td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>
@@ -677,7 +677,7 @@
                                         <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;"></td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>

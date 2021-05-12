@@ -308,6 +308,7 @@
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
+<input type="text" name="folioPago" id="folioPago" hidden="true">
 @endsection
 
 @section('scripts')
@@ -562,7 +563,7 @@ function configprelacion()
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        if(solicitud.status==2)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -618,10 +619,11 @@ function configprelacion()
       document.getElementById("btn_guardar").disabled = true;
       document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a)
+    function findAtender(id,estatus,asignado_a,folioPago)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
+      document.getElementById("folioPago").value=folioPago;
       findMessage(id);
       $.ajax({
            method: "GET", 
@@ -909,7 +911,7 @@ function configprelacion()
     Object.assign(data,{fecha:dataP.fecha});
     Object.assign(data,{hora:dataP.hora});
     }
-    
+    Object.assign(data,{folioPago:$("#folioPago").val()});
     Object.assign(data,{Municipio:"Monterrey, NL."});
     Object.assign(data,{elaboro:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
