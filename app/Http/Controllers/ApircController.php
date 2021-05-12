@@ -76,10 +76,10 @@ class ApircController extends Controller
     public function buscarIndividuo(Request $request)
     {   
 
-        $nombre = strtoupper($request->nombre);
-        $apaterno = strtoupper($request->apaterno);
-        $amaterno = strtoupper($request->amaterno);
-        $fechanac = $request->fechanac;
+        $nombre     = strtoupper($request->nombre);
+        $apaterno   = strtoupper($request->apaterno);
+        $amaterno   = strtoupper($request->amaterno);
+        $fechanac   = $request->fechanac;
 
     	$params = array (
     		"NOMBRE" => $nombre,
