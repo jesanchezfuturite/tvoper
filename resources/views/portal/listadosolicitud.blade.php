@@ -92,6 +92,7 @@
                     <th></th>
                     <th>Grupo</th>
                     <th>Total</th>
+                    <th>Solicitudes</th>
                     <th></th>
                 </tr>
             </thead>
@@ -369,7 +370,7 @@ function configprelacion()
     {
       $('#portlet-asignar').modal('show');
     }
-    document.getElementById("id_registro").value=id;
+    document.getElementById("id_registro").value=grupo;
   }
   function Asignar()
   {
@@ -514,6 +515,7 @@ function configprelacion()
               },
                   { "data":"grupo_clave"},
                   { "data":"costo_final"},
+                  { "data":"grupo.length"},
                   {
                     "data": "grupo_clave",
                     "render": getTemplateAcciones
@@ -548,7 +550,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a></td>";
      
       /*if(row.grupo[0].status==1)
          
