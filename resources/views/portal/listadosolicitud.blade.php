@@ -504,7 +504,7 @@ function configprelacion()
                "data": dataS,
                 "columns": [
                   {
-                "data": "id_transaccion",
+                "data": "grupo_clave",
                 "class": 'detectarclick',
                 "width": "2%",
                 "render": function ( data, type, row, meta) {
@@ -512,10 +512,10 @@ function configprelacion()
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data":"id_transaccion"},
+                  { "data":"grupo_clave"},
                   { "data":"costo_final"},
                   {
-                    "data": "id_transaccion",
+                    "data": "grupo_clave",
                     "render": getTemplateAcciones
                   }
               ]
@@ -530,9 +530,9 @@ function configprelacion()
             if ( row.child.isShown() ) {
                 row.child.hide();
                 tr.removeClass('shown');
-              $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+              $("#iconShow-" + row.data().grupo_clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
-                $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
+                $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
                 row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
@@ -548,7 +548,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
      
       /*if(row.grupo[0].status==1)
          
@@ -581,14 +581,14 @@ function configprelacion()
       
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.grupo_clave  +"' class='fa fa-plus'></a>" : '';
          if(solicitud.status==7 || solicitud.status==8)
           {
             clase='warning';
           }else{
             clase='';
           }
-            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.grupo_clave +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
 
         
         });
@@ -949,16 +949,19 @@ function configprelacion()
   }
   function searchIndex(key,jarray)
   {
-    //console.log(jarray);
+    console.log(jarray);
     var config=$.parseJSON($("#configP").val());
     var response='';
-    $.each(config.solicitudes[key], function(i, item) {  
+    if(typeof jarray!=='undefined')
+    {
+      $.each(config.solicitudes[key], function(i, item) {  
 
-      if(typeof jarray[item]!=='undefined')
-      {       
-        response=jarray[item];        
-      }    
-    });
+        if(typeof jarray[item]!=='undefined')
+        {       
+          response=jarray[item];        
+        }    
+      });
+    }
     return response;
   }
 
