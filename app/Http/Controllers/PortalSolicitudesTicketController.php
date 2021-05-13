@@ -985,7 +985,6 @@ class PortalSolicitudesTicketController extends Controller
               "code"		=> 402
             ]);
         }
-
     }
 
 
@@ -1050,7 +1049,6 @@ class PortalSolicitudesTicketController extends Controller
           "code"		=> 402
         ]);
       }
-
     }
     public function filtrarSolicitudes(Request $request){
         $max = Input::get('max');
@@ -1224,6 +1222,7 @@ class PortalSolicitudesTicketController extends Controller
         return $data;
     }
 
+
     public function countFiltrado(Request $request){
         $request = $request->all();
         if(!isset($request["data"])){
@@ -1238,6 +1237,7 @@ class PortalSolicitudesTicketController extends Controller
 
           if(isset($value["pendiente_firma"])){
               $solicitudes->where('solicitudes_catalogo.firma', "1")
+              ->whereNull("solicitudes_ticket.firmado")
               ->whereIn("solicitudes_ticket.status", [2,3])
               ->whereNotNull('solicitudes_ticket.id_transaccion');
           }
@@ -1285,6 +1285,7 @@ class PortalSolicitudesTicketController extends Controller
             $data["count"][$key]=$solicitudes;
 
         }
+
 
         return $data;
     }
@@ -1532,7 +1533,6 @@ class PortalSolicitudesTicketController extends Controller
         }else{
             array_push($files, $value);
         }
-
       }
 
       // inicializar zip
@@ -1608,5 +1608,4 @@ class PortalSolicitudesTicketController extends Controller
       return $newDato;
 
     }
-
 }
