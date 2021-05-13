@@ -557,7 +557,8 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-    function format ( d ) {       
+    function format ( d ) { 
+    var clase='';      
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
@@ -577,13 +578,18 @@ function configprelacion()
        }else{          
          Mp=conctenaM(municipio);
        }
-       //console.log(solicitud.info.campos);
-       //console.log(Mp);
+      
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
-        
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
+         if(solicitud.status==7 || solicitud.status==8)
+          {
+            clase='warning';
+          }else{
+            clase='';
+          }
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
+
         
         });
         html+='</table>';
