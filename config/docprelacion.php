@@ -72,6 +72,19 @@ return array(
 			),
 			"hojas"=>array(
 				"Hojas"
+			),
+			"nombre"=>array(
+				"Nombre",
+				"*Nombre",
+				"1Nombre",
+			),
+			"apellidoMat"=>array(
+				"Apellido materno",
+				"1Apellido Materno"
+			),
+			"apellidoPat"=>array(
+				"Apellido paterno",
+				"1Apellido Paterno"
 			)
 			
 		)

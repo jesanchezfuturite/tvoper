@@ -85,7 +85,7 @@
             </div>
         </div>
          <div class="portlet-body" id="addtables">
-    		<div id="removetable">
+    		<div class="table-responsive">
           		<table class="table table-hover" cellspacing="0" width="100%"  id="example">
             	<thead>
                 <tr>
@@ -308,6 +308,7 @@
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
+<input type="text" name="folioPago" id="folioPago" hidden="true">
 @endsection
 
 @section('scripts')
@@ -428,12 +429,12 @@ function configprelacion()
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  function findMotivosSelect()
+  function findMotivosSelect(catalogo_id)
   {
-    var id_catalogo_=$("#opTipoSolicitud").val();
+    //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
+          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -487,7 +488,7 @@ function configprelacion()
              response=objectResponse;
             }
             
-            findMotivosSelect();
+            //findMotivosSelect();
             createTable(response);  
         })
         .fail(function( msg ) {
@@ -504,7 +505,6 @@ function configprelacion()
                 "columns": [
                   {
                 "data": "id_transaccion",
-                "data": "costo_final",
                 "class": 'detectarclick',
                 "width": "2%",
                 "render": function ( data, type, row, meta) {
@@ -516,7 +516,6 @@ function configprelacion()
                   { "data":"costo_final"},
                   {
                     "data": "id_transaccion",
-                    "data": "costo_final",
                     "render": getTemplateAcciones
                   }
               ]
@@ -560,9 +559,9 @@ function configprelacion()
     }
     function format ( d ) {       
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
+        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
        if(solicitud.status==2)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -578,26 +577,31 @@ function configprelacion()
        }else{          
          Mp=conctenaM(municipio);
        }
-       console.log(solicitud.info.campos);
-       console.log(Mp);
+       //console.log(solicitud.info.campos);
+       //console.log(Mp);
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
         
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
         
         });
         html+='</table>';
         return html;
     }
     function conctenaM(municipio)
-    {
-       var coma='';var Mp='';
-          $.each(municipio, function(i, item) {
+    {var coma='';var Mp='';
+      if(typeof municipio.nombre !=='undefined')
+       {
+        Mp=municipio.nombre;
+       }else{
+         $.each(municipio, function(i, item) {
             Mp=Mp + coma + item.nombre;
             coma=', ';
           });
           Mp=Mp+'.';
+       }
+         
         return Mp;
     }
     function tableMsg(){
@@ -613,10 +617,11 @@ function configprelacion()
       document.getElementById("btn_guardar").disabled = true;
       document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a)
+    function findAtender(id,estatus,asignado_a,folioPago,catalogo_id)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
+      document.getElementById("folioPago").value=folioPago;
       findMessage(id);
       $.ajax({
            method: "GET", 
@@ -664,7 +669,7 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=null) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
@@ -694,6 +699,7 @@ function configprelacion()
             btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
+          findMotivosSelect(catalogo_id);
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al obtener el registro", "Notifications");
@@ -866,14 +872,24 @@ function configprelacion()
     var Resp=$.parseJSON(jsn);
     var subsidio_=searchIndex('subsidio',Resp.campos);
     var municipio_=searchIndex('municipio',Resp.campos);
+    var nombre_=searchIndex('nombre',Resp.campos);
+    var apellidoMat_=searchIndex('apellidoMat',Resp.campos);
+    var apellidoPat_=searchIndex('apellidoPat',Resp.campos);
+    var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
-        Mp=conctenaM(municipio_);
     }else{
        Mp=municipio_;
     }
-    
+    if(typeof(municipio_.nombre)!=='undefined')
+    {
+      municipio_=[municipio_];
+    }
+    Mp=conctenaM(municipio_);
+    //console.log(municipio_);
+    Object.assign(data,{solicitanteNombre:nombreSolicitante});    
+    Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
@@ -894,9 +910,9 @@ function configprelacion()
     Object.assign(data,{fecha:dataP.fecha});
     Object.assign(data,{hora:dataP.hora});
     }
-    
+    Object.assign(data,{folioPago:$("#folioPago").val()});
     Object.assign(data,{Municipio:"Monterrey, NL."});
-    Object.assign(data,{elaboro:"{{ Auth::user()->name }}"});
+    Object.assign(data,{elaboro:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
     Object.assign(data,{folioTramite:$("#idTicket").val()});
     Object.assign(data,{hojas:searchIndex('hojas',Resp.campos)});
@@ -904,7 +920,7 @@ function configprelacion()
     Object.assign(data,{tramite:Resp.tramite}); 
     Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.campos)});
     Object.assign(data,{noNotaria:Resp.solicitante.notary.notary_number});
-    Object.assign(data,{recibe:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
+    Object.assign(data,{recibe:"{{ Auth::user()->name }}"});
     if(Resp.costo_final=="undefined")
     {
       Object.assign(data,{costo_final:Resp.detalle.costo_final});
