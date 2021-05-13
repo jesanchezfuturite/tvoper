@@ -1087,7 +1087,8 @@ class PortalSolicitudesTicketController extends Controller
             `solicitudes_ticket`.`firmado`,
             `solicitudes_ticket`.`id_tramite`,
             `solicitudes_ticket`.`recibo_referencia`,
-            `solicitudes_ticket`.`required_docs`
+            `solicitudes_ticket`.`required_docs`,
+            `solicitudes_ticket`.`grupo_clave`
             ");
             $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
             ->select($select)
@@ -1099,13 +1100,13 @@ class PortalSolicitudesTicketController extends Controller
             if(isset($value["pendiente_firma"])){
                 $solicitudes->where('solicitudes_catalogo.firma', "1")
                 ->whereNull("solicitudes_ticket.firmado")
-                ->where("solicitudes_ticket.status", [2,3])
+                ->where("solicitudes_ticket.status", 2)
                 ->whereNotNull('solicitudes_ticket.id_transaccion');
             }
 
             if(isset($value["firmado"])){
                 $solicitudes->where('solicitudes_catalogo.firma', "1")
-                ->whereIn("solicitudes_ticket.status", [2,3])
+                ->where("solicitudes_ticket.status", 2)
                 ->whereNotNull('solicitudes_ticket.id_transaccion')
                 ->whereNotNull('solicitudes_ticket.firmado');
             }
@@ -1139,7 +1140,12 @@ class PortalSolicitudesTicketController extends Controller
             }
 
             if(isset($value["estatus"])){
-                $solicitudes->where('solicitudes_ticket.status', $value["estatus"]);
+                if($value["estatus"]==3){
+                  $solicitudes->whereIn('solicitudes_ticket.status', [3, 7, 8]);
+                }else{
+                  $solicitudes->where('solicitudes_ticket.status', $value["estatus"]);
+
+                }
             }
             $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
 
