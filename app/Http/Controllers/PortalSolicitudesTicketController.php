@@ -191,17 +191,32 @@ class PortalSolicitudesTicketController extends Controller
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
               $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
-                "clave" => $clave,
-                "grupo_clave" => $grupo,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>$status,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs
-
-              ]);
+              $consultar_status=$this->$ticket->where("id", $value->id)->first();
+              if($consultar_status->status==7){
+                $tramites_finalizados = $this->tramites_finalizados();
+                $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
+                  "clave" => $clave,
+                  "grupo_clave" => $grupo,
+                  "catalogo_id" => $catalogo_id,
+                  "info"=> json_encode($info),
+                  "user_id"=>$user_id,
+                  "en_carrito"=>$carrito,
+                  "required_docs"=>$request->required_docs  
+                ]);
+              }else{
+                $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
+                  "clave" => $clave,
+                  "grupo_clave" => $grupo,
+                  "catalogo_id" => $catalogo_id,
+                  "info"=> json_encode($info),
+                  "user_id"=>$user_id,
+                  "status"=>$status,
+                  "en_carrito"=>$carrito,
+                  "required_docs"=>$request->required_docs
+  
+                ]);
+              }
+      
 
              array_push($ids, $ticket->id);
             }
@@ -939,31 +954,36 @@ class PortalSolicitudesTicketController extends Controller
         $ticket = $this->ticket->where("id", $id)->first();
         $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
         if($solCatalogo->atendido_por==1){
-          try{
-          $solicitudTicket = $this->ticket->where('id',$id)
-          ->update(['status'=>2]);
+          $status=2;
+        }else{
+          $status=1;
+        }
 
+        try{
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>$status]);
+        if($status==2){
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $id,
             'mensaje' => "Solicitud cerrada porque esta asignado al admin"
           ]);
-
-          return json_encode(
-            [
-              "response" 	=> "Tramite finalizado",
-              "code"		=> 200
-            ]);
-
-          } catch (\Exception $e) {
-            return json_encode(
-              [
-                "response" 	=> "Error al actualizar - " . $e->getMessage(),
-                "code"		=> 402
-              ]);
-          }
-
         }
 
+       
+
+        return json_encode(
+          [
+            "response" 	=> "Tramite finalizado",
+            "code"		=> 200
+          ]);
+
+        } catch (\Exception $e) {
+          return json_encode(
+            [
+              "response" 	=> "Error al actualizar - " . $e->getMessage(),
+              "code"		=> 402
+            ]);
+        }
 
     }
 
