@@ -190,6 +190,11 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
+              // $consultar_status=$this->$ticket->where("id", $value->id)->first();
+              // if($consultar_status->status==7){
+              //   $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
+              //   return $tramites;
+              // }
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
@@ -219,6 +224,11 @@ class PortalSolicitudesTicketController extends Controller
               }
             }
           }else{
+            // $consultar_status=$this->$ticket->where("id",$request->id)->first();
+            //   if($consultar_status->status==7){
+            //      $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
+            //     return $tramites;
+            //   }
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "grupo_clave" => $grupo,
@@ -937,8 +947,8 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function tramites_finalizados($id){
         $ticket = $this->ticket->where("id", $id)->first();
-        $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
-        if($solCatalogo->atendido_por==1){
+        $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();       
+        if($solCatalogo->atendido_por==1){         
           try{
           $solicitudTicket = $this->ticket->where('id',$id)
           ->update(['status'=>2]);
