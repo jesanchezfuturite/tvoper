@@ -444,9 +444,11 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    $user_id = auth()->user()->id;
+    // $user_id = auth()->user()->id;
+    $user_id =113;
 
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
      ->where(function($q) use ($user_id){
       $q->whereNull('solicitudes_ticket.asignado_a')
@@ -465,7 +467,10 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('id_solicitud')){
-      $filtro->where('solicitudes_ticket.id',  $request->id_solicitud);
+      // $filtro->where('solicitudes_ticket.id',  $request->id_solicitud);
+      $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
+      ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
+      ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
 
     }
     $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
@@ -1037,10 +1042,10 @@ class PortalSolicitudesController extends Controller
   public function asignarSolicitud($id){
       $ticket = $this->ticket->where('id', $id)->first();
       $findP=$this->ticket->findPrelacion($id);
-      $id_transaccion = $ticket["id_transaccion"];
+      $grupo = $ticket["grupo_clave"];
       $user_id = auth()->user()->id;
       try {
-        $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
+        $asignar=  $this->ticket->where('grupo_clave',$grupo)->update(["asignado_a"=>$user_id]);
            return response()->json(
             [
               "Code" => "200",
