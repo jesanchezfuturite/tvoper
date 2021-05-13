@@ -160,6 +160,14 @@
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio14" name="radio2" class="md-radiobtn" value="FI" >
+                      <label for="radio14">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Indefinido</label>
                     </div>
                   </div>
               </div>
@@ -219,6 +227,14 @@
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio15" name="radio4" class="md-radiobtn" value="FA" >
+                      <label for="radio15">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Anual</label>
                     </div>
                   </div>
               </div>
@@ -692,7 +708,7 @@
       {
         option = document.querySelector('input[name = radio2]:checked').value;
       }
-      if(option=="H"  || option =="L")
+      if(option=="H"  || option =="L" || option == "F")
       {
         if(valor.length==0)
         {
@@ -765,13 +781,16 @@
           {costo="Millar";
           }else if(item.costo=='N')
           {costo="No Aplica";
-          }else if(item.costo=="L"){ costo="Lote";}
+          }else if(item.costo=="L"){ costo="Lote";
+          }else if(item.costo=="F"){ costo="Indefinido";}
           else{
             costo="N/A";
           }
           if(item.tipo_costo_fijo=='C')
           {costoFijo="Cuotas";
           }else if(item.tipo_costo_fijo=='P')
+          {costoFijo="Pesos";
+          }else if(item.tipo_costo_fijo=='F')
           {costoFijo="Pesos";
           }else{
             costoFijo="N/A";
