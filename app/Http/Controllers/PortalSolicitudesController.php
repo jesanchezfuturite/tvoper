@@ -633,9 +633,9 @@ class PortalSolicitudesController extends Controller
         'mensaje_para' => $mensaje_para,
         'attach'    =>  $attach
       ]);
-      if($request->rechazo===true)
+      if($request->rechazo==true)
       {
-        $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
+        
         $rch=0;
         switch ($request->rechazo_id) {
           case '50':
@@ -650,6 +650,7 @@ class PortalSolicitudesController extends Controller
         }
         if($rch<>0){
           $this->updateStatusTicket($ticket_id,$rch);
+          $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
         }
       }
       return response()->json(
