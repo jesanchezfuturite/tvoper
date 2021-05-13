@@ -370,7 +370,7 @@ function configprelacion()
     {
       $('#portlet-asignar').modal('show');
     }
-    document.getElementById("id_registro").value=grupo;
+    document.getElementById("id_registro").value=id;
   }
   function Asignar()
   {
