@@ -445,6 +445,7 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
+
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->where('solicitudes_ticket.status', '!=', 99)
      ->where(function($q) use ($user_id){
@@ -452,7 +453,8 @@ class PortalSolicitudesController extends Controller
         ->orwhere('solicitudes_ticket.asignado_a', $user_id);
     })
     ->whereNotNull('solicitudes_ticket.id_transaccion')
-    ->groupBy('solicitudes_ticket.id_transaccion');
+    ->whereNotNull('solicitudes_ticket.grupo_clave')
+    ->groupBy('solicitudes_ticket.grupo_clave');
  
     if($request->has('tipo_solicitud')){
         $filtro->where('c.id', $request->tipo_solicitud);
@@ -462,11 +464,11 @@ class PortalSolicitudesController extends Controller
       $filtro->where('solicitudes_ticket.status', $request->estatus);
     }
 
-    if($request->has('id_transaccion')){
-      $filtro->where('solicitudes_ticket.id_transaccion',  $request->id_transaccion);
+    if($request->has('id_solicitud')){
+      $filtro->where('solicitudes_ticket.id',  $request->id_solicitud);
 
     }
-    $filtro = $filtro->get()->pluck('id_transaccion')->toArray();
+    $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
 
 
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
@@ -474,48 +476,26 @@ class PortalSolicitudesController extends Controller
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
     "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
-    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite")
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", "tk.grupo_clave")
     ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
     ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
-    // if($request->has('tipo_solicitud')){
-    //     $solicitudes->orwhere('c.id', $request->tipo_solicitud);
-    // }
-
-    // if($request->has('estatus')){
-    //   $solicitudes->where('tk.status', $request->estatus);
-    // }
-
-    // if($request->has('id_transaccion')){
-    //   $solicitudes->where('tk.id_transaccion',  $request->id_transaccion);
-
-    // }
-    // $solicitudes->where('tk.status', '!=', 99)
-    // ->where(function($q) use ($user_id){
-    //   $q->whereNull('tk.asignado_a')
-    //     ->orwhere('tk.asignado_a', $user_id);
-    // })
-    // ->whereNotNull('tk.id_transaccion')
     ->orderBy('tk.created_at', 'DESC')
-
-    ->whereIn('tk.id_transaccion',$filtro)->get();
-
-    // $ids = $solicitudes->pluck("id_transaccion")->toArray();
-    // $ids = array_unique($ids);
+    ->whereIn('tk.grupo_clave',$filtro)->get();
     
     $newDato=[];
     foreach($filtro as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) {     
-        if($value->id_transaccion== $id){
+        if($value->grupo_clave== $id){
           if(isset($value->info)){            
             $info=$this->asignarClavesCatalogo($value->info);
             $value->info=$info;
           }
           array_push($datos, $value);
-          $newDato[$i]["id_transaccion"]=$id;
+          $newDato[$i]["grupo_clave"]=$id;
           $newDato[$i]["grupo"]=$datos;
         }
       
