@@ -85,6 +85,7 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function registrarSolicitud(Request $request){
       $name= \Request::route()->getName();
+      $status="";
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
       }else{
@@ -185,8 +186,7 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
 
-        }
-        if($status==90){
+        }else if($status==90){
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
@@ -248,8 +248,7 @@ class PortalSolicitudesTicketController extends Controller
 
             }
           }
-        }
-        if($status==7){ 
+        }else{
           $estatus = $tramite->atendido_por=1 ? 2 : 1;        
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
@@ -308,6 +307,7 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
+          
 
       } catch (\Exception $e) {
         Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
