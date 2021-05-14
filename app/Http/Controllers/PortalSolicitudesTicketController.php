@@ -226,7 +226,7 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $consultar_status=$this->ticket->where("id",$request->id)->first();
               if($consultar_status["status"]==7){
-                 $tramites = $this->tramites_finalizados($value->id, $consultar_status["status"], $info);
+                 $tramites = $this->tramites_finalizados($request->id, $consultar_status["status"], $info);
                 return $tramites;
               }
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
