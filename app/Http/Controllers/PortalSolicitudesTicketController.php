@@ -191,8 +191,8 @@ class PortalSolicitudesTicketController extends Controller
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
               $consultar_status=$this->ticket->where("id", $value->id)->first();
-              if($consultar_status->status==7){
-                $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
+              if($consultar_status["status"]==7){
+                $tramites = $this->tramites_finalizados($value->id, $consultar_status["status"], $info);
                 return $tramites;
               }
               $data==1 ? $info->solicitante=$value :  $info=$value;
@@ -225,8 +225,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }else{
             $consultar_status=$this->ticket->where("id",$request->id)->first();
-              if($consultar_status->status==7){
-                 $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
+              if($consultar_status["status"]==7){
+                 $tramites = $this->tramites_finalizados($value->id, $consultar_status["status"], $info);
                 return $tramites;
               }
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
