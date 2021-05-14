@@ -190,7 +190,7 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
-              $consultar_status=$this->$ticket->where("id", $value->id)->first();
+              $consultar_status=$this->ticket->where("id", $value->id)->first();
               if($consultar_status->status==7){
                 $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
                 return $tramites;
@@ -224,7 +224,7 @@ class PortalSolicitudesTicketController extends Controller
               }
             }
           }else{
-            $consultar_status=$this->$ticket->where("id",$request->id)->first();
+            $consultar_status=$this->ticket->where("id",$request->id)->first();
               if($consultar_status->status==7){
                  $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
                 return $tramites;
