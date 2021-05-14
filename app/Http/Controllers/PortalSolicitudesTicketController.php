@@ -96,6 +96,7 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has("status") && $request->status==7){
         $status=7;
       }
+      
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
@@ -187,7 +188,7 @@ class PortalSolicitudesTicketController extends Controller
           }
 
         }
-        if($status==90){
+        if($status==99){
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
