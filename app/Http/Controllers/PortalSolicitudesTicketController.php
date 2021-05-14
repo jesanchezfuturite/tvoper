@@ -190,11 +190,6 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
-              $consultar_status=$this->ticket->where("id", $value->id)->first();
-              if($consultar_status["status"]==7){
-                $tramites = $this->tramites_finalizados($value->id, $consultar_status["status"], $info);
-                return $tramites;
-              }
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
@@ -224,11 +219,6 @@ class PortalSolicitudesTicketController extends Controller
               }
             }
           }else{
-            $consultar_status=$this->ticket->where("id",$request->id)->first();
-              if($consultar_status["status"]==7){
-                 $tramites = $this->tramites_finalizados($request->id, $consultar_status["status"], $info);
-                return $tramites;
-              }
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "grupo_clave" => $grupo,
@@ -246,7 +236,7 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    ];
+                    ];  return $tramites;
                   $this->saveFile($data);
                 }
 
@@ -945,40 +935,25 @@ class PortalSolicitudesTicketController extends Controller
         log::info("error PortalSolicitudesTicketController@downloadFile" .$e->getMessage());
       }
     }
-    public function tramites_finalizados($id, $status="", $info=""){
-        $ticket = $this->ticket->where("id", $id)->first();
-        $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();   
-        try {
-          if($solCatalogo->atendido_por==1){
-            if(isset($status) && $status==7){
-              $solicitudTicket = $this->ticket->where('id',$id)
-              ->update(['status'=>2, 'info'=>json_encode($info)]);
-              $mensajes =$this->mensajes->create([
-                'ticket_id'=> $id,
-                'mensaje' => "Solicitud cerrada porque esta asignado al admin"
-                ]);
-             
-            }else{
-              $solicitudTicket = $this->ticket->where('id',$id)
-              ->update(['status'=>2]);
-              $mensajes =$this->mensajes->create([
-                'ticket_id'=> $id,
-                'mensaje' => "Solicitud cerrada porque esta asignado al admin"
-                ]);           
-            }
-         
-            
-          }else{         
-             if(isset($status) && $status==7){
-              $solicitudTicket = $this->ticket->where('id',$id)
-              ->update(['status'=>1, 'info'=>json_encode($info)]);
-            }
-          }
+    public function tramites_finalizados($id){
+      $ticket = $this->ticket->where("id", $id)->first();
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();       
+      if($solCatalogo->atendido_por==1){         
+        try{
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>2]);
 
-          return json_encode([
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $id,
+          'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+        ]);
+
+        return json_encode(
+          [
             "response" 	=> "Tramite finalizado",
             "code"		=> 200
           ]);
+
         } catch (\Exception $e) {
           return json_encode(
             [
@@ -986,8 +961,11 @@ class PortalSolicitudesTicketController extends Controller
               "code"		=> 402
             ]);
         }
-  
-    }
+
+      }
+
+
+  }
 
     public function guardarCarrito($id, $status){
         try{
