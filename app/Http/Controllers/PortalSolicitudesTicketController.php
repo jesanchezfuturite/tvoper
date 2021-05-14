@@ -324,6 +324,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
+            "id"=> $ids
           ]
         );
     }
