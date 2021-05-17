@@ -85,12 +85,18 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function registrarSolicitud(Request $request){
       $name= \Request::route()->getName();
+      $status="";
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
-      }else{
-        $status=99;
-
       }
+      if($name=="RegistrarSolicitud"){
+        $status=99;
+      }
+
+      if($request->has("status") && $request->status==7){
+        $status=7;
+      }
+      
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
@@ -181,7 +187,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
 
-        }else{
+        }
+        if($status==99){
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
@@ -190,11 +197,6 @@ class PortalSolicitudesTicketController extends Controller
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
             foreach($datosrecorrer as $key => $value){
-              // $consultar_status=$this->$ticket->where("id", $value->id)->first();
-              // if($consultar_status->status==7){
-              //   $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
-              //   return $tramites;
-              // }
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
                 "clave" => $clave,
@@ -224,11 +226,6 @@ class PortalSolicitudesTicketController extends Controller
               }
             }
           }else{
-            // $consultar_status=$this->$ticket->where("id",$request->id)->first();
-            //   if($consultar_status->status==7){
-            //      $tramites = $this->tramites_finalizados($value->id, $consultar_status->status, $info);
-            //     return $tramites;
-            //   }
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "grupo_clave" => $grupo,
@@ -246,7 +243,66 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    ];
+                    ];  return $tramites;
+                  $this->saveFile($data);
+                }
+
+
+            }
+          }
+        }
+        if($status==7){
+          $estatus = $tramite->atendido_por=1 ? 2 : 1;        
+          if(!empty($datosrecorrer)){
+            $datosrecorrer = json_decode($datosrecorrer);
+            foreach($datosrecorrer as $key => $value){
+              $data==1 ? $info->solicitante=$value :  $info=$value;
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
+                "clave" => $clave,
+                "grupo_clave" => $grupo,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),
+                "user_id"=>$user_id,
+                "status"=>$estatus,
+                "en_carrito"=>$carrito,
+                "required_docs"=>$request->required_docs
+
+              ]);
+
+             array_push($ids, $ticket->id);
+            }
+            $first_id = reset($ids);
+            if($request->has("file")){
+              foreach ($request->file as $key => $value) {
+                $data =[
+                  'ticket_id'=> $first_id,
+                  'mensaje' => $request->descripcion[$key],
+                  'file'    =>  $value
+                  ];
+
+                  $this->saveFile($data);
+
+              }
+            }
+          }else{
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+              "clave" => $clave,
+              "grupo_clave" => $grupo,
+              "catalogo_id" => $catalogo_id,
+              "info"=> json_encode($info),
+              "user_id"=>$user_id,
+              "status"=>$estatus,
+              "en_carrito"=>$carrito,
+              "required_docs"=>$request->required_docs
+            ]);
+
+            if($request->has("file")){
+               foreach ($request->file as $key => $value) {
+                  $data =[
+                    'ticket_id'=> $ticket->id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value,
+                    ];  
                   $this->saveFile($data);
                 }
 
@@ -270,6 +326,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
+            "id"=> $ids
           ]
         );
     }
@@ -946,36 +1003,36 @@ class PortalSolicitudesTicketController extends Controller
       }
     }
     public function tramites_finalizados($id){
-        $ticket = $this->ticket->where("id", $id)->first();
-        $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();       
-        if($solCatalogo->atendido_por==1){         
-          try{
-          $solicitudTicket = $this->ticket->where('id',$id)
-          ->update(['status'=>2]);
+      $ticket = $this->ticket->where("id", $id)->first();
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();       
+      if($solCatalogo->atendido_por==1){         
+        try{
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['status'=>2]);
 
-          $mensajes =$this->mensajes->create([
-            'ticket_id'=> $id,
-            'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+        $mensajes =$this->mensajes->create([
+          'ticket_id'=> $id,
+          'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+        ]);
+
+        return json_encode(
+          [
+            "response" 	=> "Tramite finalizado",
+            "code"		=> 200
           ]);
 
+        } catch (\Exception $e) {
           return json_encode(
             [
-              "response" 	=> "Tramite finalizado",
-              "code"		=> 200
+              "response" 	=> "Error al actualizar - " . $e->getMessage(),
+              "code"		=> 402
             ]);
-
-          } catch (\Exception $e) {
-            return json_encode(
-              [
-                "response" 	=> "Error al actualizar - " . $e->getMessage(),
-                "code"		=> 402
-              ]);
-          }
-
         }
 
+      }
 
-    }
+
+  }
 
     public function guardarCarrito($id, $status){
         try{
@@ -1618,4 +1675,5 @@ class PortalSolicitudesTicketController extends Controller
       return $newDato;
 
     }
+
 }
