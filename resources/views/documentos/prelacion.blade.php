@@ -344,22 +344,22 @@
                   <table role="presentation" border="0" cellpadding="10" cellspacing="0" style="width: 100%; padding:0px 10px 0px 10px !important;">
                     <tr>
                       <td><label><strong>No. Notaria</strong></label>
-                        <br><label></label>
+                        <br><label>{{$data->noNotaria}}</label>
                       </td>
                       <td><label><strong>Municipio</strong></label>
-                        <br><label></label>
+                        <br><label>{{$data->Municipio}}</label>
                       </td>
                       <td><label><strong>Fecha</strong></label>
                         <br><label>{{$data->fecha}}</label>
                       </td>
                       <td><label><strong>Folio trámite</strong></label>
-                        <br><label></label>
+                        <br><label>{{$data->folioTramite}}</label>
                       </td>
                       <td><label><strong>No. Control</strong></label>
                         <br><label></label>
                       </td>
                       <td><label><strong>Folio Pago</strong></label>
-                        <br><label></label>
+                        <br><label>{{$data->folioPago='null' ? '': $data->folioPago}}</label>
                       </td>
                     </tr> 
                   </table><br>
@@ -378,14 +378,14 @@
                     </tr> 
                     <tr>
                         <td  class="bl-lbl">
-                            <label><strong>Razon Social:</strong></label>
-                            <label></label>
+                            <label><strong>Nombre del solicitante:</strong></label>
+                            <label>{{$data->solicitanteNombre}}</label>
                         </td>
                     </tr>
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Municipio destino:</strong></label>
-                            <label></label>
+                            <label>{{$data->municipioConc}}</label>
                         </td>
                     </tr>
                   </tbody>
@@ -399,14 +399,14 @@
                     <tr>
                         <td>
                             <label><strong>No. partida</strong></label>
-                            <label>0000</label>
+                            <label>{{$data->subsidio}}</label>
                         </td>
                         <td></td>
                     </tr> 
                     <tr>
                         <td>
                             <label><strong>Valor de operación:</strong></label>
-                            <label></label>
+                            <label>{{ is_numeric($data->valorOperacion) ? '$'  .number_format($data->valorOperacion,2) : ' ' }}</label>
                         </td>
                         <td></td>
                     </tr>
@@ -444,7 +444,7 @@
                     <tr>
                         <td > 
                           <label><strong>Elaboró:</strong></label>
-                          <label></label>
+                          <label>{{$data->elaboro}}</label>
                             
                         </td>
                         <td></td>                        
@@ -452,7 +452,7 @@
                     <tr>
                         <td>
                             <label><strong>Recibe:</strong></label>
-                            <label></label>
+                            <label>{{$data->recibe}}</label>
                         </td>
                         <td></td>
                     </tr> 
@@ -477,162 +477,321 @@
                   </table>
                   <br>
                   <br>
-                  @for ($i = 0; $i < 6; $i++)
-                  @if( $i==1 || $i==3 || $i==5)
-                      <div style="page-break-after:always;">
-                    @else
-                      <div>
-                  @endif
-                 
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
-                    <tr>                      
-                      <td >
-                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                  <td> 
-                                    <div style="position: relative;">
-                                      <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
-                                      <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
-                                    </div>
-                                   <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
-                                   <br> 
-                                   <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
-                                   <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
-                                  </td>
-                                </tr>
+                  @if(count($data->municipio)>1)
+                    @foreach(json_decode(json_encode($data->municipio),true) as  $indexKey => $munp)
+                      @if( $indexKey==1 || $indexKey==3 || $indexKey==5 || $indexKey==7 || $indexKey==9 || $indexKey==11)
+                          <div style="page-break-after:always;">
+                        @else
+                          <div>
+                      @endif
+                   
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
+                      <tr>                      
+                        <td >
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                    <td> 
+                                      <div style="position: relative;">
+                                        <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
+                                        <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
+                                      </div>
+                                     <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
+                                     <br> 
+                                     <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
+                                     <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
+                                    </td>
+                                  </tr>
+                                </table>
+                                <table role="presentation" border="0" cellpadding="1" cellspacing="0">
+                                  <thead>
+                                      <tr>
+                                          <th class="tbl-label">No. Notaria</th>
+                                          <th class="tbl-label">Municipio</th>
+                                          <th class="tbl-label">Fecha</th>
+                                          <th class="tbl-label">Folio trámite</th>
+                                          <th class="tbl-label">No. Control</th>
+                                          <th class="tbl-label">Folio Pago</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->Municipio}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;"></td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
+                                      </tr>
+                                  </tbody> 
+                                </table><br>
+                                <center>
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Nombre del trámite:</strong></label>
+                                          <label>{{$data->tramite}}</label>
+                                      </td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Nombre del solicitante:</strong></label>
+                                          <label>{{$data->solicitanteNombre}}</label>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Municipio destino:</strong></label>
+                                          <label>{{$munp["nombre"]}}</label>
+                                      </td>
+                                  </tr>
+                                </table>
+                            </center>
+                            <br>
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>No. partida</strong></label>
+                                          <label>{{$data->subsidio}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Valor de operación:</strong></label>
+                                          <label>$ {{ is_numeric($data->valorOperacion) ? '$'.  number_format($data->valorOperacion,2) : ' ' }}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Unidad de calculo:</strong></label>
+                                          <label></label>
+                                      </td>
+                                      <td></td>                        
+                                  </tr>
+                                  <tr>
+                                      <td width="70%" class="tbl-label">
+                                          <label><strong>Hojas o lotes:</strong></label>
+                                          <label></label>
+                                      </td>
+                                      <td width="15%" class="tbl-label">
+                                          <label><strong>Derecho-15215900:</strong></label>
+                                      </td>
+                                      <td width="15%" class="tbl-label">
+                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                      </td>
+                                  </tr> 
+                                  <tr>
+                                      <td width="70%" class="tbl-label">
+                                          <label><strong>Oficio o decreto:</strong></label>
+                                          <label></label><label>
+                                      </td>
+                                      <td width="10%" class="tbl-label">
+                                          <label><strong>TOTAL:</strong></label>
+                                      </td>
+                                      <td width="10%" class="tbl-label">
+                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <strong>Elaboró:</strong></label>
+                                          <label>{{$data->elaboro}}</label>
+                                      </td>
+                                      <td></td>                        
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Recibe:</strong></label>
+                                          <label>{{$data->recibe}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>IMPORTE CON LETRA:</strong></label>
+                                          <label>{{$importe_letra}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr>
+                                </table>
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                      <td class="tbl-label">    
+                                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                                             <center> 
+                                              <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
+                                             </center>
+                                          <center>{{$data->folio}}</center>                         
+                                    </td>
+                                  </tr>
                               </table>
-                              <table role="presentation" border="0" cellpadding="5" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th class="tbl-label">No. Notaria</th>
-                                        <th class="tbl-label">Municipio</th>
-                                        <th class="tbl-label">Fecha</th>
-                                        <th class="tbl-label">Folio trámite</th>
-                                        <th class="tbl-label">No. Control</th>
-                                        <th class="tbl-label">Folio Pago</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                      <td class="tbl-label"></td>
-                                      <td class="tbl-label"></td>
-                                      <td class="tbl-label">{{$data->fecha}}</td>
-                                      <td class="tbl-label"></td>
-                                      <td class="tbl-label"></td>
-                                      <td class="tbl-label"></td>
-                                    </tr>
-                                </tbody> 
-                              </table><br>
-                              <center>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Nombre del trámite:</strong></label>
-                                        <label>{{$data->tramite}}</label>
-                                    </td>
-                                </tr> 
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Razon Social:</strong></label>
-                                        <label></label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Municipio destino:</strong></label>
-                                        <label></label>
-                                    </td>
-                                </tr>
-                              </table>
-                          </center>
-                          <br>
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>No. partida</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td></td>
-                                </tr> 
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Valor de operación:</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Unidad de calculo:</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td></td>                        
-                                </tr>
-                                <tr>
-                                    <td width="70%" class="tbl-label">
-                                        <label><strong>Hojas o lotes:</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td width="15%" class="tbl-label">
-                                        <label><strong>Derecho-15215900:</strong></label>
-                                    </td>
-                                    <td width="15%" class="tbl-label">
-                                        <label>$ {{number_format($data->costo_final,2)}}</label>
-                                    </td>
-                                </tr> 
-                                <tr>
-                                    <td width="70%" class="tbl-label">
-                                        <label><strong>Oficio o decreto:</strong></label>
-                                        <label></label><label>
-                                    </td>
-                                    <td width="10%" class="tbl-label">
-                                        <label><strong>TOTAL:</strong></label>
-                                    </td>
-                                    <td width="10%" class="tbl-label">
-                                        <label>$ {{number_format($data->costo_final,2)}}</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="tbl-label">
-                                        <strong>Elaboró:</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td></td>                        
-                                </tr>
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>Recibe:</strong></label>
-                                        <label></label>
-                                    </td>
-                                    <td></td>
-                                </tr> 
-                                <tr>
-                                    <td class="tbl-label">
-                                        <label><strong>IMPORTE CON LETRA:</strong></label>
-                                        <label>{{$importe_letra}}</label>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                              </table>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td class="tbl-label">    
-                                        <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
-                                           <center> 
-                                            <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
-                                           </center>
-                                        <center>{{$data->folio}}</center>                         
-                                  </td>
-                                </tr>
-                            </table>
-                        </td>
-                                            
-                    </tr>
+                          </td>
+                                              
+                      </tr>
 
-                  </table> 
-                  </div>
-                  
-                  @endfor 
+                    </table> 
+                    </div>
+                    
+                    @endforeach
+                  @else
+                    @for ($i = 0; $i < 2; $i++)
+                    @if( $i==1 || $i==3 || $i==5)
+                        <div style="page-break-after:always;">
+                      @else
+                        <div>
+                    @endif
+                   
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="1"style="width:50%;float: left;position:relative;">
+                      <tr>                      
+                        <td >
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                    <td> 
+                                      <div style="position: relative;">
+                                        <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
+                                        <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
+                                      </div>
+                                     <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
+                                     <br> 
+                                     <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
+                                     <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
+                                    </td>
+                                  </tr>
+                                </table>
+                                <table role="presentation" border="0" cellpadding="1" cellspacing="0">
+                                  <thead>
+                                      <tr>
+                                          <th class="tbl-label">No. Notaria</th>
+                                          <th class="tbl-label">Municipio</th>
+                                          <th class="tbl-label">Fecha</th>
+                                          <th class="tbl-label">Folio trámite</th>
+                                          <th class="tbl-label">No. Control</th>
+                                          <th class="tbl-label">Folio Pago</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <tr>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->Municipio}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;"></td>
+                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
+                                      </tr>
+                                  </tbody> 
+                                </table><br>
+                                <center>
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Nombre del trámite:</strong></label>
+                                          <label>{{$data->tramite}}</label>
+                                      </td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Nombre del solicitante:</strong></label>
+                                          <label>{{$data->solicitanteNombre}}</label>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Municipio destino:</strong></label>
+                                          @foreach(json_decode(json_encode($data->municipio),true) as $munpd)<label>{{$munpd["nombre"]}}</label>@endforeach
+                                      </td>
+                                  </tr>
+                                </table>
+                            </center>
+                            <br>
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>No. partida</strong></label>
+                                          <label>{{$data->subsidio}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Valor de operación:</strong></label>
+                                          <label> {{ is_numeric($data->valorOperacion) ? '$' . number_format($data->valorOperacion,2) : ' ' }}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Unidad de calculo:</strong></label>
+                                          <label></label>
+                                      </td>
+                                      <td></td>                        
+                                  </tr>
+                                  <tr>
+                                      <td width="70%" class="tbl-label">
+                                          <label><strong>Hojas o lotes:</strong></label>
+                                          <label></label>
+                                      </td>
+                                      <td width="15%" class="tbl-label">
+                                          <label><strong>Derecho-15215900:</strong></label>
+                                      </td>
+                                      <td width="15%" class="tbl-label">
+                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                      </td>
+                                  </tr> 
+                                  <tr>
+                                      <td width="70%" class="tbl-label">
+                                          <label><strong>Oficio o decreto:</strong></label>
+                                          <label></label><label>
+                                      </td>
+                                      <td width="10%" class="tbl-label">
+                                          <label><strong>TOTAL:</strong></label>
+                                      </td>
+                                      <td width="10%" class="tbl-label">
+                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <strong>Elaboró:</strong></label>
+                                          <label>{{$data->elaboro}}</label>
+                                      </td>
+                                      <td></td>                        
+                                  </tr>
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>Recibe:</strong></label>
+                                          <label>{{$data->recibe}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr> 
+                                  <tr>
+                                      <td class="tbl-label">
+                                          <label><strong>IMPORTE CON LETRA:</strong></label>
+                                          <label>{{$importe_letra}}</label>
+                                      </td>
+                                      <td></td>
+                                  </tr>
+                                </table>
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                  <tr>
+                                      <td class="tbl-label">    
+                                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                                             <center> 
+                                              <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
+                                             </center>
+                                          <center>{{$data->folio}}</center>                         
+                                    </td>
+                                  </tr>
+                              </table>
+                          </td>
+                                              
+                      </tr>
+
+                    </table> 
+                    </div>
+                    
+                    @endfor 
+                  @endif
                 </td>
               </tr>
             </table>
