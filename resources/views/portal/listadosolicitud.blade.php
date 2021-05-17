@@ -596,7 +596,7 @@ function configprelacion()
     function format ( d ) { 
     var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.id_transaccion+"\");' value='"+d.id_transaccion+"'> Todos</label></th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label></th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
           let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
           let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
@@ -639,7 +639,7 @@ function configprelacion()
           hiddenSol="hidden='true'";
         }
        
-        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.id_transaccion,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.id_transaccion+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.grupo[0].id_transaccion,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
         html+='</table>';
         return html;
     }
