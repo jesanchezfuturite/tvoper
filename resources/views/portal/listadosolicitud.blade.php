@@ -619,7 +619,7 @@ function configprelacion()
       
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
          if(solicitud.status==7 || solicitud.status==8)
           {
             clase='warning';
@@ -627,7 +627,7 @@ function configprelacion()
             clase='';
           }
 
-            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
 
         
         });
@@ -649,13 +649,13 @@ function configprelacion()
 
         if(tr.hasClass("shown") ){
           tr.removeClass('shown');
-          $("#brothertr-" + solicitud.id_transaccion ).remove();
+          $("#brothertr-" + solicitud.id ).remove();
 
-          $("#iconShowChild-" + solicitud.id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+          $("#iconShowChild-" + solicitud.id).addClass("fa-plus").removeClass("fa-minus");
         } else {
-          $("#iconShowChild-" + solicitud.id_transaccion).removeClass("fa-plus").addClass("fa-minus");
+          $("#iconShowChild-" + solicitud.id).removeClass("fa-plus").addClass("fa-minus");
           tr.addClass('shown');
-          $("#trchild-" + solicitud.id_transaccion).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id_transaccion + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
+          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
         }
 
       }
