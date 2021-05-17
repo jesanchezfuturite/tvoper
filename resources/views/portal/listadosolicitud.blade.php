@@ -498,21 +498,32 @@ function configprelacion()
         var objectResponse=[];
             if(typeof response=== 'object')
             {
-            for (n in response) {                 
+            for (n in response) {              
                   var total=0;
+                  var contador=[];
                   for(k in response[n].grupo)
                   {
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
-                  }
-                  //console.log(response[n]);
-                  Object.assign(response[n],{"costo_final":formatter.format(total)});
-                  objectResponse.push(response[n]); 
-              }  
-              //console.log(objectResponse);
+                    Object.assign(response[n],{"costo_final":formatter.format(total)});
+
+                     for(h in response[n].grupo)
+                     {
+                      console.log(response[n].grupo[k]);
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
+                       {
+                       
+                       Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
+                        response[n].grupo.splice(h,1);
+                       }
+                     }                     
+                  } 
+
+                  objectResponse.push(response[n]);
+              }
              response=objectResponse;
             }
             
-            //findMotivosSelect();
+            //console.log(response);
             createTable(response);  
         })
         .fail(function( msg ) {
@@ -558,7 +569,7 @@ function configprelacion()
               $("#iconShow-" + row.data().grupo_clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
@@ -573,7 +584,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a></td>";
+      let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
       /*if(row.grupo[0].status==1)
          
@@ -585,10 +596,10 @@ function configprelacion()
     function format ( d ) { 
     var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo_clave+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo_clave+"' type='checkbox'onclick='select_allCheck(\""+d.grupo_clave+"\");' value='"+d.grupo_clave+"'> Todos</label></th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.id_transaccion+"\");' value='"+d.id_transaccion+"'> Todos</label></th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
           let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-          let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
+          let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
        if(solicitud.status!=1)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -608,14 +619,15 @@ function configprelacion()
       
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.grupo_clave  +"' class='fa fa-plus'></a>" : '';
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
          if(solicitud.status==7 || solicitud.status==8)
           {
             clase='warning';
           }else{
             clase='';
           }
-            html += '<tr class="'+clase+'" id="trchild-' + solicitud.grupo_clave +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
 
         
         });
@@ -626,40 +638,58 @@ function configprelacion()
         {
           hiddenSol="hidden='true'";
         }
-        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.grupo_clave,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo_clave+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
+       
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.id_transaccion,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.id_transaccion+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
         html+='</table>';
         return html;
     }
-    function rechazarArray(grupo_clave)
+    function showMore( solicitud, e){
+      var tr = $(e.target).parents('tr');
+      if( solicitud.grupo && solicitud.grupo.length > 0 ){
+
+        if(tr.hasClass("shown") ){
+          tr.removeClass('shown');
+          $("#brothertr-" + solicitud.id ).remove();
+
+          $("#iconShowChild-" + solicitud.id).addClass("fa-plus").removeClass("fa-minus");
+        } else {
+          $("#iconShowChild-" + solicitud.id).removeClass("fa-plus").addClass("fa-minus");
+          tr.addClass('shown');
+          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
+        }
+
+      }
+    }
+    function rechazarArray(id_transaccion)
     {
-      var estatus_=$("#select_"+grupo_clave).val();
+      var estatus_=$("#select_"+id_transaccion).val();
       if(estatus_=='0')
       {
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
       checks=[];
-      $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
           checks.push($(this).val());
         });
       if(checks.length>0){
         document.getElementById("lbl_idsolicitudes").textContent=checks;
          $('#portlet-rechazar').modal('show');
-         document.getElementById("idgrupo").value=grupo_clave;
+         document.getElementById("idgrupo").value=id_transaccion;
       }
 
     }
     function rechazarSolicitudes()
     {
-      var grupo_clave=$("#idgrupo").val();
-      var estatus_=$("#select_"+grupo_clave).val();
+      var id_transaccion=$("#idgrupo").val();
+      var estatus_=$("#select_"+id_transaccion).val();
       if(estatus_=='0')
       {
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
       checks=[];
-      $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
           checks.push($(this).val());
         });
       $.ajax({
@@ -691,21 +721,21 @@ function configprelacion()
       select+="</select>";
       return select;
     }
-    function select_allCheck(grupo_clave)
+    function select_allCheck(id_transaccion)
     {
-      var checkP=$("#check_todos_"+grupo_clave).prop("checked");
+      var checkP=$("#check_todos_"+id_transaccion).prop("checked");
       checks=[];
         if(checkP)
         {
-           $("input[name = check_"+grupo_clave+"]").prop("checked", true);
+           $("input[name = check_"+id_transaccion+"]").prop("checked", true);
         }else{
-          $("input[name = check_"+grupo_clave+"]").prop("checked", false);
+          $("input[name = check_"+id_transaccion+"]").prop("checked", false);
         } 
-        $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+        $("input[name = check_"+id_transaccion+"]:checked").each(function(){
           checks.push($(this).val());
         });
   
-      console.log(checks);
+      //console.log(checks);
     }
     function conctenaM(municipio)
     {var coma='';var Mp='';
