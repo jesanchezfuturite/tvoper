@@ -305,11 +305,34 @@
         </div>
     </div>
 </div>
-
+<div id="portlet-rechazar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Rechazar Solicitudes: <label id="lbl_idsolicitudes" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="rechazarSolicitudes()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
 <input type="text" name="folioPago" id="folioPago" hidden="true">
+<input type="text" name="idgrupo" id="idgrupo" hidden="true">
+<input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 @endsection
 
 @section('scripts')
@@ -562,12 +585,14 @@ function configprelacion()
     function format ( d ) { 
     var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo_clave+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo_clave+"' type='checkbox'onclick='select_allCheck(\""+d.grupo_clave+"\");' value='"+d.grupo_clave+"'> Todos</label></th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
           let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-       if(solicitud.status==2)
+          let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
+       if(solicitud.status!=1)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
+         checks='';
        } 
        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
        var lote=searchIndex('lote',solicitud.info.campos);
@@ -590,12 +615,97 @@ function configprelacion()
           }else{
             clase='';
           }
-            html += '<tr class="'+clase+'" id="trchild-' + solicitud.grupo_clave +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ botonAtender + '</td></tr>'
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.grupo_clave +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
 
         
         });
+        var hiddenSol="";
+        var btnSol="";
+        var checks="";
+        if(d.grupo[0].asignado_a==null)
+        {
+          hiddenSol="hidden='true'";
+        }
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.grupo_clave,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo_clave+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
         html+='</table>';
         return html;
+    }
+    function rechazarArray(grupo_clave)
+    {
+      var estatus_=$("#select_"+grupo_clave).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      if(checks.length>0){
+        document.getElementById("lbl_idsolicitudes").textContent=checks;
+         $('#portlet-rechazar').modal('show');
+         document.getElementById("idgrupo").value=grupo_clave;
+      }
+
+    }
+    function rechazarSolicitudes()
+    {
+      var grupo_clave=$("#idgrupo").val();
+      var estatus_=$("#select_"+grupo_clave).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      $.ajax({
+      method: "post",            
+      url: "{{ url('/update-rechazo') }}",
+      data: {id:checks,estatus:estatus_,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+          if(response.Code=='200'){
+             findSolicitudes();
+            Command: toastr.success(response.Message, "Notifications") 
+          }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+          }
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+    }
+    function addSelect(id,hiddenSol){
+      var select ='<select class="form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'" '+hiddenSol+'>';
+      var itemSelect=$.parseJSON($("#jsonStatus").val());
+      select+="<option value='0'>-------</option>";
+      $.each(itemSelect, function(i, item) {
+        if(item.id==7 || item.id==8)
+        {
+          select+="<option value='"+item.id+"'>"+item.descripcion+"</option>";
+        }
+      });
+      select+="</select>";
+      return select;
+    }
+    function select_allCheck(grupo_clave)
+    {
+      var checkP=$("#check_todos_"+grupo_clave).prop("checked");
+      checks=[];
+        if(checkP)
+        {
+           $("input[name = check_"+grupo_clave+"]").prop("checked", true);
+        }else{
+          $("input[name = check_"+grupo_clave+"]").prop("checked", false);
+        } 
+        $("input[name = check_"+grupo_clave+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+  
+      console.log(checks);
     }
     function conctenaM(municipio)
     {var coma='';var Mp='';
@@ -657,10 +767,17 @@ function configprelacion()
           }
           if(typeof(Resp.solicitante.notary)){
             $(".divNotaria").css("display", "block");
+            dataNot='';
             for (not in Resp.solicitante.notary) {  
               if(not=='notary_number' || not=='email' || not=='phone')
-              {             
-                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+not+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+              { 
+                if(not=='notary_number')
+                {dataNot='Numero de Notaria';}
+                if(not=='email')
+                {dataNot='Correo Electrónico';} 
+                if(not=='phone')
+                {dataNot='Teléfono';}            
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
               }
             }
           }
@@ -951,7 +1068,7 @@ function configprelacion()
   }
   function searchIndex(key,jarray)
   {
-    console.log(jarray);
+    //console.log(jarray);
     var config=$.parseJSON($("#configP").val());
     var response='';
     if(typeof jarray!=='undefined')

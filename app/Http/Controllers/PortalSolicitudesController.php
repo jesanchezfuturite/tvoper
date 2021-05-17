@@ -1082,6 +1082,24 @@ class PortalSolicitudesController extends Controller
  {
     return json_encode(config('docprelacion'));
  }
-
+  public   function upStatusRechazo(Request $request)
+  {
+    try {
+        $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
+        ->update(['status'=> $request->estatus]);
+        return response()->json(
+            [
+              "Code" => "200",
+              "Message" =>"Actualizado correctamente"
+          ]);
+      } catch (\Exception $e) {
+          log::info("PortalSolicitudesticket@upStatusRechazo " . $e);
+         return response()->json(
+            [
+              "Code" => "400",
+              "Message" =>"Error al asignar solicitud"
+          ]);
+      }  
+  }
   
 }
