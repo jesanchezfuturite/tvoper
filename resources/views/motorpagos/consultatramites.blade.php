@@ -586,16 +586,11 @@
     {    var inin=0;
         $('#sample_3 thead tr').clone(true).appendTo( '#sample_3 thead' );
         $('#sample_3').DataTable( {
-        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
-        initComplete: function () {            
+            "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+            initComplete: function () {            
             this.api().columns().every( function () {
                 var column = this;
-               
-                //console.log(inin);
-               
-                var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                
-                
+                var select = $('<select class="select2me form-control"><option value=""></option></select>')               
                     .appendTo( $("#sample_3 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
                         var val = $.fn.dataTable.util.escapeRegex(
@@ -612,7 +607,7 @@
                     select.append( '<option value="'+d+'">'+d+'</option>' )
                 } );
                  inin=inin+1;
-            } );
+            });
         },
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
@@ -631,6 +626,7 @@
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
                     .appendTo( $("#sample_2 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                        console.log($(this)).val();
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -661,6 +657,7 @@
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
                     .appendTo( $("#sample_4 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                        console.log($(this).val());
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -685,11 +682,12 @@
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc").val();
         var familia_=$("#itemsFamilia").val();
+        console.log("familia   "+ familia_);
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) { 
+        .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
@@ -706,7 +704,7 @@
                 color='danger';
                 label='No procesado';
             }else if(item.estatus=='ad')
-            {
+            {f
                 color='warning';
                 label='ad';
             }else{
@@ -786,6 +784,8 @@
     function saveOper()
     {
         var JSONData=$("#jsonCode1").val();
+        console.log(JSONData);
+        return false;
         var ReportTitle='Transacciones_Operaciones';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
@@ -797,45 +797,64 @@
     }
 
     function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
-  var f = new Date();
-  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
-    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
-    var CSV = '';    
-    //CSV += ReportTitle + '\r\n\n';
-    if (ShowLabel) {
-        var row = ""; 
-        for (var index in arrData[0]) { 
+        var f = new Date();
+        fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+        var CSV = '';    
+        //CSV += ReportTitle + '\r\n\n';
+        if (ShowLabel) {
+            var row = ""; 
+            for (var index in arrData[0]) { 
             row += index + ',';
+            }
+            row = row.slice(0, -1);
+            CSV += row + '\r\n';
+        } 
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+            row.slice(0, row.length - 1); 
+            CSV += row + '\r\n';
         }
-        row = row.slice(0, -1);
-        CSV += row + '\r\n';
-    } 
-    for (var i = 0; i < arrData.length; i++) {
-        var row = "";
-        for (var index in arrData[i]) {
-            row += '"' + arrData[i][index] + '",';
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
         }
-        row.slice(0, row.length - 1); 
-        CSV += row + '\r\n';
-    }
-    if (CSV == '') {        
-        alert("Invalid data");
-        return;
-    }
-    //document.getElementById("blockui_sample_3_1_1").click();
+        //document.getElementById("blockui_sample_3_1_1").click();
 
-    var fileName = fecha;
-    fileName += ReportTitle.replace(/ /g,"_");
-    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
-    var link = document.createElement("a");    
-    link.href = uri;
-    link.style = "visibility:hidden";
-    link.download = fileName + ".csv";
-     Command: toastr.success("Success", "Notifications")
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        var fileName = fecha;
+        fileName += ReportTitle.replace(/ /g,"_");
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        var link = document.createElement("a");    
+        link.href = uri;
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        Command: toastr.success("Success", "Notifications")
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    function guardarDatosJson(){
+        var table = $('#sample_3').DataTable();
+        // var title = table.column( idx ).header();
+        // console.log(title.text);
+        
+         var datos= table.rows({search:'applied'}).data().toArray();
+         $.each( datos, function( key, value ) {
+            $.each( value, function( idx, val ) {
+                var title = table.column(idx).header();
+                var title = $(title).html();
+                
+            });
+        });
+        // console.log( this.header().textContent );
+        //  console.log(JSON.stringify(table.rows().data()))
+        // table.rows( { search: 'applied' } ).data().toArray();
+        // console.log(table);
+        // console.log(JSON.stringify(table.rows().data().toArray()))
+    }
     
 </script>
 @endsection
