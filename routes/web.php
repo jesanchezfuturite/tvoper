@@ -486,5 +486,3 @@ Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircContr
 
 Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
 Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');
-
-
