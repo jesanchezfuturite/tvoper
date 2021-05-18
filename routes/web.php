@@ -419,6 +419,7 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
+
 Route::get('/getInfoNormales/{folio}/{idticket}', 'PortalSolicitudesTicketController@getNormales');
 
 Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado');
@@ -478,4 +479,10 @@ Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentaje
 
 Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
 
+Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarIndividuo');
+Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaNac');
+Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}','ApircController@buscarActaDef');
+Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaMat');
+
 Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
+Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');

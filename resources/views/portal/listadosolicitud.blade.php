@@ -85,13 +85,14 @@
             </div>
         </div>
          <div class="portlet-body" id="addtables">
-    		<div id="removetable">
+    		<div class="table-responsive">
           		<table class="table table-hover" cellspacing="0" width="100%"  id="example">
             	<thead>
                 <tr>
                     <th></th>
                     <th>Grupo</th>
                     <th>Total</th>
+                    <th>Solicitudes</th>
                     <th></th>
                 </tr>
             </thead>
@@ -213,7 +214,7 @@
             <div class="col-md-3">             
               <div class="form-group">
                 <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage(0,{})"><i class="fa fa-check"></i> Guardar</button>
+                <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
                 <span class="help-block">&nbsp;</span>
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                         <span class="btn green btn-file">
@@ -221,7 +222,7 @@
                         <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                        <input type="file" name="file" accept="application/pdf" id="file">
+                        <input type="file" name="file" accept="application/pdf" id="file" >
                         </span>
                         <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
                         </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
@@ -304,10 +305,34 @@
         </div>
     </div>
 </div>
-
+<div id="portlet-rechazar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Rechazar Solicitudes: <label id="lbl_idsolicitudes" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="rechazarSolicitudes()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
+<input type="text" name="folioPago" id="folioPago" hidden="true">
+<input type="text" name="idgrupo" id="idgrupo" hidden="true">
+<input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 @endsection
 
 @section('scripts')
@@ -329,7 +354,7 @@ function configprelacion()
       url: "{{ url('/configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
-      console.log(response);   
+      //console.log(response);   
         document.getElementById("configP").value=response;
         })
       .fail(function( msg ) {
@@ -428,12 +453,12 @@ function configprelacion()
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  function findMotivosSelect()
+  function findMotivosSelect(catalogo_id)
   {
-    var id_catalogo_=$("#opTipoSolicitud").val();
+    //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
+          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -473,21 +498,32 @@ function configprelacion()
         var objectResponse=[];
             if(typeof response=== 'object')
             {
-            for (n in response) {                 
+            for (n in response) {              
                   var total=0;
+                  var contador=[];
                   for(k in response[n].grupo)
                   {
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
-                  }
-                  console.log(response[n]);
-                  Object.assign(response[n],{"costo_final":formatter.format(total)});
-                  objectResponse.push(response[n]); 
-              }  
-              //console.log(objectResponse);
+                    Object.assign(response[n],{"costo_final":formatter.format(total)});
+
+                     for(h in response[n].grupo)
+                     {
+                      console.log(response[n].grupo[k]);
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
+                       {
+                       
+                       Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
+                        response[n].grupo.splice(h,1);
+                       }
+                     }                     
+                  } 
+
+                  objectResponse.push(response[n]);
+              }
              response=objectResponse;
             }
             
-            findMotivosSelect();
+            //console.log(response);
             createTable(response);  
         })
         .fail(function( msg ) {
@@ -503,21 +539,19 @@ function configprelacion()
                "data": dataS,
                 "columns": [
                   {
-                "data": "id_transaccion",
-                "data": "costo_final",
-                "grupo":"grupo",
+                "data": "grupo_clave",
                 "class": 'detectarclick',
                 "width": "2%",
-                "render": function ( data, type, row, meta , grupo) {
+                "render": function ( data, type, row, meta) {
                   
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data":"id_transaccion"},
+                  { "data":"grupo_clave"},
                   { "data":"costo_final"},
+                  { "data":"grupo.length"},
                   {
-                    "data": "id_transaccion",
-                    "data": "costo_final",
+                    "data": "grupo_clave",
                     "render": getTemplateAcciones
                   }
               ]
@@ -532,10 +566,10 @@ function configprelacion()
             if ( row.child.isShown() ) {
                 row.child.hide();
                 tr.removeClass('shown');
-              $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+              $("#iconShow-" + row.data().grupo_clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
-                $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
+                $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
+                row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
@@ -550,7 +584,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
       /*if(row.grupo[0].status==1)
          
@@ -559,44 +593,163 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-    function format ( d ) {       
+    function format ( d ) { 
+    var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.id_transaccion+"\");' value='"+d.id_transaccion+"'> Todos</label></th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-       if(solicitud.status==2)
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
+       if(solicitud.status!=1)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
+         checks='';
        } 
        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
        var lote=searchIndex('lote',solicitud.info.campos);
        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
        var municipio=searchIndex('municipio',solicitud.info.campos);
-       
+       var Mp='';
        if(typeof (municipio) !== 'object')
        {
         Mp=municipio;
        }else{          
          Mp=conctenaM(municipio);
        }
+      
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
-        
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ botonAtender + '</td></tr>'
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
+         if(solicitud.status==7 || solicitud.status==8)
+          {
+            clase='warning';
+          }else{
+            clase='';
+          }
+
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+
         
         });
+        var hiddenSol="";
+        var btnSol="";
+        var checks="";
+        if(d.grupo[0].asignado_a==null)
+        {
+          hiddenSol="hidden='true'";
+        }
+       
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.id_transaccion,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.id_transaccion+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
         html+='</table>';
         return html;
     }
-    function conctenaM(municipio)
+    function showMore( solicitud, e){
+      var tr = $(e.target).parents('tr');
+      if( solicitud.grupo && solicitud.grupo.length > 0 ){
+
+        if(tr.hasClass("shown") ){
+          tr.removeClass('shown');
+          $("#brothertr-" + solicitud.id ).remove();
+
+          $("#iconShowChild-" + solicitud.id).addClass("fa-plus").removeClass("fa-minus");
+        } else {
+          $("#iconShowChild-" + solicitud.id).removeClass("fa-plus").addClass("fa-minus");
+          tr.addClass('shown');
+          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
+        }
+
+      }
+    }
+    function rechazarArray(id_transaccion)
     {
-       var coma='';var Mp='';
-          $.each(municipio, function(i, item) {
+      var estatus_=$("#select_"+id_transaccion).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      if(checks.length>0){
+        document.getElementById("lbl_idsolicitudes").textContent=checks;
+         $('#portlet-rechazar').modal('show');
+         document.getElementById("idgrupo").value=id_transaccion;
+      }
+
+    }
+    function rechazarSolicitudes()
+    {
+      var id_transaccion=$("#idgrupo").val();
+      var estatus_=$("#select_"+id_transaccion).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      $.ajax({
+      method: "post",            
+      url: "{{ url('/update-rechazo') }}",
+      data: {id:checks,estatus:estatus_,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+          if(response.Code=='200'){
+             findSolicitudes();
+            Command: toastr.success(response.Message, "Notifications") 
+          }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+          }
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+    }
+    function addSelect(id,hiddenSol){
+      var select ='<select class="form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'" '+hiddenSol+'>';
+      var itemSelect=$.parseJSON($("#jsonStatus").val());
+      select+="<option value='0'>-------</option>";
+      $.each(itemSelect, function(i, item) {
+        if(item.id==7 || item.id==8)
+        {
+          select+="<option value='"+item.id+"'>"+item.descripcion+"</option>";
+        }
+      });
+      select+="</select>";
+      return select;
+    }
+    function select_allCheck(id_transaccion)
+    {
+      var checkP=$("#check_todos_"+id_transaccion).prop("checked");
+      checks=[];
+        if(checkP)
+        {
+           $("input[name = check_"+id_transaccion+"]").prop("checked", true);
+        }else{
+          $("input[name = check_"+id_transaccion+"]").prop("checked", false);
+        } 
+        $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+  
+      //console.log(checks);
+    }
+    function conctenaM(municipio)
+    {var coma='';var Mp='';
+      if(typeof municipio.nombre !=='undefined')
+       {
+        Mp=municipio.nombre;
+       }else{
+         $.each(municipio, function(i, item) {
             Mp=Mp + coma + item.nombre;
             coma=', ';
           });
           Mp=Mp+'.';
+       }
+         
         return Mp;
     }
     function tableMsg(){
@@ -609,18 +762,21 @@ function configprelacion()
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
+      document.getElementById("btn_guardar").disabled = true;
+      document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a)
+    function findAtender(id,estatus,asignado_a,folioPago,catalogo_id)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
+      document.getElementById("folioPago").value=folioPago;
       findMessage(id);
       $.ajax({
            method: "GET", 
            url: "{{ url('/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-            console.log(response);
+            //console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -641,10 +797,17 @@ function configprelacion()
           }
           if(typeof(Resp.solicitante.notary)){
             $(".divNotaria").css("display", "block");
+            dataNot='';
             for (not in Resp.solicitante.notary) {  
               if(not=='notary_number' || not=='email' || not=='phone')
-              {             
-                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+not+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+              { 
+                if(not=='notary_number')
+                {dataNot='Numero de Notaria';}
+                if(not=='email')
+                {dataNot='Correo Electrónico';} 
+                if(not=='phone')
+                {dataNot='Teléfono';}            
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
               }
             }
           }
@@ -661,11 +824,16 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!=0) 
+          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
             $(".btnPrelacion").css("display", "block");
           }else{
              $(".btnPrelacion").css("display", "none");
+          }
+          if( asignado_a!='null' )
+          {
+            document.getElementById("btn_guardar").disabled = false;
+            document.getElementById("file").disabled = false;
           }
 
          var btn_1=document.getElementById('btn_cerrar_1');
@@ -683,9 +851,10 @@ function configprelacion()
             btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_1.value="continuar";
+            btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
+          findMotivosSelect(catalogo_id);
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al obtener el registro", "Notifications");
@@ -858,11 +1027,24 @@ function configprelacion()
     var Resp=$.parseJSON(jsn);
     var subsidio_=searchIndex('subsidio',Resp.campos);
     var municipio_=searchIndex('municipio',Resp.campos);
+    var nombre_=searchIndex('nombre',Resp.campos);
+    var apellidoMat_=searchIndex('apellidoMat',Resp.campos);
+    var apellidoPat_=searchIndex('apellidoPat',Resp.campos);
+    var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
+    }else{
+       Mp=municipio_;
+    }
+    if(typeof(municipio_.nombre)!=='undefined')
+    {
+      municipio_=[municipio_];
     }
     Mp=conctenaM(municipio_);
+    //console.log(municipio_);
+    Object.assign(data,{solicitanteNombre:nombreSolicitante});    
+    Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.campos)});    
@@ -883,9 +1065,9 @@ function configprelacion()
     Object.assign(data,{fecha:dataP.fecha});
     Object.assign(data,{hora:dataP.hora});
     }
-    
+    Object.assign(data,{folioPago:$("#folioPago").val()});
     Object.assign(data,{Municipio:"Monterrey, NL."});
-    Object.assign(data,{elaboro:"{{ Auth::user()->name }}"});
+    Object.assign(data,{elaboro:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.campos)});
     Object.assign(data,{folioTramite:$("#idTicket").val()});
     Object.assign(data,{hojas:searchIndex('hojas',Resp.campos)});
@@ -893,7 +1075,7 @@ function configprelacion()
     Object.assign(data,{tramite:Resp.tramite}); 
     Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.campos)});
     Object.assign(data,{noNotaria:Resp.solicitante.notary.notary_number});
-    Object.assign(data,{recibe:Resp.solicitante.nombreSolicitante+" "+Resp.solicitante.apPat+" "+Resp.solicitante.apMat});
+    Object.assign(data,{recibe:"{{ Auth::user()->name }}"});
     if(Resp.costo_final=="undefined")
     {
       Object.assign(data,{costo_final:Resp.detalle.costo_final});
@@ -919,15 +1101,16 @@ function configprelacion()
     //console.log(jarray);
     var config=$.parseJSON($("#configP").val());
     var response='';
-    $.each(config.solicitudes[key], function(i, item) {  
+    if(typeof jarray!=='undefined')
+    {
+      $.each(config.solicitudes[key], function(i, item) {  
 
-      if(typeof jarray[item]!=='undefined')
-      {       
-        response=jarray[item];        
-      }else{
-        response='';
-      }      
-    });  
+        if(typeof jarray[item]!=='undefined')
+        {       
+          response=jarray[item];        
+        }    
+      });
+    }
     return response;
   }
 
