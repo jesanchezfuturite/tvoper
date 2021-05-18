@@ -162,7 +162,7 @@
                         Lote. </label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio14" name="radio2" class="md-radiobtn" value="FI" >
+                      <input type="radio" id="radio14" name="radio2" class="md-radiobtn" value="I" >
                       <label for="radio14">
                       <span></span>
                       <span class="check"></span>
@@ -229,7 +229,7 @@
                         Lote. </label>
                     </div>|
                     <div class="md-radio">
-                      <input type="radio" id="radio15" name="radio4" class="md-radiobtn" value="FA" >
+                      <input type="radio" id="radio15" name="radio4" class="md-radiobtn" value="A" >
                       <label for="radio15">
                       <span></span>
                       <span class="check"></span>
