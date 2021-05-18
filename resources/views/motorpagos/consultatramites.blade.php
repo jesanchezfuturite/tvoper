@@ -339,7 +339,7 @@
         </div>
     </div>
 </div>
-<input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
+<input type="text" name="jsonCode1" id="jsonCode1">
 <input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
 <input type="text" name="jsonCode3" id="jsonCode3" hidden="true">
                             
@@ -593,6 +593,7 @@
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')               
                     .appendTo( $("#sample_3 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                       
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -783,9 +784,9 @@
     }
     function saveOper()
     {
-        var JSONData=$("#jsonCode1").val();
-        console.log(JSONData);
-        return false;
+        var datos = guardarDatosJson();
+        var JSONData = datos;
+        // var JSONData=$("#jsonCode1").val();
         var ReportTitle='Transacciones_Operaciones';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
@@ -838,22 +839,26 @@
     }
     function guardarDatosJson(){
         var table = $('#sample_3').DataTable();
-        // var title = table.column( idx ).header();
-        // console.log(title.text);
-        
+        var obj =[];
          var datos= table.rows({search:'applied'}).data().toArray();
+         console.log(datos);
          $.each( datos, function( key, value ) {
+            //  console.log(value);
+            var info ={};
+
             $.each( value, function( idx, val ) {
+                // console.log(val);
                 var title = table.column(idx).header();
                 var title = $(title).html();
+                info[title]=val;
                 
             });
+            obj.push(info);
         });
-        // console.log( this.header().textContent );
-        //  console.log(JSON.stringify(table.rows().data()))
-        // table.rows( { search: 'applied' } ).data().toArray();
-        // console.log(table);
-        // console.log(JSON.stringify(table.rows().data().toArray()))
+        obj = JSON.stringify(obj);
+        // $('#jsonCode1').val(obj);  
+
+        return obj;
     }
     
 </script>
