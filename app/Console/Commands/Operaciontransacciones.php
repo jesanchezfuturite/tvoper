@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Repositories\ProcessedregistersRepositoryEloquent;
 use App\Repositories\TransaccionesRepositoryEloquent;
-
+use App\Http\Requests;
+use Illuminate\Http\Request;
+use SoapClient;
+use GuzzleHttp\Client;
 class Operaciontransacciones extends Command
 {
     /**
@@ -294,6 +297,7 @@ class Operaciontransacciones extends Command
             $updateoper2 = $this->tr->updateStatusReferenceStatus65($this->valid);
             //log::info($this->valid);
             $this->updateFechPago($this->valid);
+            $this->referencepayment($this->valid);
 
         }catch( \Exception $e ){
             dd($e->getMessage());
@@ -327,4 +331,27 @@ class Operaciontransacciones extends Command
         }
         //log::info("termina consulta");
     }
+    private function referencepayment($referencia)
+    {
+         try{
+            foreach ($referencia as $i) {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/"."$i");
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+                //curl_setopt($ch, CURLOPT_POSTFIELDS,);
+
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $remote_server_output = curl_exec($ch);
+                curl_close ($ch);
+                $response =json_decode($remote_server_output);
+            }
+           
+        }
+        catch(\Exception $e) {
+            Log::info('Command conciliacion:operaciont - referencepayment: '.$e->getMessage());
+        }
+    }  
+
+    
 }
