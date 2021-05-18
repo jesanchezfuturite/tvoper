@@ -336,7 +336,7 @@ class Operaciontransacciones extends Command
          try{
             foreach ($referencia as $i) {
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/"."$i");
+                curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/"."$i"."?service=conciliacion");
                 curl_setopt($ch, CURLOPT_POST, TRUE);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
                 //curl_setopt($ch, CURLOPT_POSTFIELDS,);
