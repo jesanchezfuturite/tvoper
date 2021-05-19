@@ -158,7 +158,7 @@ Configuración <small> Asignación de Herramientas</small>
             })); 
 
         });   
-        $("#itemsEstatus").val(["1","2"]).trigger('change');
+       
     });
 
     /* 
@@ -650,19 +650,47 @@ Configuración <small> Asignación de Herramientas</small>
     });
     function saveEstatus()
     {
-      var idT=$("#users_select").val();
+      var id_user=$("#users_select").val();
       var status=$("#itemsEstatus").val();
       console.log(status);
-     /*$.ajax({
+      if(status==null)
+      {
+        Command: toastr.warning("Estatus sin seleccionar", "Notifications")
+        return;
+      }
+     $.ajax({
            method: "POST", 
            url: "{{ url('/asignaherramientas/saveuserstatus') }}",
-           data:{ id:idT ,_token:'{{ csrf_token() }}'} })
+           data:{ id_usuario:id_user, estatus:status,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
            if(response.Code=="200")
              {
                Command: toastr.success(response.Message, "Notifications")
                return;
+             }else{
+                Command: toastr.warning(response.Message, "Notifications")
              }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+    function findEstatusUsers()
+    {
+      var id_user=$("#users_select").val();      
+     $.ajax({
+           method: "POST", 
+           url: "{{ url('/asignaherramientas/saveuserstatus') }}",
+           data:{ id_usuario:id_user,_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+             $("#itemsEstatus").val(response).trigger('change');
+           /*if(response.Code=="200")
+             {
+               Command: toastr.success(response.Message, "Notifications")
+               return;
+             }else{
+                Command: toastr.warning(response.Message, "Notifications")
+             }*/
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
