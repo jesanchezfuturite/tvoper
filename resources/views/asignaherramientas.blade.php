@@ -178,7 +178,7 @@ Configuración <small> Asignación de Herramientas</small>
         var first = $("#principal_level").val();
         var second = $.parseJSON($("#second_level").val());
         var saved = $.parseJSON($("#saved_tools").val());
-        if(user == 0)
+        if(user == 0 && first!=0)
         {    Command: toastr.warning("Por favor selecciona un Usuario!!", "Notifications")         
     //$("#principal_level").val("0").change();
             
@@ -322,11 +322,12 @@ Configuración <small> Asignación de Herramientas</small>
 
         var user = $("#users_select").val();
         $("#principal_level").val("0").change();
+        findEstatusUsers();
         if(user == 0)
         {             
             return false;   
         }
-        findEstatusUsers();
+        
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
@@ -690,7 +691,7 @@ Configuración <small> Asignación de Herramientas</small>
        var option = document.querySelector("#users_select").selectedOptions[0].getAttribute("data-iduser"); 
       if(id_user==0)
       {
-        $("#itemsEstatus").val(response).trigger('change');
+        $("#itemsEstatus").val([]).trigger('change');
         return;
       }     
      $.ajax({
@@ -699,16 +700,10 @@ Configuración <small> Asignación de Herramientas</small>
            data:{ id_usuario:option,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
              $("#itemsEstatus").val(response).trigger('change');
-           if(response.Code=="200")
-             {
-               Command: toastr.success(response.Message, "Notifications")
-               return;
-             }else{
-                Command: toastr.warning(response.Message, "Notifications")
-             }
+ 
         })
         .fail(function( msg ) {
-         Command: toastr.warning("Error", "Notifications");
+         Command: toastr.warning("Error al cargar estatus", "Notifications");
         });
     }
 </script>
