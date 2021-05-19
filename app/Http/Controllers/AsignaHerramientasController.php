@@ -32,7 +32,7 @@ class AsignaHerramientasController extends Controller
         PortalSolicitudesStatusRepositoryEloquent $status
     )
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
 
         $this->menu = $menu;
 
