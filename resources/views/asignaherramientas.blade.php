@@ -32,10 +32,10 @@ Configuración <small> Asignación de Herramientas</small>
                 
                 <div class="form-group">
                     
-                    <select id="users_select" class="select2me form-control">
+                    <select id="users_select" class="select2me form-control users_select">
                         <option value="0"> ----- </option>
                         @foreach($users as $user)
-                            <option value='{{$user->email}}'>{{$user->name}} - ({{$user->email}})</option>
+                            <option value='{{$user->email}}' data-iduser='{{$user->id}}'>{{$user->name}} - ({{$user->email}})</option>
                         @endforeach
                     </select>
                 </div>
@@ -45,6 +45,9 @@ Configuración <small> Asignación de Herramientas</small>
                     <div class="col-md-6">
                         <h4>Estatus</h4>
                     <select class="select2me form-control col-md-6" placeholder="Estatus"  multiple name="itemsEstatus" id="itemsEstatus">
+                         @foreach(json_decode(json_encode($status)) as $estatus)
+                            <option value='{{$estatus->id}}'>{{$estatus->descripcion}}</option>
+                        @endforeach
                     </select>   
                     </div>
                 </div>
@@ -323,7 +326,7 @@ Configuración <small> Asignación de Herramientas</small>
         {             
             return false;   
         }
-
+        findEstatusUsers();
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
@@ -651,17 +654,23 @@ Configuración <small> Asignación de Herramientas</small>
     function saveEstatus()
     {
       var id_user=$("#users_select").val();
+      var option = document.querySelector("#users_select").selectedOptions[0].getAttribute("data-iduser");
       var status=$("#itemsEstatus").val();
-      console.log(status);
+      if(id_user==0)
+      {
+         Command: toastr.warning("Usuario sin seleccionar", "Notifications")
+        return;
+      }
       if(status==null)
       {
         Command: toastr.warning("Estatus sin seleccionar", "Notifications")
         return;
       }
+
      $.ajax({
            method: "POST", 
            url: "{{ url('/asignaherramientas/saveuserstatus') }}",
-           data:{ id_usuario:id_user, estatus:status,_token:'{{ csrf_token() }}'} })
+           data:{ id_usuario:option, estatus:status,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
            if(response.Code=="200")
              {
@@ -677,24 +686,30 @@ Configuración <small> Asignación de Herramientas</small>
     }
     function findEstatusUsers()
     {
-      var id_user=$("#users_select").val();      
+      var id_user=$("#users_select").val();
+       var option = document.querySelector("#users_select").selectedOptions[0].getAttribute("data-iduser"); 
+      if(id_user==0)
+      {
+        $("#itemsEstatus").val(response).trigger('change');
+        return;
+      }     
      $.ajax({
            method: "POST", 
-           url: "{{ url('/asignaherramientas/saveuserstatus') }}",
-           data:{ id_usuario:id_user,_token:'{{ csrf_token() }}'} })
+           url: "{{ url('asignaherramientas/loadstatususer') }}",
+           data:{ id_usuario:option,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
              $("#itemsEstatus").val(response).trigger('change');
-           /*if(response.Code=="200")
+           if(response.Code=="200")
              {
                Command: toastr.success(response.Message, "Notifications")
                return;
              }else{
                 Command: toastr.warning(response.Message, "Notifications")
-             }*/
+             }
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
-        });*/
+        });
     }
 </script>
 @endsection
