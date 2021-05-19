@@ -289,4 +289,18 @@ class AsignaHerramientasController extends Controller
         }
     }
 
+    public function loadstatusUser(Request $request)
+    {
+        $status = $this->userEstatus->where( "id_usuario",  $request->id_usuario)->first();
+            if($status->count())
+            {
+                $status = json_decode($status->estatus);
+            
+                return $status;
+            }else{
+                return "[]";
+            }
+
+    }
+
 }

@@ -282,6 +282,7 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
     Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
     Route::post('/asignaherramientas/saveuserstatus', 'AsignaHerramientasController@saveUserStatus');
+    Route::post('/asignaherramientas/loadstatususer', 'AsignaHerramientasController@loadstatusUser');
 
 });
 
