@@ -32,7 +32,7 @@ class AsignaHerramientasController extends Controller
         PortalSolicitudesStatusRepositoryEloquent $status
     )
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
 
         $this->menu = $menu;
 
@@ -287,6 +287,20 @@ class AsignaHerramientasController extends Controller
                 ]);
             Log::info('[AsignaHerramientasController@saveUserEstatus] Error ' . $e->getMessage());    
         }
+    }
+
+    public function loadstatusUser(Request $request)
+    {
+        $status = $this->userEstatus->where( "id_usuario",  $request->id_usuario)->first();
+            if($status->count())
+            {
+                $status = json_decode($status->estatus);
+            
+                return $status;
+            }else{
+                return "[]";
+            }
+
     }
 
 }
