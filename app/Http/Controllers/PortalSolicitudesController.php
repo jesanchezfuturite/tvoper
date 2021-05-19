@@ -29,6 +29,7 @@ use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
 use App\Repositories\SolicitudesMotivoRepositoryEloquent;
 use App\Repositories\MotivosRepositoryEloquent;
 use App\Entities\SolicitudesMotivo;
+use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 
@@ -49,6 +50,7 @@ class PortalSolicitudesController extends Controller
   protected $msjprelaciondb;
   protected $solicitudesMotivos;
   protected $motivos;
+  protected $userEstatus;
 
 
 
@@ -67,11 +69,12 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
-     MotivosRepositoryEloquent $motivos
+     MotivosRepositoryEloquent $motivos,
+     OperacionUsuariosEstatusRepositoryEloquent $userEstatus
 
     )
     {
-      // $this->middleware('auth');
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -87,6 +90,7 @@ class PortalSolicitudesController extends Controller
       $this->msjprelaciondb = $msjprelaciondb;
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
+      $this->userEstatus = $userEstatus;
 
 
     }
@@ -510,7 +514,15 @@ class PortalSolicitudesController extends Controller
   public function listSolicitudes(){
 
     $tipoSolicitud=$this->findSol();
-    $status = $this->status->all()->toArray();
+
+    $user_id = auth()->user()->id;
+
+    $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+    $status = json_decode($status->estatus);
+
+    $status = $this->status->whereIn("id", $status)->get()->toArray();
+    
     return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
   }

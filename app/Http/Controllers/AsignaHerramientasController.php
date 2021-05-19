@@ -16,6 +16,8 @@ use App\Repositories\AdministratorsRepositoryEloquent;
 
 use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 
+use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
+
 class AsignaHerramientasController extends Controller
 {
     //
@@ -26,7 +28,8 @@ class AsignaHerramientasController extends Controller
         MenuRepositoryEloquent $menu,
         UsersRepositoryEloquent $users,
         AdministratorsRepositoryEloquent $admins,
-        OperacionUsuariosEstatusRepositoryEloquent $userEstatus
+        OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
+        PortalSolicitudesStatusRepositoryEloquent $status
     )
     {
         $this->middleware('auth');
@@ -38,6 +41,8 @@ class AsignaHerramientasController extends Controller
         $this->admins = $admins;
 
         $this->userEstatus = $userEstatus;
+
+        $this->status = $status;
     }
 
     /**
@@ -49,6 +54,8 @@ class AsignaHerramientasController extends Controller
     {
         /* get the user list */
         $user_id = auth()->user()->id;
+
+        $status = $this->status->all()->toArray();
 
         $name = $this->admins->where("creado_por", $user_id)->pluck('name')->toArray();             
 
@@ -86,6 +93,7 @@ class AsignaHerramientasController extends Controller
         }   	
 
         $data ["users"]= $users;
+        $data["status"]=$status;
 
     	return view('asignaherramientas', $data);
     }
@@ -272,6 +280,11 @@ class AsignaHerramientasController extends Controller
                   "Message" => "Estatus actualizado"
                 ]);
         }catch( \Exception $e){
+            return response()->json(
+                [
+                  "Code" => "400",
+                  "Message" => "Error"
+                ]);
             Log::info('[AsignaHerramientasController@saveUserEstatus] Error ' . $e->getMessage());    
         }
     }
