@@ -14,6 +14,8 @@ use App\Repositories\UsersRepositoryEloquent;
 
 use App\Repositories\AdministratorsRepositoryEloquent;
 
+use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
+
 class AsignaHerramientasController extends Controller
 {
     //
@@ -23,7 +25,8 @@ class AsignaHerramientasController extends Controller
     public function __construct(
         MenuRepositoryEloquent $menu,
         UsersRepositoryEloquent $users,
-        AdministratorsRepositoryEloquent $admins
+        AdministratorsRepositoryEloquent $admins,
+        OperacionUsuariosEstatusRepositoryEloquent $userEstatus
     )
     {
         $this->middleware('auth');
@@ -34,6 +37,7 @@ class AsignaHerramientasController extends Controller
 
         $this->admins = $admins;
 
+        $this->userEstatus = $userEstatus;
     }
 
     /**
@@ -253,6 +257,22 @@ class AsignaHerramientasController extends Controller
                 return 0;
 
             }
+        }
+    }
+
+    public function saveUserStatus(Request $request){
+        try{
+            $userEstatus = $this->userEstatus->updateOrCreate(["id_usuario" =>$request->id_usuario],
+              [
+                "estatus"=> json_encode($request->estatus)
+              ]);
+              return response()->json(
+                [
+                  "Code" => "200",
+                  "Message" => "Estatus actualizado"
+                ]);
+        }catch( \Exception $e){
+            Log::info('[AsignaHerramientasController@saveUserEstatus] Error ' . $e->getMessage());    
         }
     }
 

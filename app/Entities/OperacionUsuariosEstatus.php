@@ -24,7 +24,7 @@ class OperacionUsuariosEstatus extends Model implements Transformable
 
     protected $fillable = ['id','id_usuario','estatus'];
 
-    protected $table = "oper_roles";
+    protected $table = "oper_usuarios_estatus";
 
 
 }
