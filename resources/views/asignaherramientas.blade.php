@@ -27,18 +27,35 @@ Configuración <small> Asignación de Herramientas</small>
     <div class="col-md-12">
         <!-- BEGIN SAMPLE FORM PORTLET-->
         <div class="portlet-body">
-            <h4>Listado de usuarios</h4>
-            
-            <div class="form-group">
+            <div class="row">
+                <h4>Listado de usuarios</h4>
                 
-                <select id="users_select" class="select2me form-control">
-                    <option value="0"> ----- </option>
-                    @foreach($users as $user)
-                        <option value='{{$user->email}}'>{{$user->name}} - ({{$user->email}})</option>
-                    @endforeach
-                </select>
+                <div class="form-group">
+                    
+                    <select id="users_select" class="select2me form-control">
+                        <option value="0"> ----- </option>
+                        @foreach($users as $user)
+                            <option value='{{$user->email}}'>{{$user->name}} - ({{$user->email}})</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            
+            <div class="row">                
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <h4>Estatus</h4>
+                    <select class="select2me form-control col-md-6" placeholder="Estatus"  multiple name="itemsEstatus" id="itemsEstatus">
+                    </select>   
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-6">
+                        <span class="help-block">&nbsp;</span>
+                        <input type="button" name="saveEstatus"class="btn green" value="Guardar" onclick="saveEstatus()"> 
+                    </div>
+                </div>
+            </div>
+
             <hr>
             <h4>Nivel principal</h4>
             <div class="row">
@@ -141,7 +158,7 @@ Configuración <small> Asignación de Herramientas</small>
             })); 
 
         });   
-
+        $("#itemsEstatus").val(["1","2"]).trigger('change');
     });
 
     /* 
@@ -631,5 +648,25 @@ Configuración <small> Asignación de Herramientas</small>
 
         });
     });
+    function saveEstatus()
+    {
+      var idT=$("#users_select").val();
+      var status=$("#itemsEstatus").val();
+      console.log(status);
+     /*$.ajax({
+           method: "POST", 
+           url: "{{ url('/asignaherramientas/saveuserstatus') }}",
+           data:{ id:idT ,_token:'{{ csrf_token() }}'} })
+        .done(function (response) {
+           if(response.Code=="200")
+             {
+               Command: toastr.success(response.Message, "Notifications")
+               return;
+             }
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });*/
+    }
 </script>
 @endsection
