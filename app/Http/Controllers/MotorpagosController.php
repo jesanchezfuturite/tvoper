@@ -2400,6 +2400,7 @@ class MotorpagosController extends Controller
                 }
             }
         }    
+        dd($response);
         //log::info($transaccion);      
          return json_encode($response);
         
