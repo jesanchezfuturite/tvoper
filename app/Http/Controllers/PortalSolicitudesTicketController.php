@@ -715,12 +715,34 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);
+          $this->guardarCarrito($value->id, 2);         
 
-          if($value->status<>5){
-            $tramites_finalizados = $this->tramites_finalizados($value->id);
-          }
+          if(isset($value->info->camposConfigurados)){
+            foreach($value->info->camposConfigurados as $k => $val){
+              if($val->nombre=="Distrito"){
+                if($val->valor->clave==1){
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>3]);
+                }else{
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>2]);
+                }
 
+              }else{
+                if($value->status<>5){
+                  $tramites_finalizados = $this->tramites_finalizados($value->id);
+                }
+      
+              }
+             
+            }
+
+           }else{
+            if($value->status<>5){
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            }
+           }
+         
         }
 
 
