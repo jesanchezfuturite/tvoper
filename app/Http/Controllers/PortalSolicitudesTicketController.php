@@ -692,11 +692,12 @@ class PortalSolicitudesTicketController extends Controller
       
               }
 
-           }else{
+          }else{
+            log::info("else si no hay campos configurados");
             if($value->status<>5){
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
-           }
+          }
          
         }
 
@@ -706,6 +707,7 @@ class PortalSolicitudesTicketController extends Controller
           $error = $e;
       }
       if ($error) {
+        log::info("error PortalSolicitudesTicketController@statusTramite" .$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
