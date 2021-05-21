@@ -749,11 +749,11 @@ class PortalSolicitudesTicketController extends Controller
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
             log::info("if campos");
-            $array = $info->camposConfigurados;
-             $distrito = array_search("Distrito", array_column($array, 'nombre'));
-              if(!isset($distrito)){
+            $campos = $info->camposConfigurados;
+             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+              if(isset($distrito)){
                  log::info("if distrito");
-
+                 $distrito = $campos[$key2];
                 if($distrito->valor->clave==1){
                   log::info("if clave");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
