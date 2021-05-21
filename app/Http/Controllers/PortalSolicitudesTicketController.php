@@ -751,7 +751,7 @@ class PortalSolicitudesTicketController extends Controller
             log::info("if campos");
             $campos = $info->camposConfigurados;
              $key2 = array_search("Distrito", array_column($campos, 'nombre'));
-              if(isset($distrito)){
+              if(isset($key2)){
                  log::info("if distrito");
                  $distrito = $campos[$key2];
                 if($distrito->valor->clave==1){
