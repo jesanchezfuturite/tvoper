@@ -668,24 +668,24 @@ class PortalSolicitudesTicketController extends Controller
           $this->guardarCarrito($value->id, 2);         
 
           if(isset($value->info->camposConfigurados)){
-            Log::info("if campos");
+            log::info("if campos");
             $array = $value->info->camposConfigurados;
              $distrito = array_search("Distrito", array_column($array, 'nombre'));
               if(!isset($distrito)){
-                 Log::info("if distrito");
+                 log::info("if distrito");
 
                 if($distrito->valor->clave==1){
-                  Log::info("if clave");
+                  log::info("if clave");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>3]);
                 }else{
-                  Log::info("else");
+                  log::info("else");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>2]);
                 }
 
               }else{
-                Log::info("else del if");
+                log::info("else del if");
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
