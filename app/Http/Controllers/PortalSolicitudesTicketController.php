@@ -742,13 +742,14 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status", "info"]);
+
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
-
-          if(isset($value->info->camposConfigurados)){
+          $info = json_decode($value->info);
+          if(isset($info->camposConfigurados)){
             log::info("if campos");
-            $array = $value->info->camposConfigurados;
+            $array = $info->camposConfigurados;
              $distrito = array_search("Distrito", array_column($array, 'nombre'));
               if(!isset($distrito)){
                  log::info("if distrito");
