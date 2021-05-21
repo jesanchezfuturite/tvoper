@@ -599,7 +599,7 @@ function configprelacion()
         html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label></th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
           let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-          let checks='<input id="ch_'+solicitud.id+'"style="cursor:pointer" name="check_'+d.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
+          let checks='<input id="ch_'+solicitud.id_transaccion+'"style="cursor:pointer" name="check_'+solicitud.id_transaccion+'" type="checkbox" value="'+solicitud.id_transaccion+'">';
        if(solicitud.status!=1)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
@@ -710,14 +710,18 @@ function configprelacion()
     }
     function addSelect(id,hiddenSol){
       var select ='<select class="form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'" '+hiddenSol+'>';
-      var itemSelect=$.parseJSON($("#jsonStatus").val());
+      /*var itemSelect=$.parseJSON($("#jsonStatus").val());
       select+="<option value='0'>-------</option>";
       $.each(itemSelect, function(i, item) {
         if(item.id==7 || item.id==8)
         {
           select+="<option value='"+item.id+"'>"+item.descripcion+"</option>";
         }
-      });
+      });*/
+      select+="<option value='0'>-------</option>";
+      //select+="<option value='2'>Cerrar Solicitud</option>";
+      select+="<option value='7'>Error de Municipio</option>";
+      select+="<option value='8'>Falta de pago</option>";
       select+="</select>";
       return select;
     }
