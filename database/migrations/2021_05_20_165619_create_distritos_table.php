@@ -15,9 +15,9 @@ class CreateDistritosTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('distritos', function(Blueprint $table) {
-            $table->integer('distrito');
-            $table->string('municipios', 250);
+		Schema::create('portal.distritos', function(Blueprint $table) {
+            $table->string('distrito', 50);
+            $table->string('municipio', 50);
             $table->timestamps();
 		});
 	}

@@ -23,7 +23,7 @@ class Distritos extends Model implements Transformable
     protected $connection = "mysql6";
     protected $fillable = [
         "distrito",
-        "municipios"
+        "municipio"
     ];
     protected $table = "distritos";
 
