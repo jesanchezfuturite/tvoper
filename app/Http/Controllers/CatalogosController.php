@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
 use App\Repositories\DistritosRepositoryEloquent;
+use App\Entities\Distritos;
+use App\Entities\Municipios;
 
 
 class CatalogosController extends Controller
@@ -81,7 +83,18 @@ class CatalogosController extends Controller
     public function getDistrito($type, $clave){
         
         try {
-            $distrito = $this->distritos->where($type, $clave)->get(["distrito", "municipio"])->toArray();
+            
+            $distrito = Distritos::leftJoin("municipios", "distritos.municipio","=",  "municipios.clave")
+            ->where("municipios.clave_estado", 19);
+
+            if($type=="distrito"){
+                $distrito->where("distritos.distrito", $clave);
+            }else{
+                $distrito->where("municipios.clave", $clave)->where("distritos.distrito", 1);
+            }
+           
+            $distrito = $distrito->get()->toArray();
+
           
             if($distrito){
 
