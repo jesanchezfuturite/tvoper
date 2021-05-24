@@ -117,4 +117,23 @@ class CatalogosController extends Controller
             );
         }
     }
+
+    public function obtDistritos(){
+        try {
+            $distritos = $this->distritos->select("distrito as clave")
+            ->groupBy("distrito")->get()->toArray();
+
+            foreach ($distritos as $key => &$value) {
+                $value["nombre"] = "Distrito ".$value["clave"];
+            }
+            return json_encode($distritos);
+        } catch (\Exception $e) {
+            return json_encode(
+                [
+                    "code" => 400,
+                    "message" => $e->getMessage()
+                ]
+            );
+        }
+    }
 }
