@@ -638,15 +638,52 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status", "info"]);
+
+        // foreach ($ids as $key => $value) {
+        //   $this->guardarCarrito($value->id, 2);
+
+        //   if($value->status<>5){
+        //     $tramites_finalizados = $this->tramites_finalizados($value->id);
+        //   }
+
+        // }
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);
+          $this->guardarCarrito($value->id, 2);         
+          $info = json_decode($value->info);
+          if(isset($info->camposConfigurados)){
+            log::info("if campos");
+            $campos = $info->camposConfigurados;
+             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+              if(isset($key2)){
+                 log::info("if distrito");
+                 $distrito = $campos[$key2];
+                if($distrito->valor->clave==1){
+                  log::info("if clave");
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>3]);
+                }else{
+                  log::info("else");
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>2]);
+                }
 
-          if($value->status<>5){
-            $tramites_finalizados = $this->tramites_finalizados($value->id);
+              }else{
+                log::info("else del if");
+                if($value->status<>5){
+                  $tramites_finalizados = $this->tramites_finalizados($value->id);
+                }
+      
+              }
+
+          }else{
+            log::info("else si no hay campos configurados");
+            if($value->status<>5){
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            }
           }
-
+         
         }
 
       } catch (\Exception $e) {
@@ -712,15 +749,43 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);
+          $this->guardarCarrito($value->id, 2);         
+          $info = json_decode($value->info);
+          if(isset($info->camposConfigurados)){
+            log::info("if campos");
+            $campos = $info->camposConfigurados;
+             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+              if(isset($key2)){
+                 log::info("if distrito");
+                 $distrito = $campos[$key2];
+                if($distrito->valor->clave==1){
+                  log::info("if clave");
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>3]);
+                }else{
+                  log::info("else");
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>2]);
+                }
 
-          if($value->status<>5){
-            $tramites_finalizados = $this->tramites_finalizados($value->id);
+              }else{
+                log::info("else del if");
+                if($value->status<>5){
+                  $tramites_finalizados = $this->tramites_finalizados($value->id);
+                }
+      
+              }
+
+          }else{
+            log::info("else si no hay campos configurados");
+            if($value->status<>5){
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            }
           }
-
+         
         }
 
 
@@ -729,6 +794,7 @@ class PortalSolicitudesTicketController extends Controller
           $error = $e;
       }
       if ($error) {
+        log::info("error PortalSolicitudesTicketController@statusTramite" .$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
