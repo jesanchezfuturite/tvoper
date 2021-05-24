@@ -124,16 +124,31 @@ class FacturacionOperaciones extends Command
      */
     private function obtenerPendientes()
     {
-        $info = $this->pr->findWhere(
+        // $info = $this->pr->findWhere(
+        //     [
+        //         "facturado" => 0,
+        //         "origen"    => 11,
+        //         "status"   => 'p',
+        //     ],
+        //     [
+        //         'referencia'
+        //     ]
+        // );
+
+        // $info = $this->pr->whereIn("origen",[5,11])->where(
+        //     [
+        //         "facturado" => 1,
+        //         "status"    => 'p',
+        //         "referencia" => '050000205513555555555529481215'
+        //     ]
+        // );
+
+        $info = $this->pr->select(['referencia'])->whereIn("origen",[5,11])->where(
             [
                 "facturado" => 0,
-                "origen"    => 11,
-                "status"   => 'p'
-            ],
-            [
-                'referencia'
+                "status"    => 'p'
             ]
-        );
+        )->distinct()->get();
 
         if($info->count() > 0)
         {
@@ -252,7 +267,7 @@ class FacturacionOperaciones extends Command
                                 }
                                 
                             }
-
+                            
                             $tramites []= array(
                                 'info' => $tramite_info, 
                                 'detalles' => $dt
@@ -320,6 +335,60 @@ class FacturacionOperaciones extends Command
 
             // obtener la info de tramite
             $tramites = $full["tramites"];
+
+            // try
+            // {
+            //     $en = $this->encabezados->create( $i_transaccion );
+            //     $refs[]= $transaccion['referencia'];
+
+            //     foreach($tramites as $t)
+            //     {
+            //         // obtener los detalles
+            //         $detalles = $t["detalles"];
+            //         $info = $t["info"];
+            //         $i_detalles = array();
+
+            //         foreach($detalles as $d)
+            //         {   
+            //             $i_detalles = array(
+            //                 "folio_unico"       => $transaccion['referencia'],
+            //                 "cantidad"          => "1",
+            //                 "unidad"            => "SERVICIO",      
+            //                 "concepto"          => utf8_decode($d["concepto"]),
+            //                 "precio_unitario"   => !empty((int)$d["id_descuento"]) ? ($d["importe_concepto"]*-1) : $d["importe_concepto"],
+            //                 "importe"           => !empty((int)$d["id_descuento"]) ? ($d["importe_concepto"]*-1) : $d["importe_concepto"],
+            //                 "partida"           => $d["partida"],
+            //                 "fecha_registro"    => date("Y-m-d H:i:s"),
+            //                 "num_identificacion"=> !empty((int)$d["id_descuento"]) ? $d["id_descuento"]."|"."0" : $d["id_detalle_tramite"]."|"."0",
+            //                 "id_oper"           => $d["id_transaccion_motor"],
+            //                 "id_mov"            => $d["id_tramite_motor"],
+            //                 "st_gen"            => "0",
+            //                 "st_doc"            => "0",
+            //                 "info"              => json_encode($info)
+            //             );
+
+            //             try
+            //             {
+            //                 // insertar los registros de detalles de la transaccion
+            //                 // $o = $this->detalle->insert( $i_detalles );
+
+            //                 $has = $this->detalle->findWhere(["id_mov" => $d["id_tramite_motor"], "id_oper" => $d["id_transaccion_motor"]]);
+            //                 $dcount = $has->count();
+                            
+            //                 if ((int)$dcount == 0) {
+            //                     /* no existe */
+            //                     $this->detalle->create( $i_detalles );                                
+            //                 } 
+
+            //             }catch( \Exception $e ){
+            //                 Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
+            //             }      
+            //         }                              
+            //     }
+
+            // }catch( \Exception $e ){
+            //     Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar encabezados " . $e->getMessage());
+            // }
             
             foreach($tramites as $t)
             {
@@ -349,31 +418,21 @@ class FacturacionOperaciones extends Command
 
                     try
                     {
-                        // insertar los registros de detalles de la transaccion
-                        // $o = $this->detalle->insert( $i_detalles );
-
-                        $has = $this->detalle->findWhere(["id_mov" => $d["id_tramite_motor"], "id_oper" => $d["id_transaccion_motor"]]);
-
-                        $dcount = $has->count();
-                        // Log::info("id_mov => ".$d['id_tramite_motor'] ." "."id_oper => ".$d['id_transaccion_motor']." count => ".$has->count());
-                        if ((int)$dcount == 0) {
-                            /* no existe */
-                            $this->detalle->create( $i_detalles );
-                            // Log::info("Detalles insertados: ".count($i_detalles));
-                        } 
+                        // insertar los registros de detalles de la transaccion                        
+                        $this->detalle->create( $i_detalles );
 
                     }catch( \Exception $e ){
                         Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar detalles de la factura " . $e->getMessage());
                     }      
-                }
-
-                          
+                }                          
             }
 
+            $refs[]= $transaccion['referencia'];
+            
             try
             {
                 $en = $this->encabezados->create( $i_transaccion );
-                $refs []= $transaccion['referencia'];
+
             }catch( \Exception $e ){
                 Log::info("FacturacionOperaciones@escribirFacturas - ERROR al insertar encabezados " . $e->getMessage());
             }
@@ -381,7 +440,7 @@ class FacturacionOperaciones extends Command
         
         /* actualizar las referencias como facturadas */
         try
-        {
+        {   
             foreach($refs as $r)
             {
                 $pr = $this->pr->where('referencia', $r)->update(['facturado' => 1]);

@@ -420,6 +420,7 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
+Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales');
 
 Route::get('/getInfoNormales/{folio}/{idticket}', 'PortalSolicitudesTicketController@getNormales');
 
@@ -470,6 +471,8 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
+Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
 
 Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
 Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');
