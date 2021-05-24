@@ -281,7 +281,8 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile');
     Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
     Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
-
+    Route::post('/asignaherramientas/saveuserstatus', 'AsignaHerramientasController@saveUserStatus');
+    Route::post('/asignaherramientas/loadstatususer', 'AsignaHerramientasController@loadstatusUser');
 
 });
 
@@ -488,5 +489,3 @@ Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircContr
 
 Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
 Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');
-
-
