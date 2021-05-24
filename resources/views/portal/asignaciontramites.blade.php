@@ -29,97 +29,47 @@
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
     <strong>Info: </strong>Esta configuración te permite relacionar un trámite a una entidad. También puedes eliminar o editar el registro.
 </div>
-
 <div class="row">
-  
-    <div class="portlet box blue">
-        <div class="portlet-title">
-            <div class="caption">
-                <i class="fa fa-bank"></i>Agregar Entidad
-            </div>
-
-        </div>
-        <div class="portlet-body">
-        <div class="form-body">
-        <div class="row">
-            
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label class="sr-only" for="entidad">Nueva Entidad</label>
-                    <input type="text" class="form-control" id="entidad"name="entidad" autocomplete="off" placeholder="Nueva Entidad">
-                </div> 
-            </div> 
-            <div class="col-md-1">
-                <div class="form-group">               
-                    <button type="button" class="btn green" onclick="">Agregar</button>
-                </div>
-            </div>
-            <div class="col-md-3">   
-                <div class="form-group">
-                    <label>Entidades Registradas (Selecciona para ver los Tramites)</label>         
-                </div>
-            </div> 
-            <div class="col-md-3">   
-                <div class="form-group">    
-                    <select class="select2me form-control" name="OptionEntidad" id="OptionEntidad" onchange="">
-                        <option value="limpia">------</option>
-                    </select>       
-                </div> 
-            </div>
-            <div id="editentidad" class="col-md-1 col-ms-12" hidden="true">
-                <div class="form-group" >
-                  <button type="button" class="btn green tooltips" onclick=""  data-container="body" data-placement="top" data-original-title="Editar Nombre Entidad" data-toggle='modal' href='#modEntidad'><i class='fa fa-pencil'></i></button>  
-                </div>
-            </div> 
-          </div>            
-            </div>
-        </div>
+  <div class="portlet box blue">
+    <div class="portlet-title">
+      <div class="caption">
+          <i class="fa fa-cogs"></i>Registros Entidad Tramite  
+      </div>
+      <div class="tools">                
+         <a href="#portlet-config" data-toggle="modal" class="config" data-original-title="" title="Asignar traamite">
+                    </a>
+      </div>
     </div>
-    
-</div>
-
-<div class="row">
-  <div class="portlet box blue" id="Addtable">
-    <div class="portlet-title" id="TitleBanco">
-            <div class="caption" id="RemoveTitle">
-                <i class="fa fa-cogs"></i>Registros Entidad Tramite  
+    <div class="portlet-body">
+       <div class="row">
+          <div class="form-group">
+            <div class="col-md-12 text-right">                
+              <button class="btn blue" onclick=""><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
             </div>
-        </div>
-        <div class="portlet-body" id="RemoveTable">
-          <div class="row">
-            <div class="form-group">
-              <div class="col-md-6">                      
-                <button class="btn green" href='#static2' data-toggle='modal' >Agregar</button>
-              </div>
-            </div>
-            <div class="form-group">
-             <div class="col-md-6 text-right">                
-                <button class="btn blue" onclick=""><i class="fa fa-file-excel-o"></i> Descargar CSV</button>
-              </div>
-            </div>
-            <span class="help-block">&nbsp; </span>
           </div>
-                <table class="table table-hover" id="sample_2">
-                <thead>
-                <tr>
-                    <th>
-                        Nombre
-                    </th>                    
-                    <th>
-                        &nbsp;
-                    </th>
-                </tr>
-                </thead>
-                <tbody>              
-                    <tr>                           
-                      <td>                              
-                        <span class="help-block">No Found</span>                          
-                      </td>
-                      <td class="text-right">
-                      </td>
-                    </tr>                              
-                </tbody>
-              </table>
+          <span class="help-block">&nbsp; </span>
+        </div>
+          <table class="table table-hover" id="sample_2">
+            <thead>
+              <tr>
+                <th>
+                  Nombre
+                </th>                    
+                <th>
+                  &nbsp;
+                </th>
+              </tr>
+            </thead>
+            <tbody>              
+              <tr>                           
+                <td>                              
+                  <span class="help-block">No Found</span>                          
+                </td>
+                <td class="text-right">
+                </td>
+              </tr>                              
+            </tbody>
+          </table>
         </div>
     </div>
 </div>
