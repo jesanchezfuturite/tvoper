@@ -595,9 +595,14 @@ function configprelacion()
        return botonAtender;
     }
     function format ( d ) { 
+      input_check="";
+      if(d.grupo[0].asignado_a!=null)
+      {
+        input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label>";
+      }
     var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label></th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
           let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
           let checks='<input id="ch_'+solicitud.id_transaccion+'"style="cursor:pointer" name="check_'+solicitud.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
@@ -605,7 +610,11 @@ function configprelacion()
        {
          botonAtender="<td class='text-center' width='5%'></td>";
          checks='';
-       } 
+       }
+       if(d.grupo[0].asignado_a==null)
+      {
+        checks='';
+      }
        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
        var lote=searchIndex('lote',solicitud.info.campos);
        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
@@ -632,15 +641,15 @@ function configprelacion()
 
         
         });
-        var hiddenSol="";
-        var btnSol="";
-        var checks="";
+        var select_rechazos=addSelect(d.grupo[0].id_transaccion);
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
         if(d.grupo[0].asignado_a==null)
         {
-          hiddenSol="hidden='true'";
+          select_rechazos="";
+          btn_rechazo="";
         }
        
-        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+addSelect(d.grupo[0].id_transaccion,hiddenSol)+"</th><th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")' "+hiddenSol+">Rechazar</a></th></tr>";
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th> <th></th><th> </th><th>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         return html;
     }
@@ -710,8 +719,8 @@ function configprelacion()
         Command: toastr.warning("Error Rechazo", "Notifications") 
       })
     }
-    function addSelect(id,hiddenSol){
-      var select ='<select class="select-a form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'" '+hiddenSol+'>';
+    function addSelect(id){
+      var select ='<select class="select-a form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'">';
       /*var itemSelect=$.parseJSON($("#jsonStatus").val());
       select+="<option value='0'>-------</option>";
       $.each(itemSelect, function(i, item) {
