@@ -243,7 +243,7 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    ];  return $tramites;
+                    ];  
                   $this->saveFile($data);
                 }
 
