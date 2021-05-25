@@ -62,6 +62,14 @@
                             </div>
                         @endif
                         <div class="form-group row">
+                                <label for="comunidad" class="col-md-4 col-form-label text-md-right">{{ __('Comunidad') }}</label>
+                                <div class="col-md-6">
+                                    <select class="select2me form-control"name="comunidad" id="itemsComunidad" >
+                                        <option value="">Selecciona</option>                                       
+                                      </select> 
+                                </div>
+                            </div>
+                        <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
@@ -96,4 +104,33 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        getcomunidad();
+    });
+    function getcomunidad()
+    {
+      $.ajax({
+          method: "get",            
+          url: "{{ url('/operacion-roles-get-rol') }}",
+          data: {_token:'{{ csrf_token() }}'}  })
+          .done(function (response) { 
+            
+            $("#itemsComunidad option").remove();
+            $('#itemsComunidad').append("<option value=''>Selecciona</option>");
+            $.each(response, function(i, item) {
+                $('#itemsComunidad').append("<option value='"+item.id+"'>"+item.descripcion+"</option>");
+          
+            });
+          })
+          .fail(function( msg ) {
+            Command: toastr.warning("Error Config", "Notifications") 
+          })
+    }
+
+
+</script>
 @endsection

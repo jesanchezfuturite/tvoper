@@ -533,7 +533,7 @@ class ApiController extends Controller
     public function getValorCatastral(Request $request)
     {
 
-        $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
+        // $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
 
         $notary_users = array();
 
@@ -550,15 +550,16 @@ class ApiController extends Controller
 
         try
         {
-            $this->client = new \GuzzleHttp\Client();
+			$results = app()->call('App\Http\Controllers\PortalNotaryOfficesController@getUsers', [$request->id]);
+            // $this->client = new \GuzzleHttp\Client();
 
-            $response = $this->client->get(
-                $path
-            );
+            // $response = $this->client->get(
+            //     $path
+            // );
 
-            $results = $response->getBody();
+            // $results = $response->getBody();
 
-            $results = json_decode($results);
+            // $results = json_decode($results);
 
             if(count($results) > 0)
             {

@@ -281,7 +281,8 @@ Route::group(['middleware' => 'permissions'], function () {
     Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile');
     Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
     Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
-
+    Route::post('/asignaherramientas/saveuserstatus', 'AsignaHerramientasController@saveUserStatus');
+    Route::post('/asignaherramientas/loadstatususer', 'AsignaHerramientasController@loadstatusUser');
 
 });
 
@@ -469,6 +470,8 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
+Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
 
 Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
 Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');
@@ -485,5 +488,4 @@ Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}','A
 Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaMat');
 
 Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
-
-
+Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');

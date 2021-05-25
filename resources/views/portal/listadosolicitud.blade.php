@@ -85,13 +85,14 @@
             </div>
         </div>
          <div class="portlet-body" id="addtables">
-    		<div id="removetable">
+    		<div class="table-responsive">
           		<table class="table table-hover" cellspacing="0" width="100%"  id="example">
             	<thead>
                 <tr>
                     <th></th>
                     <th>Grupo</th>
                     <th>Total</th>
+                    <th>Solicitudes</th>
                     <th></th>
                 </tr>
             </thead>
@@ -304,11 +305,34 @@
         </div>
     </div>
 </div>
-
+<div id="portlet-rechazar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Rechazar Solicitudes: <label id="lbl_idsolicitudes" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="rechazarSolicitudes()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
 <input type="text" name="folioPago" id="folioPago" hidden="true">
+<input type="text" name="idgrupo" id="idgrupo" hidden="true">
+<input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 @endsection
 
 @section('scripts')
@@ -429,12 +453,12 @@ function configprelacion()
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
   }
-  function findMotivosSelect()
+  function findMotivosSelect(catalogo_id)
   {
-    var id_catalogo_=$("#opTipoSolicitud").val();
+    //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id_catalogo_,
+          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -474,21 +498,31 @@ function configprelacion()
         var objectResponse=[];
             if(typeof response=== 'object')
             {
-            for (n in response) {                 
+            for (n in response) {              
                   var total=0;
+                  var contador=[];
                   for(k in response[n].grupo)
                   {
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
-                  }
-                  //console.log(response[n]);
-                  Object.assign(response[n],{"costo_final":formatter.format(total)});
-                  objectResponse.push(response[n]); 
-              }  
-              //console.log(objectResponse);
+                    Object.assign(response[n],{"costo_final":formatter.format(total)});
+
+                     for(h in response[n].grupo)
+                     {
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
+                       {
+                       
+                       Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
+                        response[n].grupo.splice(h,1);
+                       }
+                     }                     
+                  } 
+
+                  objectResponse.push(response[n]);
+              }
              response=objectResponse;
             }
             
-            findMotivosSelect();
+            //console.log(response);
             createTable(response);  
         })
         .fail(function( msg ) {
@@ -504,7 +538,7 @@ function configprelacion()
                "data": dataS,
                 "columns": [
                   {
-                "data": "id_transaccion",
+                "data": "grupo_clave",
                 "class": 'detectarclick',
                 "width": "2%",
                 "render": function ( data, type, row, meta) {
@@ -512,10 +546,11 @@ function configprelacion()
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data":"id_transaccion"},
+                  { "data":"grupo_clave"},
                   { "data":"costo_final"},
+                  { "data":"grupo.length"},
                   {
-                    "data": "id_transaccion",
+                    "data": "grupo_clave",
                     "render": getTemplateAcciones
                   }
               ]
@@ -530,13 +565,15 @@ function configprelacion()
             if ( row.child.isShown() ) {
                 row.child.hide();
                 tr.removeClass('shown');
-              $("#iconShow-" + row.data().id_transaccion).addClass("fa-plus").removeClass("fa-minus");
+              $("#iconShow-" + row.data().grupo_clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
-                $("#iconShow-" + row.data().id_transaccion).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:10px;'>"  + format(row.data()) + "</div>").show();
+                $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
+                row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
+        $("#select_"+row.data().grupo[0].id_transaccion).select2();
+
     }
     function getTemplateAcciones( data, type, row, meta){
     var  color_btn='red';
@@ -548,7 +585,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.id_transaccion+"\",\""+val+"\")'> <strong>"+label_btn+" ("+row.grupo.length+")</strong> </a></td>";
+      let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
       /*if(row.grupo[0].status==1)
          
@@ -557,15 +594,27 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-    function format ( d ) {       
+    function format ( d ) { 
+      input_check="";
+      if(d.grupo[0].asignado_a!=null)
+      {
+        input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label>";
+      }
+    var clase='';      
         let html = '<table class="table table-hover">';
-        html += "<tr><th></th><th>Id</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th></th></tr>";
+        html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>";
         d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
-       if(solicitud.status==2)
+          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+          let checks='<input id="ch_'+solicitud.id_transaccion+'"style="cursor:pointer" name="check_'+solicitud.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
+       if(solicitud.status!=1)
        {
          botonAtender="<td class='text-center' width='5%'></td>";
-       } 
+         checks='';
+       }
+       if(d.grupo[0].asignado_a==null)
+      {
+        checks='';
+      }
        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
        var lote=searchIndex('lote',solicitud.info.campos);
        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
@@ -577,17 +626,131 @@ function configprelacion()
        }else{          
          Mp=conctenaM(municipio);
        }
-       //console.log(solicitud.info.campos);
-       //console.log(Mp);
+      
        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_transaccion  +"' class='fa fa-plus'></a>" : '';
-        
-            html += '<tr id="trchild-' + solicitud.id_transaccion +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td>'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ botonAtender + '</td></tr>'
+        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
+         if(solicitud.status==7 || solicitud.status==8)
+          {
+            clase='warning';
+          }else{
+            clase='';
+          }
+
+            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+
         
         });
-        html+='</table>';
+        var select_rechazos=addSelect(d.grupo[0].id_transaccion);
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
+        if(d.grupo[0].asignado_a==null)
+        {
+          select_rechazos="";
+          btn_rechazo="";
+        }
+       
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th> <th></th><th> </th><th>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+
         return html;
+    }
+    function showMore( solicitud, e){
+      var tr = $(e.target).parents('tr');
+      if( solicitud.grupo && solicitud.grupo.length > 0 ){
+
+        if(tr.hasClass("shown") ){
+          tr.removeClass('shown');
+          $("#brothertr-" + solicitud.id ).remove();
+
+          $("#iconShowChild-" + solicitud.id).addClass("fa-plus").removeClass("fa-minus");
+        } else {
+          $("#iconShowChild-" + solicitud.id).removeClass("fa-plus").addClass("fa-minus");
+          tr.addClass('shown');
+          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
+        }
+
+      }
+      $("#select_"+solicitud.grupo[0].id_transaccion).select2();
+    }
+    function rechazarArray(id_transaccion)
+    {
+      var estatus_=$("#select_"+id_transaccion).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      if(checks.length>0){
+        document.getElementById("lbl_idsolicitudes").textContent=checks;
+         $('#portlet-rechazar').modal('show');
+         document.getElementById("idgrupo").value=id_transaccion;
+      }
+
+    }
+    function rechazarSolicitudes()
+    {
+      var id_transaccion=$("#idgrupo").val();
+      var estatus_=$("#select_"+id_transaccion).val();
+      if(estatus_=='0')
+      {
+        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
+        return;
+      }
+      checks=[];
+      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+      $.ajax({
+      method: "post",            
+      url: "{{ url('/update-rechazo') }}",
+      data: {id:checks,estatus:estatus_,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+          if(response.Code=='200'){
+             findSolicitudes();
+            Command: toastr.success(response.Message, "Notifications") 
+          }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+          }
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+    }
+    function addSelect(id){
+      var select ='<select class="select-a form-control form-filter input-sm" name="select_'+id+'" id="select_'+id+'">';
+      /*var itemSelect=$.parseJSON($("#jsonStatus").val());
+      select+="<option value='0'>-------</option>";
+      $.each(itemSelect, function(i, item) {
+        if(item.id==7 || item.id==8)
+        {
+          select+="<option value='"+item.id+"'>"+item.descripcion+"</option>";
+        }
+      });*/
+      select+="<option value='0'>-------</option>";
+      //select+="<option value='2'>Cerrar Solicitud</option>";
+      select+="<option value='7'>Error de Municipio</option>";
+      select+="<option value='8'>Falta de pago</option>";
+      select+="</select>";
+      return select;
+    }
+    function select_allCheck(id_transaccion)
+    {
+      var checkP=$("#check_todos_"+id_transaccion).prop("checked");
+      checks=[];
+        if(checkP)
+        {
+           $("input[name = check_"+id_transaccion+"]").prop("checked", true);
+        }else{
+          $("input[name = check_"+id_transaccion+"]").prop("checked", false);
+        } 
+        $("input[name = check_"+id_transaccion+"]:checked").each(function(){
+          checks.push($(this).val());
+        });
+  
+      //console.log(checks);
     }
     function conctenaM(municipio)
     {var coma='';var Mp='';
@@ -617,7 +780,7 @@ function configprelacion()
       document.getElementById("btn_guardar").disabled = true;
       document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a,folioPago)
+    function findAtender(id,estatus,asignado_a,folioPago,catalogo_id)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
@@ -649,10 +812,17 @@ function configprelacion()
           }
           if(typeof(Resp.solicitante.notary)){
             $(".divNotaria").css("display", "block");
+            dataNot='';
             for (not in Resp.solicitante.notary) {  
               if(not=='notary_number' || not=='email' || not=='phone')
-              {             
-                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+not+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+              { 
+                if(not=='notary_number')
+                {dataNot='Numero de Notaria';}
+                if(not=='email')
+                {dataNot='Correo Electrónico';} 
+                if(not=='phone')
+                {dataNot='Teléfono';}            
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
               }
             }
           }
@@ -699,6 +869,7 @@ function configprelacion()
             btn_2.innerHTML="Continuar Solicitud";
             btn_2.value="continuar";
           }
+          findMotivosSelect(catalogo_id);
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al obtener el registro", "Notifications");
@@ -945,13 +1116,16 @@ function configprelacion()
     //console.log(jarray);
     var config=$.parseJSON($("#configP").val());
     var response='';
-    $.each(config.solicitudes[key], function(i, item) {  
+    if(typeof jarray!=='undefined')
+    {
+      $.each(config.solicitudes[key], function(i, item) {  
 
-      if(typeof jarray[item]!=='undefined')
-      {       
-        response=jarray[item];        
-      }    
-    });
+        if(typeof jarray[item]!=='undefined')
+        {       
+          response=jarray[item];        
+        }    
+      });
+    }
     return response;
   }
 
