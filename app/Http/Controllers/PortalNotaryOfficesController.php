@@ -48,9 +48,9 @@ class PortalNotaryOfficesController extends Controller
         foreach ($files as $key => $file) {
             $file = $file;
 			$extension = $file->getClientOriginalExtension();
-
+		
 			$attach = "archivo_temporal_".date("U").".".$extension;
-
+            
 			\Storage::disk('local')->put($attach,  \File::get($file));
             $data[$key] = [
                 'name'     => "file[]",
@@ -58,10 +58,10 @@ class PortalNotaryOfficesController extends Controller
                 'filename' => $attach
             ];
 
-
+      
         }
         $data = array_merge($data, $this->flatten([ "notary_office" => $notary_office ]));
-
+        
         try {
             $res = (new Client())->request(
                 'POST',
@@ -76,11 +76,11 @@ class PortalNotaryOfficesController extends Controller
         }
         catch (ServerException $exception) {
             return $exception->getResponse()->getBody(true);
-
+            
         }
-
+   
         return $response;
-
+   
 
 
     }
@@ -122,17 +122,17 @@ class PortalNotaryOfficesController extends Controller
             foreach ($files as $key => $file) {
                 $file = $file;
                 $extension = $file->getClientOriginalExtension();
-
+            
                 $attach = "archivo_temporal_".date("U").".".$extension;
-
+                
                 \Storage::disk('local')->put($attach,  \File::get($file));
                 $data[$key] = [
                     'name'     => "file[$key]",
                     'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
                     'filename' => $attach
                 ];
-
-
+    
+          
             }
             $data = array_merge($data, $this->flatten([ "users" => $users ]));
 
@@ -140,6 +140,7 @@ class PortalNotaryOfficesController extends Controller
             $data = $this->flatten([ "users" => $users ]);
         }
         $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users/$user_id";
+
         
         try {
             $res = (new Client())->request(
@@ -193,23 +194,23 @@ class PortalNotaryOfficesController extends Controller
             foreach ($files as $key => $file) {
                 $file = $file;
                 $extension = $file->getClientOriginalExtension();
-
+            
                 $attach = "archivo_temporal_".date("U").".".$extension;
-
+                
                 \Storage::disk('local')->put($attach,  \File::get($file));
                 $data[$key] = [
                     'name'     => "file[]",
                     'contents' => Psr7\Utils::tryFopen(storage_path('app/'.$attach), 'r'),
                     'filename' => $attach
                 ];
-
-
+    
+          
             }
             $data = array_merge($data, $this->flatten([ "users" => $users ]));
         }else{
             $data = $this->flatten([ "users" => $users ]);
         }
-
+  
         try {
             $res = (new Client())->request(
                 'POST',
@@ -229,7 +230,7 @@ class PortalNotaryOfficesController extends Controller
             Log::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
             return $responseBody;
         }
-
+   
         return $response;
    }
    public function getRolesPermission(){
@@ -370,7 +371,7 @@ class PortalNotaryOfficesController extends Controller
                     }
                 }
             }
-            else {
+            else {                
                 if($value instanceof UploadedFile){
                     $result[] = ["name" => $prefix.$key.$suffix,
                         "filename" => $value->getClientOriginalName(),

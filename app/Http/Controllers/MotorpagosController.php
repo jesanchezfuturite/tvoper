@@ -2331,7 +2331,6 @@ class MotorpagosController extends Controller
     {
         
         $rfc=$request->rfc;        
-        $familia=$request->familia;        
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
         $response=array();
@@ -2349,7 +2348,7 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';            
         }       
-        if($rfc=="" && $familia=='0')
+        if($rfc=="")
         {
          $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin); 
             if($transaccion<>null){
@@ -2367,7 +2366,7 @@ class MotorpagosController extends Controller
                     $response=$this->reponseTransacciones($transaccion,$response);
                 }
                 $transaccionplaca=$this->tramitedb->consultaRFCoper(['auxiliar_2'=>$rfc],$fechaIn,$fechaFin);
-               //log::info($rfc.$transaccionplaca);
+                log::info($rfc.$transaccionplaca);
                  if($transaccionplaca<>null){
                     $response=$this->reponseTransacciones($transaccionplaca,$response);
                 }
@@ -2377,30 +2376,20 @@ class MotorpagosController extends Controller
                     $response=$this->reponseTransacciones($findFolio,$response);
                 }
             }else{
-                if($rfc!=""){
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.rfc'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    } 
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.auxiliar_2'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    } 
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_transacciones.id_transaccion_motor'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    }
-                }
-                if($familia!='0'){
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_familia.id'=>$familia]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                     
-                    }
-                }
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.rfc'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.auxiliar_2'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
+                $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_transacciones.id_transaccion_motor'=>$rfc]);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                } 
             }
         }    
-        dd($response);
         //log::info($transaccion);      
          return json_encode($response);
         
