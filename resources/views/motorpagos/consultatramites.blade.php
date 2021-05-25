@@ -87,7 +87,16 @@
                                 </div>
                                 <div class="row">
                                     <div id="addTimerpicker" hidden="true">
-                                        <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscaroper' onclick='consultaRangoFechasOper()'>Buscar</button></div></div>
+                                        <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'></div></div></div>
+                                        <div class="col-md-3"><span class='help-block'>&nbsp;</span>
+                                                    <div class="form-group">
+                                                        <label>Familia</label>
+                                                        <select class="select2me form-control"  id="itemsFamilia" >
+                                                            <option>------</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                        <div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc' id='rfc' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscaroper' onclick='consultaRangoFechasOper()'>Buscar</button></div></div>
                                     </div>
                                 </div> <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span> 
                                     <div id="addTable_1">
@@ -354,16 +363,37 @@
         cargatabla2(); 
         cargatabla3(); 
         ComponentsPickers.init(); 
-
+        findFamilia();
     });
-    
+    function findFamilia()
+    {
+        $.ajax({
+           method: "get",
+           url: "{{ url('/familia-find-all') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        var Resp=$.parseJSON(response);
+            $("#itemsFamilia option").remove();
+            $("#itemsFamilia").append("<option value='0'>-------</option>");
+            $.each(Resp, function(i, item) {
+                
+                $("#itemsFamilia").append("<option value='"+item.id+"'>"+item.nombre+"</option>");
+                
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+    }
     function consultaRangoFechasOper()
     {
        fechaIn=$("#fechainicio").val();
         fechaF=$("#fechafin").val();
         var rfc=$("#rfc").val();
-        if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1){
-            Command: toastr.warning("Rango de Fechas o RFC / Placa / Folio, Requerido!", "Notifications")            
+        var familia_=$("#itemsFamilia").val();
+        if(rfc.length<1 && fechaIn.length<1 && fechaF.length<1 && familia_=='0'){
+            Command: toastr.warning("Rango de Fechas o RFC / Placa / Folio o Familia, Requerido!", "Notifications")            
+        }else if(familia_!='0' && fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Rango de Fechas, Requerido!", "Notifications")            
         }else{
             consultaOper(fechaIn,fechaF);                    
         }
@@ -440,6 +470,7 @@
         document.getElementById('fechainicio').value='';
         document.getElementById('fechafin').value='';
         document.getElementById('rfc').value=''; 
+        $("#itemsFamilia").val('0').change();
     }
      function timpicker2()
     {
@@ -555,18 +586,14 @@
     {    var inin=0;
         $('#sample_3 thead tr').clone(true).appendTo( '#sample_3 thead' );
         $('#sample_3').DataTable( {
-        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
-        initComplete: function () {            
+            "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+            initComplete: function () {            
             this.api().columns().every( function () {
                 var column = this;
-               
-                //console.log(inin);
-               
-                var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                
-                
+                var select = $('<select class="select2me form-control"><option value=""></option></select>')               
                     .appendTo( $("#sample_3 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                       
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -581,9 +608,11 @@
                     select.append( '<option value="'+d+'">'+d+'</option>' )
                 } );
                  inin=inin+1;
-            } );
-        }
-        } );
+            });
+        },
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]} );
         
     }
     function cargatabla2()
@@ -598,6 +627,7 @@
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
                     .appendTo( $("#sample_2 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                        console.log($(this)).val();
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -628,6 +658,7 @@
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
                     .appendTo( $("#sample_4 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
+                        console.log($(this).val());
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
@@ -651,11 +682,13 @@
         Addtable1();
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc").val();
+        var familia_=$("#itemsFamilia").val();
+        console.log("familia   "+ familia_);
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
-        data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) { 
+        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
         $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
@@ -672,7 +705,7 @@
                 color='danger';
                 label='No procesado';
             }else if(item.estatus=='ad')
-            {
+            {f
                 color='warning';
                 label='ad';
             }else{
@@ -763,45 +796,69 @@
     }
 
     function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
-  var f = new Date();
-  fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
-    var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
-    var CSV = '';    
-    //CSV += ReportTitle + '\r\n\n';
-    if (ShowLabel) {
-        var row = ""; 
-        for (var index in arrData[0]) { 
+        var f = new Date();
+        fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
+        var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;    
+        var CSV = '';    
+        //CSV += ReportTitle + '\r\n\n';
+        if (ShowLabel) {
+            var row = ""; 
+            for (var index in arrData[0]) { 
             row += index + ',';
+            }
+            row = row.slice(0, -1);
+            CSV += row + '\r\n';
+        } 
+        for (var i = 0; i < arrData.length; i++) {
+            var row = "";
+            for (var index in arrData[i]) {
+                row += '"' + arrData[i][index] + '",';
+            }
+            row.slice(0, row.length - 1); 
+            CSV += row + '\r\n';
         }
-        row = row.slice(0, -1);
-        CSV += row + '\r\n';
-    } 
-    for (var i = 0; i < arrData.length; i++) {
-        var row = "";
-        for (var index in arrData[i]) {
-            row += '"' + arrData[i][index] + '",';
+        if (CSV == '') {        
+            alert("Invalid data");
+            return;
         }
-        row.slice(0, row.length - 1); 
-        CSV += row + '\r\n';
-    }
-    if (CSV == '') {        
-        alert("Invalid data");
-        return;
-    }
-    //document.getElementById("blockui_sample_3_1_1").click();
+        //document.getElementById("blockui_sample_3_1_1").click();
 
-    var fileName = fecha;
-    fileName += ReportTitle.replace(/ /g,"_");
-    var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
-    var link = document.createElement("a");    
-    link.href = uri;
-    link.style = "visibility:hidden";
-    link.download = fileName + ".csv";
-     Command: toastr.success("Success", "Notifications")
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        var fileName = fecha;
+        fileName += ReportTitle.replace(/ /g,"_");
+        var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+        var link = document.createElement("a");    
+        link.href = uri;
+        link.style = "visibility:hidden";
+        link.download = fileName + ".csv";
+        Command: toastr.success("Success", "Notifications")
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function guardarDatosJson(){
+        var table = $('#sample_3').DataTable();
+        var obj =[];
+         var datos= table.rows({search:'applied'}).data().toArray();
+         console.log(datos);
+         $.each( datos, function( key, value ) {
+            //  console.log(value);
+            var info ={};
+
+            $.each( value, function( idx, val ) {
+                // console.log(val);
+                var title = table.column(idx).header();
+                var title = $(title).html();
+                info[title]=val;
+                
+            });
+            obj.push(info);
+        });
+        obj = JSON.stringify(obj);
+        // $('#jsonCode1').val(obj);  
+
+        return obj;
+    }
     
 </script>
 @endsection

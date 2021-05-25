@@ -35,12 +35,13 @@ class ApiController extends Controller
 
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
-    protected $catastro_url = 'http://10.150.130.96/WSCatastro/json/index.php';
+    protected $catastro_url = 'http://10.150.130.90/WSCatastro/json/index.php';
 
-	protected $insumos_url 	= 'http://insumos.test.nl.gob.mx/api/url';
-	protected $insumos_auth = 'http://insumos.test.nl.gob.mx/api/auth';
-	protected $insumos_user = "fun1";
-	protected $insumos_pass = "prueba123";
+	protected $insumos_url 	= 'https://insumos.nl.gob.mx/api/url';
+	protected $insumos_auth = 'https://insumos.nl.gob.mx/api/auth';
+	protected $insumos_user = "mayela_irc";
+	protected $insumos_pass = "prueba1234";
+
 	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 	protected $insumos_auth_produccion = 'https://insumos.nl.gob.mx/api/auth';
 
@@ -532,7 +533,7 @@ class ApiController extends Controller
     public function getValorCatastral(Request $request)
     {
 
-        $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
+        // $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
 
         $notary_users = array();
 
@@ -549,15 +550,16 @@ class ApiController extends Controller
 
         try
         {
-            $this->client = new \GuzzleHttp\Client();
+			$results = app()->call('App\Http\Controllers\PortalNotaryOfficesController@getUsers', [$request->id]);
+            // $this->client = new \GuzzleHttp\Client();
 
-            $response = $this->client->get(
-                $path
-            );
+            // $response = $this->client->get(
+            //     $path
+            // );
 
-            $results = $response->getBody();
+            // $results = $response->getBody();
 
-            $results = json_decode($results);
+            // $results = json_decode($results);
 
             if(count($results) > 0)
             {
@@ -650,7 +652,13 @@ class ApiController extends Controller
 
 			return  $results->token;
 	}
-
+  /**
+	 * Regresa el valor del monto de operación correspondiente al folio informativo ingresado
+	 * @param expediente catastral
+	 * @param folio folio informativo
+	 * @param id_notaria Id de la notaria en la que se hace el trámite
+	 * @return data
+	 */
   public function getMontoOperacion(Request $request){
 
     $expediente = $request->expediente;
