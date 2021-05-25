@@ -35,12 +35,12 @@ class ApiController extends Controller
 
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
-    protected $catastro_url = 'http://10.150.130.96/WSCatastro/json/index.php';
+    protected $catastro_url = 'http://10.150.130.90/WSCatastro/json/index.php';
 
-	protected $insumos_url 	= 'http://insumos.test.nl.gob.mx/api/url';
-	protected $insumos_auth = 'http://insumos.test.nl.gob.mx/api/auth';
-	protected $insumos_user = "fun1";
-	protected $insumos_pass = "prueba123";
+	protected $insumos_url 	= 'https://insumos.nl.gob.mx/api/url';
+	protected $insumos_auth = 'https://insumos.nl.gob.mx/api/auth';
+	protected $insumos_user = "mayela_irc";
+	protected $insumos_pass = "prueba1234";
 	protected $insumos_curp = "https://insumos.nl.gob.mx/api/consultacurp";
 	protected $insumos_auth_produccion = 'https://insumos.nl.gob.mx/api/auth';
 
