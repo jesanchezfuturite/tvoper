@@ -339,7 +339,7 @@
         </div>
     </div>
 </div>
-<input type="text" name="jsonCode1" id="jsonCode1">
+<input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
 <input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
 <input type="text" name="jsonCode3" id="jsonCode3" hidden="true">
                             
@@ -784,9 +784,7 @@
     }
     function saveOper()
     {
-        var datos = guardarDatosJson();
-        var JSONData = datos;
-        // var JSONData=$("#jsonCode1").val();
+        var JSONData=$("#jsonCode1").val();
         var ReportTitle='Transacciones_Operaciones';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
@@ -837,6 +835,7 @@
         link.click();
         document.body.removeChild(link);
     }
+    
     function guardarDatosJson(){
         var table = $('#sample_3').DataTable();
         var obj =[];
