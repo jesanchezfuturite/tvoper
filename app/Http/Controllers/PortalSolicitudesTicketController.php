@@ -641,10 +641,32 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);
+          $this->guardarCarrito($value->id, 2);         
+          $info = json_decode($value->info);
+          if(isset($info->camposConfigurados)){
+            $campos = $info->camposConfigurados;
+             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+              if(isset($key2)){
+                 $distrito = $campos[$key2];
+                if($distrito->valor->clave==1){
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>3]);
+                }else{
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>2]);
+                }
 
-          if($value->status<>5){
-            $tramites_finalizados = $this->tramites_finalizados($value->id);
+              }else{
+                if($value->status<>5){
+                  $tramites_finalizados = $this->tramites_finalizados($value->id);
+                }
+      
+              }
+
+          }else{
+            if($value->status<>5){
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            }
           }
 
         }
@@ -715,10 +737,32 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);
+          $this->guardarCarrito($value->id, 2);         
+          $info = json_decode($value->info);
+          if(isset($info->camposConfigurados)){
+            $campos = $info->camposConfigurados;
+             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+              if(isset($key2)){
+                 $distrito = $campos[$key2];
+                if($distrito->valor->clave==1){
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>3]);
+                }else{
+                  $solicitudTicket = $this->ticket->where('id',$value->id)
+                  ->update(['status'=>2]);
+                }
 
-          if($value->status<>5){
-            $tramites_finalizados = $this->tramites_finalizados($value->id);
+              }else{
+                if($value->status<>5){
+                  $tramites_finalizados = $this->tramites_finalizados($value->id);
+                }
+      
+              }
+
+          }else{
+            if($value->status<>5){
+              $tramites_finalizados = $this->tramites_finalizados($value->id);
+            }
           }
 
         }
