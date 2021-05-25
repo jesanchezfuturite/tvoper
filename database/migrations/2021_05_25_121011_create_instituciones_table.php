@@ -15,9 +15,9 @@ class CreateInstitucionesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('instituciones', function(Blueprint $table) {
+		Schema::create('portal.instituciones', function(Blueprint $table) {
             $table->increments('id');
-
+            $table->string('descripcion', 255);
             $table->timestamps();
 		});
 	}
@@ -29,6 +29,6 @@ class CreateInstitucionesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('instituciones');
+		Schema::drop('portal.instituciones');
 	}
 }
