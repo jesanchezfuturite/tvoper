@@ -82,8 +82,9 @@ class CalculoimpuestosController extends Controller
 
     public function index()
     {
+
     	// mostrar la forma para ejemplo del calculo de declaracion normal
-    	$fecha_escritura 			= '2021-2-22'; // sin ceros iniciales ej 2020-9-1 para primero de sept de 2020
+    	$fecha_escritura 			= '2020-12-28'; // sin ceros iniciales ej 2020-9-1 para primero de sept de 2020
     	$monto_operacion 			= 1500000;
     	$ganancia_obtenida 			= 950000; // puede ser mayor o igual al monto de operacion
     	$pago_provisional_lisr		= 40000;
@@ -104,9 +105,12 @@ class CalculoimpuestosController extends Controller
  		$this->factor_actualizacion = $this->getFA();
 
  		$this->porcentaje_recargos	= $this->getPorcentajeregargos();
-    $this->calculo();
 
-    $results = array(
+
+
+    	$this->calculo();
+
+    	$results = array(
     		"Entradas" => array(
 	    			"fecha_escritura" => $this->fecha_escritura,
 	    			"monto_operacion" => $monto_operacion,
