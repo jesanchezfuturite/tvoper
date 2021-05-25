@@ -575,7 +575,7 @@ function configprelacion()
         $("#select_"+row.data().grupo[0].id_transaccion).select2();
 
     }
-    function getTemplateAcciones( data, type, row, meta){
+  function getTemplateAcciones( data, type, row, meta){
     var  color_btn='red';
     var  label_btn='Asignado';
     var val=0;
@@ -594,57 +594,52 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-    function format ( d ) { 
+  function format ( d ) { 
       input_check="";
       if(d.grupo[0].asignado_a!=null)
       {
         input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+d.grupo[0].id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+d.grupo[0].id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+d.grupo[0].id_transaccion+"\");' value='"+d.grupo[0].id_transaccion+"'> Todos</label>";
       }
-    var clase='';      
+      var clase='';      
         let html = '<table class="table table-hover">';
         html += "<tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>";
-        d.grupo.forEach( (solicitud) =>{          
-          let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
+      d.grupo.forEach( (solicitud) =>{          
+        let botonAtender = "<td class='text-center' width='5%'><a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a></td>";
           let checks='<input id="ch_'+solicitud.id_transaccion+'"style="cursor:pointer" name="check_'+solicitud.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
-       if(solicitud.status!=1)
-       {
-         botonAtender="<td class='text-center' width='5%'></td>";
-         checks='';
-       }
-       if(d.grupo[0].asignado_a==null)
-      {
-        checks='';
-      }
-       var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
-       var lote=searchIndex('lote',solicitud.info.campos);
-       var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
-       var municipio=searchIndex('municipio',solicitud.info.campos);
-       var Mp='';
-       if(typeof (municipio) !== 'object')
-       {
-        Mp=municipio;
-       }else{          
-         Mp=conctenaM(municipio);
-       }
-      
-       var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
-       var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
+        if(solicitud.status!=1){
+           botonAtender="<td class='text-center' width='5%'></td>";
+           checks='';
+        }
+        if(d.grupo[0].asignado_a==null){
+          checks='';
+        }
+        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+        var lote=searchIndex('lote',solicitud.info.campos);
+        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
+        var municipio=searchIndex('municipio',solicitud.info.campos);
+        var distrito=searchIndex('distrito',solicitud.info.campos);
+        var Mp='';
+        if(typeof (municipio) !== 'object'){
+          Mp=municipio;
+        }else{          
+           Mp=conctenaM(municipio);
+        }      
+        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
+        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
-         if(solicitud.status==7 || solicitud.status==8)
-          {
-            clase='warning';
-          }else{
-            clase='';
-          }
+        if(solicitud.status==7 || solicitud.status==8){
+          clase='warning';
+        }else{
+          clase='';
+        }
 
-            html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
 
         
-        });
+      });
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(d.grupo[0].asignado_a==null)
-        {
+        if(d.grupo[0].asignado_a==null){
           select_rechazos="";
           btn_rechazo="";
         }
@@ -1070,15 +1065,15 @@ function configprelacion()
       Object.assign(data,{subsidio:subsidio_.nombre});
     }
     //dataP=$.parseJSON(dataP); 
-    if(typeof(dataP.folio)=='undefined' || typeof(dataP.folio)==null)
+    if(typeof(dataP.folio)==='undefined')
     {
-    Object.assign(data,{folio:null});
-    Object.assign(data,{fecha:null});
-    Object.assign(data,{hora:null});
+      Object.assign(data,{folio:null});
+      Object.assign(data,{fecha:null});
+      Object.assign(data,{hora:null});
     }else{
       Object.assign(data,{folio:dataP.folio});
-    Object.assign(data,{fecha:dataP.fecha});
-    Object.assign(data,{hora:dataP.hora});
+      Object.assign(data,{fecha:dataP.fecha});
+      Object.assign(data,{hora:dataP.hora});
     }
     Object.assign(data,{folioPago:$("#folioPago").val()});
     Object.assign(data,{Municipio:"Monterrey, NL."});
