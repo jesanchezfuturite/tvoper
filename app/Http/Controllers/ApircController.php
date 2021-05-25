@@ -193,21 +193,19 @@ class ApircController extends Controller
     public function buscarActaDef(Request $request)
     {   
 
-        $nombre = strtoupper($request->nombre);
-        $apaterno = strtoupper($request->apaterno);
-        $amaterno = strtoupper($request->amaterno);
-        $fechanac = $request->fechanac;
-        $genero = strtoupper($request->genero);
+        $nombre = strtoupper($request->ndef);
+        $apaterno = strtoupper($request->apdef);
+        $amaterno = strtoupper($request->amdef);
+        $fechadef = $request->fedef;
 
         $params = array (
             "NOMBRE" => $nombre,
             "APELLIDO_PATERNO" => $apaterno, 
             "APELLIDO_MATERNO" => $amaterno,
-            "FECHA_NACI" => $fechanac,
-            "SEXO" => $genero
+            "FECHA_DEFUNCION" => $fechadef
         );
 
-        $url = $this->url . "/GobiernoNuevoLeon-war/webresources/RegistroCivil/buscar_acta_de_defuncion";
+        $url = $this->url . "/WS_RegistroCivil_2020/restful/actas/buscar_defuncion1";
 
         // inicializamos el api de insumos
         try
@@ -225,12 +223,10 @@ class ApircController extends Controller
                     'body'    => json_encode($params)
                 ]
             );
-
-            $results = $response->getBody();
-
-            $results = json_decode($results);
-
-            $r = empty($results->data) ? [] : $results->data;
+            
+            $results = json_decode($response->getBody());
+            
+            $r = empty($results->result) ? [] : $results->result;
 
             return response()->json($r);
             
@@ -252,21 +248,25 @@ class ApircController extends Controller
 
     public function buscarActaMat(Request $request)
     {   
-
-        $nombre = strtoupper($request->nombre);
-        $apaterno = strtoupper($request->apaterno);
-        $amaterno = strtoupper($request->amaterno);
-        $fechanac = $request->fechanac;
+        $nom_con1 = strtoupper($request->nc1);
+        $apa_con1 = strtoupper($request->apc1);
+        $ama_con1 = strtoupper($request->amc1);
+        $nom_con2 = strtoupper($request->nc2);
+        $apa_con2 = strtoupper($request->apc2);
+        $ama_con2 = strtoupper($request->amc2);
+        $fechareg = $request->fechareg;
 
         $params = array (
-            "NOMBRE" => "JAIME",
-            "APELLIDO_PATERNO" => "RODRIGUEZ", 
-            "APELLIDO_MATERNO" => "CALDERON",
-            "FECHA_NACI" => "28-12-1957",
-            "SEXO" => ""
+            "conyugue1_Nombre"=> $nom_con1,
+            "conyugue1_PrimerApellido"=> $apa_con1,
+            "conyugue1_SegundoApellido"=> $ama_con1,
+            "conyugue2_Nombre"=> $nom_con2,
+            "conyugue2_PrimerApellido"=> $apa_con2,
+            "conyugue2_SegundoApellido"=> $ama_con2,
+            "fecha_registro"=> $fechareg
         );
 
-        $url = $this->url . "/GobiernoNuevoLeon-war/webresources/RegistroCivil/buscar_acta_de_matrimonio";
+        $url = $this->url . "/WS_RegistroCivil_2020/restful/actas/buscar_matrimonio1";
 
         // inicializamos el api de insumos
         try
