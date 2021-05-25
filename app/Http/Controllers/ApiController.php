@@ -505,7 +505,13 @@ class ApiController extends Controller
 			$response = curl_exec($ch);
 
 			curl_close($ch);
-			return $response;
+			$response =json_decode($response);
+			foreach ($response->data as $key => &$value) {
+				if($value==[]){
+					$value="";
+				}
+			}
+			return json_encode($response);
 
 
         }catch (\Exception $e){

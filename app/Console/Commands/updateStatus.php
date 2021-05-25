@@ -85,7 +85,11 @@ class updateStatus extends Command
          try{
 
             $json=json_encode($array);
+<<<<<<< HEAD
             $link = env("REFERENCEPAYMENT_HOSTNAME");
+=======
+            $link = env("REFERENCEPAYMENT_HOSTNAME")."?service=ActualizacionReferencia";
+>>>>>>> d52132295917af3f58e57722638a6fc3afab31d2
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $link);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
