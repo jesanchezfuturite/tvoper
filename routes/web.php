@@ -420,7 +420,6 @@ Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@up
 Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite');
 Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile');
 Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito');
-Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales');
 
 Route::get('/getInfoNormales/{folio}/{idticket}', 'PortalSolicitudesTicketController@getNormales');
 
@@ -491,4 +490,3 @@ Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircContr
 
 Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
 Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');
-Route::get('/asignaherramientas/loadstatususer', 'AsignaHerramientasController@loadStatusUser');
