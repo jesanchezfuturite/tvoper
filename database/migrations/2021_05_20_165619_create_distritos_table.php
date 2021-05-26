@@ -29,6 +29,6 @@ class CreateDistritosTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('distritos');
+		Schema::drop('portal.distritos');
 	}
 }

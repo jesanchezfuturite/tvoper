@@ -10,6 +10,7 @@ use App\Repositories\DistritoRepositoryEloquent;
 use App\Entities\Distritos;
 use App\Entities\Distrito;
 use App\Entities\Municipios;
+use App\Repositories\InstitucionesRepositoryEloquent;
 
 
 class CatalogosController extends Controller
@@ -18,6 +19,7 @@ class CatalogosController extends Controller
     protected $municipios;
     protected $distritos;
     protected $distrito;
+    protected $instituciones;
 
 
 
@@ -25,13 +27,15 @@ class CatalogosController extends Controller
         EstadosRepositoryEloquent $estados,
 		MunicipiosRepositoryEloquent $municipios,
         DistritosRepositoryEloquent $distritos,
-        DistritoRepositoryEloquent $distrito
+        DistritoRepositoryEloquent $distrito,
+        InstitucionesRepositoryEloquent $instituciones
 		
     )
     {
         $this->estados = $estados;
         $this->municipios = $municipios;
         $this->distritos = $distritos;
+        $this->instituciones = $instituciones;
     }
 
     public function getEntidad(){
@@ -129,6 +133,21 @@ class CatalogosController extends Controller
             $distritos = Distrito::select("valor as clave", "descripcion as nombre")->get()->toArray();
          
             return json_encode($distritos);
+        } catch (\Exception $e) {
+            return json_encode(
+                [
+                    "code" => 400,
+                    "message" => $e->getMessage()
+                ]
+            );
+        }
+    }
+
+    public function getInstituciones(){
+        try {
+            $instituciones = $this->instituciones->get()->toArray();
+         
+            return json_encode($instituciones);
         } catch (\Exception $e) {
             return json_encode(
                 [
