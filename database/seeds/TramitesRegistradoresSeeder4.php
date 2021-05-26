@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class TramitesRegistradoresSeeder4 extends Seeder
 {
@@ -43,7 +44,7 @@ class TramitesRegistradoresSeeder4 extends Seeder
             [
                 'registrador_id' => 4,
                 'tramite_id' 	=> 103,
-                'region_id' 	=4,
+                'region_id' 	=>4,
                 'created_at' 	=> Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' 	=> Carbon::now()->format('Y-m-d H:i:s'),
             ],
@@ -129,7 +130,7 @@ class TramitesRegistradoresSeeder4 extends Seeder
             ],     
             [
                 'registrador_id' => 4,
-                'tramite_id' 	=> 116
+                'tramite_id' 	=> 116,
                 'region_id' 	=>26,
                 'created_at' 	=> Carbon::now()->format('Y-m-d H:i:s'),
                 'updated_at' 	=> Carbon::now()->format('Y-m-d H:i:s'),
