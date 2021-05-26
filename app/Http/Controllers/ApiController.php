@@ -26,7 +26,6 @@ use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 
-
 class ApiController extends Controller
 {
     protected $key ;
@@ -292,7 +291,7 @@ class ApiController extends Controller
 	    	$results = $response->getBody();
 
 			$results = json_decode($results);
-
+ 
 			return json_encode($results->data[0]);
 
         }catch (\Exception $e){
@@ -550,16 +549,7 @@ class ApiController extends Controller
 
         try
         {
-			$results = app()->call('App\Http\Controllers\PortalNotaryOfficesController@getUsers', [$request->id]);
-            // $this->client = new \GuzzleHttp\Client();
-
-            // $response = $this->client->get(
-            //     $path
-            // );
-
-            // $results = $response->getBody();
-
-            // $results = json_decode($results);
+			      $results = app()->call('App\Http\Controllers\PortalNotaryOfficesController@getUsers', [$request->id]);
 
             if(count($results) > 0)
             {

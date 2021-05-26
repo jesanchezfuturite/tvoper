@@ -85,6 +85,9 @@ return array(
 			"apellidoPat"=>array(
 				"Apellido paterno",
 				"1Apellido Paterno"
+			),
+			"distrito"=>array(
+				"Distrito"
 			)
 			
 		)

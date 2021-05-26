@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateDistritosTable.
+ * Class CreateInstitucionesTable.
  */
-class CreateDistritosTable extends Migration
+class CreateInstitucionesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,10 +15,9 @@ class CreateDistritosTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('portal.distrito', function(Blueprint $table) {
+		Schema::create('portal.instituciones', function(Blueprint $table) {
             $table->increments('id');
-            $table->string('descripcion');
-            $table->string('valor');
+            $table->string('descripcion', 255);
             $table->timestamps();
 		});
 	}
@@ -30,6 +29,6 @@ class CreateDistritosTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('portal.distrito');
+		Schema::drop('portal.instituciones');
 	}
 }

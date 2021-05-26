@@ -472,6 +472,7 @@ Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
 Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
 Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
+Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones');
 
 Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
 Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');

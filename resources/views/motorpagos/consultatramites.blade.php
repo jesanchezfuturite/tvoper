@@ -42,6 +42,9 @@
                             <li>
                                 <a href="#tab_2" data-toggle="tab">Contribuyente</a>
                             </li>
+                            <li>
+                                <a href="#tab_3" data-toggle="tab">Tramites</a>
+                            </li>
                         </ul>
                         <div class="tab-content">                               
                             <div class="tab-pane active" id="tab_0"> 
@@ -305,6 +308,99 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="tab-pane" id="tab_3">
+                                
+                                <div class="portlet box blue">
+                                    <div class="portlet-title">
+                                        <div class="caption">
+                                            <i class="fa fa-gift"></i>Egobierno
+                                        </div>
+                                    </div>
+                                    <div class="portlet-body" >
+                                    <div class="row">
+                                    <div class="col-md-12 text-right"> 
+                                    <span class="help-block">Selecciona una Opcion. </span>
+                                        <div class="md-radio-inline">
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio4" name="radio4" class="md-radiobtn" value="undia" onclick="radiobuttons3()">
+                                                <label for="radio4">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 1 Dia (Últimas 24hrs). </label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio5" name="radio5" class="md-radiobtn" value="tresdias" onclick="radiobuttons3()">
+                                                <label for="radio5">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Hace 3 Días.</label>
+                                            </div>|
+                                            <div class="md-radio">
+                                                <input type="radio" id="radio6" name="radio6" class="md-radiobtn" value="avanzado" onclick="radiobuttons3()">
+                                                <label for="radio6">
+                                                <span></span>
+                                                <span class="check"></span>
+                                                <span class="box"></span>
+                                                Avanzado (Rango Fechas). </label>
+                                            </div>
+                                        </div>                                                                 
+                                    </div>                   
+                                </div>
+                                        <div class="row">
+                                            <div id="addTimerpicker4" hidden="true">
+                                                <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio4' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin4' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc4' id='rfc4' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='BuscarTramites' onclick='consultaRangoFechasTramites()'>Buscar</button></div></div>
+                                            </div>
+                                        </div>
+                                         <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveTramites()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                        <div id="addTable_4">
+                                        <div id="table_4">
+                                        <div class="table-scrollable">
+                                        <table class="table table-hover table-responsive" id="sample_5">
+                                            <thead>
+                                                <tr> 
+
+                                                    <th>Transacción</th>
+                                                    <th>Conciliacion</th>
+                                                    <th>Estatus</th>
+                                                    <th>RFC</th>
+                                                    <th>Declarado</th>
+                                                    <th>Familia</th>
+                                                    <th>Entidad</th>
+                                                    <th>Tramite</th>
+                                                    <th>Contribuyente</th> 
+                                                    <th>Inicio Tramite</th>                       
+                                                    <th>Banco</th>
+                                                    <th>Tipo Pago</th>                                            
+                                                    <th>Total Tamite</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody> 
+                                                <tr>
+                                                    <td><span class="help-block">No Found</span></td>           
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>                                   
+                                            </tbody>
+                                            
+                                        </table>                            
+                                    </div>
+                                    </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -362,6 +458,7 @@
         cargatabla1();
         cargatabla2(); 
         cargatabla3(); 
+        cargatabla4();
         ComponentsPickers.init(); 
         findFamilia();
     });
@@ -420,6 +517,16 @@
             consultaGpm(fechaIn,fechaF);                    
         }
     }
+    function consultaRangoFechasTramites()
+    {
+       fechaIn=$("#fechainicio4").val();
+        fechaF=$("#fechafin4").val();
+        if(fechaIn.length<1 && fechaF.length<1){
+            Command: toastr.warning("Fecha Inicio y Fin, Requerido!", "Notifications")            
+        }else{
+            consultaTramites(fechaIn,fechaF);                    
+        }
+    }
     function radiobuttons()
     {
         document.getElementById('fechainicio').value='';
@@ -457,6 +564,27 @@
             if(option=="undia")
             {
                 consultaEgob('1','1');
+            }else{
+                consulta3dias('3','3');
+            }
+        }
+    }
+    function radiobuttons3()
+    {
+        document.getElementById('fechainicio4').value='';
+        document.getElementById('fechafin4').value='';
+        document.getElementById('rfc4').value='';
+        console.log('Egobierno');
+        var option = document.querySelector('input[name = radio4]:checked').value;        
+        if(option=="avanzado")
+        {
+            timpicker2();
+        }else{
+            //$("#addTimerpicker2 div").remove();
+             $("#addTimerpicker2").css("display", "none");
+            if(option=="undia")
+            {
+                consultaTramites('1','1');
             }else{
                 consulta3dias('3','3');
             }
@@ -566,6 +694,11 @@
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });
         
       
+    }
+    function Addtable4()
+    {
+        $("#table_4").remove();
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'>     <table class='table table-hover table-responsive' id='sample_5'><thead><tr> <th>Id Transacción</th>  <th>Id Transaccion Entidad</th> <th>Fecha Transacición</th> <th>Importe Transacción</th> <th>Nombre Tramite</th>  <th>Id Tramite Egob</th><th>Id Tramite Entidad</th><th>Importe Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -677,6 +810,38 @@
         } );
          
     }
+
+    function cargatabla4()
+    {
+         var inin=0;
+        $('#sample_5 thead tr').clone(true).appendTo( '#sample_5 thead' );       
+        $('#sample_5').DataTable( {
+        "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select class="select2me form-control"><option value=""></option></select>')
+                    .appendTo( $("#sample_5 thead tr:eq(0) th:eq('"+inin+"')").empty() )
+                    .on( 'change', function () {
+                        console.log($(this).val());
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+                 inin=inin+1;                
+            } );
+            }
+        } );
+         
+    }
     
     function consultaOper(fechaIn,fechaF) {
         Addtable1();
@@ -739,8 +904,8 @@
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
     }
-    function consultaGpm(fechaIn,fechaF) {
-        Addtable3();
+    function consultaTramites(fechaIn,fechaF) {
+        Addtable4();
         //document.getElementById("blockui_sample_3_1").click();
         $.ajax({
         method: "post",            
@@ -748,7 +913,7 @@
         data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
         document.getElementById('jsonCode3').value=response;        
-        $("#sample_4 tbody tr").remove();   
+        $("#sample_5 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
         var label='';
@@ -765,13 +930,74 @@
                 +"<td>"+item.importe_tramite+"</td>"
                 +"</tr>");
             });        
-       cargatabla3();
+       cargatabla4();
         //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
             //document.getElementById("blockui_sample_3_1_1").click();
-            $("#sample_4 tbody tr").remove(); 
-            $("#sample_4 tbody").append("<tr>"
+            $("#sample_5 tbody tr").remove(); 
+            $("#sample_5 tbody").append("<tr>"
+                +"<td>No Found</td>"
+                +"</tr>");
+         Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
+    }
+    function consultaOper(fechaIn,fechaF) {
+        Addtable1();
+        //document.getElementById("blockui_sample_3_1").click();
+        var rfc_=$("#rfc").val();
+        var familia_=$("#itemsFamilia").val();
+        console.log("familia   "+ familia_);
+        $.ajax({
+        method: "post",            
+        url: "{{ url('/consulta-transacciones-oper') }}",
+        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        document.getElementById('jsonCode1').value=response;        
+        $("#sample_3 tbody tr").remove();   
+        var Resp=$.parseJSON(response);
+         var color='';
+        var label='';
+        
+        $.each(Resp, function(i, item) { 
+             /*  if(item.estatus=='p')
+            {
+                color='success';
+                label='procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='No procesado';
+            }else if(item.estatus=='ad')
+            {f
+                color='warning';
+                label='ad';
+            }else{
+                color='Info';
+                label='ane';
+            }*/
+             $("#sample_3 tbody").append("<tr>"
+                +"<td>"+item.Folio+"</td>"
+                +"<td>"+item.Transaccion+"</td>"
+                +"<td>"+item.estatus+"</td>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Familia+"</td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
+                +"</tr>");
+            });        
+       cargatabla1();
+        //document.getElementById("blockui_sample_3_1_1").click();
+        })
+        .fail(function( msg ) {
+            //document.getElementById("blockui_sample_3_1_1").click();
+            $("#sample_3 tbody tr").remove(); 
+            $("#sample_3 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
