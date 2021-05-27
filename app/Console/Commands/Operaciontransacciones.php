@@ -345,6 +345,7 @@ class Operaciontransacciones extends Command
                 $remote_server_output = curl_exec($ch);
                 curl_close ($ch);
                 $response =json_decode($remote_server_output);
+                log::info("REFERENCEPAYMENT Conciliacion Respuesta: ".$remote_server_output);
             }
            
         }
