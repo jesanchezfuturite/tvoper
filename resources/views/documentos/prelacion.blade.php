@@ -329,9 +329,10 @@
                 <td class="wrapper">
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                      @foreach(json_decode(json_encode($data),true) as $ind => $dat)
 
-                      @php $dat=json_decode($dat);  @endphp
+                      @foreach($data as $ind => $dat)
+@php //dd($dat); @endphp
+                      @php //$dat=json_decode($dat);  @endphp
                       <td align="center"> 
                         <div style="position: relative;">
                           <img src="data:image/png;base64,<?php echo $img_irc ?>" width="195px" align="right"name="image_irc">
@@ -461,6 +462,7 @@
                     </tr> 
                     <tr>
                         <td>
+
                             <label><strong>IMPORTE CON LETRA:</strong></label>
                             <label>{{$dat->importe_letra}}</label>
                         </td>
@@ -782,7 +784,7 @@
                                              <center> 
                                               <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
                                              </center>
-                                          <center>{{$data->folio}}</center>                         
+                                          <center>{{$dat->folio}}</center>                         
                                     </td>
                                   </tr>
                               </table>

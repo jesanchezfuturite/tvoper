@@ -971,7 +971,7 @@ class PortalSolicitudesController extends Controller
       $dompdf = new DOMPDF($options);
       $dompdf->setPaper('A4', 'portrait');
       $dompdf->set_option('dpi', '135');
-      $html=View::make('documentos/prelacion',['data'=>$data])->render();
+      $html=View::make('documentos/prelacion',['data'=>$request])->render();
      // log::info($html);
       $dompdf->load_html( $html);
       $dompdf->render();
