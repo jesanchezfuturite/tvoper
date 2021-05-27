@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Instituciones.
+ * Class TramitePorRegistrador.
  *
  * @package namespace App\Entities;
  */
-class Instituciones extends Model implements Transformable
+class TramitesPorRegistrador extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -22,9 +22,13 @@ class Instituciones extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['descripcion'];
+    protected $fillable = [
+        'id',
+        'registrador_id'
+        'tramite_id',
+        'region_id'
+    ]
 
-    protected $table = "instituciones";
-
+    protected $table = "tramites_por_registrador";
 
 }

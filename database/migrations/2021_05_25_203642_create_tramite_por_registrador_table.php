@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateDistritosTable.
+ * Class CreateTramitePorRegistradorTable.
  */
-class CreateDistritosTable extends Migration
+class CreateTramitePorRegistradorTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,10 +15,11 @@ class CreateDistritosTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('portal.distrito', function(Blueprint $table) {
+		Schema::create('portal.tramites_por_registrador', function(Blueprint $table) {
             $table->increments('id');
-            $table->string('descripcion');
-            $table->string('valor');
+            $table->string('registrador_id');
+            $table->string('tramite_id');
+			$table->string('region_id');
             $table->timestamps();
 		});
 	}
@@ -30,6 +31,6 @@ class CreateDistritosTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('portal.distrito');
+		Schema::drop('portal.tramites_por_registrador');
 	}
 }
