@@ -638,7 +638,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status",  "info"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
@@ -733,25 +733,29 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
+            log::info("hay campos configurados");
             $campos = $info->camposConfigurados;
              $key2 = array_search("Distrito", array_column($campos, 'nombre'));
               if(isset($key2)){
                  $distrito = $campos[$key2];
                 if($distrito->valor->clave==1){
+                  log::info("es distrito 1");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>3]);
                 }else{
+                  log::info("no es distrito 1");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>2]);
                 }
 
               }else{
+                log::info("no hay campos configurados");
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
