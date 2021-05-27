@@ -638,7 +638,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status",  "info"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
@@ -733,7 +733,7 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
-        ->get(["id", "status"]);
+        ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
