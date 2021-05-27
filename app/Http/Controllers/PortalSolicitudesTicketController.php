@@ -96,7 +96,7 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has("status") && $request->status==7){
         $status=7;
       }
-      
+
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
@@ -252,7 +252,7 @@ class PortalSolicitudesTicketController extends Controller
           }
         }
         if($status==7){
-          $estatus = $tramite->atendido_por=1 ? 2 : 1;        
+          $estatus = $tramite->atendido_por=1 ? 2 : 1;
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             foreach($datosrecorrer as $key => $value){
@@ -302,7 +302,7 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    ];  
+                    ];
                   $this->saveFile($data);
                 }
 
@@ -668,7 +668,6 @@ class PortalSolicitudesTicketController extends Controller
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
-
         }
 
       } catch (\Exception $e) {
@@ -768,7 +767,6 @@ class PortalSolicitudesTicketController extends Controller
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
-
         }
 
 
@@ -1052,8 +1050,8 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function tramites_finalizados($id){
       $ticket = $this->ticket->where("id", $id)->first();
-      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();       
-      if($solCatalogo->atendido_por==1){         
+      $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
+      if($solCatalogo->atendido_por==1){
         try{
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);

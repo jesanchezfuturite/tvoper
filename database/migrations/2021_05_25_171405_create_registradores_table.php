@@ -15,11 +15,11 @@ class CreateRegistradoresTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('registradores', function(Blueprint $table) {
+		Schema::create('portal.registradores', function(Blueprint $table) {
             $table->increments('id');
-            $table->increments('descripcion');
-            $table->increments('instituciones_id');
-            $table->increments('municipios_id');
+            $table->string('descripcion');
+            $table->string('instituciones_id');
+            $table->string('municipios_id');
             $table->timestamps();
 		});
 	}
@@ -31,6 +31,6 @@ class CreateRegistradoresTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('registradores');
+		Schema::drop('portal.registradores');
 	}
 }

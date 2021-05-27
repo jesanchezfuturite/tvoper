@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTramitePorRegistradorsTable.
+ * Class CreateTramitePorRegistradorTable.
  */
-class CreateTramitePorRegistradorsTable extends Migration
+class CreateTramitePorRegistradorTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,7 +15,7 @@ class CreateTramitePorRegistradorsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('tramites_por_registradors', function(Blueprint $table) {
+		Schema::create('portal.tramites_por_registrador', function(Blueprint $table) {
             $table->increments('id');
             $table->string('registrador_id');
             $table->string('tramite_id');
@@ -31,6 +31,6 @@ class CreateTramitePorRegistradorsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('tramite_por_registradors');
+		Schema::drop('portal.tramites_por_registrador');
 	}
 }
