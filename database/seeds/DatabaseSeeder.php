@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
          $this->call(OperMenuTable::class);
          $this->call(InstitucionesSeeder::class);
          $this->call(RegistradoresSeeder::class);
+         $this->call(TramitesRegistradoresSeeder::class);
+
     }
 }
