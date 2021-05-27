@@ -929,27 +929,41 @@ class PortalSolicitudesController extends Controller
       }
     }
     private function savePdfprelacion($path,$data)
-    {//log::info($data);
-      $data=json_decode($data);
-
-      if($data->fecha==null)
+    {$request=array();
+      //$data=json_decode($data);
+        //log::info($data);
+      foreach($data as $d => $reg)
       {
-        $fecha=Carbon::now();
-        $hora=$fecha->toTimeString();
-        $fecha=$fecha->format('Y/m/d');
-        $folio=999999999;
-        $data = (object) array_merge((array) $data, array('folio'=>$folio,'fecha'=>$fecha,'hora'=>$hora));
-      }else{
-        $fecha=Carbon::parse($data->fecha . " " . $data->hora);
-        $hora=$fecha->toTimeString();
-        $fecha=$fecha->format('Y/m/d');
-        $data = (object) array_merge((array) $data, array('fecha'=>$fecha,'hora'=>$hora));
-      }
-      $barcode=DNS1D::getBarcodePNG($data->folio, 'C39',1,33);
-      $data = (object) array_merge((array) $data, array('barcode'=>$barcode));
-      $formatter = new NumeroALetras();
-      $letras= $formatter->toMoney($data->costo_final, 2,"PESOS","CENTAVOS");
-      $importe_letra=$letras ." 00/100 M.N.";
+        $reg=json_decode($reg);
+         log::info((array)$reg);
+         
+        if($reg->fecha==null)
+        {
+          $fecha=Carbon::now();
+          $hora=$fecha->toTimeString();
+          $fecha=$fecha->format('Y/m/d');
+          $folio=999999999;
+          $reg = (object) array_merge((array) $reg, array('folio'=>$folio,'fecha'=>$fecha,'hora'=>$hora));
+        }else{
+          $fecha=Carbon::parse($reg->fecha . " " . $reg->hora);
+          $hora=$fecha->toTimeString();
+          $fecha=$fecha->format('Y/m/d');
+          $reg = (object) array_merge((array) $reg, array('fecha'=>$fecha,'hora'=>$hora));
+        }
+        
+        
+        $formatter = new NumeroALetras();
+        $letras= $formatter->toMoney($reg->costo_final, 2,"PESOS","CENTAVOS");
+        $importe_letra=$letras ." 00/100 M.N.";
+        $reg = (object) array_merge((array) $reg, array('importe_letra'=>$importe_letra));
+        $barcode=DNS1D::getBarcodePNG($reg->folio, 'C39',1,33);
+        $reg = (object) array_merge((array) $reg, array('barcode'=>$barcode));
+        $request []=$reg;
+      }  
+
+      log::info(json_encode($request));
+
+
       $path=storage_path('app/'.$path);
       $options= new Options();
       $options->set('isHtml5ParserEnabled',true);
@@ -957,7 +971,7 @@ class PortalSolicitudesController extends Controller
       $dompdf = new DOMPDF($options);
       $dompdf->setPaper('A4', 'portrait');
       $dompdf->set_option('dpi', '135');
-      $html=View::make('documentos/prelacion',['data'=>$data,"importe_letra"=> $importe_letra])->render();
+      $html=View::make('documentos/prelacion',['data'=>$data])->render();
      // log::info($html);
       $dompdf->load_html( $html);
       $dompdf->render();
