@@ -11,7 +11,7 @@ use Prettus\Repository\Traits\TransformableTrait;
  *
  * @package namespace App\Entities;
  */
-class TramitesPorRegistrador extends Model implements Transformable
+class TramitePorRegistrador extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -24,10 +24,10 @@ class TramitesPorRegistrador extends Model implements Transformable
 
     protected $fillable = [
         'id',
-        'registrador_id'
+        'registrador_id',
         'tramite_id',
         'region_id'
-    ]
+    ];
 
     protected $table = "tramites_por_registrador";
 
