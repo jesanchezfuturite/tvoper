@@ -621,7 +621,8 @@ function configprelacion()
   function format ( d ) { 
       var input_check="";            
       var valid='0';            
-      let html = '';      
+      let html = '';
+      var p="0";    
       d.grupo.forEach( (solicitud) =>{ 
         var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
@@ -638,14 +639,11 @@ function configprelacion()
         }      
         let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
         
-        if(solicitud.status!=1 && dist=='1'){
+        if(solicitud.status==1 && dist=='1'){          
+           p="1";
+        }else{
            botonAtender="<td class='text-center' width='5%'></td>";
            checks='';
-        }
-        if(solicitud.status!=1 && dist=='')
-        {
-          botonAtender="<td class='text-center' width='5%'></td>";
-          checks='';
         }
         if(d.grupo[0].asignado_a==null){
           checks='';
@@ -670,10 +668,11 @@ function configprelacion()
           clase='';
         }
 
-        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>'
+        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
 
         
       });
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btnPrelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>"
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
         if(d.grupo[0].asignado_a==null){
@@ -682,10 +681,14 @@ function configprelacion()
         }else{
          input_check= addChecks(d.grupo[0].id_transaccion);
         }
+        if(p=="0")
+        {
+          btn_prelacion="";
+        }
        
-        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th> <th></th><th> </th><th>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/Acta/Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
     }
 
@@ -709,7 +712,7 @@ function configprelacion()
     }
     function addChecks(id_transaccion)
     {
-      input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'> Todos</label>";
+      input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'>Marcar Todos</label>";
       return input_check;
     }
     function rechazarArray(id_transaccion)
