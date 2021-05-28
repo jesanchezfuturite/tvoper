@@ -26,7 +26,7 @@ class Registradores extends Model implements Transformable
         'descripcion',
         'instituciones_id',
         'municipios_id'
-    ]
+    ];
 
     protected $table = "registradores";
 
