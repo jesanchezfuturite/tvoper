@@ -491,7 +491,7 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('tk.grupo_clave',$filtro)->get();
-    
+
     $newDato=[];
     foreach($filtro as $i => $id){
       $datos=[];
@@ -594,7 +594,6 @@ class PortalSolicitudesController extends Controller
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
     $informacion =array_merge( $informacion,$msprelacion);
     $informacion =array_merge( $informacion,$con_solicitud);
-
     return $informacion;
   }
 
@@ -751,11 +750,14 @@ class PortalSolicitudesController extends Controller
 
         $findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
         //log::info($findSolicitudes[0]["ticket_relacionado"]);
-        $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
-                    ->orderBy('created_at', 'DESC')
-                    ->get()
-                    ->toArray();
-        $mensajes=array_merge($findmensajes,$findMensajesPadre);
+        if(isset($findSolicitudes[0]["ticket_relacionado"])){
+          $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
+          ->orderBy('created_at', 'DESC')
+          ->get()
+          ->toArray();
+          $mensajes=array_merge($findmensajes,$findMensajesPadre);
+        }
+     
       }catch(\Exception $e){
 
         Log::info('Error Obtener Mensajes '.$e->getMessage());
