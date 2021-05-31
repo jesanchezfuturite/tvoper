@@ -334,6 +334,7 @@ class Operaciontransacciones extends Command
     private function referencepayment($referencia)
     {
          try{
+            log::info("REFERENCEPAYMENT Conciliacion referencias: ".$referencia);
             foreach ($referencia as $i) {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/"."$i"."?service=conciliacion");
@@ -345,6 +346,7 @@ class Operaciontransacciones extends Command
                 $remote_server_output = curl_exec($ch);
                 curl_close ($ch);
                 $response =json_decode($remote_server_output);
+                log::info("REFERENCEPAYMENT Conciliacion Respuesta: ".$remote_server_output);
             }
            
         }
