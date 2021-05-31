@@ -327,6 +327,8 @@
             <table role="presentation" class="main" style="table-layout: fixed; word-break:break-all; word-wrap:break-word;" width="100%">
               <tr>
                 <td class="wrapper">
+                  @foreach($data as $ind => $dat)
+                    @php //dd($dat); @endphp
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td align="center"> 
@@ -344,22 +346,22 @@
                   <table role="presentation" border="0" cellpadding="10" cellspacing="0" style="width: 100%; padding:0px 10px 0px 10px !important;">
                     <tr>
                       <td><label><strong>No. Notaria</strong></label>
-                        <br><label>{{$data->noNotaria}}</label>
+                        <br><label>{{$dat->noNotaria}}</label>
                       </td>
                       <td><label><strong>Municipio</strong></label>
-                        <br><label>{{$data->Municipio}}</label>
+                        <br><label>{{$dat->Municipio}}</label>
                       </td>
                       <td><label><strong>Fecha</strong></label>
-                        <br><label>{{$data->fecha}}</label>
+                        <br><label>{{$dat->fecha}}</label>
                       </td>
                       <td><label><strong>Folio trámite</strong></label>
-                        <br><label>{{$data->folioTramite}}</label>
+                        <br><label>{{$dat->folioTramite}}</label>
                       </td>
                       <td><label><strong>No. Control</strong></label>
                         <br><label></label>
                       </td>
                       <td><label><strong>Folio Pago</strong></label>
-                        <br><label>{{$data->folioPago='null' ? '': $data->folioPago}}</label>
+                        <br><label>{{$dat->folioPago='null' ? '': $dat->folioPago}}</label>
                       </td>
                     </tr> 
                   </table><br>
@@ -372,20 +374,20 @@
                     <tr>
                         <td class="bl-lbl">
                             <label><strong>Nombre del trámite:</strong></label>
-                              <label>{{$data->tramite}} </label>
+                              <label>{{$dat->tramite}} </label>
                             
                         </td>
                     </tr> 
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Nombre del solicitante:</strong></label>
-                            <label>{{$data->solicitanteNombre}}</label>
+                            <label>{{$dat->solicitanteNombre}}</label>
                         </td>
                     </tr>
                     <tr>
                         <td  class="bl-lbl">
                             <label><strong>Municipio destino:</strong></label>
-                            <label>{{$data->municipioConc}}</label>
+                            <label>{{$dat->municipioConc}}</label>
                         </td>
                     </tr>
                   </tbody>
@@ -399,14 +401,14 @@
                     <tr>
                         <td>
                             <label><strong>No. partida</strong></label>
-                            <label>{{$data->subsidio}}</label>
+                            <label>{{$dat->subsidio}}</label>
                         </td>
                         <td></td>
                     </tr> 
                     <tr>
                         <td>
                             <label><strong>Valor de operación:</strong></label>
-                            <label>{{ is_numeric($data->valorOperacion) ? '$'  .number_format($data->valorOperacion,2) : ' ' }}</label>
+                            <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
                         </td>
                         <td></td>
                     </tr>
@@ -426,7 +428,7 @@
                             <label><strong>Derecho-15215900:</strong></label>
                         </td>
                         <td width="10%">
-                            <label>$ {{number_format($data->costo_final,2)}}</label>
+                            <label>$ {{number_format($dat->costo_final,2)}}</label>
                         </td>
                     </tr> 
                     <tr>
@@ -438,13 +440,13 @@
                             <label><strong>TOTAL:</strong></label>
                         </td>
                         <td width="10%">
-                            <label>$ {{number_format($data->costo_final,2)}}</label>
+                            <label>$ {{number_format($dat->costo_final,2)}}</label>
                         </td>
                     </tr>
                     <tr>
                         <td > 
                           <label><strong>Elaboró:</strong></label>
-                          <label>{{$data->elaboro}}</label>
+                          <label>{{$dat->elaboro}}</label>
                             
                         </td>
                         <td></td>                        
@@ -452,14 +454,15 @@
                     <tr>
                         <td>
                             <label><strong>Recibe:</strong></label>
-                            <label>{{$data->recibe}}</label>
+                            <label>{{$dat->recibe}}</label>
                         </td>
                         <td></td>
                     </tr> 
                     <tr>
                         <td>
+
                             <label><strong>IMPORTE CON LETRA:</strong></label>
-                            <label>{{$importe_letra}}</label>
+                            <label>{{$dat->importe_letra}}</label>
                         </td>
                         <td></td>
                     </tr>
@@ -467,18 +470,18 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         <td>    
-                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                          <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
                           <center> 
-                          <img src="data:image/png;base64,{{$data->barcode}}"  width="175px">
+                          <img src="data:image/png;base64,{{$dat->barcode}}"  width="175px">
                           </center>
-                          <center>{{$data->folio}}</center>                         
+                          <center>{{$dat->folio}}</center>                         
                       </td>
                     </tr>
                   </table>
                   <br>
                   <br>
-                  @if(count($data->municipio)>1)
-                    @foreach(json_decode(json_encode($data->municipio),true) as  $indexKey => $munp)
+                  @if(count($dat->municipio)>1)
+                    @foreach(json_decode(json_encode($dat->municipio),true) as  $indexKey => $munp)
                       @if( $indexKey==1 || $indexKey==3 || $indexKey==5 || $indexKey==7 || $indexKey==9 || $indexKey==11)
                           <div style="page-break-after:always;">
                         @else
@@ -515,12 +518,12 @@
                                   </thead>
                                   <tbody>
                                       <tr>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->noNotaria}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->Municipio}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioPago='null' ? '': $dat->folioPago}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>
@@ -529,13 +532,13 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Nombre del trámite:</strong></label>
-                                          <label>{{$data->tramite}}</label>
+                                          <label>{{$dat->tramite}}</label>
                                       </td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Nombre del solicitante:</strong></label>
-                                          <label>{{$data->solicitanteNombre}}</label>
+                                          <label>{{$dat->solicitanteNombre}}</label>
                                       </td>
                                   </tr>
                                   <tr>
@@ -551,14 +554,14 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>No. partida</strong></label>
-                                          <label>{{$data->subsidio}}</label>
+                                          <label>{{$dat->subsidio}}</label>
                                       </td>
                                       <td></td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Valor de operación:</strong></label>
-                                          <label>$ {{ is_numeric($data->valorOperacion) ? '$'.  number_format($data->valorOperacion,2) : ' ' }}</label>
+                                          <label>$ {{ is_numeric($dat->valorOperacion) ? '$'.  number_format($dat->valorOperacion,2) : ' ' }}</label>
                                       </td>
                                       <td></td>
                                   </tr>
@@ -578,7 +581,7 @@
                                           <label><strong>Derecho-15215900:</strong></label>
                                       </td>
                                       <td width="15%" class="tbl-label">
-                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
                                       </td>
                                   </tr> 
                                   <tr>
@@ -590,27 +593,27 @@
                                           <label><strong>TOTAL:</strong></label>
                                       </td>
                                       <td width="10%" class="tbl-label">
-                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
                                       </td>
                                   </tr>
                                   <tr>
                                       <td class="tbl-label">
                                           <strong>Elaboró:</strong></label>
-                                          <label>{{$data->elaboro}}</label>
+                                          <label>{{$dat->elaboro}}</label>
                                       </td>
                                       <td></td>                        
                                   </tr>
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Recibe:</strong></label>
-                                          <label>{{$data->recibe}}</label>
+                                          <label>{{$dat->recibe}}</label>
                                       </td>
                                       <td></td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>IMPORTE CON LETRA:</strong></label>
-                                          <label>{{$importe_letra}}</label>
+                                          <label>{{$dat->importe_letra}}</label>
                                       </td>
                                       <td></td>
                                   </tr>
@@ -618,11 +621,11 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tr>
                                       <td class="tbl-label">    
-                                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                                          <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
                                              <center> 
-                                              <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
+                                              <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
                                              </center>
-                                          <center>{{$data->folio}}</center>                         
+                                          <center>{{$dat->folio}}</center>                         
                                     </td>
                                   </tr>
                               </table>
@@ -672,12 +675,12 @@
                                   </thead>
                                   <tbody>
                                       <tr>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->noNotaria}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->Municipio}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->fecha}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;">{{$data->folioPago='null' ? '': $data->folioPago}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioPago='null' ? '': $dat->folioPago}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>
@@ -686,19 +689,19 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Nombre del trámite:</strong></label>
-                                          <label>{{$data->tramite}}</label>
+                                          <label>{{$dat->tramite}}</label>
                                       </td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Nombre del solicitante:</strong></label>
-                                          <label>{{$data->solicitanteNombre}}</label>
+                                          <label>{{$dat->solicitanteNombre}}</label>
                                       </td>
                                   </tr>
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Municipio destino:</strong></label>
-                                          @foreach(json_decode(json_encode($data->municipio),true) as $munpd)<label>{{$munpd["nombre"]}}</label>@endforeach
+                                          @foreach(json_decode(json_encode($dat->municipio),true) as $munpd)<label>{{$munpd["nombre"]}}</label>@endforeach
                                       </td>
                                   </tr>
                                 </table>
@@ -708,14 +711,14 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>No. partida</strong></label>
-                                          <label>{{$data->subsidio}}</label>
+                                          <label>{{$dat->subsidio}}</label>
                                       </td>
                                       <td></td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Valor de operación:</strong></label>
-                                          <label> {{ is_numeric($data->valorOperacion) ? '$' . number_format($data->valorOperacion,2) : ' ' }}</label>
+                                          <label> {{ is_numeric($dat->valorOperacion) ? '$' . number_format($dat->valorOperacion,2) : ' ' }}</label>
                                       </td>
                                       <td></td>
                                   </tr>
@@ -735,7 +738,7 @@
                                           <label><strong>Derecho-15215900:</strong></label>
                                       </td>
                                       <td width="15%" class="tbl-label">
-                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
                                       </td>
                                   </tr> 
                                   <tr>
@@ -747,27 +750,27 @@
                                           <label><strong>TOTAL:</strong></label>
                                       </td>
                                       <td width="10%" class="tbl-label">
-                                          <label>$ {{number_format($data->costo_final,2)}}</label>
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
                                       </td>
                                   </tr>
                                   <tr>
                                       <td class="tbl-label">
                                           <strong>Elaboró:</strong></label>
-                                          <label>{{$data->elaboro}}</label>
+                                          <label>{{$dat->elaboro}}</label>
                                       </td>
                                       <td></td>                        
                                   </tr>
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Recibe:</strong></label>
-                                          <label>{{$data->recibe}}</label>
+                                          <label>{{$dat->recibe}}</label>
                                       </td>
                                       <td></td>
                                   </tr> 
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>IMPORTE CON LETRA:</strong></label>
-                                          <label>{{$importe_letra}}</label>
+                                          <label>{{$dat->importe_letra}}</label>
                                       </td>
                                       <td></td>
                                   </tr>
@@ -775,11 +778,11 @@
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tr>
                                       <td class="tbl-label">    
-                                          <center><label>{{$data->fecha}} {{$data->hora}}</label></center> 
+                                          <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
                                              <center> 
-                                              <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
+                                              <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
                                              </center>
-                                          <center>{{$data->folio}}</center>                         
+                                          <center>{{$dat->folio}}</center>                         
                                     </td>
                                   </tr>
                               </table>
@@ -792,6 +795,8 @@
                     
                     @endfor 
                   @endif
+
+                @endforeach 
                 </td>
               </tr>
             </table>
