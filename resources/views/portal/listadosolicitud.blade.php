@@ -327,11 +327,35 @@
         </div>
     </div>
 </div>
+<div id="portlet-prelacion" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Generar Prelación del grupo: <label id="lbl_grupo_clave" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="prelacion_confirm_all()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="configP" id="configP" hidden="true">
 <input type="text" name="folioPago" id="folioPago" hidden="true">
 <input type="text" name="idgrupo" id="idgrupo" hidden="true">
+<input type="text" name="m_grupo_clave" id="m_grupo_clave" hidden="true">
+<input type="text" name="obj_grupo" id="obj_grupo" hidden="true">
 <input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 @endsection
 
@@ -417,7 +441,7 @@ function configprelacion()
   function prelacion()
   { objectResponse=[];
     var resp=$.parseJSON(JSON.stringify(registroPublico()));
-    console.log(resp);
+    //console.log(resp);
     document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
     //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
     data=dataPrelacion(JSON.stringify(resp),null);
@@ -541,13 +565,8 @@ function configprelacion()
          url: "{{ url('/filtrar-solicitudes') }}",
          data: formdata })
       .done(function (response) {
-         var objectResponse=[];
-        if(typeof response=== 'object'){
-          for (n in response) {
-           objectResponse.push(dataPrelacion(response[n].grupo));
-          }
-        }
         
+        document.getElementById("obj_grupo").value=JSON.stringify(response);
       })
       .fail(function( msg ) {
        Command: toastr.warning("Error", "Notifications");
@@ -672,7 +691,7 @@ function configprelacion()
 
         
       });
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btnPrelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>"
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>"
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
         if(d.grupo[0].asignado_a==null){
@@ -688,8 +707,82 @@ function configprelacion()
        
         html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>Rechazar "+input_check+"</th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
+    }
+    function relacion_mult(grupo_clave)
+    {
+      searchSolicitudes(grupo_clave);
+      document.getElementById("m_grupo_clave").value=grupo_clave;
+      document.getElementById("lbl_grupo_clave").textContent=grupo_clave;
+      $('#portlet-prelacion').modal('show');
+    }
+    function prelacion_confirm_all()
+    {
+      var formdata=new FormData();
+      var id_="";
+      var grupo_clave="";
+      var response=$.parseJSON($("#obj_grupo").val());
+       var objectResponse=[];
+       var resp=$.parseJSON(JSON.stringify(registroPublico()));
+        if(typeof response=== 'object'){
+          for (n in response) { 
+                   
+            for(g in response[n].grupo)
+            {
+              id_=response[n].grupo[g].id;    
+              grupo_clave=response[n].grupo[g].grupo_clave;
+              var distrito=searchIndex('distrito',response[n].grupo[g].info.campos);
+              if(typeof(distrito)==='object'){
+                if(distrito.clave=='1')
+                {
+                  Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
+                  document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
+                  datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g].info));
+                  formdata.append("data[]",JSON.stringify(datapr));
+                }   
+              }
+             
+            }
+          }
+        }
+        savePrelacion(id_,1,formdata,grupo_clave,resp);
+    }
+    function savePrelacion(id_,prelacion_,formdata,grupo_clave,resp)
+    {
+      var mensaje=$("#message").val();
+      var file=$("#file").val();
+      var checkRechazo=false;
+      var msjpublic="1";
+      var rechazo=0;
+      //var formdata = new FormData();     
+      mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
+        formdata.append("id", id_);      
+        formdata.append("mensaje", mensaje);
+        formdata.append("mensaje_para", msjpublic);
+        formdata.append("prelacion", prelacion_);
+        formdata.append("rechazo", checkRechazo);
+        //formdata.append("data[]", JSON.stringify(data));
+        formdata.append("_token",'{{ csrf_token() }}');
+      $.ajax({
+          method: "POST",
+          contentType: false,
+          processData: false, 
+          url: "{{ url('/guardar-solicitudes') }}",
+          data: formdata })
+      .done(function (response) {
+          if(response.Code=="200")
+            {
+              Command: toastr.success(response.Message, "Notifications")
+              return;
+            }
+            else{
+              Command: toastr.warning("Ocurrio un Error", "Notifications")
+            }  
+      })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error", "Notifications");
+      });
     }
 
     function showMore( solicitud, e){
@@ -710,9 +803,13 @@ function configprelacion()
       }
       $("#select_"+solicitud.grupo[0].id_transaccion).select2();
     }
+    function obtnerRegion()
+    {
+
+    }
     function addChecks(id_transaccion)
     {
-      input_check="<br><label style='cursor:pointer;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'>Marcar Todos</label>";
+      input_check="<label style='cursor:pointer;font-weight: bold;font-size: 13px;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'>Marcar Todos</label>";
       return input_check;
     }
     function rechazarArray(id_transaccion)
@@ -885,7 +982,7 @@ function configprelacion()
             }
           if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
-            $(".btnPrelacion").css("display", "block");
+            //$(".btnPrelacion").css("display", "block");
           }else{
              $(".btnPrelacion").css("display", "none");
           }
@@ -1048,9 +1145,6 @@ function configprelacion()
         formdata.append("data[]", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
         //console.log(Object.fromEntries(formdata));
-        console.log(JSON.stringify(data));
-        console.log($.parseJSON(JSON.stringify(data)));
-        console.log(data);
         $.ajax({
            method: "POST",
            contentType: false,
@@ -1083,10 +1177,10 @@ function configprelacion()
   {
     var tramiteMember=$("#itemsTramites option:selected").text();
     var data={}; 
-  
+    if(jsn===null)
+    {
       jsn=$("#jsonCode").val();
-      
-   
+    }  
     var Resp=$.parseJSON(jsn);
     var subsidio_=searchIndex('subsidio',Resp.campos);
     var municipio_=searchIndex('municipio',Resp.campos);
@@ -1105,7 +1199,6 @@ function configprelacion()
       municipio_=[municipio_];
     }
     Mp=conctenaM(municipio_);
-    //console.log(municipio_);
     Object.assign(data,{solicitanteNombre:nombreSolicitante});    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipioConc:Mp});    
@@ -1117,7 +1210,6 @@ function configprelacion()
     }else{
       Object.assign(data,{subsidio:subsidio_.nombre});
     }
-    //dataP=$.parseJSON(dataP); 
     if(typeof(dataP.folio)==='undefined')
     {
       Object.assign(data,{folio:null});
