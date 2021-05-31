@@ -201,7 +201,8 @@ class ApiController extends Controller
     			return json_encode(
 	    			[
 	    				"response" 	=> "Existen el mismo numero de transaccion en mas de un registro",
-	    				"code"		=> 401
+	    				"code"		=> 401,
+                        "bus" => json_encode($busqueda)
 	    			]
     			);
     		}
