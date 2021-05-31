@@ -650,7 +650,7 @@ class PortalSolicitudesTicketController extends Controller
                  $distrito = $campos[$key2];
                 if($distrito->valor->clave==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
-                  ->update(['status'=>3]);
+                  ->update(['status'=>1]);
                 }else{
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>2]);
@@ -747,7 +747,7 @@ class PortalSolicitudesTicketController extends Controller
                 if($distrito->valor->clave==1){
                   log::info("es distrito 1");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
-                  ->update(['status'=>3]);
+                  ->update(['status'=>1]);
                 }else{
                   log::info("no es distrito 1");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
