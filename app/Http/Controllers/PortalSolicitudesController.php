@@ -749,14 +749,18 @@ class PortalSolicitudesController extends Controller
 
 
         $findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
+        $findMensajesPadre=[];
         //log::info($findSolicitudes[0]["ticket_relacionado"]);
         if(isset($findSolicitudes[0]["ticket_relacionado"])){
           $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
           ->orderBy('created_at', 'DESC')
           ->get()
           ->toArray();
-          $mensajes=array_merge($findmensajes,$findMensajesPadre);
+
         }
+        $mensajes=array_merge($findmensajes,$findMensajesPadre);
+
+
      
       }catch(\Exception $e){
 
