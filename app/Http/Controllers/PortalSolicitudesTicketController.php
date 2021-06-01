@@ -189,6 +189,7 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($status==99){
+          $estatus = $request->has("sin_costo") ? 2 : 99;
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
@@ -204,7 +205,7 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
-                "status"=>$status,
+                "status"=>$estatus,
                 "en_carrito"=>$carrito,
                 "required_docs"=>$request->required_docs
 
