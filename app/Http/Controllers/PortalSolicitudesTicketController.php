@@ -1177,7 +1177,7 @@ class PortalSolicitudesTicketController extends Controller
             $select = DB::raw("
             `solicitudes_ticket`.`id`,
             `servicio`.`Tipo_Descripcion` as `nombre_servicio`,
-
+            `servicio`.`perfil`,
             `solicitudes_catalogo`.`titulo`,
             `solicitudes_catalogo`.`tramite_id`,
             `solicitudes_catalogo`.`firma`,
