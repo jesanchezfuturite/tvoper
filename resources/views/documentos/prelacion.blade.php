@@ -346,7 +346,7 @@
                   <table role="presentation" border="0" cellpadding="10" cellspacing="0" style="width: 100%; padding:0px 10px 0px 10px !important;">
                     <tr>
                       <td><label><strong>No. Notaria</strong></label>
-                        <br><label>{{$dat->noNotaria}}</label>
+                        <br><label>{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</label>
                       </td>
                       <td><label><strong>Municipio</strong></label>
                         <br><label>{{$dat->Municipio}}</label>
@@ -518,7 +518,7 @@
                                   </thead>
                                   <tbody>
                                       <tr>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
@@ -675,7 +675,7 @@
                                   </thead>
                                   <tbody>
                                       <tr>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->noNotaria}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
