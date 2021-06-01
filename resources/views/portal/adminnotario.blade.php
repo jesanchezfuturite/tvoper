@@ -1122,12 +1122,9 @@ function changeComunidad()
     }else if (nameUser.length<1) {
       Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
         $("#nameUser").focus();  
-    }else if (apePatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
+    }else if (apePatUser.length<1 && apeMatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Materno/Paterno, requerido!", "Notifications") 
         $("#apePatUser").focus(); 
-    }else if (apeMatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
-        $("#apeMatUser").focus(); 
     }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
         $("#rfcUser").focus();  
@@ -1539,11 +1536,8 @@ function changeComunidad()
       }else if (nameUser.length<1) {
         Command: toastr.warning("Campo Nombre, requerido!", "Notifications")
         $("#nameUser").focus();  
-      }else if (apePatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Paterno, requerido!", "Notifications") 
-        $("#apePatUser").focus(); 
-      }else if (apeMatUser.length<1) {
-        Command: toastr.warning("Campo Apellido Materno, requerido!", "Notifications") 
+      }else if (apeMatUser.length<1 && apePatUser.length<1) {
+        Command: toastr.warning("Campo Apellido Materno/Paterno, requerido!", "Notifications") 
         $("#apeMatUser").focus(); 
       }else if (rfcUser.length<13) {
         Command: toastr.warning("Campo RFC, longitud minima 13!", "Notifications")
