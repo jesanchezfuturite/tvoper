@@ -511,8 +511,8 @@ function configprelacion()
   	if(noSolicitud.length>0){
        Object.assign(formdata,{id_solicitud:noSolicitud});  
   	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
-  		Object.assign(formdata,{id_solicitud:noSolicitud}); 
-      Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});    
+  		Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
+      Object.assign(formdata,{estatus:opEstatus});    
   	}else if(opTipoSolicitud != "0"){ 
       Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
   	}else if( opEstatus != "0"){   
@@ -700,7 +700,7 @@ function configprelacion()
         }else{
          input_check= addChecks(d.grupo[0].id_transaccion);
         }
-        if(p=="0")
+        if(p=="0" && d.grupo[0].asignado_a==null)
         {
           btn_prelacion="";
         }
