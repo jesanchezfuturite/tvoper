@@ -528,6 +528,7 @@ function configprelacion()
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
+        var exit_distrito=null;
         if(typeof response=== 'object'){
           for (n in response) {             
                 var total=0;
@@ -539,8 +540,8 @@ function configprelacion()
                    {
                      if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
                      {                       
-                     Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
-                      response[n].grupo.splice(h,1);
+                        Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
+                        response[n].grupo.splice(h,1);
                      }
                    }                     
                 } 
@@ -946,12 +947,16 @@ function configprelacion()
             if(obj=="tipoPersona"){obj="Tipo Persona";}
             if(obj=="rfc"){obj="RFC";}
             if(obj=="razonSocial"){obj="Razón Social";}
-            if (obj!="notary" && obj!="id")
+            if(obj=="nombreSolicitante"){obj="Nombre del Solicitante";}            
+            if (typeof (tipo) !== 'object' && obj!="id")
             {
+              if(obj=="notary"){obj="Notaria"}
+              if(obj=="apPat"){obj="Apellido Paterno";}
+              if(obj=="apMat"){obj="Apellido Materno";}
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
             }            
           }
-          if(typeof(Resp.solicitante.notary)){
+          if(typeof(Resp.solicitante.notary)==="object"){
             $(".divNotaria").css("display", "block");
             dataNot='';
             for (not in Resp.solicitante.notary) {  
