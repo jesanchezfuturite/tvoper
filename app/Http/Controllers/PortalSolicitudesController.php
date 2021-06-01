@@ -465,11 +465,14 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('estatus')){
-      $filtro->where('solicitudes_ticket.status', $request->estatus);
+      if($request->estatus ==0){
+        $filtro->where('solicitudes_ticket.status', '<>', 2);
+      }else{
+        $filtro->where('solicitudes_ticket.status', $request->estatus);
+      }
     }
 
     if($request->has('id_solicitud')){
-      // $filtro->where('solicitudes_ticket.id',  $request->id_solicitud);
       $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
       ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
