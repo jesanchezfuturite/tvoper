@@ -45,7 +45,8 @@
 		                <div class="form-group"> 
 		                	<label >Estatus</label>          
 						    <select class="select2me form-control" name="opEstatus" id="opEstatus" onchange="">	       	
-						       <option value="0">------</option>
+                   <option value="">------</option>
+						       <option value="0">Todos</option>
 						       @foreach( $status as $sd)
                        			 <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
                       			@endforeach     
@@ -510,12 +511,12 @@ function configprelacion()
     var formdata={            };
   	if(noSolicitud.length>0){
        Object.assign(formdata,{id_solicitud:noSolicitud});  
-  	}else if(opTipoSolicitud !="0" && opEstatus !="0"){
+  	}else if(opTipoSolicitud !="0" && opEstatus !=""){
   		Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
       Object.assign(formdata,{estatus:opEstatus});    
   	}else if(opTipoSolicitud != "0"){ 
       Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
-  	}else if( opEstatus != "0"){   
+  	}else if( opEstatus != ""){   
       Object.assign(formdata,{estatus:opEstatus}); 
   	}else{
   		Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
