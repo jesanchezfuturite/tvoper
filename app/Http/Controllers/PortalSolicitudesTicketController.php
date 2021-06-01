@@ -645,17 +645,18 @@ class PortalSolicitudesTicketController extends Controller
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
-             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2)){
                  $distrito = $campos[$key2];
-                if($distrito->valor->clave==1){
+                 $valor = $distrito->valor;
+                 $verificar = array_search("1", array_column($valor, 'distrito'));
+                 if(false !== $verificar){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
-                }else{
-                  $solicitudTicket = $this->ticket->where('id',$value->id)
-                  ->update(['status'=>2]);
-                }
-
+                 }else{
+                    $solicitudTicket = $this->ticket->where('id',$value->id)
+                    ->update(['status'=>2]);
+                 }
               }else{
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
@@ -739,23 +740,20 @@ class PortalSolicitudesTicketController extends Controller
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
-            log::info("hay campos configurados");
             $campos = $info->camposConfigurados;
-             $key2 = array_search("Distrito", array_column($campos, 'nombre'));
+             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2)){
                  $distrito = $campos[$key2];
-                if($distrito->valor->clave==1){
-                  log::info("es distrito 1");
+                 $valor = $distrito->valor;
+                 $verificar = array_search("1", array_column($valor, 'distrito'));
+                 if(false !== $verificar){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
-                }else{
-                  log::info("no es distrito 1");
-                  $solicitudTicket = $this->ticket->where('id',$value->id)
-                  ->update(['status'=>2]);
-                }
-
+                 }else{
+                    $solicitudTicket = $this->ticket->where('id',$value->id)
+                    ->update(['status'=>2]);
+                 }
               }else{
-                log::info("no hay campos configurados");
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
