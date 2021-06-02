@@ -529,21 +529,31 @@ function configprelacion()
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
-        var exit_distrito=null;
+        
         if(typeof response=== 'object'){
           for (n in response) {             
                 var total=0;
+                var exit_distrito=null;
                 for(k in response[n].grupo)
                 {
                   total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                    for(h in response[n].grupo)
                    {
+                    distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
+                    if(typeof distrito==="object")
+                    {
+                      if(distrito.clave=="1")
+                      {
+                        exit_distrito=distrito.clave;
+                      }
+                    }
                      if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
                      {                       
                         Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
                         response[n].grupo.splice(h,1);
                      }
+                     Object.assign(response[n].grupo[h],{"distrito":exit_distrito});
                    }                     
                 } 
                 objectResponse.push(response[n]);
@@ -551,7 +561,7 @@ function configprelacion()
            response=objectResponse;
 
           }            
-          //console.log(response);
+          console.log(response);
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -697,20 +707,18 @@ function configprelacion()
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>";
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(d.grupo[0].asignado_a==null){
+        if(p=="0" && d.grupo[0].asignado_a==null){
           select_rechazos="";
           btn_rechazo="";
+          btn_prelacion="";
         }else{
          input_check= addChecks(d.grupo[0].id_transaccion);
         }
-        if(p=="0" && d.grupo[0].asignado_a==null && d.grupo[0].url_prelacion!=null)
-        {
-          btn_prelacion="";
-        }
         if(d.grupo[0].url_prelacion!=null)
         {
-          url_prelacion="<a href='/listado-download/"+prelacion+"' title='Descargar Archivo'>"+prelacion+"<i class='fa a-download'></i></a></td>";
-        }
+          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download'></i></a></td>";
+          btn_prelacion="";
+        }        
        
         html += "<tr><th></th><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
@@ -726,6 +734,7 @@ function configprelacion()
     }
     function prelacion_confirm_all()
     {
+      findSolicitudes();
       var formdata=new FormData();
       var id_="";
       var grupo_clave="";

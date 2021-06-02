@@ -492,7 +492,7 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
     ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
-    ->leftJoin('portal.mensajes_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
+    ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('tk.grupo_clave',$filtro)->get();
 
