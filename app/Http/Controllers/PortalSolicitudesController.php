@@ -574,12 +574,12 @@ class PortalSolicitudesController extends Controller
   }
   public function atenderSolicitud($id){
     $ticket = $this->ticket->where('id', $id)->first();
-    $findP=$this->ticket->findPrelacion($id);
+    //$findP=$this->ticket->findPrelacion($id);
     $id_transaccion = $ticket["id_transaccion"];
     $user_id = auth()->user()->id;
     // $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
 
-    $msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
+    //$msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
     $findsolicitudCatalogoHijo=$this->solicitudes->findWhere(['padre_id'=>$ticket["catalogo_id"]]);
     $con_solicitud=array('continuar_solicitud'=>$findsolicitudCatalogoHijo->count());
@@ -596,7 +596,7 @@ class PortalSolicitudesController extends Controller
     $camposnuevos = array_combine($catalogue, $campos);
     unset($informacion["campos"]);
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
-    $informacion =array_merge( $informacion,$msprelacion);
+    //$informacion =array_merge( $informacion,$msprelacion);
     $informacion =array_merge( $informacion,$con_solicitud);
     return $informacion;
   }
@@ -1077,7 +1077,7 @@ class PortalSolicitudesController extends Controller
 
   public function asignarSolicitud($id){
       $ticket = $this->ticket->where('id', $id)->first();
-      $findP=$this->ticket->findPrelacion($id);
+      //$findP=$this->ticket->findPrelacion($id);
       $grupo = $ticket["grupo_clave"];
       $user_id = auth()->user()->id;
       try {
