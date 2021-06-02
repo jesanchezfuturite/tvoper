@@ -602,6 +602,8 @@ class PortalSolicitudesController extends Controller
 
 
   public function guardarSolicitud(Request $request){
+    $fecha=Carbon::now();
+    $fecha=$fecha->format('Hms');
     $mensaje = $request->mensaje;
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
@@ -617,10 +619,10 @@ class PortalSolicitudesController extends Controller
     }
     if($prelacion==1)
       {
-        $attach= "documento_prelacion_".$request->id.".pdf";
+        $attach= "doc_prelacion_".$request->grupo_clave."_".$fecha.".pdf";
         $this->savePdfprelacion($attach,$request->data);
         $msprelacion =$this->msjprelaciondb->create([
-          'solicitud_id'=> $ticket_id
+          'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
       }
     try {
@@ -1135,6 +1137,20 @@ class PortalSolicitudesController extends Controller
               "Message" =>"Error al asignar solicitud"
           ]);
       }  
+  }
+  public  function findPrelacionDoc($grupo_clave)
+  {
+    try{
+      $url="0";
+      $findprl=$this->msjprelaciondb->findWhere(['grupo_clave'=>$grupo_clave,'status'=>1]);
+      foreach ($findprl as $f) {
+        $url=$f->url;
+      }
+    }catch (\Exception $e) {
+      log::info("PortalSolicitudesticket@findPrelacionDoc " . $e);
+      return "0";
+    }
+    return $url;
   }
   
 }
