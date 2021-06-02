@@ -741,7 +741,7 @@ function configprelacion()
     }
     function prelacion_confirm_all()
     {
-      findSolicitudes();
+      
       var formdata=new FormData();
       var id_="";
       var grupo_clave="";
@@ -772,6 +772,7 @@ function configprelacion()
           }
         }
         savePrelacion(1,formdata,grupo_clave,resp);
+        findSolicitudes();
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {

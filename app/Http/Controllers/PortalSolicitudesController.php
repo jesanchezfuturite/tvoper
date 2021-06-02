@@ -957,7 +957,7 @@ class PortalSolicitudesController extends Controller
       foreach($data as $d => $reg)
       {
         $reg=json_decode($reg);
-         log::info((array)$reg);
+         //log::info((array)$reg);
          
         if($reg->fecha==null)
         {
@@ -983,7 +983,7 @@ class PortalSolicitudesController extends Controller
         $request []=$reg;
       }  
 
-      log::info(json_encode($request));
+      //log::info(json_encode($request));
 
 
       $path=storage_path('app/'.$path);
