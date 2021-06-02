@@ -334,13 +334,14 @@ class Operaciontransacciones extends Command
     private function referencepayment($referencia)
     {
          try{
+            $post=json_encode((object) null);
             log::info("REFERENCEPAYMENT Conciliacion referencias: ".json_encode($referencia));
             foreach ($referencia as $i) {
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/"."$i"."?service=conciliacion");
+                curl_setopt($ch, CURLOPT_URL, env("REFERENCEPAYMENT_HOSTNAME")."/".$i."?service=conciliacion");
                 curl_setopt($ch, CURLOPT_POST, TRUE);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                //curl_setopt($ch, CURLOPT_POSTFIELDS,);
+                curl_setopt($ch, CURLOPT_POSTFIELDS,$post);
 
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $remote_server_output = curl_exec($ch);
