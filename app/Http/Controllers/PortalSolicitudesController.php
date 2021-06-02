@@ -610,6 +610,7 @@ class PortalSolicitudesController extends Controller
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
     //log::info($request->all());
+   
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
@@ -627,12 +628,17 @@ class PortalSolicitudesController extends Controller
         ]);
       }
     try {
-      $mensajes =$this->mensajes->create([
-        'ticket_id'=> $ticket_id,
-        'mensaje' => $mensaje,
-        'mensaje_para' => $mensaje_para,
-        'attach'    =>  $attach
-      ]);
+          foreach($request->id as $i)
+          {
+
+            $mensajes =$this->mensajes->create([
+            'ticket_id'=> $i,
+            'mensaje' => $mensaje,
+            'mensaje_para' => $mensaje_para,
+            'attach'    =>  $attach
+            ]);
+          }
+
       if($request->rechazo==true)
       {
         
@@ -649,7 +655,11 @@ class PortalSolicitudesController extends Controller
             break;
         }
         if($rch<>0){
-          $this->updateStatusTicket($ticket_id,$rch);
+          foreach($request->id as $i)
+          {
+           $this->ticket->update(['status'=>$status],$i);
+          }
+          
           $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
         }
       }
@@ -677,7 +687,7 @@ class PortalSolicitudesController extends Controller
   {
     for($x=0; $x<6;$x++)
         {
-          $solicitudTicket = $this->ticket->update(['status'=>$status],$id);
+          
           $findSoli=$this->ticket->findWhere(['id'=>$id]);
           if($findSoli->count()>0)
           {

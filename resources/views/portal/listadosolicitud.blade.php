@@ -679,6 +679,10 @@ function configprelacion()
         if(d.grupo[0].asignado_a==null){
           checks='';
         }
+        if(d.grupo[0].url_prelacion!=null)
+        {
+          checks='';
+        }
         var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
         var lote=searchIndex('lote',solicitud.info.campos);
         var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
@@ -707,7 +711,7 @@ function configprelacion()
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>";
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(p=="0" && d.grupo[0].asignado_a==null){
+        if(p=="0" || d.grupo[0].asignado_a==null){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
@@ -718,6 +722,9 @@ function configprelacion()
         {
           url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download'></i></a></td>";
           btn_prelacion="";
+          select_rechazos="";
+          btn_rechazo="";
+          input_check="";
         }        
        
         html += "<tr><th></th><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
@@ -746,12 +753,14 @@ function configprelacion()
                    
             for(g in response[n].grupo)
             {
-              id_=response[n].grupo[g].id;    
+              id_=response[n].grupo[g].id; 
+                  
               grupo_clave=response[n].grupo[g].grupo_clave;
               var distrito=searchIndex('distrito',response[n].grupo[g].info.campos);
               if(typeof(distrito)==='object'){
                 if(distrito.clave=='1')
                 {
+                  formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
                   datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g].info));
@@ -762,9 +771,9 @@ function configprelacion()
             }
           }
         }
-        savePrelacion(id_,1,formdata,grupo_clave,resp);
+        savePrelacion(1,formdata,grupo_clave,resp);
     }
-    function savePrelacion(id_,prelacion_,formdata,grupo_clave,resp)
+    function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
       var mensaje=$("#message").val();
       var file=$("#file").val();
@@ -773,7 +782,7 @@ function configprelacion()
       var rechazo=0;
       //var formdata = new FormData();     
       mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
-        formdata.append("id", id_);      
+             
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);
@@ -1170,7 +1179,7 @@ function configprelacion()
         if(file.length>0){ 
           formdata.append("file", fileV);
         }              
-        formdata.append("id", id_);      
+        formdata.append("id[]", id_);      
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);
