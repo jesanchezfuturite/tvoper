@@ -714,7 +714,7 @@ function configprelacion()
         
       });
       var url_prelacion="";
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>";
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Genera Prelación  </a>";
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
         if(p=="0" || d.grupo[0].asignado_a==null){
@@ -726,14 +726,14 @@ function configprelacion()
         }
         if(d.grupo[0].url_prelacion!=null)
         {
-          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download'></i></a></td>";
+          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download blue'></i></a></td>";
           btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
           input_check="";
         }        
        
-        html += "<tr><th></th><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
