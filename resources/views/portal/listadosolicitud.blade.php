@@ -46,7 +46,7 @@
 		                	<label >Estatus</label>          
 						    <select class="select2me form-control" name="opEstatus" id="opEstatus" onchange="">	       	
                    <option value="">------</option>
-						       <option value="0">Todos</option>
+						       <option value="0">Todos menos cerrado</option>
 						       @foreach( $status as $sd)
                        			 <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
                       			@endforeach     
@@ -529,21 +529,31 @@ function configprelacion()
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
-        var exit_distrito=null;
+        
         if(typeof response=== 'object'){
           for (n in response) {             
                 var total=0;
+                var exit_distrito=null;
                 for(k in response[n].grupo)
                 {
                   total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                    for(h in response[n].grupo)
                    {
+                    distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
+                    if(typeof distrito==="object")
+                    {
+                      if(distrito.clave=="1")
+                      {
+                        exit_distrito=distrito.clave;
+                      }
+                    }
                      if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null)
                      {                       
                         Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
                         response[n].grupo.splice(h,1);
                      }
+                     Object.assign(response[n].grupo[h],{"distrito":exit_distrito});
                    }                     
                 } 
                 objectResponse.push(response[n]);
@@ -551,7 +561,7 @@ function configprelacion()
            response=objectResponse;
 
           }            
-          //console.log(response);
+          console.log(response);
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -632,9 +642,11 @@ function configprelacion()
       }
       let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
-      /*if(row.grupo[0].status==1)
-         
-      else{
+      if(row.grupo[0].distrito!="1")
+      {
+        botonAtender='';
+      }
+    /*else{
         return "<td class='text-center' width='10%'></td>"
       }*/
        return botonAtender;
@@ -669,6 +681,10 @@ function configprelacion()
         if(d.grupo[0].asignado_a==null){
           checks='';
         }
+        if(d.grupo[0].url_prelacion!=null)
+        {
+          checks='';
+        }
         var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
         var lote=searchIndex('lote',solicitud.info.campos);
         var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
@@ -689,25 +705,31 @@ function configprelacion()
           clase='';
         }
 
-        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.id  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
+        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
 
         
       });
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>"
+      var url_prelacion="";
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Prelación  </a>";
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(d.grupo[0].asignado_a==null){
+        if(p=="0" || d.grupo[0].asignado_a==null){
           select_rechazos="";
           btn_rechazo="";
+          btn_prelacion="";
         }else{
          input_check= addChecks(d.grupo[0].id_transaccion);
         }
-        if(p=="0" && d.grupo[0].asignado_a==null)
+        if(d.grupo[0].url_prelacion!=null)
         {
+          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download'></i></a></td>";
           btn_prelacion="";
-        }
+          select_rechazos="";
+          btn_rechazo="";
+          input_check="";
+        }        
        
-        html += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
@@ -721,6 +743,7 @@ function configprelacion()
     }
     function prelacion_confirm_all()
     {
+      
       var formdata=new FormData();
       var id_="";
       var grupo_clave="";
@@ -732,12 +755,14 @@ function configprelacion()
                    
             for(g in response[n].grupo)
             {
-              id_=response[n].grupo[g].id;    
+              id_=response[n].grupo[g].id; 
+                  
               grupo_clave=response[n].grupo[g].grupo_clave;
               var distrito=searchIndex('distrito',response[n].grupo[g].info.campos);
               if(typeof(distrito)==='object'){
-                if(distrito.clave=='1')
+                if(distrito.clave=='1' && response[n].grupo[g].status=='1')
                 {
+                  formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
                   datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g].info));
@@ -748,9 +773,10 @@ function configprelacion()
             }
           }
         }
-        savePrelacion(id_,1,formdata,grupo_clave,resp);
+        savePrelacion(1,formdata,grupo_clave,resp);
+        findSolicitudes();
     }
-    function savePrelacion(id_,prelacion_,formdata,grupo_clave,resp)
+    function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
       var mensaje=$("#message").val();
       var file=$("#file").val();
@@ -759,11 +785,12 @@ function configprelacion()
       var rechazo=0;
       //var formdata = new FormData();     
       mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
-        formdata.append("id", id_);      
+             
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);
         formdata.append("rechazo", checkRechazo);
+        formdata.append("grupo_clave", grupo_clave);
         //formdata.append("data[]", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
       $.ajax({
@@ -805,9 +832,21 @@ function configprelacion()
       }
       $("#select_"+solicitud.grupo[0].id_transaccion).select2();
     }
+
     function obtnerRegion()
     {
-
+      var id_ticket="";
+      var user_id="";
+      $.ajax({
+      method: "post",            
+      url: "{{ url('/obtener-region/"+id_ticket+"/"+user_id+"') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+         
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
     }
     function addChecks(id_transaccion)
     {
@@ -1143,7 +1182,7 @@ function configprelacion()
         if(file.length>0){ 
           formdata.append("file", fileV);
         }              
-        formdata.append("id", id_);      
+        formdata.append("id[]", id_);      
         formdata.append("mensaje", mensaje);
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);

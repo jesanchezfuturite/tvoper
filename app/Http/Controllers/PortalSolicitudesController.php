@@ -492,7 +492,7 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
     ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
-    ->leftJoin('portal.mensajes_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
+    ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('tk.grupo_clave',$filtro)->get();
 
@@ -574,12 +574,12 @@ class PortalSolicitudesController extends Controller
   }
   public function atenderSolicitud($id){
     $ticket = $this->ticket->where('id', $id)->first();
-    $findP=$this->ticket->findPrelacion($id);
+    //$findP=$this->ticket->findPrelacion($id);
     $id_transaccion = $ticket["id_transaccion"];
     $user_id = auth()->user()->id;
     // $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
 
-    $msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
+    //$msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
     $findsolicitudCatalogoHijo=$this->solicitudes->findWhere(['padre_id'=>$ticket["catalogo_id"]]);
     $con_solicitud=array('continuar_solicitud'=>$findsolicitudCatalogoHijo->count());
@@ -596,18 +596,21 @@ class PortalSolicitudesController extends Controller
     $camposnuevos = array_combine($catalogue, $campos);
     unset($informacion["campos"]);
     $informacion =array_merge(array("campos" =>$camposnuevos), $informacion);
-    $informacion =array_merge( $informacion,$msprelacion);
+    //$informacion =array_merge( $informacion,$msprelacion);
     $informacion =array_merge( $informacion,$con_solicitud);
     return $informacion;
   }
 
 
   public function guardarSolicitud(Request $request){
+    $fecha=Carbon::now();
+    $fecha=$fecha->format('Hms');
     $mensaje = $request->mensaje;
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
     //log::info($request->all());
+   
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
@@ -618,19 +621,24 @@ class PortalSolicitudesController extends Controller
     }
     if($prelacion==1)
       {
-        $attach= "documento_prelacion_".$request->id.".pdf";
+        $attach= "doc_prelacion_".$request->grupo_clave."_".$fecha.".pdf";
         $this->savePdfprelacion($attach,$request->data);
         $msprelacion =$this->msjprelaciondb->create([
-          'solicitud_id'=> $ticket_id
+          'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
       }
     try {
-      $mensajes =$this->mensajes->create([
-        'ticket_id'=> $ticket_id,
-        'mensaje' => $mensaje,
-        'mensaje_para' => $mensaje_para,
-        'attach'    =>  $attach
-      ]);
+          foreach($request->id as $i)
+          {
+
+            $mensajes =$this->mensajes->create([
+            'ticket_id'=> $i,
+            'mensaje' => $mensaje,
+            'mensaje_para' => $mensaje_para,
+            'attach'    =>  $attach
+            ]);
+          }
+
       if($request->rechazo==true)
       {
         
@@ -647,8 +655,12 @@ class PortalSolicitudesController extends Controller
             break;
         }
         if($rch<>0){
-          $this->updateStatusTicket($ticket_id,$rch);
-          $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
+          foreach($request->id as $i)
+          {
+           $this->ticket->update(['status'=>$status],$i);
+          }
+          
+          $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
         }
       }
       return response()->json(
@@ -675,7 +687,7 @@ class PortalSolicitudesController extends Controller
   {
     for($x=0; $x<6;$x++)
         {
-          $solicitudTicket = $this->ticket->update(['status'=>$status],$id);
+          
           $findSoli=$this->ticket->findWhere(['id'=>$id]);
           if($findSoli->count()>0)
           {
@@ -945,7 +957,7 @@ class PortalSolicitudesController extends Controller
       foreach($data as $d => $reg)
       {
         $reg=json_decode($reg);
-         log::info((array)$reg);
+         //log::info((array)$reg);
          
         if($reg->fecha==null)
         {
@@ -971,7 +983,7 @@ class PortalSolicitudesController extends Controller
         $request []=$reg;
       }  
 
-      log::info(json_encode($request));
+      //log::info(json_encode($request));
 
 
       $path=storage_path('app/'.$path);
@@ -1075,7 +1087,7 @@ class PortalSolicitudesController extends Controller
 
   public function asignarSolicitud($id){
       $ticket = $this->ticket->where('id', $id)->first();
-      $findP=$this->ticket->findPrelacion($id);
+      //$findP=$this->ticket->findPrelacion($id);
       $grupo = $ticket["grupo_clave"];
       $user_id = auth()->user()->id;
       try {
@@ -1136,6 +1148,20 @@ class PortalSolicitudesController extends Controller
               "Message" =>"Error al asignar solicitud"
           ]);
       }  
+  }
+  public  function findPrelacionDoc($grupo_clave)
+  {
+    try{
+      $url="0";
+      $findprl=$this->msjprelaciondb->findWhere(['grupo_clave'=>$grupo_clave,'status'=>1]);
+      foreach ($findprl as $f) {
+        $url=$f->url;
+      }
+    }catch (\Exception $e) {
+      log::info("PortalSolicitudesticket@findPrelacionDoc " . $e);
+      return "0";
+    }
+    return $url;
   }
   
 }
