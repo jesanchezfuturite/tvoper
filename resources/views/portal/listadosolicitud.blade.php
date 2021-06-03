@@ -642,9 +642,11 @@ function configprelacion()
       }
       let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
-      /*if(row.grupo[0].status==1)
-         
-      else{
+      if(row.grupo[0].distrito!="1")
+      {
+        botonAtender='';
+      }
+    /*else{
         return "<td class='text-center' width='10%'></td>"
       }*/
        return botonAtender;
@@ -758,7 +760,7 @@ function configprelacion()
               grupo_clave=response[n].grupo[g].grupo_clave;
               var distrito=searchIndex('distrito',response[n].grupo[g].info.campos);
               if(typeof(distrito)==='object'){
-                if(distrito.clave=='1')
+                if(distrito.clave=='1' && response[n].grupo[g].status=='1')
                 {
                   formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
