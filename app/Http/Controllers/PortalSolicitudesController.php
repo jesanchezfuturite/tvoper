@@ -660,7 +660,7 @@ class PortalSolicitudesController extends Controller
            $this->ticket->update(['status'=>$status],$i);
           }
           
-          $this->msjprelaciondb->deleteWhere(['solicitud_id'=>$ticket_id]);
+          $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
         }
       }
       return response()->json(
