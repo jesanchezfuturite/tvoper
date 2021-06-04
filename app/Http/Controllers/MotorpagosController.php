@@ -55,15 +55,7 @@ use App\Repositories\ApplicableSubjectRepositoryEloquent;
 use App\Entities\PortalSolicitudesTicket;
 use DB;
 use App\Repositories\PortalcampoRepositoryEloquent;
-// use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
-// use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
-// use App\Repositories\PortalSolicitudesTicketRepositoryEloquent;
-// use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
-// use App\Repositories\TramitedetalleRepositoryEloquent;
-// use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
-// use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
-// use App\Repositories\PortalTramitesRepositoryEloquent;
 
 
 
