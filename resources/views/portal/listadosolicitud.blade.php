@@ -276,9 +276,9 @@
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-          <div class="col-md-3 group-btn2">
+        <!--  <div class="col-md-3 group-btn2">
             <button type="button" data-dismiss="modal" class="btn green btn_cerrar_2" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
-          </div>
+          </div>-->
         </div>
       </div>   
     </div>
@@ -670,7 +670,7 @@ function configprelacion()
           dist=distrito.clave;
           if(distrito.clave!='1')
           {
-            Atender_btn="&nbsp;<span class='label label-sm label-warning'>Foráneo</span>";
+            Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
             checks='';
           }   
         }      
@@ -717,7 +717,7 @@ function configprelacion()
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Genera Prelación  </a>";
         var select_rechazos=addSelect(d.grupo[0].id_transaccion);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(p=="0" || d.grupo[0].asignado_a==null){
+        if(d.grupo[0].distrito=="null" || d.grupo[0].asignado_a==null){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
@@ -1042,22 +1042,22 @@ function configprelacion()
           }
 
          var btn_1=document.getElementById('btn_cerrar_1');
-         var btn_2=document.getElementById('btn_cerrar_2'); 
+         //var btn_2=document.getElementById('btn_cerrar_2'); 
          
           //console.log(btn_1);
           if(asignado_a=="null")
           {
             btn_1.innerHTML="N/A";
-            btn_2.innerHTML="N/A";
-            btn_2.value="return";             
+            //btn_2.innerHTML="N/A";
+           // btn_2.value="return";             
           }else if(Resp.continuar_solicitud==0){
             btn_1.innerHTML="Cerrar Ticket";
-            btn_2.innerHTML="Cerrar Ticket";
-            btn_2.value="cerrar";
+            //btn_2.innerHTML="Cerrar Ticket";
+            //btn_2.value="cerrar";
           }else{
             btn_1.innerHTML="Continuar Solicitud";
-            btn_2.innerHTML="Continuar Solicitud";
-            btn_2.value="continuar";
+           //btn_2.innerHTML="Continuar Solicitud";
+           //btn_2.value="continuar";
           }
           findMotivosSelect(catalogo_id);
         })
@@ -1117,7 +1117,8 @@ function configprelacion()
     {
       var idT=$("#idTicket").val();
       var id_catalogo_=$("#opTipoSolicitud").val();
-      var btn_2=$("#btn_cerrar_2").val();
+      btn_2="cerrar";
+      //var btn_2=$("#btn_cerrar_2").val();
       //console.log(btn_2);
      $.ajax({
            method: "POST", 
