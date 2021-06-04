@@ -714,7 +714,7 @@ function configprelacion()
         
       });
       var url_prelacion="";
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Genera Prelación  </a>";
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos=addSelect(d.grupo[0].grupo_clave);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
         if(d.grupo[0].distrito=="null" ){
@@ -726,7 +726,7 @@ function configprelacion()
         }
         if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
-          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download blue'></i></a></td>";
+          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
           btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
@@ -776,7 +776,7 @@ function configprelacion()
                   formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g]));
+                  datapr=dataPrelacion(JSON.stringify(resp),JSON.stringify(response[n].grupo[g]));
                   formdata.append("data[]",JSON.stringify(datapr));
                 }   
               }
@@ -787,7 +787,8 @@ function configprelacion()
         if(count==0)
           {Command: toastr.warning("Sin Registros", "Notifications")
           return; }
-        savePrelacion(1,formdata,grupo_clave,resp);
+        $(".btn_prelacion_"+grupo_clave).css("display", "none");
+        savePrelacion(1,formdata,grupo_clave,JSON.stringify(resp));
         findSolicitudes();
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
@@ -797,6 +798,7 @@ function configprelacion()
       var checkRechazo=false;
       var msjpublic="1";
       var rechazo=0;
+      resp=$.parseJSON(resp);
       //var formdata = new FormData();     
       mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
              
@@ -844,7 +846,7 @@ function configprelacion()
         }
 
       }
-      $("#select_"+solicitud.grupo[0].id_transaccion).select2();
+      $("#select_"+solicitud.grupo[0].grupo_clave).select2();
     }
 
     function obtnerRegion()
@@ -1245,6 +1247,7 @@ function configprelacion()
       jsn=$("#jsonCode").val();
     }  
     var Resp=$.parseJSON(jsn);
+    var dataP=$.parseJSON(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);
     var municipio_=searchIndex('municipio',Resp.info.campos);
     var nombre_=searchIndex('nombre',Resp.info.campos);
@@ -1312,7 +1315,7 @@ function configprelacion()
     }else{
       Object.assign(data,{costo_final:Resp.info.costo_final});
     }
-    //console.log(data);
+    console.log(data);
     return data;
 
   }
