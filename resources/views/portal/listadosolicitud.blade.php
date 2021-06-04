@@ -724,7 +724,7 @@ function configprelacion()
         }else{
          input_check= addChecks(d.grupo[0].grupo_clave);
         }
-        if(d.grupo[0].url_prelacion!=null)
+        if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
           url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download blue'></i></a></td>";
           btn_prelacion="";
@@ -756,6 +756,7 @@ function configprelacion()
       var formdata=new FormData();
       var id_="";
       var grupo_clave="";
+      count=0;
       var response=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
        var resp=$.parseJSON(JSON.stringify(registroPublico()));
@@ -771,6 +772,7 @@ function configprelacion()
               if(typeof(distrito)==='object'){
                 if(distrito.clave=='1' && response[n].grupo[g].status=='1')
                 {
+                  count+=1;
                   formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
@@ -782,6 +784,9 @@ function configprelacion()
             }
           }
         }
+        if(count==0)
+          {Command: toastr.warning("Sin Registros", "Notifications")
+          return; }
         savePrelacion(1,formdata,grupo_clave,resp);
         findSolicitudes();
     }
