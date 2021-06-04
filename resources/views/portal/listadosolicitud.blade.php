@@ -627,7 +627,7 @@ function configprelacion()
               $("#iconShow-" + row.data().grupo_clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
                 $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
-                row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data()) + "</div>").show();
+                row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data(),1) + "</div>").show();
                 tr.addClass('shown');
             }
         }
@@ -644,7 +644,7 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender = "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
+      let botonAtender ="";// "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
      
       if(row.grupo[0].distrito!="1")
       {
@@ -655,36 +655,35 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-  function format ( d ) { 
+  function format ( d ,b_pr) { 
       var input_check="";            
       var valid='0';            
-      let html = '';
-      var p="0";    
+      let html = '';  
       d.grupo.forEach( (solicitud) =>{ 
         var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
         var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
-        let checks='<input id="ch_'+solicitud.id_transaccion+'"style="cursor:pointer" name="check_'+solicitud.id_transaccion+'" type="checkbox" value="'+solicitud.id+'">';
-        var dist='';
+        let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
+        var dist='0';
         if(typeof(distrito)==='object'){
-          dist=distrito.clave;
-          if(distrito.clave!='1')
-          {
+          dist=distrito.clave;            
+        }      
+       
+        if(dist!='1')
+        {
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
             checks='';
-          }   
-        }      
+        }
+        if(solicitud.status!=1 && dist=='1')
+        {
+            Atender_btn="&nbsp;<span class='label label-sm label-warning'>Cerrado</span>";
+            checks='';
+        }  
         let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
         
-        if(solicitud.status==1 && dist=='1'){          
-           p="1";
-        }else{
-           botonAtender="<td class='text-center' width='5%'></td>";
-           checks='';
-        }
-        if(d.grupo[0].asignado_a==null){
+        /*if(d.grupo[0].asignado_a==null){
           checks='';
-        }
+        }*/
         if(d.grupo[0].url_prelacion!=null)
         {
           checks='';
@@ -715,14 +714,14 @@ function configprelacion()
       });
       var url_prelacion="";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_Prelacion' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Genera Prelación  </a>";
-        var select_rechazos=addSelect(d.grupo[0].id_transaccion);
-        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].id_transaccion+"\")'>Rechazar</a>";
-        if(d.grupo[0].distrito=="null" || d.grupo[0].asignado_a==null){
+        var select_rechazos=addSelect(d.grupo[0].grupo_clave);
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
+        if(d.grupo[0].distrito=="null" ){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
         }else{
-         input_check= addChecks(d.grupo[0].id_transaccion);
+         input_check= addChecks(d.grupo[0].grupo_clave);
         }
         if(d.grupo[0].url_prelacion!=null)
         {
@@ -731,8 +730,13 @@ function configprelacion()
           select_rechazos="";
           btn_rechazo="";
           input_check="";
-        }        
-       
+        }
+
+       if(b_pr==null)
+        { btn_prelacion="";
+          input_check="";
+          btn_rechazo="";
+          select_rechazos="";}
         html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
@@ -830,7 +834,7 @@ function configprelacion()
         } else {
           $("#iconShowChild-" + solicitud.id).removeClass("fa-plus").addClass("fa-minus");
           tr.addClass('shown');
-          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud  ) + "</td></tr>");
+          $("#trchild-" + solicitud.id).after("<tr style='border-left-style: dotted; border-bottom-style: dotted;' id='brothertr-" + solicitud.id + "''><td colspan='12'>"  + format( solicitud ,null ) + "</td></tr>");
         }
 
       }
@@ -1035,11 +1039,11 @@ function configprelacion()
           }else{
              $(".btnPrelacion").css("display", "none");
           }
-          if( asignado_a!='null' )
+          /*if( asignado_a!='null' )
           {
             document.getElementById("btn_guardar").disabled = false;
             document.getElementById("file").disabled = false;
-          }
+          }*/
 
          var btn_1=document.getElementById('btn_cerrar_1');
          //var btn_2=document.getElementById('btn_cerrar_2'); 
