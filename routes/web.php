@@ -153,6 +153,7 @@ Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones
 Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
+Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites');
 
 Route::get('/reporte-actualizaciones','MasterlogController@index');
 Route::post('/report-paid-operation','MasterlogController@consultamasterlog');
