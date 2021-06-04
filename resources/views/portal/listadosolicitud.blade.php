@@ -110,7 +110,7 @@
        
         <div class="row"><div class=" col-md-9"><h4 class="modal-title">Información de la Solicitud <label id="idmodal">1</label> </h4></div>
           <div class="col-md-3 group-btn1" style="text-align: right; ">
-            <button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>
+            <!--<button type="button"  data-dismiss="modal" class="btn green right btn_cerrar_1" id="btn_cerrar_1"  onclick="cerrarTicket()">Cerrar Ticket</button>-->
           </div>
         </div>        
       </div>
@@ -357,6 +357,7 @@
 <input type="text" name="idgrupo" id="idgrupo" hidden="true">
 <input type="text" name="m_grupo_clave" id="m_grupo_clave" hidden="true">
 <input type="text" name="obj_grupo" id="obj_grupo" hidden="true">
+<input type="text" name="grp_clave" id="grp_clave" hidden="true">
 <input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 @endsection
 
@@ -662,7 +663,7 @@ function configprelacion()
       d.grupo.forEach( (solicitud) =>{ 
         var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
-        var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.asignado_a+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
+        var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
         let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
         var dist='0';
         if(typeof(distrito)==='object'){
@@ -967,14 +968,15 @@ function configprelacion()
       $("#addSolicitante").empty();
       $("#addnotaria").empty();
       $(".divNotaria").css("display", "none");
-      document.getElementById("btn_guardar").disabled = true;
-      document.getElementById("file").disabled = true;
+      //document.getElementById("btn_guardar").disabled = true;
+      //document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,asignado_a,folioPago,catalogo_id)
+    function findAtender(id,estatus,grupo_clave,folioPago,catalogo_id)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       document.getElementById("folioPago").value=folioPago;
+      document.getElementById("grp_clave").value=grupo_clave;
       findMessage(id);
       $.ajax({
            method: "GET", 
@@ -1033,23 +1035,23 @@ function configprelacion()
               Mp=conctenaM(municipio);
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
             }
-          if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
+          /*if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
-            //$(".btnPrelacion").css("display", "block");
+            $(".btnPrelacion").css("display", "block");
           }else{
              $(".btnPrelacion").css("display", "none");
-          }
+          }*/
           /*if( asignado_a!='null' )
           {
             document.getElementById("btn_guardar").disabled = false;
             document.getElementById("file").disabled = false;
           }*/
 
-         var btn_1=document.getElementById('btn_cerrar_1');
+         //var btn_1=document.getElementById('btn_cerrar_1');
          //var btn_2=document.getElementById('btn_cerrar_2'); 
          
           //console.log(btn_1);
-          if(asignado_a=="null")
+          /*if(asignado_a=="null")
           {
             btn_1.innerHTML="N/A";
             //btn_2.innerHTML="N/A";
@@ -1062,7 +1064,7 @@ function configprelacion()
             btn_1.innerHTML="Continuar Solicitud";
            //btn_2.innerHTML="Continuar Solicitud";
            //btn_2.value="continuar";
-          }
+          }*/
           findMotivosSelect(catalogo_id);
         })
         .fail(function( msg ) {
@@ -1162,6 +1164,7 @@ function configprelacion()
       var mot=$("#itemsMotivos option:selected").text();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
+      var grp_clave=$("#grp_clave").val();
       var check=$("#checkbox30").prop("checked");
       var checkRechazo=$("#checkbox1").prop("checked");
       var msjpublic="1";
@@ -1196,6 +1199,7 @@ function configprelacion()
         formdata.append("mensaje_para", msjpublic);
         formdata.append("prelacion", prelacion_);
         formdata.append("rechazo", checkRechazo);
+        formdata.append("grupo_clave", grp_clave);
         formdata.append("data[]", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
         //console.log(Object.fromEntries(formdata));
