@@ -361,7 +361,7 @@
                         <br><label></label>
                       </td>
                       <td><label><strong>Folio Pago</strong></label>
-                        <br><label>{{$dat->folioPago='null' ? '': $dat->folioPago}}</label>
+                        <br><label>{{isset($dat->folioPago) ? $dat->folioPago : '' }}</label>
                       </td>
                     </tr> 
                   </table><br>
@@ -523,7 +523,7 @@
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioPago='null' ? '': $dat->folioPago}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>
@@ -680,7 +680,7 @@
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioPago='null' ? '': $dat->folioPago}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
                                       </tr>
                                   </tbody> 
                                 </table><br>
