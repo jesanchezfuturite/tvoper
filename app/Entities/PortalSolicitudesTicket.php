@@ -25,12 +25,13 @@ class PortalSolicitudesTicket extends Model implements Transformable
     protected $fillable = [
         'id','clave','catalogo_id', 'info','relacionado_a','ticket_relacionado',
         'id_transaccion', 'user_id','creado_por', 'asignado_a', 'status',
-        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs'
+        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs',
+        'grupo_clave', 'ticket_padre'
         ];
 
     protected $table = "solicitudes_ticket";
 
- 
+
     public function catalogo(){
 	  	return $this->hasMany('App\Entities\Portalsolicitudescatalogo', 'id', 'catalogo_id');
     }

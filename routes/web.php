@@ -153,6 +153,7 @@ Route::get('/consulta-transacciones','MotorpagosController@consultaTransacciones
 Route::post('/consulta-transacciones-egob','MotorpagosController@consultaTransaccionesEgob');
 Route::post('/consulta-transacciones-oper','MotorpagosController@consultaTransaccionesOper');
 Route::post('/consulta-transacciones-gpm','MotorpagosController@consultaTransaccionesGpm');
+Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites');
 
 Route::get('/reporte-actualizaciones','MasterlogController@index');
 Route::post('/report-paid-operation','MasterlogController@consultamasterlog');
@@ -466,6 +467,10 @@ Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAv
 
 Route::get('/obtener-estados', 'CatalogosController@getEntidad');
 Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
+Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
+Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
+Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones');
+Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion');
 
 Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes');
 Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes');

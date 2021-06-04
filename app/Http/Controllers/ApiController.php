@@ -26,7 +26,6 @@ use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 
-
 class ApiController extends Controller
 {
     protected $key ;
@@ -532,11 +531,11 @@ class ApiController extends Controller
     public function getValorCatastral(Request $request)
     {
 
-        $path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
+        //$path = $this->url->to('/') . '/notary-offices-get-users/' . $request->id;
 
         $notary_users = array();
 
-        $informativo_id = 8;
+        $informativo_id = 3;
 
         $campos = $this->campos->all();
 
@@ -549,15 +548,7 @@ class ApiController extends Controller
 
         try
         {
-            $this->client = new \GuzzleHttp\Client();
-
-            $response = $this->client->get(
-                $path
-            );
-
-            $results = $response->getBody();
-
-            $results = json_decode($results);
+			      $results = app()->call('App\Http\Controllers\PortalNotaryOfficesController@getUsers', [$request->id]);
 
             if(count($results) > 0)
             {
@@ -758,7 +749,7 @@ class ApiController extends Controller
 			return json_encode(
                 [
                     "code" => 402,
-                    "message" => "No hay solicitudes de aviso de enajenacion" 
+                    "message" => "No hay solicitudes de aviso de enajenacion"
 				]);
 		}
 
