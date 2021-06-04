@@ -632,7 +632,7 @@ function configprelacion()
                 tr.addClass('shown');
             }
         }
-        $("#select_"+row.data().grupo[0].id_transaccion).select2();
+        $("#select_"+row.data().grupo[0].grupo_clave).select2();
 
     }
   function getTemplateAcciones( data, type, row, meta){
