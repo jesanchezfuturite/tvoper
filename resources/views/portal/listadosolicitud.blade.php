@@ -724,7 +724,7 @@ function configprelacion()
         }else{
          input_check= addChecks(d.grupo[0].grupo_clave);
         }
-        if(d.grupo[0].url_prelacion!=null)
+        if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
           url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa a-download blue'></i></a></td>";
           btn_prelacion="";
