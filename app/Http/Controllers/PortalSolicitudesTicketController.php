@@ -97,6 +97,11 @@ class PortalSolicitudesTicketController extends Controller
         $status=7;
       }
 
+      if($request->has("status") && $request->status==8){
+        $status=8;
+      }
+
+
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
@@ -189,7 +194,6 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($status==99){
-          $estatus = $request->has("sin_costo") ? 2 : 99;
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
@@ -205,7 +209,7 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
-                "status"=>$estatus,
+                "status"=>$status,
                 "en_carrito"=>$carrito,
                 "required_docs"=>$request->required_docs
 
@@ -253,7 +257,7 @@ class PortalSolicitudesTicketController extends Controller
           }
         }
         if($status==7){
-          $estatus = $tramite->atendido_por=1 ? 2 : 1;
+          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
             foreach($datosrecorrer as $key => $value){
@@ -264,7 +268,66 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
                 "user_id"=>$user_id,
-                "status"=>$estatus,
+                "status"=>1,
+                "en_carrito"=>$carrito,
+                "required_docs"=>$request->required_docs
+
+              ]);
+
+             array_push($ids, $ticket->id);
+            }
+            $first_id = reset($ids);
+            if($request->has("file")){
+              foreach ($request->file as $key => $value) {
+                $data =[
+                  'ticket_id'=> $first_id,
+                  'mensaje' => $request->descripcion[$key],
+                  'file'    =>  $value
+                  ];
+
+                  $this->saveFile($data);
+
+              }
+            }
+          }else{
+            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+              "clave" => $clave,
+              "grupo_clave" => $grupo,
+              "catalogo_id" => $catalogo_id,
+              "info"=> json_encode($info),
+              "user_id"=>$user_id,
+              "status"=>$estatus,
+              "en_carrito"=>$carrito,
+              "required_docs"=>$request->required_docs
+            ]);
+
+            if($request->has("file")){
+               foreach ($request->file as $key => $value) {
+                  $data =[
+                    'ticket_id'=> $ticket->id,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    =>  $value,
+                    ];
+                  $this->saveFile($data);
+                }
+
+
+            }
+          }
+        }
+        if($status==8){
+          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
+          if(!empty($datosrecorrer)){
+            $datosrecorrer = json_decode($datosrecorrer);
+            foreach($datosrecorrer as $key => $value){
+              $data==1 ? $info->solicitante=$value :  $info=$value;
+              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
+                "clave" => $clave,
+                "grupo_clave" => $grupo,
+                "catalogo_id" => $catalogo_id,
+                "info"=> json_encode($info),
+                "user_id"=>$user_id,
+                "status"=>1,
                 "en_carrito"=>$carrito,
                 "required_docs"=>$request->required_docs
 
@@ -409,7 +472,7 @@ class PortalSolicitudesTicketController extends Controller
           $datos=[];
           foreach ($solicitudes as $d => $dato) {
             if($dato["tramite_id"]== $tramite["tramite_id"]){
-              if(empty($info)){
+              if(empty($dato["info"])){
                 $info=json_decode($dato["info"]);
               }else{
                 $info = $this->asignarClavesCatalogo($dato["info"]);
