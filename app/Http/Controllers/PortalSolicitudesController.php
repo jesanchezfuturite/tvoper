@@ -626,6 +626,10 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
+        foreach($request->id as $i)
+          {
+           $this->ticket->update(['status'=>"2"],$i);
+          }
       }
     try {
           foreach($request->id as $i)
@@ -657,7 +661,7 @@ class PortalSolicitudesController extends Controller
         if($rch<>0){
           foreach($request->id as $i)
           {
-           $this->ticket->update(['status'=>$status],$i);
+           $this->ticket->update(['status'=>$rch],$i);
           }
           
           $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
@@ -674,7 +678,7 @@ class PortalSolicitudesController extends Controller
 
     }catch(\Exception $e) {
 
-
+      log::info($e);
       return response()->json(
         [
           "Code" => "400",
