@@ -717,13 +717,7 @@ function configprelacion()
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos=addSelect(d.grupo[0].grupo_clave);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
-        if(d.grupo[0].distrito=="null" ){
-          select_rechazos="";
-          btn_rechazo="";
-          btn_prelacion="";
-        }else{
-         input_check= addChecks(d.grupo[0].grupo_clave);
-        }
+        
         if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
           url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -732,7 +726,13 @@ function configprelacion()
           btn_rechazo="";
           input_check="";
         }
-
+        if(d.grupo[0].distrito==null){
+          select_rechazos="";
+          btn_rechazo="";
+          btn_prelacion="";
+        }else{
+         input_check= addChecks(d.grupo[0].grupo_clave);
+        }
        if(b_pr==null)
         { btn_prelacion="";
           input_check="";
