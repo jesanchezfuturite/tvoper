@@ -923,7 +923,7 @@
         var label='';
         
         $.each(Resp, function(i, item) { 
-            console.log(item);
+            console.log(Resp);
              $("#sample_4 tbody").append("<tr>"
                 +"<td>"+item.id_transaccion+"</td>"
                 +"<td>"+item.id_transaccion_entidad+"</td>"
