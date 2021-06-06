@@ -365,30 +365,18 @@
                                     <table class="table table-hover table-responsive" id="sample_5">
                                         <thead>
                                             <tr> 
-
                                                 <th>Transacción</th>
                                                 <th>Conciliacion</th>
                                                 <th>Estatus</th>
-                                                <th>RFC</th>
                                                 <th>Declarado</th>
                                                 <th>Familia</th>
                                                 <th>Entidad</th>
                                                 <th>Tramite</th>
-                                                <th>Contribuyente</th> 
-                                                <th>Inicio Tramite</th>                       
-                                                <th>Banco</th>
-                                                <th>Tipo Pago</th>                                            
-                                                <th>Total Tamite</th>
                                             </tr>
                                         </thead>
                                         <tbody> 
                                             <tr>
                                                 <td><span class="help-block">No Found</span></td>           
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -702,7 +690,7 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'>     <table class='table table-hover table-responsive' id='sample_5'><thead><tr> <th>Id Transacción</th>  <th>Id Transaccion Entidad</th> <th>Fecha Transacición</th> <th>Importe Transacción</th> <th>Nombre Tramite</th>  <th>Id Tramite Egob</th><th>Id Tramite Entidad</th><th>Importe Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_5'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -918,21 +906,20 @@
         .done(function (response) { 
         document.getElementById('jsonCode3').value=response;        
         $("#sample_5 tbody tr").remove();   
-        var Resp=$.parseJSON(response);
+        // var Resp=$.parseJSON(response);
          var color='';
         var label='';
         
-        $.each(Resp, function(i, item) { 
-            console.log(Resp);
-             $("#sample_4 tbody").append("<tr>"
-                +"<td>"+item.id_transaccion+"</td>"
-                +"<td>"+item.id_transaccion_entidad+"</td>"
-                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
-                +"<td>"+item.TotalTramite+"</td>"
-                +"<td>"+item.Tipo_Descripcion+"</td>"
-                +"<td>"+item.id_tramite+"</td>"
-                +"<td>"+item.id_tramite_entidad+"</td>"
-                +"<td>"+item.importe_tramite+"</td>"
+        $.each(response, function(i, item) { 
+            console.log(item);
+             $("#sample_5 tbody").append("<tr>"
+                +"<td>"+item.id+"</td>"
+                +"<td>"+item.id_transaccion_motor+"</td>"
+                +"<td>"+item.fecha_transaccion+"</td>"
+                +"<td>"+item.notary_number+"</td>"
+                +"<td>"+item.titular.apellido_paterno_titular+"</td>"
+                +"<td>"+item.titular.apellido_materno_titular+"</td>"
+                +"<td>"+item.info.tipoTramite+"</td>"
                 +"</tr>");
             });        
        cargatabla4();
