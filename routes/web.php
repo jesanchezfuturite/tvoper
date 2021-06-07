@@ -480,3 +480,12 @@ Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentaje
 
 
 Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
+
+Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarIndividuo');
+Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaNac');
+Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}','ApircController@buscarActaDef');
+Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaMat');
+
+Route::get('/configprelacion','PortalSolicitudesController@configdocprelacion');
+Route::post('/update-rechazo','PortalSolicitudesController@upStatusRechazo');
+

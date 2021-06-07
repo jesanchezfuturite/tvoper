@@ -1026,7 +1026,7 @@
     function saveTramites()
     {
         var JSONData=$("#jsonCode4").val();
-        var ReportTitle='Transacciones_Operaciones';
+        var ReportTitle='Transacciones_tramites';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
 
