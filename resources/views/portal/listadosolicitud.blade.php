@@ -767,7 +767,7 @@ function configprelacion()
       count=0;
       var response=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
-       var resp=$.parseJSON(JSON.stringify(registroPublico()));
+       var resp=JSON.stringify(registroPublico());
         if(typeof response=== 'object'){
           for (n in response) { 
                    
@@ -784,7 +784,7 @@ function configprelacion()
                   formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(JSON.stringify(resp),JSON.stringify(response[n].grupo[g]));
+                  datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g]));
                   formdata.append("data[]",JSON.stringify(datapr));
                 }   
               }
@@ -1256,7 +1256,9 @@ function configprelacion()
       jsn=$("#jsonCode").val();
     }  
     var Resp=$.parseJSON(jsn);
-    var dataP=$.parseJSON(dataP);
+    //console.log(dataP);
+    //var dataP=$.parseJSON(dataP);
+    //console.log(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);
     var municipio_=searchIndex('municipio',Resp.info.campos);
     var nombre_=searchIndex('nombre',Resp.info.campos);
