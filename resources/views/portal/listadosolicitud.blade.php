@@ -659,7 +659,8 @@ function configprelacion()
   function format ( d ,b_pr) { 
       var input_check="";            
       var valid='0';            
-      let html = '';  
+      let html = ''; 
+      var exist=0; 
       d.grupo.forEach( (solicitud) =>{ 
         var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
@@ -682,9 +683,9 @@ function configprelacion()
         }  
         let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
         
-        /*if(d.grupo[0].asignado_a==null){
-          checks='';
-        }*/
+        if(solicitud.status=='1' && dist=='1'){
+          exist+=1;  
+        }
         if(d.grupo[0].url_prelacion!=null)
         {
           checks='';
@@ -738,6 +739,13 @@ function configprelacion()
           input_check="";
           btn_rechazo="";
           select_rechazos="";}
+          if(exist==0)
+          {
+            btn_prelacion="";
+          input_check="";
+          btn_rechazo="";
+          select_rechazos="";
+          }
         html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
