@@ -3409,7 +3409,8 @@ class MotorpagosController extends Controller
         ->leftJoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
         ->leftJoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
         ->leftjoin('operacion.oper_transacciones', 'solicitudes_tramite.id_transaccion_motor', '=', 'oper_transacciones.id_transaccion_motor')
-        ->whereBetween("operacion.oper_transacciones.fecha_transaccion" , [$fecha_inicio, $fecha_fin]);
+        ->whereBetween("operacion.oper_transacciones.fecha_transaccion" , [$fecha_inicio, $fecha_fin])
+        ->where('tipo_servicios.Tipo_Code', 399);
 
         if($request->has("notary_id")){
             $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
