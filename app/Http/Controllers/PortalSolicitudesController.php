@@ -458,7 +458,7 @@ class PortalSolicitudesController extends Controller
     ->groupBy('solicitudes_ticket.grupo_clave');
  
     if($request->has('tipo_solicitud')){
-        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
+        $filtro->where('c.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
@@ -494,14 +494,18 @@ class PortalSolicitudesController extends Controller
     ->whereIn('tk.grupo_clave',$filtro)->get();
 
     $newDato=[];
-    foreach($ids as $t => $id){
+    foreach($filtro as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) {
-        if($value->id_transaccion== $id){
+      foreach ($solicitudes as $d => $value) {     
+        if($value->grupo_clave== $id){
+          if(isset($value->info)){            
+            $info=$this->asignarClavesCatalogo($value->info);
+            $value->info=$info;
+          }
           array_push($datos, $value);
-          $newDato[$id]=$datos;
-        }
-
+          $newDato[$i]["grupo_clave"]=$id;
+          $newDato[$i]["grupo"]=$datos;
+        }      
       }
     }
     return $newDato;
