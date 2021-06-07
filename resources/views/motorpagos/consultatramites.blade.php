@@ -415,7 +415,6 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td></td>
                                                         </tr>                                   
                                                     </tbody>
                                         
@@ -462,7 +461,8 @@
 <input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
 <input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
 <input type="text" name="jsonCode3" id="jsonCode3" hidden="true">
-                            
+<input type="text" name="jsonCode4" id="jsonCode4" >
+                                                        
 @endsection
 
 @section('scripts')
@@ -482,7 +482,7 @@
         cargatabla1();
         cargatabla2(); 
         cargatabla3(); 
-        // cargatabla4();
+        cargatabla4();
         ComponentsPickers.init(); 
         findFamilia();
     });
@@ -722,7 +722,7 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -872,7 +872,6 @@
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc").val();
         var familia_=$("#itemsFamilia").val();
-        console.log("familia   "+ familia_);
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-oper') }}",
@@ -936,7 +935,8 @@
         url: "{{ url('/consulta-transacciones-tramites') }}",
         data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
-        document.getElementById('jsonCode3').value=response;        
+            obj = JSON.stringify(response);
+        document.getElementById('jsonCode4').value=obj;        
         $("#sample_7 tbody tr").remove();   
         // var Resp=$.parseJSON(response);
          var color='';
@@ -1042,6 +1042,12 @@
     {
         var JSONData=$("#jsonCode3").val();
         var ReportTitle='Transacciones_Contribuyente';
+        JSONToCSVConvertor(JSONData, ReportTitle, true);
+    }
+    function saveTramites()
+    {
+        var JSONData=$("#jsonCode4").val();
+        var ReportTitle='Transacciones_Operaciones';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
 

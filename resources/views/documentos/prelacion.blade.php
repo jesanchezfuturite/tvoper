@@ -323,13 +323,14 @@
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td class="container">
-          <div class="content">
-            <table role="presentation" class="main" style="table-layout: fixed; word-break:break-all; word-wrap:break-word;" width="100%">
+          <div class="content"> 
+            @foreach($data as $ind => $dat)
+            <table role="presentation" class="main" style="page-break-after:always;" width="100%">
               <tr>
                 <td class="wrapper">
-                  @foreach($data as $ind => $dat)
+                 
                     @php //dd($dat); @endphp
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"style="width: 100%">
                     <tr>
                       <td align="center"> 
                         <div style="position: relative;">
@@ -796,10 +797,10 @@
                     @endfor 
                   @endif
 
-                @endforeach 
+               
                 </td>
               </tr>
-            </table>
+            </table> @endforeach 
           </div>
         </td>
             <td>&nbsp;</td>

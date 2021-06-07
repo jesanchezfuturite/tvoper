@@ -2413,7 +2413,7 @@ class MotorpagosController extends Controller
                 }
             }
         }    
-        //log::info($transaccion);  
+        //log::info($transaccion);
          return json_encode($response);
         
     }
