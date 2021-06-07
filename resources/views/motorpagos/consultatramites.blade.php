@@ -1026,6 +1026,20 @@
     function saveTramites()
     {
         var JSONData=$("#jsonCode4").val();
+        json = JSON.parse(JSONData)
+        $.each(json, function(i, item) { 
+            var entradas = item.info.detalle.Entradas;
+            var salidas = item.info.detalle.Salidas;
+            var tipo = item.info.tipoTramite;
+            console.log(tipo);
+            var notario = item.titular;
+            var obj = Object.assign({}, item, entradas, salidas, notario);
+            obj.tipo=tipo;
+            console.log(obj); 
+        });    
+
+        
+        return false;
         var ReportTitle='Transacciones_tramites';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
