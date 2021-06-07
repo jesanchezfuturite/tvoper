@@ -22,6 +22,7 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
+
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
@@ -29,7 +30,6 @@ use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
 use App\Repositories\SolicitudesMotivoRepositoryEloquent;
 use App\Repositories\MotivosRepositoryEloquent;
 use App\Entities\SolicitudesMotivo;
-use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 
@@ -50,7 +50,6 @@ class PortalSolicitudesController extends Controller
   protected $msjprelaciondb;
   protected $solicitudesMotivos;
   protected $motivos;
-  protected $userEstatus;
 
 
 
@@ -69,12 +68,11 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
-     MotivosRepositoryEloquent $motivos,
-     OperacionUsuariosEstatusRepositoryEloquent $userEstatus
+     MotivosRepositoryEloquent $motivos
 
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -90,7 +88,6 @@ class PortalSolicitudesController extends Controller
       $this->msjprelaciondb = $msjprelaciondb;
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
-      $this->userEstatus = $userEstatus;
 
 
     }
@@ -448,20 +445,17 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    $user_id = auth()->user()->id;
-    $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
-    ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
-    ->where('solicitudes_ticket.status', '!=', 99)
-     ->where(function($q) use ($user_id){
-      $q->whereNull('solicitudes_ticket.asignado_a')
-        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
-    })
-    ->whereNotNull('solicitudes_ticket.id_transaccion')
-    ->whereNotNull('solicitudes_ticket.grupo_clave')
-    ->groupBy('solicitudes_ticket.grupo_clave');
- 
+
+    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
+    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
+    "solicitudes_status.descripcion","solicitudes_ticket.status",
+    "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
+    "solicitudes_ticket.created_at")
+    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
+
     if($request->has('tipo_solicitud')){
-        $filtro->where('c.id', $request->tipo_solicitud);
+        $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
     }
 
     if($request->has('estatus')){
@@ -497,19 +491,14 @@ class PortalSolicitudesController extends Controller
     ->whereIn('tk.grupo_clave',$filtro)->get();
 
     $newDato=[];
-    foreach($filtro as $i => $id){
+    foreach($ids as $t => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) {     
-        if($value->grupo_clave== $id){
-          if(isset($value->info)){            
-            $info=$this->asignarClavesCatalogo($value->info);
-            $value->info=$info;
-          }
+      foreach ($solicitudes as $d => $value) {
+        if($value->id_transaccion== $id){
           array_push($datos, $value);
-          $newDato[$i]["grupo_clave"]=$id;
-          $newDato[$i]["grupo"]=$datos;
+          $newDato[$id]=$datos;
         }
-      
+
       }
     }
     return $newDato;
@@ -518,15 +507,7 @@ class PortalSolicitudesController extends Controller
   public function listSolicitudes(){
 
     $tipoSolicitud=$this->findSol();
-
-    $user_id = auth()->user()->id;
-
-    $status = $this->userEstatus->where("id_usuario", $user_id)->first();
-
-    $status = json_decode($status->estatus);
-
-    $status = $this->status->whereIn("id", $status)->get()->toArray();
-    
+    $status = $this->status->all()->toArray();
     return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
   }
@@ -577,7 +558,7 @@ class PortalSolicitudesController extends Controller
     //$findP=$this->ticket->findPrelacion($id);
     $id_transaccion = $ticket["id_transaccion"];
     $user_id = auth()->user()->id;
-    // $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]); //se pone en otro enpoint
+    $asignar=  $this->ticket->where('id_transaccion',$id_transaccion)->update(["asignado_a"=>$user_id]);
 
     //$msprelacion=array('mensaje_prelacion'=>$findP[0]["mensaje_prelacion"],'tramite_prelacion'=>$findP[0]["tramite_prelacion"],'tramite_id'=>$findP[0]["tramite_id"],'tramite'=>$findP[0]["tramite"]);
 
@@ -610,7 +591,7 @@ class PortalSolicitudesController extends Controller
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
     //log::info($request->all());
-   
+
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
@@ -645,7 +626,7 @@ class PortalSolicitudesController extends Controller
 
       if($request->rechazo==true)
       {
-        
+
         $rch=0;
         switch ($request->rechazo_id) {
           case '50':
@@ -663,7 +644,7 @@ class PortalSolicitudesController extends Controller
           {
            $this->ticket->update(['status'=>$rch],$i);
           }
-          
+
           $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
         }
       }
@@ -691,7 +672,7 @@ class PortalSolicitudesController extends Controller
   {
     for($x=0; $x<6;$x++)
         {
-          
+
           $findSoli=$this->ticket->findWhere(['id'=>$id]);
           if($findSoli->count()>0)
           {
@@ -781,7 +762,7 @@ class PortalSolicitudesController extends Controller
         $mensajes=array_merge($findmensajes,$findMensajesPadre);
 
 
-     
+
       }catch(\Exception $e){
 
         Log::info('Error Obtener Mensajes '.$e->getMessage());
@@ -962,7 +943,7 @@ class PortalSolicitudesController extends Controller
       {
         $reg=json_decode($reg);
          //log::info((array)$reg);
-         
+
         if($reg->fecha==null)
         {
           $fecha=Carbon::now();
@@ -976,8 +957,8 @@ class PortalSolicitudesController extends Controller
           $fecha=$fecha->format('Y/m/d');
           $reg = (object) array_merge((array) $reg, array('fecha'=>$fecha,'hora'=>$hora));
         }
-        
-        
+
+
         $formatter = new NumeroALetras();
         $letras= $formatter->toMoney($reg->costo_final, 2,"PESOS","CENTAVOS");
         $importe_letra=$letras ." 00/100 M.N.";
@@ -985,7 +966,7 @@ class PortalSolicitudesController extends Controller
         $barcode=DNS1D::getBarcodePNG($reg->folio, 'C39',1,33);
         $reg = (object) array_merge((array) $reg, array('barcode'=>$barcode));
         $request []=$reg;
-      }  
+      }
 
       //log::info(json_encode($request));
 
@@ -1019,18 +1000,18 @@ class PortalSolicitudesController extends Controller
 
       $response=array_merge($response,$findClav);
       $response=array_merge($response,$findid);
-     
+
         return response()->json(
           [
             "Code" => "200",
             "Message" =>$response
-        ]);  
+        ]);
     } catch (Exception $e) {
      return response()->json(
           [
             "Code" => "400",
             "Message" =>"Error al buscar el Folio"
-        ]);   
+        ]);
     }
   }
   public function updatePermisoSolicitud(Request $request)
@@ -1041,13 +1022,13 @@ class PortalSolicitudesController extends Controller
           [
             "Code" => "200",
             "Message" =>"Actualizado correctamente"
-        ]);  
+        ]);
     } catch (Exception $e) {
      return response()->json(
           [
             "Code" => "400",
             "Message" =>"Error al actualizar permisos"
-        ]);   
+        ]);
     }
   }
   public function findDetalleSolicitud($idticket)
@@ -1079,13 +1060,13 @@ class PortalSolicitudesController extends Controller
             "Code" => "200",
             "Message" =>"Informacion de la notaria",
             "data"=> $notary
-        ]);  
+        ]);
     } catch (Exception $e) {
      return response()->json(
           [
             "Code" => "400",
             "Message" =>"Error al encontrar notaria"
-        ]);   
+        ]);
     }
   }
 
@@ -1100,16 +1081,16 @@ class PortalSolicitudesController extends Controller
             [
               "Code" => "200",
               "Message" =>"Solicitud asignada"
-          ]);  
+          ]);
       } catch (Exception $e) {
         Log::info('Error Portal - asignar solicitud: '.$e->getMessage());
        return response()->json(
             [
               "Code" => "400",
               "Message" =>"Error al asignar solicitud"
-          ]);   
+          ]);
       }
-     
+
   }
 
   public function asignarClavesCatalogo($info){
@@ -1151,7 +1132,7 @@ class PortalSolicitudesController extends Controller
               "Code" => "400",
               "Message" =>"Error al asignar solicitud"
           ]);
-      }  
+      }
   }
   public  function findPrelacionDoc($grupo_clave)
   {
@@ -1167,5 +1148,5 @@ class PortalSolicitudesController extends Controller
     }
     return $url;
   }
-  
+
 }
