@@ -797,7 +797,7 @@ function configprelacion()
           return; }
         $(".btn_prelacion_"+grupo_clave).css("display", "none");
         savePrelacion(1,formdata,grupo_clave,JSON.stringify(resp));
-        findSolicitudes();
+        
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
@@ -827,6 +827,7 @@ function configprelacion()
           if(response.Code=="200")
             {
               Command: toastr.success(response.Message, "Notifications")
+              findSolicitudes();
               return;
             }
             else{
