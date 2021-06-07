@@ -445,15 +445,18 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-
-    $solicitudes = DB::connection('mysql6')->table('solicitudes_catalogo')
-    ->select("solicitudes_ticket.id", "solicitudes_catalogo.titulo","solicitudes_ticket.id_transaccion",
-    "solicitudes_status.descripcion","solicitudes_ticket.status",
-    "solicitudes_ticket.ticket_relacionado", "solicitudes_ticket.asignado_a",
-    "solicitudes_ticket.created_at")
-    ->leftJoin('solicitudes_ticket', 'solicitudes_catalogo.id', '=', 'solicitudes_ticket.catalogo_id')
-    ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id');
-
+    $user_id = auth()->user()->id;
+    $filtro = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
+    ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
+    ->where('solicitudes_ticket.status', '!=', 99)
+     ->where(function($q) use ($user_id){
+      $q->whereNull('solicitudes_ticket.asignado_a')
+        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    })
+    ->whereNotNull('solicitudes_ticket.id_transaccion')
+    ->whereNotNull('solicitudes_ticket.grupo_clave')
+    ->groupBy('solicitudes_ticket.grupo_clave');
+ 
     if($request->has('tipo_solicitud')){
         $solicitudes->where('solicitudes_catalogo.id', $request->tipo_solicitud);
     }
