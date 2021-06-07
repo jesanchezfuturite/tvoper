@@ -508,8 +508,7 @@ class PortalSolicitudesController extends Controller
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
           $newDato[$i]["grupo"]=$datos;
-        }
-      
+        }      
       }
     }
     return $newDato;
