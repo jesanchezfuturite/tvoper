@@ -1257,7 +1257,7 @@ function configprelacion()
     }  
     var Resp=$.parseJSON(jsn);
     //console.log(dataP);
-    //var dataP=$.parseJSON(dataP);
+    var dataP=$.parseJSON(dataP);
     //console.log(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);
     var municipio_=searchIndex('municipio',Resp.info.campos);
