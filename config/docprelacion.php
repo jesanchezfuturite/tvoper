@@ -1,9 +1,19 @@
 <?php
 return array(
 	"prelacion_campos"=>array(
-			"numNotaria"=>'',
-			"municipio"=>array(),
-			"esatado"=>"Monterrey, NL.",
+		"numNotaria"=>'notary_number',
+			"municipio"=>array(
+				"campo"=>187,
+				"expedientes"=>"expedientes",
+				"municipio"=>"municipio",
+				"nombre"=>"nombre"
+			),
+			"esatado"=>array(
+				"campo"=>187,
+				"expedientes"=>"expedientes",
+				"estado"=>"estado",
+				"nombre"=>"nombre"
+			),
 			"foliotramite"=>"",
 			"numControl"=>"",
 			"folioPago"=>"",
@@ -14,8 +24,9 @@ return array(
 				"descripcion"=>"descripcion"
 			),
 			"valorOperacion"=>array(
-				"*Valor de operación",
-				"Valor de operacion"
+				"detalle"=>"detalle",
+				"entradas"=>"Entradas",
+				"monto_operacion"=>"monto_operacion"
 			),
 			"unidadCalculo"=>"",
 			"hojas"=>"",
@@ -25,7 +36,7 @@ return array(
 			"recibeNombre"=> "nombreSolicitante",
 			"recibeApPat"=> "apPat",
 			"recibeApMat"=> "apMat",
-			"importeLetra"=> "importeLetra", 
+			"importeLetra"=> "importeLetra",
 			"derecho"=>"",
 			"total"=>"costo_final"
 		),
@@ -89,7 +100,6 @@ return array(
 			"distrito"=>array(
 				"Distrito"
 			)
-			
 		)
 
 	);
