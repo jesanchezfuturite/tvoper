@@ -2403,7 +2403,7 @@ class MotorpagosController extends Controller
                 } 
             }
         }    
-        //log::info($transaccion);      
+        //log::info($transaccion);  
          return json_encode($response);
         
     }
@@ -3378,27 +3378,18 @@ class MotorpagosController extends Controller
         $select = DB::raw("
         `solicitudes_ticket`.`id`,
         `tipo_servicios`.`Tipo_Descripcion` as `nombre_servicio`,
-        `tipo_servicios`.`perfil`,
         `solicitudes_catalogo`.`titulo`,
-        `solicitudes_catalogo`.`tramite_id`,
-        `solicitudes_catalogo`.`firma`,
         `notary_offices`.`titular_id`,
       
         `solicitudes_ticket`.`status`,
-        `solicitudes_ticket`.`en_carrito`,
         `solicitudes_ticket`.`id_transaccion`,
-        `solicitudes_ticket`.`created_at`,
-        `solicitudes_ticket`.`user_id`,
-        `solicitudes_ticket`.`info`,
+        `solicitudes_tramite`.`id_transaccion_motor`,
 
-        `solicitudes_ticket`.`clave`,
-        `solicitudes_ticket`.`por_firmar`,
-        `solicitudes_ticket`.`doc_firmado`,
-        `solicitudes_ticket`.`firmado`,
-        `solicitudes_ticket`.`id_tramite`,
+        `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`recibo_referencia`,
-        `solicitudes_ticket`.`required_docs`,
-        `solicitudes_ticket`.`grupo_clave`
+        `solicitudes_ticket`.`grupo_clave`,
+        `oper_transacciones`.`fecha_transaccion`,
+        `notary_offices`.`notary_number`
         ");
         $solicitudes = PortalSolicitudesTicket::select($select)
         ->leftJoin('solicitudes_tramite', 'solicitudes_ticket.id_transaccion', '=', 'solicitudes_tramite.id')
@@ -3429,7 +3420,7 @@ class MotorpagosController extends Controller
               $value["titular"] =array(
                 'nombre_titular'=> $titular->name,
                 'apellido_paterno_titular'=> $titular->fathers_surname,
-                'apellido_materno_titular'=> $titular->mothers_surname,
+                'apellido_materno_titular'=> $titular->mothers_surname               
 
               );
         }

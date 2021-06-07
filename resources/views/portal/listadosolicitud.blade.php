@@ -689,6 +689,13 @@
           input_check="";
           btn_rechazo="";
           select_rechazos="";}
+          if(exist==0)
+          {
+            btn_prelacion="";
+          input_check="";
+          btn_rechazo="";
+          select_rechazos="";
+          }
         html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
@@ -710,7 +717,7 @@
       count=0;
       var response=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
-       var resp=$.parseJSON(JSON.stringify(registroPublico()));
+       var resp=JSON.stringify(registroPublico());
         if(typeof response=== 'object'){
           for (n in response) {
 
@@ -727,7 +734,7 @@
                   formdata.append("id[]", id_);
                   Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
                   document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(JSON.stringify(resp),JSON.stringify(response[n].grupo[g]));
+                  datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g]));
                   formdata.append("data[]",JSON.stringify(datapr));
                 }
               }
@@ -740,7 +747,7 @@
           return; }
         $(".btn_prelacion_"+grupo_clave).css("display", "none");
         savePrelacion(1,formdata,grupo_clave,JSON.stringify(resp));
-        findSolicitudes();
+        
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
@@ -770,6 +777,7 @@
           if(response.Code=="200")
             {
               Command: toastr.success(response.Message, "Notifications")
+              findSolicitudes();
               return;
             }
             else{
@@ -1195,7 +1203,9 @@
       jsn=$("#jsonCode").val();
     }
     var Resp=$.parseJSON(jsn);
-    var dataP=$.parseJSON(dataP);
+    //console.log(dataP);
+    //var dataP=$.parseJSON(dataP);
+    //console.log(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);
     var municipio_=searchIndex('municipio',Resp.info.campos);
     var nombre_=searchIndex('nombre',Resp.info.campos);

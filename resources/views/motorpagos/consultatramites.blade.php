@@ -355,10 +355,42 @@
                             </div>
                                     <div class="row">
                                         <div id="addTimerpicker4" hidden="true">
-                                            <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio4' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin4' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc4' id='rfc4' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='BuscarTramites' onclick='consultaRangoFechasTramites()'>Buscar</button></div></div>
+                                            <div class='col-md-4'>
+                                                <span class='help-block'>&nbsp;</span> 
+                                                <div class='form-group'>   
+                                                    <label for='fecha'>Seleccionar Rango de Fechas. </label>
+                                                    <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                                                        <span class='input-group-addon'>De</span>
+                                                        <input type='text' class='form-control' name='from' id='fechainicio4' autocomplete='off'>
+                                                        <span class='input-group-addon'>A</span>
+                                                        <input type='text' class='form-control' name='to'id='fechafin4' autocomplete='off'>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-md-3'>
+                                                <span class='help-block'>&nbsp;</span>
+                                                <div class='form-group'> 
+                                                    <label> RFC / Placas / Folio</label> 
+                                                    <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc4' id='rfc4' class='form-control'>
+                                                </div>
+                                            </div>
+                                            <div class='col-md-1'>
+                                                <span class='help-block'>&nbsp; </span>
+                                                <span class='help-block'>&nbsp; </span>
+                                                <div class='form-group'>
+                                                    <button class='btn green' id='BuscarTramites' onclick='consultaRangoFechasTramites()'>Buscar</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                        <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveTramites()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                    <div class='row'> 
+                                        <div class='form-group'> 
+                                            <div class='col-md-12 text-right'> 
+                                                <button class='btn blue' onclick='saveTramites()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> 
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <span class='help-block'>&nbsp; </span>
                                     <div id="addTable_4">
                                     <div id="table_4">
                                     <div class="table-scrollable">
@@ -680,7 +712,7 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'>     <table class='table table-hover table-responsive' id='sample_5'><thead><tr> <th>Id Transacción</th>  <th>Id Transaccion Entidad</th> <th>Fecha Transacición</th> <th>Importe Transacción</th> <th>Nombre Tramite</th>  <th>Id Tramite Egob</th><th>Id Tramite Entidad</th><th>Importe Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -795,6 +827,7 @@
 
     function cargatabla4()
     {
+        console.log("ola");
          var inin=0;
         $('#sample_5 thead tr').clone(true).appendTo( '#sample_5 thead' );
         $('#sample_5').DataTable( {
@@ -803,7 +836,7 @@
             this.api().columns().every( function () {
                 var column = this;
                 var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                    .appendTo( $("#sample_5 thead tr:eq(0) th:eq('"+inin+"')").empty() )
+                    .appendTo( $("#sample_7 thead tr:eq(0) th:eq('"+inin+"')").empty() )
                     .on( 'change', function () {
                         console.log($(this).val());
                         var val = $.fn.dataTable.util.escapeRegex(
@@ -900,15 +933,14 @@
 
         $.each(Resp, function(i, item) {
             console.log(item);
-             $("#sample_4 tbody").append("<tr>"
-                +"<td>"+item.id_transaccion+"</td>"
-                +"<td>"+item.id_transaccion_entidad+"</td>"
-                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
-                +"<td>"+item.TotalTramite+"</td>"
-                +"<td>"+item.Tipo_Descripcion+"</td>"
-                +"<td>"+item.id_tramite+"</td>"
-                +"<td>"+item.id_tramite_entidad+"</td>"
-                +"<td>"+item.importe_tramite+"</td>"
+             $("#sample_7 tbody").append("<tr>"
+                +"<td>"+item.id+"</td>"
+                +"<td>"+item.id_transaccion_motor+"</td>"
+                +"<td>"+item.fecha_transaccion+"</td>"
+                +"<td>"+item.notary_number+"</td>"
+                +"<td>"+item.titular.apellido_paterno_titular+"</td>"
+                +"<td>"+item.titular.apellido_materno_titular+"</td>"
+                +"<td>"+item.info.tipoTramite+"</td>"
                 +"</tr>");
             });
        cargatabla4();

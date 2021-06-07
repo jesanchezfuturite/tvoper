@@ -598,7 +598,7 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Valor de operación:</strong></label>
-                                          <label>$ {{ is_numeric($dat->valorOperacion) ? '$'.  number_format($dat->valorOperacion,2) : ' ' }}</label>
+                                          <label> {{ is_numeric($dat->valorOperacion) ? '$'.  number_format($dat->valorOperacion,2) : ' ' }}</label>
                                       </td>
                                       <td></td>
                                   </tr>
