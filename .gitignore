@@ -12,3 +12,8 @@ yarn-error.log
 config/database.php
 /config/database.php
 .DS_Store
+composer.lock
+package-lock.json
+php_errors.log
+_*
+test.dat
