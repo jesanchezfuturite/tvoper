@@ -83,7 +83,7 @@ jobs:
           search_3="ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/public" &&
           search_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/public\/" &&
           
-          replace_1="APP_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath"\n\nAPP_PREFIX=\"\/$branchPath" &&
+          replace_1="APP_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\"\n\nAPP_PREFIX=\"\/$branchPath" &&
           replace_3="ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\/public" &&
           replace_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\/public\/" &&
 
