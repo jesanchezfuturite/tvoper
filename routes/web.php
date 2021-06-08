@@ -475,3 +475,18 @@ Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentaje
 
 
 Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias');
+
+/************************* api siger *********************************************/
+Route::get('/siger-datefix/{date}', 'ApisigerController@datefix');
+Route::get('/siger-finalizarticket/{boleta}', 'ApisigerController@FinalizarTicket');
+Route::get('/siger-getallmunicipios', 'ApisigerController@GetAllMunicipios');
+Route::get('/siger-get-estados', 'ApisigerController@GetEstados');
+Route::get('/siger-getestado/{estado}', 'ApisigerController@GetEstado');
+Route::get('/siger-get-fedatarios', 'ApisigerController@GetFedatarios1');
+Route::get('/siger-getmunicipioinfo/{estado}', 'ApisigerController@GetMunicipios');
+Route::get('/siger-getfedatario/{fedatario}/{estado}/{municipio}', 'ApisigerController@GetFedatario');
+Route::get('/siger-getservicios', 'ApisigerController@GetServicios');
+Route::get('/siger-getticketstatus/{boleta}', 'ApisigerController@GetTicketStatus');
+Route::post('/siger-insertaconceptos', 'ApisigerController@InsertaConceptos');
+Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
+Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
