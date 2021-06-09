@@ -14,8 +14,10 @@
 Route::get('/', function(){
     if(getenv('APP_PREFIX')){
         $path = request()->getPathInfo();
-        if(!preg_match('/'.getenv('APP_PREFIX').'/', $path)){
-            return redirect(getenv('APP_PREFIX').$path);
+        $prefix = (substr(getenv('APP_PREFIX'), 0, 1) == "/" ? substr(getenv('APP_PREFIX'), 1) : getenv('APP_PREFIX'));
+        // dd($prefix.$path);
+        if(!preg_match('/'.$prefix.'/', $path)){
+            return redirect($prefix.$path);
         }
     }
 });
