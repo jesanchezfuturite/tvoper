@@ -1097,13 +1097,8 @@
         var arr=[];
         $.each(json, function(i, item) { 
             if('info_tramite' in item ){
-                  // var entradas = item.info_tramite.info.detalle.Entradas;
-            // var salidas = item.info_tramite.info.detalle.Salidas;
-      
-                // obj.tipo_tramite = item.info_tramite.info.tipoTramite;
-                // var id_transaccion = item.info_tramite.info.id_transaccion;
                 var obj = {};
-              
+                obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
                 obj.fecha_pago = item.Inicio_Tramite;
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
@@ -1113,36 +1108,126 @@
                 obj.tipo_tramite = item.info_tramite.info.tipoTramite;
                 if('Entradas' in  item.info_tramite.info.detalle){
                     obj.fecha_escritura = item.info_tramite.info.detalle.Entradas.fecha_escritura;
+                    obj.monto_operacion = item.info_tramite.info.detalle.Entradas.monto_operacion;
                 }else{
                     obj.fecha_escritura="Null";
+                    obj.monto_operacion ="Null";
+                   
                 }
 
                 if('Salidas' in  item.info_tramite.info.detalle){
                     obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                    obj.ganancia_obtenida = item.info_tramite.info.detalle.Salidas['Ganancia Obtenida'];
+                    obj.monto_obtenido_art_127 = item.info_tramite.info.detalle.Salidas["Monto obtenido conforme al art 127 LISR"];
+                    obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Pago provisional conforme al art 126 LISR"];
+                    obj.multa_correcion_fiscal = item.info_tramite.info.detalle.Salidas["Multa corrección fiscal"];
+                    obj.imp_entidad_federativa = item.info_tramite.info.detalle.Salidas["Impuesto correspondiente a la entidad federativa"];
+                    obj.parte_act_impuesto = item.info_tramite.info.detalle.Salidas["Parte actualizada del impuesto"];
+                    obj.factor_actualizacion = item.info_tramite.info.detalle.Salidas["Factor de Actualizacion"];
+                    obj.porcentaje_recargos = item.info_tramite.info.detalle.Salidas["Porcentaje de recargos"];
+                    obj.recargos = item.info_tramite.info.detalle.Salidas["Recargos"];
+                    obj.importe_total = item.info_tramite.info.detalle.Salidas["Importe total"];
+                    
                 }else{
                     obj.fecha_vencimiento="Null";
+                    obj.ganancia_obtenida ="Null";
+                    obj.monto_obtenido_art_127="Null";
+                    obj.pago_provisional_art_126 = "Null";
+                    obj.multa_correcion_fiscal = "Null";
+                    obj.imp_entidad_federativa="Null";
+                    obj.parte_act_impuesto = "Null";
+                    obj.factor_actualizacion = "Null";
+                    obj.porcentaje_recargos = "Null";
+                    obj.recargos = "Null";
+                    obj.importe_total ="Null";
+                   
                 }
 
                 if('Expedientes' in  item.info_tramite.info.campos){
-                    obj.municipio_expediente = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                    obj.municipio_expediente = item.info_tramite.info.campos['Expedientes'].expedientes[0].municipio.nombre;
+                    obj.no_expediente_catastral = item.info_tramite.info.campos['Expedientes'].expedientes[0].expediente;
+
+                    if('data' in  item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos){
+                        obj.valor_operacion = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                    }else{
+                        obj.valor_operacion="Null";
+                    }
+                    
                 }else{
-                    obj.fecha_vencimiento="Null";
+                    obj.municipio_expediente="Null";
+                    obj.no_expediente_catastral="Null";
+                    obj.valor_operacion="Null";
                 }
-               
-                // obj.fecha_escritura = item.info_tramite.notary_number;
-                // obj.no_notaria = item.info_tramite.notary_number;
-                // obj.no_notaria = item.info_tramite.notary_number;
+
+                if('Listado de enajenantes' in  item.info_tramite.info.campos){
+                    obj.porcentaje_venta = item.info_tramite.info.campos['Listado de enajenantes'].porcentajeVenta;
+                    if("motivo" in item.info_tramite.info.campos['Listado de enajenantes']){
+                        obj.motivo=item.info_tramite.info.campos['Listado de enajenantes'].motivo;
+                    }else{
+                        obj.motivo="Null";
+                    }
+                }else{
+                    obj.porcentaje_venta="Null";
+                    obj.motivo="Null";
+                }
+
+                if('enajenante' in  item.info_tramite.info){
+                    obj.nombre_enajenante = item.info_tramite.info.enajenante.datosPersonales.nombre;
+                    obj.apellido_paterno_enajenante = item.info_tramite.info.enajenante.datosPersonales.apPat;
+                    if('apMat' in item.info_tramite.info.enajenante.datosPersonales){
+                        obj.apellido_materno_enajenante = item.info_tramite.info.enajenante.datosPersonales.apMat;
+                    }else{
+                        obj.apellido_materno_enajenante="Null";
+                    }
+                   
+                    obj.rfc_enajenante = item.info_tramite.info.enajenante.datosPersonales.rfc;
+                    obj.curp_enajenante = item.info_tramite.info.enajenante.datosPersonales.curp;
+                    obj.clave_ine_enajenante = item.info_tramite.info.enajenante.datosPersonales.claveIne;
+                    obj.fecha_nacimiento_enajenante = item.info_tramite.info.enajenante.datosPersonales.fechaNacimiento;
+
+                }else{
+                    obj.nombre_enajenante = "Null";
+                    obj.apellido_paterno_enajenante = "Null";
+                    obj.apellido_materno_enajenante="Null";
+                    obj.rfc_enajenante = "Null";
+                    obj.curp_enajenante = "Null";
+                    obj.clave_ine_enajenante = "Null";
+                    obj.fecha_nacimiento_enajenante = "Null";
+                }
+
+                if('Valuador' in  item.info_tramite.info.campos ){
+                    if(item.info_tramite.info.campos["Valuador"].isValuable==true){
+                        obj.nombre_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.nombre;
+                        obj.apellido_paterno_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.apPat;
+                        obj.apellido_materno_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.apMat;
+                        obj.rfc_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.rfc;
+
+                    }else{
+                        obj.nombre_valuador = "Null";
+                        obj.apellido_paterno_valuador = "Null";
+                        obj.apellido_materno_valuador = "Null";
+                        obj.rfc_valuador = "Null";
+
+                    }
+                  
+
+                    
+                }else{
+                    obj.nombre_valuador = "Null";
+                    obj.apellido_paterno_valuador = "Null";
+                    obj.apellido_materno_valuador = "Null";
+                    obj.rfc_valuador = "Null";
+                }
+
+                
 
                 arr.push(obj);
                 // console.log(obj); 
             }
           
         });    
-        console.log(arr);
-        
-        return false;
         var ReportTitle='Transacciones_tramites';
-        JSONToCSVConvertor(JSONData, ReportTitle, true);
+        JSONToCSVConvertor(arr, ReportTitle, true);
     }
 
     function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
