@@ -27,33 +27,33 @@ License: You must have a valid license purchased only from themeforest(the above
 <meta content="" name="author"/>
 <!-- BEGIN GLOBAL MANDATORY STYLES -->
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/select2/select2.css"/>
+<link href="{{ asset('assets/global/plugins/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/plugins/simple-line-icons/simple-line-icons.min.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/plugins/uniform/css/uniform.default.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css') }}" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/select2/select2.css') }}"/>
 <!-- END GLOBAL MANDATORY STYLES -->
-<link href="/assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css" rel="stylesheet"/>
-<link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet"/>
-<link href="/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet"/>
+<link href="{{ asset('assets/global/plugins/jquery-file-upload/blueimp-gallery/blueimp-gallery.min.css') }}" rel="stylesheet"/>
+<link href="{{ asset('assets/global/plugins/jquery-file-upload/css/jquery.fileupload.css') }}" rel="stylesheet"/>
+<link href="{{ asset('assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css') }}" rel="stylesheet"/>
 <!-- BEGIN THEME STYLES -->
-<link href="/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/admin/layout/css/layout.css" rel="stylesheet" type="text/css"/>
-<link id="style_color" href="/assets/admin/layout/css/themes/darkblue.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/admin/layout/css/custom.css" rel="stylesheet" type="text/css"/>
-<link href="/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/css/components.css') }}" id="style_components" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/css/plugins.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/admin/layout/css/layout.css') }}" rel="stylesheet" type="text/css"/>
+<link id="style_color" href="{{ asset('assets/admin/layout/css/themes/darkblue.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/admin/layout/css/custom.css') }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/plugins/bootstrap-toastr/toastr.min.css') }}" rel="stylesheet" type="text/css"/>
 <!-- END THEME STYLES -->
 <!-- TABLE STYLES -->
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/bootstrap-colorpicker/css/colorpicker.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css"/>
-<link rel="stylesheet" type="text/css" href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-colorpicker/css/colorpicker.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css') }}"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') }}"/>
 
 
 <!-- ENDTABLE STYLES -->
@@ -79,7 +79,7 @@ License: You must have a valid license purchased only from themeforest(the above
 		<div class="page-logo">
 			<a href="index.html">
 			
-			<img src="/assets/admin/layout/img/teso.png" width="80%" alt="logo" class="logo-default"/>
+			<img src="{{ asset('assets/admin/layout/img/teso.png') }}" width="80%" alt="logo" class="logo-default"/>
 			</a>
 			<div class="menu-toggler sidebar-toggler">
 			</div>
@@ -220,7 +220,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<li>
 									<a href="inbox.html?a=view">
 									<span class="photo">
-									<img src="/assets/admin/layout3/img/avatar2.jpg" class="img-circle" alt="">
+									<img src="{{ asset('assets/admin/layout3/img/avatar2.jpg') }}" class="img-circle" alt="">
 									</span>
 									<span class="subject">
 									<span class="from">
@@ -234,7 +234,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<li>
 									<a href="inbox.html?a=view">
 									<span class="photo">
-									<img src="/assets/admin/layout3/img/avatar3.jpg" class="img-circle" alt="">
+									<img src="{{ asset('assets/admin/layout3/img/avatar3.jpg') }}" class="img-circle" alt="">
 									</span>
 									<span class="subject">
 									<span class="from">
@@ -248,7 +248,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<li>
 									<a href="inbox.html?a=view">
 									<span class="photo">
-									<img src="/assets/admin/layout3/img/avatar1.jpg" class="img-circle" alt="">
+									<img src="{{ asset('assets/admin/layout3/img/avatar1.jpg') }}" class="img-circle" alt="">
 									</span>
 									<span class="subject">
 									<span class="from">
@@ -262,7 +262,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<li>
 									<a href="inbox.html?a=view">
 									<span class="photo">
-									<img src="/assets/admin/layout3/img/avatar2.jpg" class="img-circle" alt="">
+									<img src="{{ asset('assets/admin/layout3/img/avatar2.jpg') }}" class="img-circle" alt="">
 									</span>
 									<span class="subject">
 									<span class="from">
@@ -276,7 +276,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<li>
 									<a href="inbox.html?a=view">
 									<span class="photo">
-									<img src="/assets/admin/layout3/img/avatar3.jpg" class="img-circle" alt="">
+									<img src="{{ asset('assets/admin/layout3/img/avatar3.jpg') }}" class="img-circle" alt="">
 									</span>
 									<span class="subject">
 									<span class="from">
@@ -393,7 +393,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
 				<li class="dropdown dropdown-user">
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-					<!--<img alt="" class="img-circle" src="/assets/admin/layout/img/avatar3_small.jpg"/>-->
+					<!--<img alt="" class="img-circle" src="{{ asset('assets/admin/layout/img/avatar3_small.jpg') }}"/>-->
 					<span class="username username-hide-on-mobile">@if(session('is_admin') == true)<span class="badge badge-success">Admin</span>@else <span class="badge badge-success">User</span>  @endif {{ Auth::user()->name }} </span>
 					<i class="fa fa-angle-down"></i>
 					</a>
@@ -1064,7 +1064,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="badge badge-success">8</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar3.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Bob Nilson</h4>
 									<div class="media-heading-sub">
@@ -1073,7 +1073,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								</div>
 							</li>
 							<li class="media">
-								<img class="media-object" src="/assets/admin/layout/img/avatar1.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar1.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Nick Larson</h4>
 									<div class="media-heading-sub">
@@ -1085,7 +1085,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="badge badge-danger">3</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar4.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar4.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Deon Hubert</h4>
 									<div class="media-heading-sub">
@@ -1094,7 +1094,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								</div>
 							</li>
 							<li class="media">
-								<img class="media-object" src="/assets/admin/layout/img/avatar2.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar2.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Ella Wong</h4>
 									<div class="media-heading-sub">
@@ -1109,7 +1109,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="badge badge-warning">2</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar6.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar6.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Lara Kunis</h4>
 									<div class="media-heading-sub">
@@ -1124,7 +1124,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="label label-sm label-success">new</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar7.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar7.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Ernie Kyllonen</h4>
 									<div class="media-heading-sub">
@@ -1134,7 +1134,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								</div>
 							</li>
 							<li class="media">
-								<img class="media-object" src="/assets/admin/layout/img/avatar8.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar8.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Lisa Stone</h4>
 									<div class="media-heading-sub">
@@ -1149,7 +1149,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="badge badge-success">7</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar9.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar9.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Deon Portalatin</h4>
 									<div class="media-heading-sub">
@@ -1158,7 +1158,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								</div>
 							</li>
 							<li class="media">
-								<img class="media-object" src="/assets/admin/layout/img/avatar10.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar10.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Irina Savikova</h4>
 									<div class="media-heading-sub">
@@ -1170,7 +1170,7 @@ License: You must have a valid license purchased only from themeforest(the above
 								<div class="media-status">
 									<span class="badge badge-danger">4</span>
 								</div>
-								<img class="media-object" src="/assets/admin/layout/img/avatar11.jpg" alt="...">
+								<img class="media-object" src="{{ asset('assets/admin/layout/img/avatar11.jpg') }}" alt="...">
 								<div class="media-body">
 									<h4 class="media-heading">Maria Gomez</h4>
 									<div class="media-heading-sub">
@@ -1190,7 +1190,7 @@ License: You must have a valid license purchased only from themeforest(the above
 							</div>
 							<div class="page-quick-sidebar-chat-user-messages">
 								<div class="post out">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar3.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Bob Nilson</a>
@@ -1200,7 +1200,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post in">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar2.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar2.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Ella Wong</a>
@@ -1210,7 +1210,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post out">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar3.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Bob Nilson</a>
@@ -1220,7 +1220,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post in">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar2.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar2.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Ella Wong</a>
@@ -1230,7 +1230,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post out">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar3.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Bob Nilson</a>
@@ -1240,7 +1240,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post in">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar2.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar2.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Ella Wong</a>
@@ -1250,7 +1250,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post out">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar3.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Bob Nilson</a>
@@ -1260,7 +1260,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post in">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar2.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar2.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Ella Wong</a>
@@ -1270,7 +1270,7 @@ License: You must have a valid license purchased only from themeforest(the above
 									</div>
 								</div>
 								<div class="post out">
-									<img class="avatar" alt="" src="/assets/admin/layout/img/avatar3.jpg"/>
+									<img class="avatar" alt="" src="{{ asset('assets/admin/layout/img/avatar3.jpg') }}"/>
 									<div class="message">
 										<span class="arrow"></span>
 										<a href="javascript:;" class="name">Bob Nilson</a>
@@ -1679,52 +1679,52 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
 <!-- BEGIN CORE PLUGINS -->
 <!--[if lt IE 9]>
-<script src="/assets/global/plugins/respond.min.js"></script>
-<script src="/assets/global/plugins/excanvas.min.js"></script> 
+<script src="{{ asset('assets/global/plugins/respond.min.js') }}"></script>
+<script src="{{ asset('assets/global/plugins/excanvas.min.js') }}"></script> 
 <![endif]-->
-<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-migrate.min.js') }}" type="text/javascript"></script>
 <!-- IMPORTANT! Load jquery-ui.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
-<script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-validation/js/jquery.validate.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/jquery-validation/js/additional-methods.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
-<script src="/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-ui/jquery-ui.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery.blockui.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery.cokie.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/uniform/jquery.uniform.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js') }}" type="text/javascript"></script>
 <!-- END CORE PLUGINS -->
-<script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/select2/select2.min.js"></script>
-<script src="/assets/admin/pages/scripts/ui-blockui.js"></script>
+<script src="{{ asset('assets/global/plugins/bootstrap-toastr/toastr.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/select2/select2.min.js') }}"></script>
+<script src="{{ asset('assets/admin/pages/scripts/ui-blockui.js') }}"></script>
 <!-- END PAGE LEVEL SCRIPTS -->
-<script src="/assets/admin/pages/scripts/ui-toastr.js"></script>
-<script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
-<script src="/assets/admin/layout/scripts/layout.js" type="text/javascript"></script>
-<script src="/assets/admin/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
-<script src="/assets/admin/layout/scripts/demo.js" type="text/javascript"></script>
-<script src="/assets/admin/pages/scripts/form-samples.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/clockface/js/clockface.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-daterangepicker/moment.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ asset('assets/admin/pages/scripts/ui-toastr.js') }}"></script>
+<script src="{{ asset('assets/global/scripts/metronic.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/admin/layout/scripts/layout.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/admin/layout/scripts/quick-sidebar.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/admin/layout/scripts/demo.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/admin/pages/scripts/form-samples.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/clockface/js/clockface.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-daterangepicker/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js') }}"></script>
 <!-- TABLE SCRIPT -->
-<script type="text/javascript" src="/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
-<script type="text/javascript" src="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
-<script src="/assets/admin/pages/scripts/table-advanced.js"></script>
-<script type="text/javascript" src="/assets/global/scripts/jquery.formatCurrency-1.4.0.js"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/datatables/media/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js') }}"></script>
+<script src="{{ asset('assets/admin/pages/scripts/table-advanced.js') }}"></script>
+<script type="text/javascript" src="{{ asset('assets/global/scripts/jquery.formatCurrency-1.4.0.js') }}"></script>
 
 <!-- END TABLE SCRIPT -->
-<script src="/assets/admin/pages/scripts/components-pickers.js" type="text/javascript"></script>
-<script src="/assets/admin/pages/scripts/table-managed.js"></script>
-<script src="/assets/admin/pages/scripts/table-editable.js"></script>
+<script src="{{ asset('assets/admin/pages/scripts/components-pickers.js') }}" type="text/javascript"></script>
+<script src="{{ asset('assets/admin/pages/scripts/table-managed.js') }}"></script>
+<script src="{{ asset('assets/admin/pages/scripts/table-editable.js') }}"></script>
 <script>
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components
