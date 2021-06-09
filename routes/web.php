@@ -283,10 +283,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::group(['middleware' => 'permissions'], function () {
         Route::get('/register', 'Auth\RegisterController@showRegistrationForm')->name('register');
-        Route::get('/adminmenu', 'AdminMenuController@index');
+        Route::get('/adminmenu', 'AdminMenuController@index')->name('admin.menu');
         Route::post('/adminmenu/saveMenu', 'AdminMenuController@saveMenu');
         /* set the user menu tools */
-        Route::get('/asignaherramientas', 'AsignaHerramientasController@index');
+        Route::get('/asignaherramientas', 'AsignaHerramientasController@index')->name('asigna.herramientas');
         Route::post('/asignaherramientas/saveuserprofile', 'AsignaHerramientasController@saveUserProfile');
         Route::post('/asignaherramientas/loaduserprofile', 'AsignaHerramientasController@loadUserProfile');
         Route::post('/asignaherramientas/deleteelementuserprofile', 'AsignaHerramientasController@deleteElementUserProfile');
