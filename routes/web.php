@@ -450,6 +450,7 @@ Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa');
 
 /***************************apis webservice*************************************/
 Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta');
+Route::post('/registro-catastro', 'ApiController@catastro_registro');
 Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion');
 Route::get('/wsrp/{origen}', 'ApiController@registro_publico');
 Route::get('/wsent/{origen}', 'ApiController@entidades');
