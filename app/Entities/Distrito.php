@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class Users.
+ * Class Distrito.
  *
  * @package namespace App\Entities;
  */
-class Users extends Model implements Transformable
+class Distrito extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -20,7 +20,12 @@ class Users extends Model implements Transformable
      *
      * @var array
      */
-    protected $table = "users";
-    protected $fillable = ['name','email','status','email_verified_at','password','remember_token' , 'idComunidad', 'portal_registrador_id'];
+    protected $connection = "mysql6";
+    protected $fillable = [
+        "id",
+        "descripcion",
+        "valor"
+    ];
+    protected $table = "distrito";
 
 }
