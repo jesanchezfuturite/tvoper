@@ -3368,9 +3368,13 @@ class MotorpagosController extends Controller
     {
 
     }
-    public function consultaTransaccionesTramites(Request $request){      
+    public function consultaTransaccionesTramites(Request $request){ 
+        $rfc=$request->rfc;        
+        $familia=$request->familia;        
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
+        $response=array();
+        //log::info('inicio');
         $fechaActual=Carbon::now();
         if((int)$fecha_inicio==(int)"1")
         {           
@@ -3383,8 +3387,60 @@ class MotorpagosController extends Controller
             $fechaAterior=Carbon::now()->subDays(3);
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';            
-        }  
-        
+        }       
+        if($rfc=="" && $familia=='0')
+        {
+         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin); 
+            if($transaccion<>null){
+                $response=$this->reponseTransacciones($transaccion,$response);
+            }      
+        }else{
+            if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
+            {
+                $fechaIn=$fechaActual->subYears(1);
+                $fechaIn=$fechaIn->format('Y');
+                $fechaIn=$fechaIn.'-01-01 00:00:00';
+                $fechaFin=$fechaActual->format('Y-m-d').' 23:59:59';
+                $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc],$fechaIn,$fechaFin);
+                if($transaccion<>null){
+                    $response=$this->reponseTransacciones($transaccion,$response);
+                }
+                $transaccionplaca=$this->tramitedb->consultaRFCoper(['auxiliar_2'=>$rfc],$fechaIn,$fechaFin);
+               //log::info($rfc.$transaccionplaca);
+                 if($transaccionplaca<>null){
+                    $response=$this->reponseTransacciones($transaccionplaca,$response);
+                }
+                $findFolio=$this->oper_transaccionesdb->consultaFolioTransacciones($rfc,$fechaIn,$fechaFin);
+                //log::info($findFolio);
+                 if($findFolio<>null){
+                    $response=$this->reponseTransacciones($findFolio,$response);
+                }
+            }else{
+                if($rfc!=""){
+                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.rfc'=>$rfc]);
+                    if($transaccion<>null){
+                        $response=$this->reponseTransacciones($transaccion,$response);
+                    } 
+                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.auxiliar_2'=>$rfc]);
+                    if($transaccion<>null){
+                        $response=$this->reponseTransacciones($transaccion,$response);
+                    } 
+                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_transacciones.id_transaccion_motor'=>$rfc]);
+                    if($transaccion<>null){
+                        $response=$this->reponseTransacciones($transaccion,$response);
+                    }
+                }
+                if($familia!='0'){
+                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_familia.id'=>$familia]);
+                    if($transaccion<>null){
+                        $response=$this->reponseTransacciones($transaccion,$response);
+                     
+                    }
+                }
+            }
+        }    
+        $ids = array_column($response, 'Transaccion');
+
         $select = DB::raw("
         `solicitudes_ticket`.`id`,
         `tipo_servicios`.`Tipo_Descripcion` as `nombre_servicio`,
@@ -3394,11 +3450,11 @@ class MotorpagosController extends Controller
         `solicitudes_ticket`.`status`,
         `solicitudes_ticket`.`id_transaccion`,
         `solicitudes_tramite`.`id_transaccion_motor`,
+        `solicitudes_ticket`.`created_at` as `fecha_creacion`,
 
         `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`recibo_referencia`,
         `solicitudes_ticket`.`grupo_clave`,
-        `oper_transacciones`.`fecha_transaccion`,
         `notary_offices`.`notary_number`
         ");
         $solicitudes = PortalSolicitudesTicket::select($select)
@@ -3408,34 +3464,44 @@ class MotorpagosController extends Controller
         ->leftJoin('egobierno.tipo_servicios', 'solicitudes_catalogo.tramite_id', 'tipo_servicios.Tipo_Code')
         ->leftJoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
         ->leftJoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
-        ->leftjoin('operacion.oper_transacciones', 'solicitudes_tramite.id_transaccion_motor', '=', 'oper_transacciones.id_transaccion_motor')
-        ->whereBetween("operacion.oper_transacciones.fecha_transaccion" , [$fecha_inicio, $fecha_fin])
-        ->where('tipo_servicios.Tipo_Code', 399);
-
-        if($request->has("notary_id")){
-            $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
-            $solicitudes->whereIn('solicitudes_ticket.user_id', $users);
-        }
-        $solicitudes=$solicitudes->get()->ToArray();
-
+        ->whereIn('solicitudes_ticket.id_transaccion', $ids);
+        // ->leftjoin('operacion.oper_transacciones', 'solicitudes_tramite.id_transaccion_motor', '=', 'oper_transacciones.id_transaccion_motor')
+        // ->whereBetween("operacion.oper_transacciones.fecha_transaccion" , [$fecha_inicio, $fecha_fin])
       
-        foreach ($solicitudes as $key => &$value) {
-            if(empty($value["info"])){
-                $value["info"]=json_decode($value["info"]);
-              }else{
-                $value["info"] = $this->asignarClavesCatalogo($value["info"]);
-              }
 
-              $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
+        // if($request->has("notary_id")){
+        //     $users = $this->configUserNotary->where('notary_office_id', $request->notary_id)->get()->pluck(["user_id"])->toArray();
+        //     $solicitudes->whereIn('solicitudes_ticket.user_id', $users);
+        // }
+        $solicitudes=$solicitudes->get()->toArray();
 
-              $value["titular"] =array(
-                'nombre_titular'=> $titular->name,
-                'apellido_paterno_titular'=> $titular->fathers_surname,
-                'apellido_materno_titular'=> $titular->mothers_surname               
+        foreach ($response as $r => &$res) {
+            foreach ($solicitudes as $key => &$value) {
+                if($value["id_transaccion"]== $res["Transaccion"]){                    
+                    if(empty($value["info"])){
+                        $value["info"]=json_decode($value["info"]);
+                    }else{
+                        $value["info"] = $this->asignarClavesCatalogo($value["info"]);
+                    }
+    
+                    $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
+    
+                    $value["titular"] =array(
+                        'nombre_titular'=> $titular->name,
+                        'apellido_paterno_titular'=> $titular->fathers_surname,
+                        'apellido_materno_titular'=> $titular->mothers_surname ,
+                        'rfc_titular'=>$titular->rfc,             
+                        'curp_titular'=>$titular->curp,  
+                    );
+                    $res["info_tramite"] = $value;
+                }             
+            
+                
+            }
 
-              );
         }
-        return $solicitudes;
+        return json_encode($response);
+
     }
 
     public function asignarClavesCatalogo($info){

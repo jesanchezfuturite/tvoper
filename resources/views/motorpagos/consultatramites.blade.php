@@ -396,7 +396,7 @@
                                             <div class="table-scrollable">
                                                 <table class="table table-hover table-responsive" id="sample_7">
                                                     <thead>
-                                                        <tr> 
+                                                        <!-- <tr> 
                                                             <th>Transacción</th>
                                                             <th>Conciliacion</th>
                                                             <th>Estatus</th>
@@ -404,10 +404,25 @@
                                                             <th>Familia</th>
                                                             <th>Entidad</th>
                                                             <th>Tramite</th>
+                                                        </tr> -->
+                                                        <tr>
+                                                            <th>Folio</th> 
+                                                            <th>Transacción</th> 
+                                                            <th>Conciliacion</th> 
+                                                            <th>Estatus</th>
+                                                            <th>RFC</th>
+                                                            <th>Familia</th>
+                                                            <th>Entidad</th>
+                                                            <th>Tramite</th>
+                                                            <th>Contribuyente</th> 
+                                                            <th>Inicio Tramite</th>                       
+                                                            <th>Banco</th>
+                                                            <th>Tipo Pago</th>
+                                                            <th>Total Tramite</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody> 
-                                                        <tr>
+                                                        <!-- <tr>
                                                             <td><span class="help-block">No Found</span></td>           
                                                             <td></td>
                                                             <td></td>
@@ -415,9 +430,23 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
-                                                        </tr>                                   
-                                                    </tbody>
-                                        
+                                                        </tr>                                    -->
+                                                        <tr>
+                                                            <td><span class="help-block">No Found</span></td>                     
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>       
+                                                    </tbody>                                        
                                                 </table>                            
                                             </div>
                                         </div>
@@ -722,7 +751,9 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        // $("#table_4").remove();
+        // $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -929,44 +960,59 @@
     }
     function consultaTramites(fechaIn,fechaF) {
         Addtable4();
-        //document.getElementById("blockui_sample_3_1").click();
+        var rfc_=$("#rfc").val();
+        var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
         url: "{{ url('/consulta-transacciones-tramites') }}",
-        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
-            obj = JSON.stringify(response);
-        document.getElementById('jsonCode4').value=obj;        
-        $("#sample_7 tbody tr").remove();   
-        // var Resp=$.parseJSON(response);
-         var color='';
-        var label='';
-        
-        $.each(response, function(i, item) { 
-            console.log(item);
-             $("#sample_7 tbody").append("<tr>"
-                +"<td>"+item.id+"</td>"
-                +"<td>"+item.id_transaccion_motor+"</td>"
-                +"<td>"+item.fecha_transaccion+"</td>"
-                +"<td>"+item.notary_number+"</td>"
-                +"<td>"+item.titular.apellido_paterno_titular+"</td>"
-                +"<td>"+item.titular.apellido_materno_titular+"</td>"
-                +"<td>"+item.info.tipoTramite+"</td>"
-                +"</tr>");
-            });        
-       cargatabla4();
-        //document.getElementById("blockui_sample_3_1_1").click();
-        })
-        .fail(function( msg ) {
-            //document.getElementById("blockui_sample_3_1_1").click();
-            $("#sample_7 tbody tr").remove(); 
-            $("#sample_7 tbody").append("<tr>"
-                +"<td>No Found</td>"
-                +"</tr>");
-         Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
+            // obj = JSON.stringify(response);
+            document.getElementById('jsonCode4').value=response;        
+             $("#sample_7 tbody tr").remove();   
+            var response=$.parseJSON(response);
+            var color='';
+            var label='';
+            
+            $.each(response, function(i, item) { 
+                $("#sample_7 tbody").append("<tr>"
+                    +"<td>"+item.Folio+"</td>"
+                    +"<td>"+item.Transaccion+"</td>"
+                    +"<td>"+item.estatus+"</td>"
+                    +"<td>"+item.Estatus+"</td>"
+                    +"<td>"+item.RFC+"</td>"
+                    +"<td>"+item.Familia+"</td>"
+                    +"<td>"+item.Entidad+"</td>"
+                    +"<td>"+item.Tramite+"</td>"
+                    +"<td>"+item.Contribuyente+"</td>"
+                    +"<td>"+item.Inicio_Tramite+"</td>"
+                    +"<td>"+item.Banco+"</td>"
+                    +"<td>"+item.Tipo_Pago+"</td>"
+                    +"<td>"+item.Total_Tramite+"</td>"
+                    +"</tr>");
+                });   
+            //  $("#sample_7 tbody").append("<tr>"
+            //     +"<td>"+item.id+"</td>"
+            //     +"<td>"+item.id_transaccion_motor+"</td>"
+            //     +"<td>"+item.fecha_transaccion+"</td>"
+            //     +"<td>"+item.notary_number+"</td>"
+            //     +"<td>"+item.titular.apellido_paterno_titular+"</td>"
+            //     +"<td>"+item.titular.apellido_materno_titular+"</td>"
+            //     +"<td>"+item.info.tipoTramite+"</td>"
+            //     +"</tr>");
+            // });        
+                cargatabla4();
+            })
+            .fail(function( msg ) {
+                //document.getElementById("blockui_sample_3_1_1").click();
+                $("#sample_7 tbody tr").remove(); 
+                $("#sample_7 tbody").append("<tr>"
+                    +"<td>No Found</td>"
+                    +"</tr>");
+                Command: toastr.warning("Registro No Encontrado", "Notifications")  
+            });     
     }
     function consultaOper(fechaIn,fechaF) {
-        console.log(fechaIn, fechaF);
         Addtable1();
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc").val();
@@ -1048,17 +1094,51 @@
     {
         var JSONData=$("#jsonCode4").val();
         json = JSON.parse(JSONData)
+        var arr=[];
         $.each(json, function(i, item) { 
-            var entradas = item.info.detalle.Entradas;
-            var salidas = item.info.detalle.Salidas;
-            var tipo = item.info.tipoTramite;
-            console.log(tipo);
-            var notario = item.titular;
-            var obj = Object.assign({}, item, entradas, salidas, notario);
-            obj.tipo=tipo;
-            console.log(obj); 
-        });    
+            if('info_tramite' in item ){
+                  // var entradas = item.info_tramite.info.detalle.Entradas;
+            // var salidas = item.info_tramite.info.detalle.Salidas;
+      
+                // obj.tipo_tramite = item.info_tramite.info.tipoTramite;
+                // var id_transaccion = item.info_tramite.info.id_transaccion;
+                var obj = {};
+              
+                obj.id_transaccion = item.Transaccion;
+                obj.fecha_pago = item.Inicio_Tramite;
+                obj.fecha_tramite = item.info_tramite.fecha_creacion;
+                obj.no_notaria = item.info_tramite.notary_number;
+                var notario = item.info_tramite.titular;
+                var not = Object.assign(obj, notario);
+                obj.tipo_tramite = item.info_tramite.info.tipoTramite;
+                if('Entradas' in  item.info_tramite.info.detalle){
+                    obj.fecha_escritura = item.info_tramite.info.detalle.Entradas.fecha_escritura;
+                }else{
+                    obj.fecha_escritura="Null";
+                }
 
+                if('Salidas' in  item.info_tramite.info.detalle){
+                    obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                }else{
+                    obj.fecha_vencimiento="Null";
+                }
+
+                if('Expedientes' in  item.info_tramite.info.campos){
+                    obj.municipio_expediente = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                }else{
+                    obj.fecha_vencimiento="Null";
+                
+               
+                // obj.fecha_escritura = item.info_tramite.notary_number;
+                // obj.no_notaria = item.info_tramite.notary_number;
+                // obj.no_notaria = item.info_tramite.notary_number;
+
+                arr.push(obj);
+                // console.log(obj); 
+            }
+          
+        });    
+        console.log(arr);
         
         return false;
         var ReportTitle='Transacciones_tramites';
