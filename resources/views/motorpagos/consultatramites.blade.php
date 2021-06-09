@@ -1127,7 +1127,7 @@
                     obj.municipio_expediente = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
                 }else{
                     obj.fecha_vencimiento="Null";
-                
+                }
                
                 // obj.fecha_escritura = item.info_tramite.notary_number;
                 // obj.no_notaria = item.info_tramite.notary_number;
