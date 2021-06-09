@@ -768,7 +768,7 @@ function configprelacion()
       count=0;
       var response=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
-       var resp=JSON.stringify(registroPublico());
+       var resp=$.parseJSON(JSON.stringify(registroPublico()));
         if(typeof response=== 'object'){
           for (n in response) { 
                    
@@ -797,7 +797,7 @@ function configprelacion()
           {Command: toastr.warning("Sin Registros", "Notifications")
           return; }
         $(".btn_prelacion_"+grupo_clave).css("display", "none");
-        savePrelacion(1,formdata,grupo_clave,JSON.stringify(resp));
+        savePrelacion(1,formdata,grupo_clave,resp);
         
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
@@ -807,7 +807,7 @@ function configprelacion()
       var checkRechazo=false;
       var msjpublic="1";
       var rechazo=0;
-      resp=$.parseJSON(resp);
+     // resp=$.parseJSON(resp);
       //var formdata = new FormData();     
       mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
              

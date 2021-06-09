@@ -933,7 +933,7 @@
                     </table>
                     </div>
 
-                    @endfor
+                    @endforeach
                   @endif
 
                
