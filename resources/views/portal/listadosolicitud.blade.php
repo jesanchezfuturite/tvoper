@@ -377,7 +377,7 @@ function configprelacion()
 {
   $.ajax({
       method: "get",            
-      url: "{{ url('/configprelacion') }}",
+      url: "{{ url('/deployed-dev-complementos-solicitudes/configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
       //console.log(response);   
@@ -426,7 +426,7 @@ function configprelacion()
     var id_=$("#id_registro").val();
     $.ajax({
       method: "get",            
-      url: "{{ url('/asignar-solicitudes') }}"+"/"+id_,
+      url: "{{ url('/deployed-dev-complementos-solicitudes/asignar-solicitudes') }}"+"/"+id_,
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         if(response.Code=='200')
@@ -443,7 +443,8 @@ function configprelacion()
   function prelacion()
   { objectResponse=[];
     var resp=$.parseJSON(JSON.stringify(registroPublico()));
-    //console.log(resp);
+    console.log(registroPublico());
+    console.log(resp);
     document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
     //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
     data=dataPrelacion(JSON.stringify(resp),null);
@@ -457,7 +458,7 @@ function configprelacion()
     var resp;
      $.ajax({
       method: "get",            
-      url: "{{ url('/wsrp/qa') }}",
+      url: "{{ url('/deployed-dev-complementos-solicitudes/wsrp/qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {
       resp=response; 
@@ -472,7 +473,7 @@ function configprelacion()
   {
     $.ajax({
       method: "get",            
-      url: "{{ url('/find-solicitudes') }}",
+      url: "{{ url('/deployed-dev-complementos-solicitudes/find-solicitudes') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         //console.log(response);
@@ -492,7 +493,7 @@ function configprelacion()
     //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url('/get-solicitudes-motivos') }}"+"/"+catalogo_id,
+          url: "{{ url('/deployed-dev-complementos-solicitudes/get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -526,7 +527,7 @@ function configprelacion()
     Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     $.ajax({
          method: "POST", 
-         url: "{{ url('/filtrar-solicitudes') }}",
+         url: "{{ url('/deployed-dev-complementos-solicitudes/filtrar-solicitudes') }}",
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
@@ -579,7 +580,7 @@ function configprelacion()
     Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     $.ajax({
          method: "POST", 
-         url: "{{ url('/filtrar-solicitudes') }}",
+         url: "{{ url('/deployed-dev-complementos-solicitudes/filtrar-solicitudes') }}",
          data: formdata })
       .done(function (response) {
         
@@ -821,7 +822,7 @@ function configprelacion()
           method: "POST",
           contentType: false,
           processData: false, 
-          url: "{{ url('/guardar-solicitudes') }}",
+          url: "{{ url('/deployed-dev-complementos-solicitudes/guardar-solicitudes') }}",
           data: formdata })
       .done(function (response) {
           if(response.Code=="200")
@@ -864,7 +865,7 @@ function configprelacion()
       var user_id="";
       $.ajax({
       method: "post",            
-      url: "{{ url('/obtener-region/"+id_ticket+"/"+user_id+"') }}",
+      url: "{{ url('/deployed-dev-complementos-solicitudes/obtener-region/"+id_ticket+"/"+user_id+"') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
          
@@ -912,7 +913,7 @@ function configprelacion()
         });
       $.ajax({
       method: "post",            
-      url: "{{ url('/update-rechazo') }}",
+      url: "{{ url('/deployed-dev-complementos-solicitudes/update-rechazo') }}",
       data: {id:checks,estatus:estatus_,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
@@ -996,7 +997,7 @@ function configprelacion()
       findMessage(id);
       $.ajax({
            method: "GET", 
-           url: "{{ url('/atender-solicitudes') }}" + "/"+id,
+           url: "{{ url('/deployed-dev-complementos-solicitudes/atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
             //console.log(response);
@@ -1091,7 +1092,7 @@ function configprelacion()
     {
       $.ajax({
            method: "GET", 
-           url: "{{ url('/listado-mensajes') }}" + "/"+id_,
+           url: "{{ url('/deployed-dev-complementos-solicitudes/listado-mensajes') }}" + "/"+id_,
            data:{_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -1144,7 +1145,7 @@ function configprelacion()
       //console.log(btn_2);
      $.ajax({
            method: "POST", 
-           url: "{{ url('/cerrar-ticket') }}",
+           url: "{{ url('/deployed-dev-complementos-solicitudes/cerrar-ticket') }}",
            data:{ id:idT ,id_catalogo:id_catalogo_,option:btn_2,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response.solicitante);
@@ -1223,7 +1224,7 @@ function configprelacion()
            method: "POST",
            contentType: false,
             processData: false, 
-           url: "{{ url('/guardar-solicitudes') }}",
+           url: "{{ url('/deployed-dev-complementos-solicitudes/guardar-solicitudes') }}",
            data: formdata })
         .done(function (response) {
           //console.log(response.solicitante);
