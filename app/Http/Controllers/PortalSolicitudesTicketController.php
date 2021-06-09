@@ -558,7 +558,8 @@ class PortalSolicitudesTicketController extends Controller
 
         }
 
-        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)->where('status', '<>', 99)
+        $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+        ->whereNotIn('status',  [99, 80, 9])
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
@@ -632,7 +633,7 @@ class PortalSolicitudesTicketController extends Controller
 
         ]);
 
-        $ids = $this->ticket->where('id_transaccion' , $id)->where('status', '<>', 99)
+        $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
@@ -914,17 +915,17 @@ class PortalSolicitudesTicketController extends Controller
         log::info("error PortalSolicitudesTicketController@downloadFile" .$e->getMessage());
       }
     }
-    public function tramites_finalizados($id){
+    private function tramites_finalizados($id){
       $ticket = $this->ticket->where("id", $id)->first();
       $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
-      if($solCatalogo->atendido_por==1){
+      if($solCatalogo->atendido_por==1 && $ticket->status !=80 && $ticket->status !=99 && $ticket->status !=9 ){
         try{
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
         $mensajes =$this->mensajes->create([
           'ticket_id'=> $id,
-          'mensaje' => "Solicitud cerrada porque esta asignado al admin"
+          'mensaje' => "Solicitud cerrada porque esta asignado al admin - admin"
         ]);
 
         return json_encode(
