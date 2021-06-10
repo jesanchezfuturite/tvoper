@@ -477,7 +477,11 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/obtener-estados', 'CatalogosController@getEntidad')->name('obtener-estados');
     Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios')->name('obtener-municipios');
-
+    Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
+    Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
+    Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones');
+    Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion');
+    
     Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes')->name('porcentaje-recargos');
     Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes')->name('porcentaje-find-all');
     Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes')->name('porcentaje-insert');
