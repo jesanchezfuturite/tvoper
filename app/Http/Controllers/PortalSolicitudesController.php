@@ -614,7 +614,7 @@ class PortalSolicitudesController extends Controller
     if($request->has("file")){
       $file = $request->file('file');
       $extension = $file->getClientOriginalExtension();
-      $attach = "archivo_solicitud_".$request->id.".".$extension;
+      $attach = "archivo_solicitud_".$request->id[0].".".$extension;
       \Storage::disk('local')->put($attach,  \File::get($file));
     }else{
       $attach ="";
