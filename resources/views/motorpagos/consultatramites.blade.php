@@ -490,7 +490,7 @@
 <input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
 <input type="text" name="jsonCode2" id="jsonCode2" hidden="true">
 <input type="text" name="jsonCode3" id="jsonCode3" hidden="true">
-<input type="text" name="jsonCode4" id="jsonCode4" >
+<input type="text" name="jsonCode4" id="jsonCode4" hidden="true">
                                                         
 @endsection
 
@@ -1100,6 +1100,9 @@
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
+                obj.folio = item.Folio;
+                obj.estatus = item.Estatus;
+                obj.banco = item.Banco;
                 obj.fecha_pago = item.Inicio_Tramite;
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
                 obj.no_notaria = item.info_tramite.notary_number;
