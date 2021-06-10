@@ -1,8 +1,8 @@
 @extends('layout.app')
 
 @section('content')
-<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
-<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css')}}"/>
+<link href="{{ asset('assets/global/dataTable/dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -362,10 +362,10 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
-<script src="assets/global/dataTable/dataTables.min.js"></script>
-  <script src="assets/global/dataTable/jszip.min.js"></script>
-  <script src="assets/global/dataTable/vfs_fonts.js"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js')}}"></script>
+<script src="{{ asset('assets/global/dataTable/dataTables.min.js')}}"></script>
+  <script src="{{ asset('assets/global/dataTable/jszip.min.js')}}"></script>
+  <script src="{{ asset('assets/global/dataTable/vfs_fonts.js')}}"></script>
   <script>
   jQuery(document).ready(function() {
    // TableManaged2.init2();
@@ -852,7 +852,7 @@ function configprelacion()
       var user_id="";
       $.ajax({
       method: "post",            
-      url: "{{ url()->route('obtener-region/"+id_ticket+"/"+user_id+"') }}",
+      url: "{{ url()->route('obtener-region',['id_ticket'=>"+id_ticket+",'user_id'=>"+user_id+"]) }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
          
