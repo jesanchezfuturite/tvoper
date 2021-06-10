@@ -536,7 +536,7 @@ class ApiController extends Controller
 
         $notary_users = array();
 
-        $informativo_id = 8;
+        $informativo_id = 3;
 
         $campos = $this->campos->all();
 
