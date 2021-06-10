@@ -135,11 +135,11 @@
 
 @section('scripts')
 
-   <link rel="stylesheet" href="css/yearpicker.css" />
+   <link rel="stylesheet" href="{{ asset('css/yearpicker.css')}}" />
 
-    <script src="js/jquery.min.js"></script>
-    <script src="js/yearpicker.js"></script>
-    <script src="assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+    <script src="{{ asset('js/jquery.min.js')}}"></script>
+    <script src="{{ asset('js/yearpicker.js')}}"></script>
+    <script src="{{ asset('assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}" type="text/javascript"></script>
 
 <script>
   jQuery(document).ready(function() {       
