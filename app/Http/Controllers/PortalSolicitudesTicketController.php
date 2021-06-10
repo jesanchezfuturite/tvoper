@@ -717,21 +717,26 @@ class PortalSolicitudesTicketController extends Controller
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
+            Log::info("Existen campos cnfigurados")
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2)){
+                Log::info("entro al if")
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
                  if(false !== $verificar){
+                  Log::info("Distrito 1")
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
                  }else{
+                  Log::info("No es distrito 1")
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                  }
               }else{
                 if($value->status<>5){
+                  Log::info("Tramites finalizados primer else");
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
       
@@ -739,6 +744,7 @@ class PortalSolicitudesTicketController extends Controller
 
           }else{
             if($value->status<>5){
+              Log::info("Tramites finalizados segundo else")
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
@@ -748,6 +754,7 @@ class PortalSolicitudesTicketController extends Controller
         $error = $e;
       }
       if($error){
+        Log::info('Error Guardar transaccion: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
@@ -1124,6 +1131,7 @@ class PortalSolicitudesTicketController extends Controller
       $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1 && $ticket->status !=80 && $ticket->status !=99 && $ticket->status !=9 ){
         try{
+          Log::info("es asignado al admin");
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
