@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="portlet-body form">
-                <form action=" {{ url('/conciliacion-uploadfile') }}" method="POST" role="form" method="post" enctype="multipart/form-data" >
+                <form action=" {{ url()->route('conciliacion-uploadfile') }}" method="POST" role="form" method="post" enctype="multipart/form-data" >
                     @csrf
                     <div class="form-body">
                         <div class="form-group">

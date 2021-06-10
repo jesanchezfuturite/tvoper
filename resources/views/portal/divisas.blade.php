@@ -126,13 +126,13 @@
 		let ajaxDivisas = $.ajax({
 			dataType: "json",
 		   	method: "get",
-		   	url: "{{ url('/obtener-divisas') }}",
+		   	url: "{{ url()->route('obtener-divisas') }}",
 		   	data: {_token:'{{ csrf_token() }}'}  })
 
 		let ajaxDivisasGuardadas = $.ajax({
 			dataType: "json",
 		   	method: "get",
-		   	url: "{{ url('/get-divisas-save') }}",
+		   	url: "{{ url()->route('get-divisas-save') }}",
 		   	data: {_token:'{{ csrf_token() }}'}  });
 
 
@@ -167,7 +167,7 @@
 
  		$.ajax({
            	method: "POST",
-           	url: "{{ url('/save-divisas') }}",
+           	url: "{{ url()->route('save-divisas') }}",
            	data: {divisas:nuevasDivisas,_token:'{{ csrf_token() }}'}  })
         	.done( (response) => {
         		getDivisas();
@@ -210,7 +210,7 @@
 
  		$.ajax({
            	method: "POST",
-           	url: "{{ url('/delete-divisas') }}",
+           	url: "{{ url()->route('delete-divisas') }}",
            	data: {divisas:divisasEliminadas,_token:'{{ csrf_token() }}'}  })
         	.done( (response) => {
         		getDivisas();

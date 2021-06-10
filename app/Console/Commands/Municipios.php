@@ -74,7 +74,7 @@ class Municipios extends Command
     public function updateMunicipios($id){
         try
         {
-            $path = $this->url->to('/') . '/wsmun/qa/' . $id;
+            $path = url()->route('wsmun', ['qa', $id]);
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->get(

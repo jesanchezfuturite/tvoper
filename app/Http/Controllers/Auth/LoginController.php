@@ -30,7 +30,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/register';
+    protected $redirectTo = '';
 
     /**
      * Create a new controller instance.
@@ -39,6 +39,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        $this->redirectTo = (getenv('APP_PREFIX') ?? '').'/register';
         $this->middleware('guest')->except('logout');
     }
 
