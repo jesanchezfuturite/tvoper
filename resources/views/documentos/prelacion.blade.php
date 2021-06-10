@@ -513,7 +513,7 @@
                                       <tr>
                                         <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
                                         <td class="tbl-label" style="text-align: center;">
-                                          {{$dat->municipioConc}}
+                                          {{$dat->Municipio}}
                                        </td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
@@ -539,7 +539,7 @@
                                   <tr>
                                       <td class="tbl-label">
                                           <label><strong>Municipio destino:</strong></label>
-                                          <label>{{$munp["nombre"]}}</label>
+                                          <label>{{$dat->municipioConc}}</label>
                                       </td>
                                   </tr>
                                 </table>
