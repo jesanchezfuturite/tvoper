@@ -424,21 +424,7 @@ function configprelacion()
   function Asignar()
   {
     var id_=$("#id_registro").val();
-    $.ajax({
-      method: "get",            
-      url: "{{ url()->route('asignar-solicitudes') }}"+"/"+id_,
-      data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {     
-        if(response.Code=='200')
-        {
-          findSolicitudes();
-          Command: toastr.success(response.Message, "Notifications")
-        }else{
-          Command: toastr.warning(response.Message, "Notifications")
-        }
-        })
-      .fail(function( msg ) {
-         Command: toastr.warning("Error al Guardar", "Notifications")   });
+    
   }
   function prelacion()
   { objectResponse=[];
@@ -769,6 +755,7 @@ function configprelacion()
       var response=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
        var resp=$.parseJSON(JSON.stringify(registroPublico()));
+       console.log(resp);
         if(typeof response=== 'object'){
           for (n in response) { 
                    
