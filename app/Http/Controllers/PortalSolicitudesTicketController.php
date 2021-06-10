@@ -1402,6 +1402,14 @@ class PortalSolicitudesTicketController extends Controller
         }
         $data = $flag==1 ? $data[0] : $data;
 
+
+        foreach ($data as $solicitud) {
+          foreach ($solicitud->tramites as $tramite){
+            if(isset($tramite->json_envio)) unset($tramite->json_envio);
+            if(isset($tramite->json_recibo)) unset($tramite->json_recibo);
+          }
+        }
+
         return $data;
     }
 
