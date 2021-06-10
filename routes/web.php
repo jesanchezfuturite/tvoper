@@ -164,7 +164,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/consulta-transacciones-egob', 'MotorpagosController@consultaTransaccionesEgob')->name('consulta-transacciones-egob');
     Route::post('/consulta-transacciones-oper', 'MotorpagosController@consultaTransaccionesOper')->name('consulta-transacciones-oper');
     Route::post('/consulta-transacciones-gpm', 'MotorpagosController@consultaTransaccionesGpm')->name('consulta-transacciones-gpm');
-    Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites');
+    Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites')->name('consulta-transacciones-tramites');
     
     Route::get('/reporte-actualizaciones', 'MasterlogController@index')->name('reporte-actualizaciones');
     Route::post('/report-paid-operation', 'MasterlogController@consultamasterlog')->name('report-paid-operation');
@@ -478,10 +478,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/obtener-estados', 'CatalogosController@getEntidad')->name('obtener-estados');
     Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios')->name('obtener-municipios');
-    Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito');
-    Route::get('/obtener-distritos', 'CatalogosController@obtDistritos');
-    Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones');
-    Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion');
+    Route::get('/obtener-distrito/{type}/{clave}', 'CatalogosController@getDistrito')->name('obtener-distrito');
+    Route::get('/obtener-distritos', 'CatalogosController@obtDistritos')->name('obtener-distritos');
+    Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones')->name('obtener-instituciones');
+    Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion')->name('obtener-region');
     
     Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes')->name('porcentaje-recargos');
     Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes')->name('porcentaje-find-all');
