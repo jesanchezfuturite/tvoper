@@ -294,7 +294,7 @@
         var id_=$("#OptionEntidad").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('entidad-find-where') }}",
+        url: "{{ url()->route('entidad-find-where') }}",
         data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             var Resp=$.parseJSON(response);            
@@ -312,7 +312,7 @@
         if(entidad_.length>1){
         $.ajax({
         method: "post",            
-        url: "{{ url()->('entidad-update') }}",
+        url: "{{ url()->route('entidad-update') }}",
         data: {id:id_,nombre:entidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
            if(response=="true"){
@@ -333,7 +333,7 @@
     {
           $.ajax({
            method: "get",            
-           url: "{{ url()->('entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -367,7 +367,7 @@
     {
       $.ajax({
         method: "get",            
-        url: "{{ url()->('tiposervicio-find-all') }}",
+        url: "{{ url()->route('tiposervicio-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -389,7 +389,7 @@
     {
       $.ajax({
         method: "get",            
-        url: "{{ url()->('tiposervicio-find-all-where') }}",
+        url: "{{ url()->route('tiposervicio-find-all-where') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -411,7 +411,7 @@
     {          
             $.ajax({
            method: "get",            
-           url: "{{ url()->('tiposervicio-find-all') }}",
+           url: "{{ url()->route('tiposervicio-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#itemsTipoServicio option").remove();
@@ -447,7 +447,7 @@
         }else{            
                 $.ajax({
                 method: "POST",            
-                url: "{{ url()->('entidad-tramite-insert') }}",
+                url: "{{ url()->route('entidad-tramite-insert') }}",
                 data: {Id_entidad:entidad,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
                 .done(function (response) {
             if(response==0){
@@ -466,7 +466,7 @@
         var validaentidad=$("#entidad").val();
         $.ajax({
            method: "get",            
-           url: "{{ url()->('entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo); 
@@ -499,7 +499,7 @@
         var entidad=$("#entidad").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-insert') }}",
+           url: "{{ url()->route('entidad-insert') }}",
            data: {nombre:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response=="true"){
@@ -533,7 +533,7 @@
         }else{
             $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-find-where') }}",
+           url: "{{ url()->route('entidad-tramite-find-where') }}",
            data: {id:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo); 
@@ -571,7 +571,7 @@
 
          $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-find-id') }}",
+           url: "{{ url()->route('entidad-tramite-find-id') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             var Resp=$.parseJSON(response);
@@ -593,7 +593,7 @@
         var idtiposerv=$("#itemsTipoServicio").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-update') }}",
+           url: "{{ url()->route('entidad-tramite-update') }}",
            data: {id:idtramite,Id_tiposervicio:idtiposerv,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
            if(response=="true") {
@@ -616,7 +616,7 @@
         var entidad=$("#idregistro").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-delete') }}",
+           url: "{{ url()->route('entidad-tramite-delete') }}",
            data: {id:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              if(response=="true") {
@@ -634,7 +634,7 @@
     {
          $.ajax({
            method: "get",            
-           url: "{{ url()->('entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -679,7 +679,7 @@
             }else{
                 $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-find') }}",
+           url: "{{ url()->route('entidad-tramite-find') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
           findClave();
@@ -716,7 +716,7 @@
        var id_=$("#OptionEntidad").val();
        $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-find-where') }}",
+           url: "{{ url()->route('entidad-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
            
@@ -848,7 +848,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "POST",            
-           url: "{{ url()->('entidad-tramite-find') }}",
+           url: "{{ url()->route('entidad-tramite-find') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);

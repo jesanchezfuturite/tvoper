@@ -208,7 +208,7 @@
         var descripcion_=$("#partidaDesc").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('servicios-partidas-insert') }}",
+        url: "{{ url()->route('servicios-partidas-insert') }}",
         data: {idpartida:idpart,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -228,7 +228,7 @@
         var iddeleted=$("#iddeleted").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('servicios-partidas-delete') }}",
+        url: "{{ url()->route('servicios-partidas-delete') }}",
         data: {idpartida:iddeleted,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -250,7 +250,7 @@
        
         $.ajax({
         method: "post",            
-        url: "{{ url()->('servicios-partidas-find') }}",
+        url: "{{ url()->route('servicios-partidas-find') }}",
         data: {idpartida:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);          
@@ -272,7 +272,7 @@
         var descripcion_=$("#partidaDesc").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('servicios-partidas-update') }}",
+        url: "{{ url()->route('servicios-partidas-update') }}",
         data: {idpartida:idpart,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
@@ -301,7 +301,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url()->('servicios-partidas-findall') }}",
+           url: "{{ url()->route('servicios-partidas-findall') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -328,7 +328,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url()->('tiposervicio-find-all') }}",
+        url: "{{ url()->route('tiposervicio-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);

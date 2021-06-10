@@ -242,7 +242,7 @@
     //console.log(notary_off);
     $.ajax({
            method: "POST", 
-           url: "{{ url()->('operacion-roles-eliminar-rol') }}",
+           url: "{{ url()->route('operacion-roles-eliminar-rol') }}",
            data:{id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200"){
@@ -296,7 +296,7 @@
     tramties_=$("#selectedChecks").val();
     $.ajax({
            method: "POST", 
-           url: "{{ url()->('operacion-roles-edit-rol') }}",
+           url: "{{ url()->route('operacion-roles-edit-rol') }}",
            data:{ id: id_, descripcion: nameRol, tramites: tramties_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200"){
@@ -321,7 +321,7 @@
     //console.log(notary_off);
     $.ajax({
            method: "get", 
-           url: "{{ url()->('operacion-roles-create') }}",
+           url: "{{ url()->route('operacion-roles-create') }}",
            data:{descripcion:nameRol,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200"){
@@ -344,7 +344,7 @@
       
       $.ajax({
         method: "get",            
-        url: "{{ url()->('operacion-roles-get-tramites') }}",
+        url: "{{ url()->route('operacion-roles-get-tramites') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {   
          console.log(response);
@@ -378,7 +378,7 @@
 
      $.ajax({
            method: "get",            
-           url: "{{ url()->('operacion-roles-get-rol') }}",
+           url: "{{ url()->route('operacion-roles-get-rol') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
         
@@ -409,7 +409,7 @@
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url()->('operacion-roles-get-tramite') }}"+"/"+id,
+           url: "{{ url()->route('operacion-roles-get-tramite') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) {     
           //console.log(response);
@@ -460,7 +460,7 @@
       document.getElementById('jsonTramites').value=JSON.stringify(tramites_); 
       $.ajax({
            method: "POST",            
-           url: "{{ url()->('operacion-roles-add-tramite') }}",
+           url: "{{ url()->route('operacion-roles-add-tramite') }}",
            data: { rol_id: id_rol, tramites: tramites_, _token: '{{ csrf_token() }}'}  })
         .done(function (response) { 
           if(response.Code=="200"){

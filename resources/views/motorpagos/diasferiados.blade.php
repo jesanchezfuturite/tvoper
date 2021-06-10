@@ -178,7 +178,7 @@
     }
 		  $.ajax({
             method: "POST",
-            url: "{{ url()->('dias-feriados-insert') }}",
+            url: "{{ url()->route('dias-feriados-insert') }}",
             data: { fecha:date,tipo:itemsTipo, _token: '{{ csrf_token() }}' }
         })
           .done(function(response){ 
@@ -200,7 +200,7 @@
     var itemsTipo = $("#itemsTipo").val();
       $.ajax({
             method: "POST",
-            url: "{{ url()->('dias-feriados-find') }}",
+            url: "{{ url()->route('dias-feriados-find') }}",
             data: { tipo:itemsTipo, _token: '{{ csrf_token() }}' }
         })
         .done(function(response){ 
@@ -232,7 +232,7 @@
       var itemsTipo = $("#itemsTipo").val(); 
 		$.ajax({
            method: "POST",
-           url: "{{ url()->('dias-feriados-eliminar') }}",
+           url: "{{ url()->route('dias-feriados-eliminar') }}",
            data: { ano: ano_, mes: mes_, dia: dia_,tipo:itemsTipo, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 

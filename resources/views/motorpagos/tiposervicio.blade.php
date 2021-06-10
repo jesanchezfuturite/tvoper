@@ -727,7 +727,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url()->('familia-find-all') }}",
+        url: "{{ url()->route('familia-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#familia option").remove();
@@ -750,7 +750,7 @@
     var familia_=$("#familia").val();
      $.ajax({
         method: "post",            
-        url: "{{ url()->('entidad-familia') }}",
+        url: "{{ url()->route('entidad-familia') }}",
         data: {id:familia_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);     
@@ -773,7 +773,7 @@
   {
     $.ajax({
            method: "get",            
-           url: "{{ url()->('currencies-find-all') }}",
+           url: "{{ url()->route('currencies-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
     .done(function (responseinfo) {     
       var Resp=$.parseJSON(responseinfo);
@@ -812,7 +812,7 @@
   {
     $.ajax({
       method: "get",            
-      url: "{{ url()->('applicable-subject-find-all') }}",
+      url: "{{ url()->route('applicable-subject-find-all') }}",
       data: {_token:'{{ csrf_token() }}'}  })
     .done(function (responseinfo) {     
       var Resp=$.parseJSON(responseinfo);
@@ -857,7 +857,7 @@
     });
     $.ajax({
            method: "POST",            
-           url: "{{ url()->('tipo-servicio-update-array') }}",
+           url: "{{ url()->route('tipo-servicio-update-array') }}",
            data: {tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,id:valoresCheck, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
         if(response=="true")
@@ -878,7 +878,7 @@
     {
          $.ajax({
            method: "get",            
-           url: "{{ url()->('entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -898,7 +898,7 @@
 	{
 		$.ajax({
            method: "get",           
-           url: "{{ url()->('limite-referencia-fin-all') }}",
+           url: "{{ url()->route('limite-referencia-fin-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -927,7 +927,7 @@
 	{
 		$.ajax({
            method: "get",           
-           url: "{{ url()->('tipo-referencia-Find') }}",
+           url: "{{ url()->route('tipo-referencia-Find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -959,7 +959,7 @@
     document.getElementById('identidadtramite').value=id_entidadtramite_;
     $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-Find-where') }}",
+           url: "{{ url()->route('tipo-servicio-Find-where') }}",
            data: { id:id_,id_entidadtramite:id_entidadtramite_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1084,7 +1084,7 @@
     {gpmdescripcion="1";}
     $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-insert') }}",
+           url: "{{ url()->route('tipo-servicio-insert') }}",
            data: { descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad:entidad_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1114,7 +1114,7 @@
     var id_=$("#idupdate").val();
     $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-update') }}",
+           url: "{{ url()->route('tipo-servicio-update') }}",
            data: { id:id_,descripcion:desc,url:origen,gpoTrans:gpo,id_gpm:gpm,descripcion_gpm:gpmdescripcion,tiporeferencia:tiporeferencia_,limitereferencia:limitereferencia_,entidad_id:entidad_,id_entidadtramite:id_entidadtramite_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1139,7 +1139,7 @@
         var id_=$("#idvalor").val();
         $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-delete') }}",
+           url: "{{ url()->route('tipo-servicio-delete') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1160,7 +1160,7 @@
    
     $.ajax({
            method: "GET",
-           url: "{{ url()->('tipo-servicio-find-all') }}",
+           url: "{{ url()->route('tipo-servicio-find-all') }}",
            data: { _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1202,7 +1202,7 @@
     
         $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-Find-where') }}",
+           url: "{{ url()->route('tipo-servicio-Find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1224,7 +1224,7 @@
   {
      $.ajax({
            method: "post",            
-           url: "{{ url()->('partidas-where') }}",
+           url: "{{ url()->route('partidas-where') }}",
            data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
       .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -1258,7 +1258,7 @@
   {
     $.ajax({
            method: "POST",
-           url: "{{ url()->('calcula-find-where') }}",
+           url: "{{ url()->route('calcula-find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1437,7 +1437,7 @@
 
     $.ajax({
            method: "POST",
-           url: "{{ url()->('calcula-insert') }}",
+           url: "{{ url()->route('calcula-insert') }}",
            data: { id_tramite:id_tramite_,nombreconcepto:nombreconcepto_,applicablesubject:applicablesubject_,id_partida:id_partida_,metodo:metodo_,total:total_,moneda_total:moneda_total_,has_max:has_max_,precio_max:precio_max_,moneda_max:moneda_max_,precio_min:precio_min_,moneda_min:moneda_min_,formula:formula_,moneda_formula:moneda_formula_,has_lot:has_lot_,cantidad:cantidad_,redondeo_millar:redondeo_millar_, _token: '{{ csrf_token() }}' }
     })
     .done(function (response) {
@@ -1494,7 +1494,7 @@
 
     $.ajax({
            method: "POST",
-           url: "{{ url()->('calcula-update') }}",
+           url: "{{ url()->route('calcula-update') }}",
            data: {id:id_,id_tramite:id_tramite_,nombreconcepto:nombreconcepto_,applicablesubject:applicablesubject_,id_partida:id_partida_,metodo:metodo_,total:total_,moneda_total:moneda_total_,has_max:has_max_,precio_max:precio_max_,moneda_max:moneda_max_,precio_min:precio_min_,moneda_min:moneda_min_,formula:formula_,moneda_formula:moneda_formula_,has_lot:has_lot_,cantidad:cantidad_,redondeo_millar:redondeo_millar_, _token: '{{ csrf_token() }}' }
     })
     .done(function (response) {
@@ -1544,7 +1544,7 @@
     subsidioFindWhere();
     $.ajax({
            method: "POST",
-           url: "{{ url()->('tipo-servicio-Find-where') }}",
+           url: "{{ url()->route('tipo-servicio-Find-where') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -1562,7 +1562,7 @@
     var id_=$("#idtramite").val();
      $.ajax({
            method: "POST",
-           url: "{{ url()->('subsidio-find-where') }}",
+           url: "{{ url()->route('subsidio-find-where') }}",
            data: { id_tramite:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) {             
@@ -1648,7 +1648,7 @@
     var tipopersona_=$("#subsidioTipoPersona").val();
      $.ajax({
            method: "POST",
-           url: "{{ url()->('subsidio-insert') }}",
+           url: "{{ url()->route('subsidio-insert') }}",
            data: { id_tramite:id_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token: '{{ csrf_token() }}' }
        })
         .done(function (response) {             
@@ -1686,7 +1686,7 @@
     var tipopersona_=$("#subsidioTipoPersona").val();
      $.ajax({
            method: "POST",
-           url: "{{ url()->('subsidio-update') }}",
+           url: "{{ url()->route('subsidio-update') }}",
            data: { id:id_,id_tramite:id_tramite_,total:total_,moneda:moneda_,descripcion:descripcion_,decretoficio:decreto_,formato:formato_,totaldespues:totalDespues_,id_partida:partida_,tipopersona:tipopersona_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token: '{{ csrf_token() }}' }
        })
         .done(function (response) {             
@@ -1722,7 +1722,7 @@
   {
      $.ajax({
            method: "post",            
-           url: "{{ url()->('partidas-where') }}",
+           url: "{{ url()->route('partidas-where') }}",
            data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
       .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -1761,7 +1761,7 @@
       var entidad=$("#optionEntidad").val();
       $.ajax({
        method: "POST",
-           url: "{{ url()->('tipo-servicio-find-where-id') }}",
+           url: "{{ url()->route('tipo-servicio-find-where-id') }}",
            data: { id_entidad:entidad,_token: '{{ csrf_token() }}' }  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -1854,7 +1854,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "GET",            
-           url: "{{ url()->('tipo-servicio-find-all') }}",
+           url: "{{ url()->route('tipo-servicio-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);

@@ -183,7 +183,7 @@
                     $('#result-query').hide();
                     $('#imageloading').html('UBICANDO INFORMACION.......').show();
                 },
-                url: "{{ url()->('cfdi-correccion/busca-rfc') }}",
+                url: "{{ url()->route('cfdi-correccion/busca-rfc') }}",
                 data: { rfc: rfc, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){
@@ -259,7 +259,7 @@
                     $('#result-query').hide();
                     $('#imageloading').html('UBICANDO INFORMACION.......').show();
                 },
-                url: "{{ url()->('cfdi-correccion/busca-foliounico') }}",
+                url: "{{ url()->route('cfdi-correccion/busca-foliounico') }}",
                 data: { fu: foliounico, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){
@@ -326,7 +326,7 @@
 
             $.ajax({
                 method: "get",
-                url: "{{ url()->('cfdi-correccion/encabezado') }}",
+                url: "{{ url()->route('cfdi-correccion/encabezado') }}",
                 data: { fu: id, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){
@@ -387,7 +387,7 @@
             }           
             $.ajax({
                 method: "get",
-                url: "{{ url()->('cfdi-correccion/detalle') }}",
+                url: "{{ url()->route('cfdi-correccion/detalle') }}",
                 data: { fu: id, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){
@@ -478,7 +478,7 @@
         
         $.ajax({
             method: "post",
-            url: "{{ url()->('cfdi-correccion/edit') }}",
+            url: "{{ url()->route('cfdi-correccion/edit') }}",
             data: $('#edit-form').serialize(),
             beforeSend:function(){
                 return confirm("¿Desea guardar los cambios?");

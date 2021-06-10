@@ -127,7 +127,7 @@
       findRegla();
       $.ajax({
            method: "POST", 
-           url: "{{ url()->('reglas-tmt-relationship') }}",
+           url: "{{ url()->route('reglas-tmt-relationship') }}",
            data:{id:id_, _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -170,7 +170,7 @@
       var id_=$("#opTramite").val();
         $.ajax({
            method: "POST", 
-           url: "{{ url()->('reglas-info') }}",
+           url: "{{ url()->route('reglas-info') }}",
            data:{tramite_id:id_, _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -197,7 +197,7 @@
         {return;}
         $.ajax({
            method: "POST", 
-           url: "{{ url()->('reglas-cmp') }}",
+           url: "{{ url()->route('reglas-cmp') }}",
            data:{regla_id:id_, _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           
@@ -225,7 +225,7 @@
       $.each(Resp, function(i, item) {
         $.ajax({
            method: "POST", 
-           url: "{{ url()->('reglas-delete') }}",
+           url: "{{ url()->route('reglas-delete') }}",
            data:{ id:item.id, _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           
@@ -265,7 +265,7 @@
       }
         $.ajax({
            method: "POST", 
-           url: "{{ url()->('reglas-save') }}",
+           url: "{{ url()->route('reglas-save') }}",
            data:{tramite_id:id_,definicion:definicion_,campos:fdata, _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           if(response.Code=='200')

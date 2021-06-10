@@ -128,7 +128,7 @@
                     $('#result-query').hide();
                     $('#imageloading').html('UBICANDO INFORMACION.......').show();
                 },
-                url: "{{ url()->('cfdi-correccion/busca-foliounico') }}",
+                url: "{{ url()->route('cfdi-correccion/busca-foliounico') }}",
                 data: { fu: foliounico, _token: '{{ csrf_token() }}' }
             })
             .done(function(data){

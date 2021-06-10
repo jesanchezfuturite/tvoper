@@ -519,7 +519,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url()->('familia-find-all') }}",
+           url: "{{ url()->route('familia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -694,7 +694,7 @@
         var rfc_=$("#rfc2").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('consulta-transacciones-egob') }}",
+        url: "{{ url()->route('consulta-transacciones-egob') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode2').value=response;
@@ -905,7 +905,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('consulta-transacciones-oper') }}",
+        url: "{{ url()->route('consulta-transacciones-oper') }}",
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
@@ -964,7 +964,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('consulta-transacciones-tramites') }}",
+        url: "{{ url()->route('consulta-transacciones-tramites') }}",
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             // obj = JSON.stringify(response);
@@ -1019,7 +1019,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->('consulta-transacciones-oper') }}",
+        url: "{{ url()->route('consulta-transacciones-oper') }}",
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode1').value=response;        

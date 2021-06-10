@@ -212,7 +212,7 @@
 
 	    	$.ajax({
 	    		method:"post",
-	    		url: "{{ url()->('cfdi-manual/busca-rfc') }}",
+	    		url: "{{ url()->route('cfdi-manual/busca-rfc') }}",
 	    		data: { rfc: rfc, _token: '{{ csrf_token() }}' }
 	    	})
 		}
@@ -241,7 +241,7 @@
 	    			$('#btnVrfc').removeClass('red').removeClass('blue').removeClass('green').addClass('yellow')
 	    			$('#btnVrfc').append($('<i>').addClass('fa fa-warning')).append(' Verificando... ');
 	    		},
-	    		url: "{{ url()->('cfdi-manual/busca-datos') }}",
+	    		url: "{{ url()->route('cfdi-manual/busca-datos') }}",
 	    		data: { rfc: rfc, _token: '{{ csrf_token() }}' }
 	    	})
 	    	.done( function(data){
@@ -295,7 +295,7 @@
 
 			$.ajax({
 	            method: "post",
-	            url: "{{ url()->('cfdi-manual/savecfdi') }}",
+	            url: "{{ url()->route('cfdi-manual/savecfdi') }}",
 	            data: $('#formCFDI').serialize(),
 	            beforeSend:function(){
 	                return confirm("¿Desea guardar los cambios?");

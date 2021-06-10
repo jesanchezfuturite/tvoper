@@ -447,7 +447,7 @@
         
         $.ajax({
            method: "post",           
-           url: "{{ url()->('generate') }}",
+           url: "{{ url()->route('generate') }}",
            data: {ejercicio_fiscal:ejercicio_,partida:partida_,concepto:concepto_,folio:folio_,modalidad_ejecucion:modejecucion_,referencia_contrato:refcontrato_,numero_factura:nofactura_,estimacion_pagada:estpagada_,fecha_retencion:fecharet_,monto_retencion:montoret_,razon_social:razonsoc_,dependencia_normativa:depnomativa_,dependencia_ejecutora:depejecutora_,email:correo,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);
@@ -589,7 +589,7 @@
         var ejercicio_=$("#ejercicio").val();
         $.ajax({
            method: "post",           
-           url: "{{ url()->('proyecto-programas') }}",
+           url: "{{ url()->route('proyecto-programas') }}",
            data: {folio:folio_,partida:partida_,ejercicio:ejercicio_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);
@@ -650,7 +650,7 @@
     {
         $.ajax({
            method: "post",           
-           url: "{{ url()->('acceso-partidas') }}",
+           url: "{{ url()->route('acceso-partidas') }}",
            data: {user:'{{ Auth::user()->id }}',_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);

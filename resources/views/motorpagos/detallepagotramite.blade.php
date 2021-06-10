@@ -203,7 +203,7 @@
     {
          $.ajax({
            method: "get",            
-           url: "{{ url()->('entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -248,7 +248,7 @@ function eliminarRegistro()
   var id_=$("#idTramite").val();
     $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-delete') }}",
+           url: "{{ url()->route('pagotramite-delete') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  
        })
         .done(function (responseinfo) {
@@ -269,7 +269,7 @@ function findPagoTramite(id_)
   document.getElementById('idTramite').value=id_;
     $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-find-where') }}",
+           url: "{{ url()->route('pagotramite-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
         var Resp=$.parseJSON(responseinfo);         
@@ -346,7 +346,7 @@ function actualizaPagoTramite()
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-update') }}",
+           url: "{{ url()->route('pagotramite-update') }}",
            data: {id:id_,descripcion:descripcion_,fecha_inicio:fechaInicio,fecha_fin:fechaFin,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
             if(responseinfo=="true")
@@ -365,7 +365,7 @@ function ActualizarTabla()
     var identidad_=$("#optionEntidad").val();
       $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-find-all') }}",
+           url: "{{ url()->route('pagotramite-find-all') }}",
            data: {Id_entidad:identidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);
@@ -434,7 +434,7 @@ function updateEstatus()
   var id_=$("#idupdate").val();
   $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-update-status') }}",
+           url: "{{ url()->route('pagotramite-update-status') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);
@@ -465,7 +465,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "POST",            
-           url: "{{ url()->('pagotramite-find-all') }}",
+           url: "{{ url()->route('pagotramite-find-all') }}",
            data: {Id_entidad:identidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);
