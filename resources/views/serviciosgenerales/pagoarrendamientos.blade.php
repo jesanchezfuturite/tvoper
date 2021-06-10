@@ -399,7 +399,7 @@
         var correo=$("#correo").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/pagoarrendamiento-insert') }}",
+           url: "{{ url()->('pagoarrendamiento-insert') }}",
            data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,email:correo,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {             
             if(response=='[]'){
@@ -428,7 +428,7 @@
         
         $.ajax({
            method: "post",           
-           url: "{{ url('/acceso-partidas') }}",
+           url: "{{ url()->('acceso-partidas') }}",
            data: {user:'{{ Auth::user()->id }}',_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);

@@ -376,7 +376,7 @@
         }else{            
                 $.ajax({
                 method: "POST",            
-                url: "{{ url('/insert-partidas-user') }}",
+                url: "{{ url()->('insert-partidas-user') }}",
                 data: {id_user:user_id,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
                 .done(function (response) {
             if(response==0){
@@ -401,7 +401,7 @@
         }else{            
                 $.ajax({
                 method: "POST",            
-                url: "{{ url('/delete-partidas-user') }}",
+                url: "{{ url()->('delete-partidas-user') }}",
                 data: {id_user:user_id,checkedsAll:checkeds,_token:'{{ csrf_token() }}'}  })
                 .done(function (response) {
             if(response==0){
@@ -428,7 +428,7 @@
          var user_id=$("#idUserPartidas").val();
       $.ajax({
         method: "POST",            
-        url: "{{ url('/find-partidas-where') }}",
+        url: "{{ url()->('find-partidas-where') }}",
         data: {id_user:user_id,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -452,7 +452,7 @@
         var user_id=$("#idUserPartidas").val();
       $.ajax({
         method: "POST",            
-        url: "{{ url('/find-partidas-user') }}",
+        url: "{{ url()->('find-partidas-user') }}",
         data: {id_user:user_id,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -578,7 +578,7 @@
         });
         $.ajax({
             method: "POST",
-            url: "{{ url('/update-menu-user') }}",
+            url: "{{ url()->('update-menu-user') }}",
             data: { tools: JSON.stringify(newsaved), id: user, _token: '{{ csrf_token() }}' }
         })
         .done(function (response) {
@@ -637,7 +637,7 @@
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/update-menu-user') }}",
+            url: "{{ url()->('update-menu-user') }}",
             data: { tools: JSON.stringify(filtered), id: user, _token: '{{ csrf_token() }}' }
         })
         .done(function (response) {
@@ -810,7 +810,7 @@
         /* save with ajax in DB */
         $.ajax({
             method: "POST",
-            url: "{{ url('/update-menu-user') }}",
+            url: "{{ url()->('update-menu-user') }}",
             data: { tools: JSON.stringify(newsaved), id: user, _token: '{{ csrf_token() }}' }
         })
         .fail(function( msg ) {
@@ -871,7 +871,7 @@
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/update-menu-user') }}",
+            url: "{{ url()->('update-menu-user') }}",
             data: { tools: JSON.stringify(filtered), id: user, _token: '{{ csrf_token() }}' }
         })
         .done(function (response) {
@@ -968,7 +968,7 @@
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/load-menu-user') }}",
+            url: "{{ url()->('load-menu-user') }}",
             data: { id: user, _token: '{{ csrf_token() }}' }
         })
         .done( function ( values ) {
@@ -994,7 +994,7 @@
         var user_id_=$("#iddeleted_user_id").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/deleted-user') }}",
+           url: "{{ url()->('deleted-user') }}",
            data: {id:id_,user_id:user_id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {           
             var Resp=$.parseJSON(response);        
@@ -1032,7 +1032,7 @@
         var confirmpassword_=$("#confirmpassword").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/update-user') }}",
+           url: "{{ url()->('update-user') }}",
            data: {id:id_,user_id:user_id_,nombre:nombre_,apellido_pat:apellido_pat_,apellido_mat:apellido_mat_,dependencia:dependencia_,password:password_,confirmpassword:confirmpassword_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {           
             var Resp=$.parseJSON(response);
@@ -1056,7 +1056,7 @@
         document.getElementById('idupdate_user_id').value=user_id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/find-user') }}",
+           url: "{{ url()->('find-user') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {           
             var Resp=$.parseJSON(response);
@@ -1115,7 +1115,7 @@
         var confirmpassword_=$("#confirmpassword").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/insert-user') }}",
+           url: "{{ url()->('insert-user') }}",
            data: {nombre:nombre_,apellido_pat:apellido_pat_,apellido_mat:apellido_mat_,dependencia:dependencia_,email:email_,password:password_,confirmpassword:confirmpassword_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {           
             var Resp=$.parseJSON(response);
@@ -1138,7 +1138,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/user-find-all') }}",
+           url: "{{ url()->('user-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            

@@ -252,7 +252,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-serv') }}",
+           url: "{{ url()->('traux-get-serv') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -270,7 +270,7 @@
 
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-camp') }}",
+           url: "{{ url()->('traux-get-camp') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);
@@ -288,7 +288,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-tcamp') }}",
+           url: "{{ url()->('traux-get-tcamp') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -346,7 +346,7 @@
          var tramiteMember=$("#itemsTramites option:selected").text();
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-get-relcamp') }}",
+           url: "{{ url()->('traux-get-relcamp') }}",
            data: {tramiteid:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -402,7 +402,7 @@
         }
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-add-serv') }}",
+           url: "{{ url()->('traux-add-serv') }}",
            data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -455,7 +455,7 @@
       console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
       $.ajax({
         method : "POST",
-        url: "{{url('/traux-add-caract')}}",
+        url: "{{url()->('traux-add-caract')}}",
         data: { id:idCampo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
 
         success: function(info){
@@ -497,7 +497,7 @@
         }
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-edit-relcamp') }}",
+           url: "{{ url()->('traux-edit-relcamp') }}",
            data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck], _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -516,7 +516,7 @@
         var idRelantion=$("#iddeleted").val();
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-del-relcamp') }}",
+           url: "{{ url()->('traux-del-relcamp') }}",
            data: {id:idRelantion, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {

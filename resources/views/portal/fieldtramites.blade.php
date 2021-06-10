@@ -213,7 +213,7 @@
 
          $.ajax({
            method: "post",           
-           url: "{{ url('/tramites-add-field') }}",
+           url: "{{ url()->('tramites-add-field') }}",
            data: {campo ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
@@ -235,7 +235,7 @@
         var status = $('#estatus').val( );
         $.ajax({
            method: "post",           
-           url: "{{ url('/tramites-edit-field') }}",
+           url: "{{ url()->('tramites-edit-field') }}",
            data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){
@@ -270,7 +270,7 @@
         var status = 0;
         $.ajax({
            method: "post",           
-           url: "{{ url('/tramites-estatus') }}",
+           url: "{{ url()->('tramites-estatus') }}",
            data: {campo, id_campo: id_, status ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code =="200"){

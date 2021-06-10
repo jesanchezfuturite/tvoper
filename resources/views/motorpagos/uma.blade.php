@@ -201,7 +201,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/uma-find-all') }}",
+           url: "{{ url()->('uma-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            
@@ -236,7 +236,7 @@
         var fechainicio=$("#fechainicio").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/uma-insert') }}",
+           url: "{{ url()->('uma-insert') }}",
            data: {year:year_,dia:dia_,mes:mes_,anio:anio_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -262,7 +262,7 @@
         var fechainicio=$("#fechainicio").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/uma-update') }}",
+           url: "{{ url()->('uma-update') }}",
            data: {id:id_,year:year_,dia:dia_,mes:mes_,anio:anio_,fecha_inicio:fechainicio,fecha_fin:fechafin,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")
@@ -282,7 +282,7 @@
         document.getElementById('idupdate').value=id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/uma-find-where') }}",
+           url: "{{ url()->('uma-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -355,7 +355,7 @@
         var id_=$("#iddeleted").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/uma-deleted') }}",
+           url: "{{ url()->('uma-deleted') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")

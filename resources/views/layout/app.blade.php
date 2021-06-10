@@ -568,7 +568,7 @@ License: You must have a valid license purchased only from themeforest(the above
 			
 				@if(session('is_admin')==1)
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
-					<a href="{{ url()->route('admin.menu') }}" >
+					<a href="{{ url()->route('adminmenu') }}" >
 						<i class="icon-paper-plane"></i>
 						<span class="title">Menu</span>
 					</a>
@@ -576,7 +576,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				@endif
 				@if(session('is_admin')==1 || session('is_admin')==2)
 				<li class="tooltips" data-container="body" data-placement="right" data-html="true" data-original-title="Herramientas de administrador">
-					<a href="{{ url()->route('asigna.herramientas') }}" >
+					<a href="{{ url()->route('asignaherramientas') }}" >
 						<i class="icon-paper-plane"></i>
 						<span class="title">Asignar Herramientas </span>
 					</a>
@@ -1726,16 +1726,27 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="{{ asset('assets/admin/pages/scripts/table-managed.js') }}"></script>
 <script src="{{ asset('assets/admin/pages/scripts/table-editable.js') }}"></script>
 <script>
-      jQuery(document).ready(function() {    
-        Metronic.init(); // init metronic core components
+	jQuery(document).ready(function() {    
+		Metronic.init(); // init metronic core components
 		Layout.init(); // init current layout
 		QuickSidebar.init(); // init quick sidebar
 		Demo.init();
- 		UIToastr.init();// init demo features
- 		TableEditable.init();
-      });
-   </script>
-   @yield('scripts')
+		UIToastr.init();// init demo features
+		TableEditable.init();
+	});
+
+	const APP_URL = '{{ getenv("APP_URL") }}';
+    $.ajaxSetup({
+		data: {
+			'_token': "{{ csrf_token() }}"
+		},
+		beforeSend: function(xhr, options) {
+			if(options.url.search(/http(s)?:\/\//i) < 0)
+				options.url = APP_URL + options.url;
+		}
+	});
+</script>
+@yield('scripts')
 <!-- END JAVASCRIPTS -->
 </body>
 <!-- END BODY -->

@@ -183,7 +183,7 @@
         var descripcion_=$("#descripcion").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/clasificador-insert') }}",
+        url: "{{ url()->('clasificador-insert') }}",
         data: {identidad:identidad_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -203,7 +203,7 @@
         var iddeleted=$("#iddeleted").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/clasificador-deleted') }}",
+        url: "{{ url()->('clasificador-deleted') }}",
         data: {id:iddeleted,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -225,7 +225,7 @@
        
         $.ajax({
         method: "post",            
-        url: "{{ url('/clasificador-find-where') }}",
+        url: "{{ url()->('clasificador-find-where') }}",
         data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);          
@@ -246,7 +246,7 @@
         var descripcion_=$("#descripcion").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/clasificador-update') }}",
+        url: "{{ url()->('clasificador-update') }}",
         data: {id:id_,identidad:identidad_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
@@ -275,7 +275,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/clasificador-find-all') }}",
+           url: "{{ url()->('clasificador-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -300,7 +300,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/entidad-find') }}",
+        url: "{{ url()->('entidad-find') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -323,7 +323,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "GET",            
-           url: "{{ url('/clasificador-find-all') }}",
+           url: "{{ url()->('clasificador-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);

@@ -144,7 +144,7 @@
         var entidad=$("#entidad").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-insert') }}",
+           url: "{{ url()->('entidad-insert') }}",
            data: {nombre:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response=="true"){
@@ -168,7 +168,7 @@
          document.getElementById('idEntidad').value=id_;
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-find-where') }}",
+           url: "{{ url()->('entidad-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             var Resp=$.parseJSON(response);
@@ -193,7 +193,7 @@
         var identidad=$("#idEntidad").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-update') }}",
+           url: "{{ url()->('entidad-update') }}",
            data: {id:identidad,nombre:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
            if(response=="true") {
@@ -217,7 +217,7 @@
         var entidad=$("#idregistro").val();
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-delete') }}",
+           url: "{{ url()->('entidad-delete') }}",
            data: {id:entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              if(response=="true") {
@@ -235,7 +235,7 @@
     {
          $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-find') }}",
+           url: "{{ url()->('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#table tbody tr").remove();

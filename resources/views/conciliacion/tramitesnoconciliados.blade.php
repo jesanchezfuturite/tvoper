@@ -144,7 +144,7 @@
         addTable();
         $.ajax({
            method: "post",           
-           url: "{{ url('/find-tramites-no-conciliados') }}",
+           url: "{{ url()->('find-tramites-no-conciliados') }}",
            data: {fechaInicio:fechaIn,fechaFin:fechaFi,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              

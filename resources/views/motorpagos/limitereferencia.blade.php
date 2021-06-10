@@ -249,7 +249,7 @@ var vencimiento_= $("#vencimiento").val();
 
 $.ajax({
            method: "POST",
-           url: "{{ url('/limite-referencia-insert') }}",
+           url: "{{ url()->('limite-referencia-insert') }}",
            data: { descripcion: description_,periodicidad:periodicidad_,vencimiento:vencimiento_,fecha:fechaIn, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -274,7 +274,7 @@ var vencimiento_= $("#vencimiento").val();
 
 $.ajax({
            method: "POST",
-           url: "{{ url('/limite-referencia-update') }}",
+           url: "{{ url()->('limite-referencia-update') }}",
            data: { id:id_,descripcion: description_,periodicidad:periodicidad_,vencimiento:vencimiento_,fecha:fechaIn, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -297,7 +297,7 @@ function update(id_)
 {
 	$.ajax({
            method: "POST",
-           url: "{{ url('/limite-referencia-find') }}",
+           url: "{{ url()->('limite-referencia-find') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 
@@ -331,7 +331,7 @@ function eliminar()
 
   $.ajax({
            method: "POST",
-           url: "{{ url('/limite-referencia-deleted') }}",
+           url: "{{ url()->('limite-referencia-deleted') }}",
            data: { id: id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) { 

@@ -282,7 +282,7 @@ Configuración <small> Asignación de Herramientas</small>
         /* save with ajax in DB */
         $.ajax({
             method: "POST",
-            url: "{{ url('/asignaherramientas/saveuserprofile') }}",
+            url: "{{ url()->('asignaherramientas/saveuserprofile') }}",
             data: { tools: JSON.stringify(newsaved), username: user, _token: '{{ csrf_token() }}' }
         })
         .fail(function( msg ) {
@@ -310,7 +310,7 @@ Configuración <small> Asignación de Herramientas</small>
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/asignaherramientas/loaduserprofile') }}",
+            url: "{{ url()->('asignaherramientas/loaduserprofile') }}",
             data: { username: user, _token: '{{ csrf_token() }}' }
         })
         .done( function ( values ) {
@@ -384,7 +384,7 @@ Configuración <small> Asignación de Herramientas</small>
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/asignaherramientas/deleteelementuserprofile') }}",
+            url: "{{ url()->('asignaherramientas/deleteelementuserprofile') }}",
             data: { username: user, id: added, _token: '{{ csrf_token() }}' }
         })
         .done( function ( values ) {
@@ -558,7 +558,7 @@ Configuración <small> Asignación de Herramientas</small>
         /* save with ajax in DB */
         $.ajax({
             method: "POST",
-            url: "{{ url('/asignaherramientas/saveuserprofile') }}",
+            url: "{{ url()->('asignaherramientas/saveuserprofile') }}",
             data: { tools: JSON.stringify(newsaved), username: user, _token: '{{ csrf_token() }}' }
         })
         .fail(function( msg ) {
@@ -619,7 +619,7 @@ Configuración <small> Asignación de Herramientas</small>
         // loads the menu that users has saved in DB
         $.ajax({
             method: "POST",
-            url: "{{ url('/asignaherramientas/deleteelementuserprofile') }}",
+            url: "{{ url()->('asignaherramientas/deleteelementuserprofile') }}",
             data: { username: user, id: added, _token: '{{ csrf_token() }}' }
         })
         .done( function ( values ) {

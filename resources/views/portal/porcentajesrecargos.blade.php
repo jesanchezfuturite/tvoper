@@ -201,7 +201,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/porcentaje-find-all') }}",
+           url: "{{ url()->('porcentaje-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             document.getElementById('jsonCode').value=JSON.stringify(response.Message);          
@@ -246,7 +246,7 @@
         var fed_vencido=$("#fed_vencido").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/porcentaje-insert') }}",
+           url: "{{ url()->('porcentaje-insert') }}",
            data: {anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,federal_vencido:fed_vencido,_token:'{{ csrf_token() }}'}  })
             .done(function (response) {
               if(response.Code=="200"){
@@ -269,7 +269,7 @@
         var fed_vencido=$("#fed_vencido").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/porcentaje-update') }}",
+           url: "{{ url()->('porcentaje-update') }}",
            data: {anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,federal_vencido:fed_vencido,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200")
@@ -339,7 +339,7 @@
         var mes_=$("#mes_up").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/porcentaje-deleted') }}",
+           url: "{{ url()->('porcentaje-deleted') }}",
            data: {anio:anio_,mes:mes_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200")

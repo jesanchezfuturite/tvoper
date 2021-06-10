@@ -187,7 +187,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/inpc-find-all') }}",
+           url: "{{ url()->('inpc-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            
@@ -215,7 +215,7 @@
         var indice_=$("#indice").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-insert') }}",
+           url: "{{ url()->('inpc-insert') }}",
            data: {anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -238,7 +238,7 @@
         var indice_=$("#indice").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-update') }}",
+           url: "{{ url()->('inpc-update') }}",
            data: {id:id_,anio:anio_,mes:mes_,indice:indice_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200")
@@ -258,7 +258,7 @@
         document.getElementById('idupdate').value=id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-find-where') }}",
+           url: "{{ url()->('inpc-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -310,7 +310,7 @@
         var id_=$("#iddeleted").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/inpc-deleted') }}",
+           url: "{{ url()->('inpc-deleted') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")

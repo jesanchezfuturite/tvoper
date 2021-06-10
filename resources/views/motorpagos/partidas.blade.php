@@ -210,7 +210,7 @@
         var descripcion_=$("#partidaDesc").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/partidas-insert') }}",
+        url: "{{ url()->('partidas-insert') }}",
         data: {idpartida:idpart,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -230,7 +230,7 @@
         var iddeleted=$("#iddeleted").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/partidas-deleted') }}",
+        url: "{{ url()->('partidas-deleted') }}",
         data: {idpartida:iddeleted,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -252,7 +252,7 @@
        
         $.ajax({
         method: "post",            
-        url: "{{ url('/partidas-find-where') }}",
+        url: "{{ url()->('partidas-find-where') }}",
         data: {idpartida:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);          
@@ -275,7 +275,7 @@
         var partida_=$("#idpartida").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/partidas-update') }}",
+        url: "{{ url()->('partidas-update') }}",
         data: {idpartida:idpart,partida:partida_,idservicio:idservicio_,descripcion:descripcion_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
@@ -304,7 +304,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/partidas-find-all') }}",
+           url: "{{ url()->('partidas-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -330,7 +330,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/tiposervicio-find-all') }}",
+        url: "{{ url()->('tiposervicio-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -352,7 +352,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "GET",            
-           url: "{{ url('/partidas-find-all') }}",
+           url: "{{ url()->('partidas-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);
