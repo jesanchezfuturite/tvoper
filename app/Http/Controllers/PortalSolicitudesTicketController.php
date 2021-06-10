@@ -1183,7 +1183,10 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $users = ["$user_id"];
       }
-
+      $count_carrito = $this->ticket->whereIn('user_id', $users)
+      ->where("en_carrito", 1)
+      ->whereNotNull("id_transaccion")
+      ->count();
 
       $ids = array();
       foreach($clave as $key => $v){
@@ -1196,9 +1199,18 @@ class PortalSolicitudesTicketController extends Controller
       }
       try{
         if($body["type"]=="en_carrito"){
-          $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-          $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
-          $mensaje="Solicitudes en el carrito";
+          if($count_carrito>0){
+            return json_encode([
+              "response" 	=> "El carrito no se puede porque existe una transacción en curso.",
+              "code"		=> 400,
+    
+            ]);
+          }else{
+            $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
+            $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
+            $mensaje="Solicitudes en el carrito";
+          }
+
 
         }
 
