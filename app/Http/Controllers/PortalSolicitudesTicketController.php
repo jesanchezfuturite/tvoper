@@ -448,7 +448,8 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')->where("firma", 1);
           }])->get()->toArray();
         }else{
-          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
+          $solicitudes = PortalSolicitudesTicket::with("tramites")
+          ->whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
           })
@@ -750,7 +751,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al guardar transaccion motor"
+            "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
           ]);
       }else{
         return response()->json(
@@ -848,7 +849,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al actualizar estatus"
+            "Message" => "Error al actualizar estatus "..$e->getMessage(),
           ]);
       }else {
         return response()->json(
@@ -1201,7 +1202,7 @@ class PortalSolicitudesTicketController extends Controller
         if($body["type"]=="en_carrito"){
           if($count_carrito>0){
             return json_encode([
-              "response" 	=> "El carrito no se puede porque existe una transacción en curso.",
+              "response" 	=> "El carrito no se puede actualizar porque existe una transacción en curso.",
               "code"		=> 400,
     
             ]);
