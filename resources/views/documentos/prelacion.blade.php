@@ -521,7 +521,7 @@
                                     <tr>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
-                                      <td class="tbl-label">{{$data->fecha}}</td>
+                                      <td class="tbl-label">{{$dat->fecha}}</td>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
@@ -533,7 +533,7 @@
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>
-                                        <label>{{$data->tramite}}</label>
+                                        <label>{{$dat->tramite}}</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -694,13 +694,13 @@
                                 <tr>
                                     <td width="70%" class="tbl-label">
                                         <label><strong>Hojas o lotes:</strong></label>
-                                        <label>{{$data->lote}}</label>
+                                        <label>{{$dat->lote}}</label>
                                     </td>
                                     <td width="15%" class="tbl-label">
                                         <label><strong>Derecho-15215900:</strong></label>
                                     </td>
                                     <td width="15%" class="tbl-label">
-                                        <label>$ {{number_format($data->costo_final,2)}}</label>
+                                        <label>$ {{number_format($dat->costo_final,2)}}</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -712,7 +712,7 @@
                                         <label><strong>TOTAL:</strong></label>
                                     </td>
                                     <td width="10%" class="tbl-label">
-                                        <label>$ {{number_format($data->costo_final,2)}}</label>
+                                        <label>$ {{number_format($dat->costo_final,2)}}</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -740,11 +740,11 @@
                               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="tbl-label">
-                                        <center><label>{{$data->fecha}} {{$data->hora}}</label></center>
+                                        <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center>
                                            <center>
-                                            <img src="data:image/png;base64,{{$data->barcode}}"  width="120px">
+                                            <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
                                            </center>
-                                        <center>{{$data->folio}}</center>
+                                        <center>{{$dat->folio}}</center>
                                   </td>
                                 </tr>
                             </table>
@@ -779,7 +779,7 @@
                                     <tr>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
-                                      <td class="tbl-label">{{$data->fecha}}</td>
+                                      <td class="tbl-label">{{$dat->fecha}}</td>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
                                       <td class="tbl-label"></td>
@@ -792,13 +792,13 @@
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Nombre del trámite:</strong></label>
-                                        <label>{{$data->tramite}}</label>
+                                        <label>{{$dat->tramite}}</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="tbl-label">
                                         <label><strong>Razon Social:</strong></label>
-                                        <label>{{$data->razonSocial}}</label>
+                                        <label>{{$dat->razonSocial}}</label>
                                     </td>
                                   </tr>
                                 </table>
