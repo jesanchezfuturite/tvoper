@@ -196,4 +196,10 @@ return [
 
     'same_site' => null,
 
+    'white_list' => [
+        '/',
+        '/login',
+        '/password/reset'
+    ]
+
 ];

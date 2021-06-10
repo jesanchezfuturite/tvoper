@@ -3,8 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Auth;
 
-class ValidateAppPrefix
+class ValidateSession
 {
     /**
      * Handle an incoming request.
@@ -15,6 +16,10 @@ class ValidateAppPrefix
      */
     public function handle($request, Closure $next)
     {
+        $path = request()->getPathInfo();
+        
+        // dd($path);
+        // dd(Auth::user());
         return $next($request);
     }
 }

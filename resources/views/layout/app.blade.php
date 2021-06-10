@@ -394,7 +394,7 @@ License: You must have a valid license purchased only from themeforest(the above
 				<li class="dropdown dropdown-user">
 					<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
 					<!--<img alt="" class="img-circle" src="{{ asset('assets/admin/layout/img/avatar3_small.jpg') }}"/>-->
-					<span class="username username-hide-on-mobile">@if(session('is_admin') == true)<span class="badge badge-success">Admin</span>@else <span class="badge badge-success">User</span>  @endif {{ Auth::user()->name }} </span>
+					<span class="username username-hide-on-mobile">@if(session('is_admin') == true)<span class="badge badge-success">Admin</span>@else <span class="badge badge-success">User</span>  @endif {{ Auth::user() ? Auth::user()->name : '' }} </span>
 					<i class="fa fa-angle-down"></i>
 					</a>
 					<ul class="dropdown-menu dropdown-menu-default">

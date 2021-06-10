@@ -22,17 +22,17 @@ Route::get('/', function(){
     }
 });
 
-Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
+Route::group(["prefix" => getenv("APP_PREFIX") ?? "/", 'middleware' => 'validate.session'], function(){
     Route::get('/', function () {
         return view('auth.login');
     });
 
     Auth::routes();
 
-    Route::get('/home', 'HomeController@index')->name('home')->name('home');
+    Route::get('/home', 'HomeController@index')->name('home');
 
     /* conciliacion app */
-    Route::get('/conciliacion-carga-archivo', 'ConciliacionController@index')->name('conciliacion-carga-archivo')->name('conciliacion-carga-archivo');
+    Route::get('/conciliacion-carga-archivo', 'ConciliacionController@index')->name('conciliacion-carga-archivo');
     Route::get('/conciliacion-results', 'ConciliacionController@results')->name('conciliacion-results');
     Route::post('/conciliacion-uploadfile', 'ConciliacionController@uploadFile')->name('conciliacion-uploadfile');
     Route::post('/conciliacion-getinfo', 'ConciliacionController@getInfo')->name('conciliacion-getinfo');
@@ -493,5 +493,5 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaMat')->name('wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}');
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
-    Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo')->name('update-rechazo');
+    Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo');
 });
