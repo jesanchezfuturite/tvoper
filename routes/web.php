@@ -164,7 +164,8 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/consulta-transacciones-egob', 'MotorpagosController@consultaTransaccionesEgob')->name('consulta-transacciones-egob');
     Route::post('/consulta-transacciones-oper', 'MotorpagosController@consultaTransaccionesOper')->name('consulta-transacciones-oper');
     Route::post('/consulta-transacciones-gpm', 'MotorpagosController@consultaTransaccionesGpm')->name('consulta-transacciones-gpm');
-
+    Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites');
+    
     Route::get('/reporte-actualizaciones', 'MasterlogController@index')->name('reporte-actualizaciones');
     Route::post('/report-paid-operation', 'MasterlogController@consultamasterlog')->name('report-paid-operation');
 
