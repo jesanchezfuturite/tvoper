@@ -86,10 +86,10 @@ class PortalSolicitudesTicketController extends Controller
     public function registrarSolicitud(Request $request){
       $name= \Request::route()->getName();
       $status="";
-      if($name=="solicitudes-register"){
+      if($name=="solicitudes-register-temporal"){
         $status=80;
       }
-      if($name=="solicitudes-register-temporal"){
+      if($name=="solicitudes-register"){
         $status=99;
       }
 
