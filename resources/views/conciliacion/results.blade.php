@@ -402,7 +402,7 @@
     {
         // deshabilitar el boton
         $("#corte_button").attr("disabled", true);
-        var url = "{{ url('/') }}" + "/envio-corte/"+fecha;
+        var url = "{{ url()->route('envio-corte', '') }}/"+fecha;
         window.open( url, "_blank");
 
     }

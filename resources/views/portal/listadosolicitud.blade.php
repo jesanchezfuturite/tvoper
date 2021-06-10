@@ -444,7 +444,7 @@ function configprelacion()
     var resp;
      $.ajax({
       method: "get",            
-      url: "{{ url()->route('wsrp/qa') }}",
+      url: "{{ url()->route('wsrp', 'qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {
       resp=response; 
@@ -479,7 +479,7 @@ function configprelacion()
     //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url()->route('get-solicitudes-motivos') }}"+"/"+catalogo_id,
+          url: "{{ url()->route('get-solicitudes-motivos', '') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -708,7 +708,7 @@ function configprelacion()
         
         if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
-          url_prelacion="<a href='/listado-download/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+          url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
           btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
@@ -984,7 +984,7 @@ function configprelacion()
       findMessage(id);
       $.ajax({
            method: "GET", 
-           url: "{{ url('atender-solicitudes') }}" + "/"+id,
+           url: "{{ url()->route('atender-solicitudes', '') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
             //console.log(response);
@@ -1079,7 +1079,7 @@ function configprelacion()
     {
       $.ajax({
            method: "GET", 
-           url: "{{ url()->route('listado-mensajes') }}" + "/"+id_,
+           url: "{{ url()->route('listado-mensajes', '') }}" + "/"+id_,
            data:{_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -1109,7 +1109,7 @@ function configprelacion()
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='/listado-download/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='{{ url()->route('listado-download', '') }}/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"

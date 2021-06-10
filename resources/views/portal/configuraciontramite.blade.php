@@ -512,7 +512,7 @@
         var tramite=$("#itemsTramites").val();
         $.ajax({
            method: "get",
-           url: "{{ url()->route('get-firma-find') }}"+"/"+tramite,
+           url: "{{ url()->route('get-firma-find', '') }}"+"/"+tramite,
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);

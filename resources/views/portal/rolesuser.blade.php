@@ -409,7 +409,7 @@
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url()->route('operacion-roles-get-tramite') }}"+"/"+id,
+           url: "{{ url()->route('operacion-roles-get-tramite', '') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) {     
           //console.log(response);

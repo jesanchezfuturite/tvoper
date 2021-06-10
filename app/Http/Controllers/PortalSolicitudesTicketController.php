@@ -604,7 +604,7 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;
-        $attach = $this->url->to('/') . '/download/'.$name;
+        $attach = url()->route('download', $name);
 
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
@@ -1502,7 +1502,7 @@ class PortalSolicitudesTicketController extends Controller
 
             \Storage::disk('local')->put($name,  $new_file);
 
-            $attach = $this->url->to('/') . '/download/'.$name;
+            $attach = url()->route('download', $name);
 
 
             $guardar =$this->mensajes->where("id", $mensajes->id)->update([

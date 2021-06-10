@@ -2,7 +2,7 @@
 
 
 @section('content')
-<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css') }}"/>
 <h3 class="page-title">Portal <small> Asignación de usuarios por Notaria </small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -546,8 +546,8 @@
 @endsection
 
 @section('scripts')
-<script src="assets/global/scripts/validar_pdf.js" type="text/javascript"></script>
-<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
+<script src="{{ asset('assets/global/scripts/validar_pdf.js') }}" type="text/javascript"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js') }}"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
      $(".perfilesHide").css("display", "none");
@@ -679,7 +679,7 @@
     var id_=$("#itemsNotario").val();
     $.ajax({
         method: "get",            
-        url: "{{ url()->route('get-notary-offices/') }}"+"/"+id_,
+        url: "{{ url()->route('get-notary-offices', '') }}"+"/"+id_,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           var resp=$.parseJSON(response); 
@@ -715,7 +715,7 @@
     var curp=$("#curpUser").val();
    $.ajax({
         method: "get",            
-        url: "{{ url()->route('consultar-curp') }}"+"/"+curp,
+        url: "{{ url()->route('consultar-curp', '') }}"+"/"+curp,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           var resp=$.parseJSON(response); 
@@ -767,7 +767,7 @@ function changeEntidades()
   var entidad=$("#itemsEntidadNot").val();
    $.ajax({
         method: "get",            
-        url: "{{ url()->route('obtener-municipios') }}"+"/"+entidad,
+        url: "{{ url()->route('obtener-municipios', '') }}"+"/"+entidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
         //console.log(response);  
@@ -815,7 +815,7 @@ function downloadPdf(file)
   }
    $.ajax({
         method: "get",            
-        url: "{{ url()->route('get-route') }}"+"/"+id_notary+"/"+file,
+        url: "{{ url()->route('get-route', ['', '']) }}"+"/"+id_notary+"/"+file,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
            window.open(response, '_blank');
@@ -838,7 +838,7 @@ function changeComunidad()
   }
    $.ajax({
         method: "get",            
-        url: "{{ url()->route('notary-offices-community') }}"+"/"+comunidad,
+        url: "{{ url()->route('notary-offices-community', '') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           //console.log(response)
@@ -1270,7 +1270,7 @@ function changeComunidad()
     //$(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
-           url: "{{ url()->route('notary-offices-get-users') }}"+"/"+id,
+           url: "{{ url()->route('notary-offices-get-users', '') }}"+"/"+id,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) { 
           //console.log(response);

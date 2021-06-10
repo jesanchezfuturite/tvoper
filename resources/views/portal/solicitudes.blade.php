@@ -571,7 +571,7 @@
 
 			$.ajax({
 			    method: "get",            
-			    url: "{{ url()->route('get-solicitudes-motivos') }}"+"/"+id,
+			    url: "{{ url()->route('get-solicitudes-motivos', '') }}"+"/"+id,
 			    data: {_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        

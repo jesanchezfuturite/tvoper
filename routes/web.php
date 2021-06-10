@@ -231,7 +231,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     })->name('foo');
     /* ws estado de cuenta icv */
 
-    Route::get('/icv-consulta-placa/{info}/{key}', 'IcvrestserviceController@icvconsultaplaca')->name('icv-consulta-placa/{info}/{key}');
+    Route::get('/icv-consulta-placa/{info}/{key}', 'IcvrestserviceController@icvconsultaplaca')->name('icv-consulta-placa');
 
     /******************SERVICIOS GENERALES ---RETENCIONES AL MILLAR---******************/
     Route::get('/retencionesalmillar', 'ServiciosgeneralesController@retencionesAlMillar')->name('retencionesalmillar');
@@ -250,7 +250,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
 
     /**************************** ENVIO CORTE POR CORREO  ***************************/
-    Route::get('/envio-corte/{fecha}', 'CorteController@enviacorreo')->name('envio-corte/{fecha}');
+    Route::get('/envio-corte/{fecha}', 'CorteController@enviacorreo')->name('envio-corte');
 
     /**************************** TRAMITES NO CONCILIADOS  ***************************/
     Route::get('/tramites-no-conciliados', 'ConciliacionController@tramitesNoConciliados')->name('tramites-no-conciliados');
@@ -369,17 +369,17 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/traux-edit-porcentaje', 'PortaltramitesauxController@savePorcentaje')->name('traux-edit-porcentaje');
 
     Route::post('/notary-offices', 'PortalNotaryOfficesController@createNotary')->name('notary-offices');
-    Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers')->name('notary-offices-get-users/{id}');
+    Route::get('/notary-offices-get-users/{id}', 'PortalNotaryOfficesController@getUsers')->name('notary-offices-get-users');
     Route::get('/notary', 'PortalNotaryOfficesController@index')->name('notary');
     Route::post('/notary-offices-edit-user', 'PortalNotaryOfficesController@editUsersNotary')->name('notary-offices-edit-user');
     Route::post('/notary-offices-user-status', 'PortalNotaryOfficesController@status')->name('notary-offices-user-status');
     Route::post('/notary-offices-create-users', 'PortalNotaryOfficesController@createUsersNotary')->name('notary-offices-create-users');
     Route::get('/notary-offices-roles', 'PortalNotaryOfficesController@getRolesPermission')->name('notary-offices-roles');
-    Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity')->name('notary-offices-community/{id}');
+    Route::get('/notary-offices-community/{id}', 'PortalNotaryOfficesController@listNotaryCommunity')->name('notary-offices-community');
     Route::get('/config-users', 'PortalNotaryOfficesController@viewUsers')->name('config-users');
     Route::post('/config-create-users', 'PortalNotaryOfficesController@createUsers')->name('config-create-users');
     Route::post('/notary-offices-update', 'PortalNotaryOfficesController@updateNotary')->name('notary-offices-update');
-    Route::get('/get-notary-offices/{id}', 'PortalNotaryOfficesController@getNotary')->name('get-notary-offices/{id}');
+    Route::get('/get-notary-offices/{id}', 'PortalNotaryOfficesController@getNotary')->name('get-notary-offices');
     Route::post('/notary-offices-username', 'PortalNotaryOfficesController@searchUsername')->name('notary-offices-username');
 
 
@@ -389,7 +389,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/comunidades', 'OperacionRolesController@index')->name('comunidades');
     Route::get('/operacion-roles-create', 'OperacionRolesController@createRol')->name('operacion-roles-create');
     Route::post('/operacion-roles-add-tramite', 'OperacionRolesController@addTramite')->name('operacion-roles-add-tramite');
-    Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites')->name('operacion-roles-get-tramite/{id}');
+    Route::post('/operacion-roles-get-tramite/{id}', 'OperacionRolesController@getTramites')->name('operacion-roles-get-tramite');
     Route::post('/operacion-roles-edit-rol', 'OperacionRolesController@editRol')->name('operacion-roles-edit-rol');
     Route::post('/operacion-roles-eliminar-rol', 'OperacionRolesController@eliminarRol')->name('operacion-roles-eliminar-rol');
     Route::get('/operacion-roles-get-rol', 'OperacionRolesController@getRoles')->name('operacion-roles-get-rol');
@@ -397,40 +397,40 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::post('/filtrar-solicitudes', 'PortalSolicitudesController@filtrar')->name('filtrar-solicitudes');
     Route::get('/listado-solicitudes', 'PortalSolicitudesController@listSolicitudes')->name('listado-solicitudes');
-    Route::get('/atender-solicitudes/{id}', 'PortalSolicitudesController@atenderSolicitud')->name('atender-solicitudes/{id}');
+    Route::get('/atender-solicitudes/{id}', 'PortalSolicitudesController@atenderSolicitud')->name('atender-solicitudes');
     Route::post('/guardar-solicitudes', 'PortalSolicitudesController@guardarSolicitud')->name('guardar-solicitudes');
     Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket')->name('cerrar-ticket');
-    Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes')->name('listado-mensajes/{id}');
-    Route::get('/listado-download/{file}', 'PortalSolicitudesController@downloadFile')->name('listado-download/{file}');
-    Route::get('/get-route/{id}/{type}', 'PortalSolicitudesController@getFileRoute')->name('get-route/{id}/{type}');
+    Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes')->name('listado-mensajes');
+    Route::get('/listado-download/{file}', 'PortalSolicitudesController@downloadFile')->name('listado-download');
+    Route::get('/get-route/{id}/{type}', 'PortalSolicitudesController@getFileRoute')->name('get-route');
     Route::post('/solicitudes-update-status', 'PortalSolicitudesController@updateStatus')->name('solicitudes-update-status');
     Route::get('/find-solicitudes', 'PortalSolicitudesController@findSol')->name('find-solicitudes');
     Route::get('/get-motivos', 'PortalSolicitudesController@getmotivos')->name('get-motivos');
     Route::post('/create-solicitud-motivo', 'PortalSolicitudesController@createsolicitudMotivos')->name('create-solicitud-motivo');
-    Route::get('/get-solicitudes-motivos/{solicitud_catalogo_id?}', 'PortalSolicitudesController@getSolicitudesMotivos')->name('get-solicitudes-motivos/{solicitud_catalogo_id?}');
+    Route::get('/get-solicitudes-motivos/{solicitud_catalogo_id?}', 'PortalSolicitudesController@getSolicitudesMotivos')->name('get-solicitudes-motivos');
     Route::post('/delete-solicitudes-motivos', 'PortalSolicitudesController@deleteSolicitudMotivo')->name('delete-solicitudes-motivos');
 
-    Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite')->name('get-firma-find/{tramite_id?}');
+    Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite')->name('get-firma-find');
     Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite')->name('update-firma');
 
 
     Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name('solicitudes-register');
     Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
-    Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo')->name('solicitudes-info/{id}/{type?}');
-    Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite')->name('solicitudes-detalle-tramite/{id}');
+    Route::get('/solicitudes-info/{id}/{type?}', 'PortalSolicitudesTicketController@getInfo')->name('solicitudes-info');
+    Route::get('/solicitudes-detalle-tramite/{id}', 'PortalSolicitudesTicketController@detalleTramite')->name('solicitudes-detalle-tramite');
     Route::post('/solicitudes-update', 'PortalSolicitudesTicketController@updateTramite')->name('solicitudes-update');
-    Route::post('/solicitudes-filtrar/{max?}', 'PortalSolicitudesTicketController@filtrarSolicitudes')->name('solicitudes-filtrar/{max?}');
+    Route::post('/solicitudes-filtrar/{max?}', 'PortalSolicitudesTicketController@filtrarSolicitudes')->name('solicitudes-filtrar');
     Route::post('/save-transaccion', 'PortalSolicitudesTicketController@saveTransaccion')->name('save-transaccion');
     Route::post('/save-transaccion-motor', 'PortalSolicitudesTicketController@saveTransaccionMotor')->name('save-transaccion-motor');
     Route::post('/solicitudes-update-status-tramite', 'PortalSolicitudesTicketController@updateStatusTramite')->name('solicitudes-update-status-tramite');
     Route::post('/solicitudes-get-status', 'PortalSolicitudesTicketController@getStatus')->name('solicitudes-get-status');
     Route::post('/solicitudes-register-temporal', 'PortalSolicitudesTicketController@registrarSolicitud')->name('solicitudes-register-temporal');
-    Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite')->name('solicitudes-get-tramite/{clave}');
+    Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite')->name('solicitudes-get-tramite');
     Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites')->name('solicitudes-update-tramite');
-    Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite')->name('solicitudes-get-tramite-pdf/{id}');
-    Route::get('/download/{file}', 'PortalSolicitudesTicketController@downloadFile')->name('download/{file}');
+    Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite')->name('solicitudes-get-tramite-pdf');
+    Route::get('/download/{file}', 'PortalSolicitudesTicketController@downloadFile')->name('download');
     Route::post('/solicitudes-guardar-carrito', 'PortalSolicitudesTicketController@enCarrito')->name('solicitudes-guardar-carrito');
-    Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales/{folio}');
+    Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales');
 
     Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado')->name('solicitudes-filtrar/count');
     Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles')->name('save-files');
@@ -460,23 +460,23 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/obt-divisas-cambio', 'DivisasController@getCambioDivisa')->name('obt-divisas-cambio');
 
     /***************************apis webservice*************************************/
-    Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta')->name('insumos-catastro-consulta/{expediente}');
-    Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion')->name('transaccion-estatus/{transaccion}/{estatus}/{key}');
-    Route::get('/wsrp/{origen}', 'ApiController@registro_publico')->name('wsrp/{origen}');
-    Route::get('/wsent/{origen}', 'ApiController@entidades')->name('wsent/{origen}');
-    Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios')->name('wsmun/{origen}/{clave_entidad}');
-    Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos')->name('wsdis/{origen}/{clave_municipio}');
-    Route::get('/consultar-curp/{curp}', 'ApiController@curp')->name('consultar-curp/{curp}');
-    Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral')->name('valor-catastral-notaria/{id}');
+    Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta')->name('insumos-catastro-consulta');
+    Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion')->name('transaccion-estatus');
+    Route::get('/wsrp/{origen}', 'ApiController@registro_publico')->name('wsrp');
+    Route::get('/wsent/{origen}', 'ApiController@entidades')->name('wsent');
+    Route::get('/wsmun/{origen}/{clave_entidad}', 'ApiController@municipios')->name('wsmun');
+    Route::get('/wsdis/{origen}/{clave_municipio}', 'ApiController@distritos')->name('wsdis');
+    Route::get('/consultar-curp/{curp}', 'ApiController@curp')->name('consultar-curp');
+    Route::get('/valor-catastral-notaria/{id}', 'ApiController@getValorCatastral')->name('valor-catastral-notaria');
 
     Route::get('/insumos-montos', 'ApiController@getMontoOperacion')->name('insumos-montos');
 
-    Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAviso')->name('aviso/{expediente}/{userid}/{tramite}');
+    Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAviso')->name('aviso');
 
 
 
     Route::get('/obtener-estados', 'CatalogosController@getEntidad')->name('obtener-estados');
-    Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios')->name('obtener-municipios/{clave_estado}');
+    Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios')->name('obtener-municipios');
 
     Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes')->name('porcentaje-recargos');
     Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes')->name('porcentaje-find-all');
@@ -487,10 +487,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/campo-alias-update', 'PortalSolicitudesTicketController@updateAlias')->name('campo-alias-update');
 
-    Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarIndividuo')->name('wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}');
-    Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaNac')->name('wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}');
-    Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}', 'ApircController@buscarActaDef')->name('wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}');
-    Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaMat')->name('wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}');
+    Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarIndividuo')->name('wsrc-individuo');
+    Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaNac')->name('wsrc-actanac');
+    Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}', 'ApircController@buscarActaDef')->name('wsrc-actadef');
+    Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaMat')->name('wsrc-actamat');
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
     Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo');
