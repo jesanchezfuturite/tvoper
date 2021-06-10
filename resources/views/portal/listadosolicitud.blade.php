@@ -377,7 +377,7 @@ function configprelacion()
 {
   $.ajax({
       method: "get",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/configprelacion') }}",
+      url: "{{ url()->route('configprelacion') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
       //console.log(response);   
@@ -426,7 +426,7 @@ function configprelacion()
     var id_=$("#id_registro").val();
     $.ajax({
       method: "get",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/asignar-solicitudes') }}"+"/"+id_,
+      url: "{{ url()->route('asignar-solicitudes') }}"+"/"+id_,
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         if(response.Code=='200')
@@ -458,7 +458,7 @@ function configprelacion()
     var resp;
      $.ajax({
       method: "get",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/wsrp/qa') }}",
+      url: "{{ url()->route('wsrp/qa') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {
       resp=response; 
@@ -473,7 +473,7 @@ function configprelacion()
   {
     $.ajax({
       method: "get",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/find-solicitudes') }}",
+      url: "{{ url()->route('find-solicitudes') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         //console.log(response);
@@ -493,7 +493,7 @@ function configprelacion()
     //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
-          url: "{{ url()->route('deployed-dev-complementos-solicitudes/get-solicitudes-motivos') }}"+"/"+catalogo_id,
+          url: "{{ url()->route('get-solicitudes-motivos') }}"+"/"+catalogo_id,
           data: {_token:'{{ csrf_token() }}'}  })
           .done(function (response) {   
           //console.log(response);  
@@ -527,7 +527,7 @@ function configprelacion()
     Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     $.ajax({
          method: "POST", 
-         url: "{{ url()->route('deployed-dev-complementos-solicitudes/filtrar-solicitudes') }}",
+         url: "{{ url()->route('filtrar-solicitudes') }}",
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
@@ -580,7 +580,7 @@ function configprelacion()
     Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     $.ajax({
          method: "POST", 
-         url: "{{ url()->route('deployed-dev-complementos-solicitudes/filtrar-solicitudes') }}",
+         url: "{{ url()->route('filtrar-solicitudes') }}",
          data: formdata })
       .done(function (response) {
         
@@ -822,7 +822,7 @@ function configprelacion()
           method: "POST",
           contentType: false,
           processData: false, 
-          url: "{{ url()->route('deployed-dev-complementos-solicitudes/guardar-solicitudes') }}",
+          url: "{{ url()->route('guardar-solicitudes') }}",
           data: formdata })
       .done(function (response) {
           if(response.Code=="200")
@@ -865,7 +865,7 @@ function configprelacion()
       var user_id="";
       $.ajax({
       method: "post",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/obtener-region/"+id_ticket+"/"+user_id+"') }}",
+      url: "{{ url()->route('obtener-region/"+id_ticket+"/"+user_id+"') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
          
@@ -913,7 +913,7 @@ function configprelacion()
         });
       $.ajax({
       method: "post",            
-      url: "{{ url()->route('deployed-dev-complementos-solicitudes/update-rechazo') }}",
+      url: "{{ url()->route('update-rechazo') }}",
       data: {id:checks,estatus:estatus_,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
@@ -997,7 +997,7 @@ function configprelacion()
       findMessage(id);
       $.ajax({
            method: "GET", 
-           url: "{{ url()->route('deployed-dev-complementos-solicitudes/atender-solicitudes') }}" + "/"+id,
+           url: "{{ url('atender-solicitudes') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
             //console.log(response);
@@ -1092,7 +1092,7 @@ function configprelacion()
     {
       $.ajax({
            method: "GET", 
-           url: "{{ url()->route('deployed-dev-complementos-solicitudes/listado-mensajes') }}" + "/"+id_,
+           url: "{{ url()->route('listado-mensajes') }}" + "/"+id_,
            data:{_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -1145,7 +1145,7 @@ function configprelacion()
       //console.log(btn_2);
      $.ajax({
            method: "POST", 
-           url: "{{ url()->route('deployed-dev-complementos-solicitudes/cerrar-ticket') }}",
+           url: "{{ url()->route('cerrar-ticket') }}",
            data:{ id:idT ,id_catalogo:id_catalogo_,option:btn_2,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response.solicitante);
@@ -1224,7 +1224,7 @@ function configprelacion()
            method: "POST",
            contentType: false,
             processData: false, 
-           url: "{{ url()->route('deployed-dev-complementos-solicitudes/guardar-solicitudes') }}",
+           url: "{{ url()->route('guardar-solicitudes') }}",
            data: formdata })
         .done(function (response) {
           //console.log(response.solicitante);
