@@ -1100,6 +1100,9 @@
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
+                obj.folio = item.Folio;
+                obj.estatus = item.Estatus;
+                obj.banco = item.Banco;
                 obj.fecha_pago = item.Inicio_Tramite;
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
                 obj.no_notaria = item.info_tramite.notary_number;
