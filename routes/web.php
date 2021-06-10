@@ -22,18 +22,18 @@ Route::get('/', function(){
     }
 });
 
-Route::group(["prefix" => getenv("APP_PREFIX") ?? "/", 'middleware' => 'validate.session'], function(){
+Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/', function () {
         return view('auth.login');
-    });
+    })->name('/');
 
     Auth::routes();
 
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@index')->name('home')->middleware('validate.session');
 
     /* conciliacion app */
-    Route::get('/conciliacion-carga-archivo', 'ConciliacionController@index')->name('conciliacion-carga-archivo');
-    Route::get('/conciliacion-results', 'ConciliacionController@results')->name('conciliacion-results');
+    Route::get('/conciliacion-carga-archivo', 'ConciliacionController@index')->name('conciliacion-carga-archivo')->middleware('validate.session');
+    Route::get('/conciliacion-results', 'ConciliacionController@results')->name('conciliacion-results')->middleware('validate.session');
     Route::post('/conciliacion-uploadfile', 'ConciliacionController@uploadFile')->name('conciliacion-uploadfile');
     Route::post('/conciliacion-getinfo', 'ConciliacionController@getInfo')->name('conciliacion-getinfo');
     Route::post('/conciliacion-detalle-anomalia', 'ConciliacionController@getAnomalia')->name('conciliacion-detalle-anomalia');

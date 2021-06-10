@@ -16,10 +16,7 @@ class ValidateSession
      */
     public function handle($request, Closure $next)
     {
-        $path = request()->getPathInfo();
-        
-        // dd($path);
-        // dd(Auth::user());
+        if(!Auth::user()) return redirect()->route('home.login');
         return $next($request);
     }
 }

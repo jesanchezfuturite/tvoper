@@ -199,7 +199,9 @@ return [
     'white_list' => [
         '/',
         '/login',
-        '/password/reset'
+        '/password/reset',
+        '/register',
+        '/logout'
     ]
 
 ];
