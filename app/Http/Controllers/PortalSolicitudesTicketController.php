@@ -1821,6 +1821,7 @@ class PortalSolicitudesTicketController extends Controller
         $tramite = $this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)->first();
         $json_recibo = json_decode($tramite->json_recibo);
         $referencia = $json_recibo->response->referencia;
+        $id_transaccion = $tramite->id;
         $link = "http://10.153.144.218/payments-api/v1/cancel";
         try {
           $res = (new Client())->request(
@@ -1837,10 +1838,13 @@ class PortalSolicitudesTicketController extends Controller
           
           $results = json_decode($results);
 
-          $results->response->error;
+          $results->response;
 
-          if($results == 0){
-              
+          if($results->error == 0){
+              $tramite =$this->$solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
+              ->update(["estatus", $results->status]);
+              $ticket= $this->ticket->where("id_transaccion", $id_transaccion)
+              ->update(["id_transaccion"=>NULL]);
           }
           
           } catch (ClientException $exception) {
