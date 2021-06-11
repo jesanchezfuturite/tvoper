@@ -688,26 +688,26 @@ class PortalSolicitudesTicketController extends Controller
       }
       $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
       try {
-        // $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
-        // ->update([
-        //   'id_transaccion_motor'=>$request->id_transaccion_motor,
-        //   'json_envio'=>json_encode($request->json_envio),
-        //   'json_recibo'=>json_encode($request->json_recibo),
-        //   'url_recibo'=>$request->url_recibo,
-        //   'estatus'=> $request->status
+        $solTramites = $this->solTramites->where('id' , $request->id_transaccion)
+        ->update([
+          'id_transaccion_motor'=>$request->id_transaccion_motor,
+          'json_envio'=>json_encode($request->json_envio),
+          'json_recibo'=>json_encode($request->json_recibo),
+          'url_recibo'=>$request->url_recibo,
+          'estatus'=> $request->status
 
-        //   ]);
+          ]);
 
-        // if($solTramites){
-        //   $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
-        //   ->update([
-        //     'status'=> $statusTicket,
-        //     'id_tramite'=>$request->id_tramite,
-        //     'recibo_referencia'=>$recibo_referencia
-        //   ]);
+        if($solTramites){
+          $solicitudTicket = $this->ticket->where('id_transaccion' , $request->id_transaccion)
+          ->update([
+            'status'=> $statusTicket,
+            'id_tramite'=>$request->id_tramite,
+            'recibo_referencia'=>$recibo_referencia
+          ]);
 
 
-        // }
+        }
 
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)
