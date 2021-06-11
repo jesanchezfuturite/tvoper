@@ -266,7 +266,7 @@
   {
     $.ajax({
         method: "get",            
-        url: "{{ url('/entidad-find') }}",
+        url: "{{ url()->route('entidad-find') }}",
         data: {_token:'{{ csrf_token() }}'}  })
       .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -311,7 +311,7 @@
     {          
         $.ajax({
            method: "get",            
-           url: "{{ url('/banco-find-all') }}",
+           url: "{{ url()->route('banco-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#itemsBancos option").remove();
@@ -336,7 +336,7 @@
       var entidadId=$("#optionEntidad").val();
             $.ajax({
            method: "POST",            
-           url: "{{ url('/entidad-find-all') }}",
+           url: "{{ url()->route('entidad-find-all') }}",
            data: {id:entidadId,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
         $("#itemsTipoServicio option").remove();
@@ -460,7 +460,7 @@
           var IdBanc= valueBanco;
          $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-find') }}",
+           url: "{{ url()->route('pagotramite-find') }}",
            data: {idBanco:IdBanc,idTiposervicio:TipoServ,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             var Resp=$.parseJSON(responseTipoServicio);          
@@ -502,7 +502,7 @@ function FindCuentasBancarias(banco_)
 {    
       $.ajax({
            method: "POST",            
-           url: "{{ url('/cuentasbanco-find') }}",
+           url: "{{ url()->route('cuentasbanco-find') }}",
            data: {id:banco_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) { 
 
@@ -539,7 +539,7 @@ function findPagoTramite(id_,banco_,idbanco_)
 
     $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-find-where') }}",
+           url: "{{ url()->route('pagotramite-find-where') }}",
            data: {id:id_,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
         var Resp=$.parseJSON(responseinfo);         
@@ -621,7 +621,7 @@ function actualizaPagoTramite(idbanco_)
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-update') }}",
+           url: "{{ url()->route('pagotramite-update') }}",
            data: {id:id_,descripcion:descripcion_,fecha_inicio:fechaInicio,fecha_fin:fechaFin,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {
             if(responseinfo=="true")
@@ -649,7 +649,7 @@ function eliminarRegistro(banco_,idbanco_)
 
     $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-delete') }}",
+           url: "{{ url()->route('pagotramite-delete') }}",
            data: {id:id_,entidad:valueEntidad,option:option_,_token:'{{ csrf_token() }}'}  
        })
         .done(function (responseinfo) {
@@ -698,7 +698,7 @@ function PagoTramite(id_)
 
          $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-insert') }}",
+           url: "{{ url()->route('pagotramite-insert') }}",
            data: {Id_Banco:idcuentaBanco,Id_tiposervicio:TipoServ,option:option_,entidad:entidad_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {           
           if(responseTipoServicio=="true")        
@@ -725,7 +725,7 @@ function ActualizarTabla(idbanco_)
     
       $.ajax({
            method: "POST",            
-           url: "{{ url('/pagotramite-find') }}",
+           url: "{{ url()->route('pagotramite-find') }}",
            data: {idBanco:idbanco_,idTiposervicio:TipoServ,option:option_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseTipoServicio) {
             //console.log(responseTipoServicio);

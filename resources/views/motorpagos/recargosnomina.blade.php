@@ -191,7 +191,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/recargos-find-all') }}",
+           url: "{{ url()->route('recargos-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode').value=response;            
@@ -221,7 +221,7 @@
         var requerido_=$("#requerido").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-insert') }}",
+           url: "{{ url()->route('recargos-insert') }}",
            data: {anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -245,7 +245,7 @@
         var requerido_=$("#requerido").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-update') }}",
+           url: "{{ url()->route('recargos-update') }}",
            data: {id:id_,anio:anio_,mes:mes_,vencido:vencido_,requerido:requerido_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response.Code=="200")
@@ -265,7 +265,7 @@
         document.getElementById('idupdate').value=id_;
         $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-find-where') }}",
+           url: "{{ url()->route('recargos-find-where') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -323,7 +323,7 @@
         var id_=$("#iddeleted").val();
          $.ajax({
            method: "post",           
-           url: "{{ url('/recargos-deleted') }}",
+           url: "{{ url()->route('recargos-deleted') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           if(response=="true")

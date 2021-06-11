@@ -197,7 +197,7 @@
     { docs=1; }
       $.ajax({
            method: "POST", 
-           url: "{{ url('/solicitud-update-permisos') }}",
+           url: "{{ url()->route('solicitud-update-permisos') }}",
            data: {id:id_,required_docs:docs,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
             if(response.status=='400')
@@ -226,7 +226,7 @@
     	 
     	$.ajax({
            method: "POST", 
-           url: "{{ url('/solicitud-find-folio') }}",
+           url: "{{ url()->route('solicitud-find-folio') }}",
            data: {folio:folio_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
         	//console.log(response);
@@ -266,7 +266,7 @@
       $("#solicitante").append("<div id='addSolicitante'></div>");
       $.ajax({
            method: "GET", 
-           url: "{{ url('/solicitud-find-detalle') }}" + "/"+id,
+           url: "{{ url()->route('solicitud-find-detalle') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           console.log(response);

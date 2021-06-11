@@ -512,7 +512,7 @@
         var tramite=$("#itemsTramites").val();
         $.ajax({
            method: "get",
-           url: "{{ url('/get-firma-find') }}"+"/"+tramite,
+           url: "{{ url()->route('get-firma-find', '') }}"+"/"+tramite,
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -542,7 +542,7 @@
         console.log(check);
         $.ajax({
            method: "POST",
-           url: "{{ url('/update-firma') }}",
+           url: "{{ url()->route('update-firma') }}",
            data: {tramite_id:id_tramite_,firma:check,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
          if(response.Code =="200"){
@@ -572,7 +572,7 @@
         //console.log(check);
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-prelacion') }}",
+           url: "{{ url()->route('traux-prelacion') }}",
            data: {id_tramite:id_tramite_,prelacion:check,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
          if(response.Code =="200"){
@@ -590,7 +590,7 @@
     
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-agrupacion') }}",
+           url: "{{ url()->route('traux-agrupacion') }}",
            data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -654,7 +654,7 @@
         }
         $.ajax({
            method: "POST",
-           url: "{{ url('/addFile') }}",
+           url: "{{ url()->route('addFile') }}",
            data: {id_tramite:itemTramite,option:option_, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -672,7 +672,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url('/listarCategorias') }}",
+           url: "{{ url()->route('listarCategorias') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -689,7 +689,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-serv') }}",
+           url: "{{ url()->route('traux-get-serv') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -707,7 +707,7 @@
 
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-camp') }}",
+           url: "{{ url()->route('traux-get-camp') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);
@@ -725,7 +725,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url('/traux-get-tcamp') }}",
+           url: "{{ url()->route('traux-get-tcamp') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -766,7 +766,7 @@
 
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-agrupacion') }}",
+           url: "{{ url()->route('traux-agrupacion') }}",
            data: {id_tramite:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -821,7 +821,7 @@
         var agrupacion=$("#itemsAgrupaciones").val();
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-get-relcamp') }}",
+           url: "{{ url()->route('traux-get-relcamp') }}",
            data: {tramiteid:items,agrupacion_id:agrupacion,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -1011,7 +1011,7 @@
         });
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-add-serv') }}",
+           url: "{{ url()->route('traux-add-serv') }}",
            data: {tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],agrupacion_id:itemsAgrupaciones,orden:contador,fileT:option, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -1048,7 +1048,7 @@
         }
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-edit-relcamp') }}",
+           url: "{{ url()->route('traux-edit-relcamp') }}",
            data: {id:idRelantion,tramiteid:itemTramite,campoid:[itemsCampo],tipoid: [itemsTipos],caracteristicas:[valCheck],fileT:option, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -1073,7 +1073,7 @@
       //console.log("id "+idCampo+" nombre:"+nombre+" valor:"+valor);
       $.ajax({
         method : "POST",
-        url: "{{url('/traux-add-caract')}}",
+        url: "{{url()->route('traux-add-caract')}}",
         data: { id:idCampo,tipo:idTipo, nombre:nombre, valor:valor, _token:"{{ csrf_token() }}"},
 
         success: function(info){
@@ -1117,7 +1117,7 @@
         //console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/guardar-orden') }}",
+           url: "{{ url()->route('guardar-orden') }}",
            data: {data: fdata,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         
@@ -1141,7 +1141,7 @@
         //console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/guardar-orden-agrupacion') }}",
+           url: "{{ url()->route('guardar-orden-agrupacion') }}",
            data: {data: fdata,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         
@@ -1176,7 +1176,7 @@
         });
          $.ajax({
            method: "POST",
-           url: "{{ url('/guardar-agrupacion') }}",
+           url: "{{ url()->route('guardar-agrupacion') }}",
            data: {descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,orden:contador,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
@@ -1211,7 +1211,7 @@
         //console.log(fdata);
          $.ajax({
            method: "POST",
-           url: "{{ url('/edit-agrupacion') }}",
+           url: "{{ url()->route('edit-agrupacion') }}",
            data: {id:id_agr,descripcion: agrup,id_tramite:tramite_id,id_categoria:categoria_id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response.Code=="200"){          
@@ -1244,7 +1244,7 @@
         var idRelantion=$("#iddeleted").val();
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-del-relcamp') }}",
+           url: "{{ url()->route('traux-del-relcamp') }}",
            data: {id:idRelantion, _token:'{{ csrf_token() }}'}
        })
         .done(function (response) {
@@ -1263,7 +1263,7 @@
         var check=$("#checkbox2").prop("checked");
         $.ajax({
            method: "POST",
-           url: "{{ url('/traux-divisa') }}",
+           url: "{{ url()->route('traux-divisa') }}",
            data: {id_tramite:id_tramite_,divisa:check,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
          if(response.Code =="200"){

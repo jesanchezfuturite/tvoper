@@ -133,7 +133,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/status-find-all') }}",
+           url: "{{ url()->route('status-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -175,7 +175,7 @@
         $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Referencia</th>   <th>Estatus</th><th>Importe</th><th>Fecha Transaccion</th> <th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-referencia') }}",
+           url: "{{ url()->route('transaccion-find-referencia') }}",
            data: {folio:numero,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
            
@@ -217,7 +217,7 @@
         $("#RemoveTable").append(" <table class='table table-hover' id='sample_2'> <thead> <tr>   <th>Transaccion</th>   <th>Nombre de Envio</th><th>Estatus</th><th>Importe</th> <th>Fecha Transaccion</th><th>&nbsp;Operacion&nbsp; </th></tr> </thead> <tbody>  <tr> <td><span class='help-block'>No Found</span></td> <td></td> <td></td> <td></td> <td></td> <td></td> </tr> </tbody> </table>");
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-referencia') }}",
+           url: "{{ url()->route('transaccion-find-referencia') }}",
            data: {folio:numero,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -261,7 +261,7 @@
        
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-status') }}",
+           url: "{{ url()->route('transaccion-find-status') }}",
            data: {folio:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {           
           var Resp=$.parseJSON(response);        
@@ -274,7 +274,7 @@
         }else{
              $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-find-status-oper') }}",
+           url: "{{ url()->route('transaccion-find-status-oper') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);        
@@ -300,7 +300,7 @@
         else if(busca=="egob_transaccion"){
         $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-update-status') }}",
+           url: "{{ url()->route('transaccion-update-status') }}",
            data: {folio:id_,status:status_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response=="true"){
@@ -315,7 +315,7 @@
         }else{
             $.ajax({
            method: "POST",           
-           url: "{{ url('/transaccion-update-status-oper') }}",
+           url: "{{ url()->route('transaccion-update-status-oper') }}",
            data: {folio:id_,status:status_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(response=="true"){

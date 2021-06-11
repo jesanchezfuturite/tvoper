@@ -286,7 +286,7 @@ function ItemsPermisos()
   {
     $.ajax({
       method: "get",            
-      url: "{{ url('/notary-offices-roles') }}",
+      url: "{{ url()->route('notary-offices-roles') }}",
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         //console.log(response);
@@ -306,7 +306,7 @@ function changeComunidad()
   
    $.ajax({
         method: "get",            
-        url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
+        url: "{{ url()->route('notary-offices-community') }}"+"/"+comunidad,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
            
@@ -320,7 +320,7 @@ function changeComunidad()
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/operacion-roles-get-rol') }}",
+        url: "{{ url()->route('operacion-roles-get-rol') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#itemsConfigUser option").remove();
@@ -367,7 +367,7 @@ function changeComunidad()
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url('/notary-offices-user-status') }}",
+           url: "{{ url()->route('notary-offices-user-status') }}",
            data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
           changeNotario();
@@ -424,7 +424,7 @@ function changeComunidad()
             };
       $.ajax({
            method: "POST",            
-           url: "{{ url('/notary-offices-edit-user') }}",
+           url: "{{ url()->route('notary-offices-edit-user') }}",
            data: {notary_id:id_notary,user_id:id_user,user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
              limpiarPerf();
@@ -496,7 +496,7 @@ function changeComunidad()
             console.log(user_);
       $.ajax({
            method: "POST",            
-           url: "{{ url('/config-create-users') }}",
+           url: "{{ url()->route('config-create-users') }}",
            data: {user:user_ ,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           response=$.parseJSON(response);

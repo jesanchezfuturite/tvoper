@@ -22,7 +22,7 @@ class Portalmensajeprelacion extends Model implements Transformable
      */
      protected $connection = "mysql6";
 
-    protected $fillable = ['id','solicitud_id'];
+    protected $fillable = ['id','grupo_clave','url_prelacion','status','created_at','upodated_at'];
 
     protected $table = "mensaje_prelacion";
 
