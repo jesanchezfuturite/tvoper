@@ -539,7 +539,7 @@ function configprelacion()
                     //console.log(response[n].grupo[k]);
                     if(typeof (response[n].grupo[k])!=="undefined" )
                     {
-                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null &&  response[n].grupo[h].status!="11" &&  response[n].grupo[h]!="10")
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null &&  response[n].grupo[h].status!="11" &&  response[n].grupo[h]!="10" && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe)
                        {                       
                           Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
                           response[n].grupo.splice(h,1);
