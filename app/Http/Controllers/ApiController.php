@@ -89,6 +89,10 @@ class ApiController extends Controller
 	protected $expediente_catastral_id = 32;
 	protected $solicitudes_aviso_id = 71;
 
+	protected $header = array (
+                'Content-Type' => 'application/json; charset=UTF-8',
+                'charset' => 'utf-8'
+            );
 
     /**
      * Create a new controller instance.
@@ -299,6 +303,144 @@ class ApiController extends Controller
 
         }
     }
+
+
+    /**
+     * Registrar tramites de catastro (Aviso de Enajenacion y IVC)
+     *
+     * @param 
+     *
+     *
+     * @return 
+     */
+
+    public function catastro_registro(Request $request)
+    {
+        // $response = ['code'=>400,'response'=>'','message'=>''];
+        // return csrf_token();
+        $body = $request->getContent();
+        $data = json_decode($body);
+        $json = isset($data->json) ? $data->json : "";
+
+        if(empty($json))
+            return response()->json(['response'=>'','message'=>'Sin informacion para continuar.'],400,$this->header,JSON_UNESCAPED_UNICODE);
+
+        $expediente = isset($json->expedientecatastral) ? $json->expedientecatastral : "";
+        $pktramite = isset($json->pktramite) ? $json->pktramite : "0";
+        $pknotaria = isset($json->pknotaria) ? $json->pknotaria : 0;
+        $estadonotaria = isset($json->estadonotaria) ? $json->estadonotaria : "";
+        $foliopago = isset($json->foliopago) ? $json->foliopago : 0;
+        $fechapago = isset($json->fechapago) ? $json->fechapago : "";
+        $montopago = isset($json->montopago) ? $json->montopago : 0;
+        $tipoventa = isset($json->tipoventa) ? $json->tipoventa : "";
+        $isai = isset($json->isai) ? $json->isai : 0;
+        $fechaprot = isset($json->fechaprot) ? $json->fechaprot : '0000-00-00';
+        $fechafirma = isset($json->fechafirma) ? $json->fechafirma : '0000-00-00';
+        $escriturapub = isset($json->escriturapub) ? $json->escriturapub : "";
+        $actafprot = isset($json->actafprot) ? $json->actafprot : "";
+        $operacion = isset($json->operacion) ? $json->operacion : 0;
+        $motivooperacion = isset($json->motivooperacion) ? $json->motivooperacion : "";
+        $adquirientes = isset($json->adquirientes) ? $json->adquirientes : [];
+        $folioforma = isset($json->folioforma) ? $json->folioforma : "";
+        $descripcion_predio = isset($json->descripcion_predio) ? $json->descripcion_predio : "";
+        $vendedores = isset($json->vendedores) ? $json->vendedores : [];
+        
+        if(empty($expediente) || empty($pktramite) || empty($pknotaria)) 
+            return response()->json(['response'=>'','message'=>'Faltan parametros de registro.'],400,$this->header,JSON_UNESCAPED_UNICODE);
+
+        if(!in_array($pktramite, ["15","9"]))
+            return response()->json(['response'=>'','message'=>'Id tramite incorrecto'],400,$this->header,JSON_UNESCAPED_UNICODE);
+
+        if(strcmp($pktramite,"15") == 0) // INFORMATIVO
+        {   
+            if(empty($foliopago) || empty($fechapago) || empty($montopago) || empty($estadonotaria))
+                return response()->json(['response'=>'','message'=>'Faltan parametros para informativo'],400,$this->header,JSON_UNESCAPED_UNICODE);
+            else
+            {
+                try {
+                    $this->client = new \GuzzleHttp\Client();
+
+                    $elements = 'expedientecatastral='.$expediente;
+                    $elements.= '&pktramite='.$pktramite;
+                    $elements.= '&pknotaria='.$pknotaria;
+                    $elements.= '&foliopago='.$foliopago;
+                    $elements.= '&fechapago='.$fechapago;
+                    $elements.= '&montopago='.$montopago;
+                    $elements.= '&estadonotaria='.$estadonotaria;
+
+                    $url = $this->catastro_url_reg . '?' . $elements;
+                    
+                    $response = $this->client->request('GET',$url);
+
+                    if($response->getStatusCode() == 200)
+                    {
+                        $body = $response->getBody()->getContents();
+                        return response()->json(['response'=>$body,'message'=>'OK'],200,$this->header,JSON_UNESCAPED_UNICODE);
+                    }
+                    else
+                        return response()->json(['response'=>$body,'message'=>''],$response->getStatusCode(),$this->header,JSON_UNESCAPED_UNICODE);
+
+                } catch (\Exception $e) {
+                    return response()->json(['response'=>'','message'=>$e->getMessage()],400,$this->header,JSON_UNESCAPED_UNICODE);
+                    // dd($e->getMessage());
+                }
+            }
+        }
+
+        if(strcmp($pktramite,"9") == 0) // AVISO DE ENAJENACION
+        {
+            if(empty($foliopago) || empty($fechapago) || empty($montopago) || empty($estadonotaria))
+                return response()->json(['response'=>'','message'=>'Faltan parametros para aviso de enajenacion'],400,$this->header,JSON_UNESCAPED_UNICODE); 
+            else 
+            {
+                try {
+                    $this->client = new \GuzzleHttp\Client();
+
+                    if((int)$operacion == 0 && empty($motivooperacion))
+                        return response()->json(['response'=>'','message'=>'Obligatorio el motivo de la operacion si la operacion del monto es 0'],400,$this->header,JSON_UNESCAPED_UNICODE);
+
+                    if(empty($actafprot) && empty($escriturapub))
+                        return response()->json(['response'=>'','message'=>'Obligatorio acta fuera de protocolo o escritura publica'],400,$this->header,JSON_UNESCAPED_UNICODE);
+
+                    $elements = 'expedientecatastral='.$expediente;
+                    $elements.= '&pktramite='.$pktramite;
+                    $elements.= '&pknotaria='.$pknotaria;
+                    $elements.= '&estadonotaria='.$estadonotaria;
+                    $elements.= '&tipoventa='.$tipoventa;
+                    $elements.= '&isai='.$isai;
+                    $elements.= '&fechaprot='.$fechaprot;
+                    $elements.= '&fechafirma='.$fechafirma;
+                    $elements.= '&actafprot='.$actafprot;
+                    $elements.= '&escriturapub='.$escriturapub;
+                    $elements.= '&operacion='.$operacion;
+                    $elements.= '&motivooperacion='.$motivooperacion;
+                    $elements.= '&folioforma='.$folioforma;
+                    $elements.= '&descripcion_predio='.$descripcion_predio;
+                    $elements.= '&adquirientes='.urlencode(serialize($adquirientes));
+                    $elements.= '&vendedores='.urlencode(serialize($vendedores));
+
+                    $url = $this->catastro_url_reg . '?' . $elements;
+                    
+                    $response = $this->client->request('GET',$url);
+
+                    if($response->getStatusCode() == 200)
+                    {
+                        $body = $response->getBody()->getContents();
+                        return response()->json(['response'=>$body,'message'=>'OK'],200,$this->header,JSON_UNESCAPED_UNICODE);
+                    }
+                    else
+                        return response()->json(['response'=>$body,'message'=>''],$response->getStatusCode(),$this->header,JSON_UNESCAPED_UNICODE);
+                    
+                } catch (\Exception $e) {
+                    return response()->json(['response'=>'','message'=>$e->getMessage()],400,$this->header,JSON_UNESCAPED_UNICODE);
+                }
+            }
+
+        }
+
+    }
+
+
  /**
      * Consultar entidad
      *

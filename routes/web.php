@@ -463,6 +463,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     /***************************apis webservice*************************************/
     Route::get('/insumos-catastro-consulta/{expediente}', 'ApiController@catastro_consulta')->name('insumos-catastro-consulta');
+    Route::post('/registro-catastro', 'ApiController@catastro_registro');
     Route::get('/transaccion-estatus/{transaccion}/{estatus}/{key}', 'ApiController@cambiaEstatusTransaccion')->name('transaccion-estatus');
     Route::get('/wsrp/{origen}', 'ApiController@registro_publico')->name('wsrp');
     Route::get('/wsent/{origen}', 'ApiController@entidades')->name('wsent');
