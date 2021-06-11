@@ -448,7 +448,8 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')->where("firma", 1);
           }])->get()->toArray();
         }else{
-          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
+          $solicitudes = PortalSolicitudesTicket::with("tramites")
+          ->whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
           })
@@ -486,13 +487,14 @@ class PortalSolicitudesTicketController extends Controller
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "id_transaccion"=>$dato["id_transaccion"],
                 "grupo_clave"=>$dato["grupo_clave"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
                 "status"=>$dato["status"]
+                
               );
-
               array_push($datos, $data);
               $tramite["solicitudes"]= $datos;
 
@@ -513,7 +515,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener información",
+            "Message" => "Error al obtener información " .$e->getMessage(),
           ]
         );
       }
@@ -533,7 +535,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener detalle",
+            "Message" => "Error al obtener detalle ",
           ]
         );
       }
@@ -718,7 +720,7 @@ class PortalSolicitudesTicketController extends Controller
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
-              if(isset($key2)){
+              if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
@@ -738,6 +740,7 @@ class PortalSolicitudesTicketController extends Controller
 
           }else{
             if($value->status<>5){
+              Log::info("Tramites finalizados segundo else");
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
@@ -747,10 +750,11 @@ class PortalSolicitudesTicketController extends Controller
         $error = $e;
       }
       if($error){
+        Log::info('Error Guardar transaccion: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al guardar transaccion motor"
+            "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
           ]);
       }else{
         return response()->json(
@@ -814,7 +818,7 @@ class PortalSolicitudesTicketController extends Controller
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
-              if(isset($key2)){
+              if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
@@ -848,7 +852,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al actualizar estatus"
+            "Message" => "Error al actualizar estatus ".$e->getMessage()
           ]);
       }else {
         return response()->json(
@@ -1123,6 +1127,7 @@ class PortalSolicitudesTicketController extends Controller
       $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1 && $ticket->status !=80 && $ticket->status !=99 && $ticket->status !=9 ){
         try{
+          Log::info("es asignado al admin");
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
@@ -1183,7 +1188,10 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $users = ["$user_id"];
       }
-
+      $count_carrito = $this->ticket->whereIn('user_id', $users)
+      ->where("en_carrito", 1)
+      ->whereNotNull("id_transaccion")
+      ->count();
 
       $ids = array();
       foreach($clave as $key => $v){
@@ -1196,9 +1204,18 @@ class PortalSolicitudesTicketController extends Controller
       }
       try{
         if($body["type"]=="en_carrito"){
-          $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-          $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
-          $mensaje="Solicitudes en el carrito";
+          if($count_carrito>0){
+            return json_encode([
+              "response" 	=> "El carrito no se puede actualizar porque existe una transacción en curso.",
+              "code"		=> 400,
+    
+            ]);
+          }else{
+            $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
+            $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
+            $mensaje="Solicitudes en el carrito";
+          }
+
 
         }
 
