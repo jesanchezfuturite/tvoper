@@ -110,10 +110,8 @@ class PortalSolicitudesTicketController extends Controller
       $catalogo_id = $tramite->id;
       $error =null;
       $info = json_decode($request->info);
-
-      if($request->has("solicitantes")){
-        $data = 1;
-      }if($request->has("enajenantes")){
+      
+      if($request->has("enajenantes")){
         $datosrecorrer= $request->enajenantes;
         $data = 2;
       }
