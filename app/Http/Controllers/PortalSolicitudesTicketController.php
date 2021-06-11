@@ -717,7 +717,7 @@ class PortalSolicitudesTicketController extends Controller
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
-            Log::info("Existen campos cnfigurados")
+            Log::info("Existen campos cnfigurados");
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2)){
@@ -726,11 +726,11 @@ class PortalSolicitudesTicketController extends Controller
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
                  if(false !== $verificar){
-                  Log::info("Distrito 1")
+                  Log::info("Distrito 1");
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
                  }else{
-                  Log::info("No es distrito 1")
+                  Log::info("No es distrito 1");
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                  }
