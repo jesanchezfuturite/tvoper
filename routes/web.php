@@ -437,7 +437,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado')->name('solicitudes-filtrar/count');
     Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles')->name('save-files');
     Route::post('/edit-solicitudes-info', 'PortalSolicitudesTicketController@editInfo')->name('edit-solicitudes-info');
-
+    Route::post('/cancelar-transaccion', 'PortalSolicitudesTicketController@cancelarTransaccion')->name('cancelar-transaccion');
 
     Route::get('/reglas-operativas', 'PortalReglaOperativaController@index')->name('reglas-operativas');
     Route::get('/reglas-tmt', 'PortalReglaOperativaController@getTramites')->name('reglas-tmt');

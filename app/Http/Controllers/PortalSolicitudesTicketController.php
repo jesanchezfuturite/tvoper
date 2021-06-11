@@ -1816,5 +1816,54 @@ class PortalSolicitudesTicketController extends Controller
       return $newDato;
 
     }
+    public function cancelarTransaccion(Request $request){
+      try {
+        $tramite = $this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)->first();
+        $json_recibo = json_decode($tramite->json_recibo);
+        $referencia = $json_recibo->response->referencia;
+        $link = "http://10.153.144.218/payments-api/v1/cancel";
+        try {
+          $res = (new Client())->request(
+              'POST',
+               $link,
+               [
+                "form_params" =>
+                  [
+                    "referencia" => $referencia,
+                  ]
+              ]
+          );
+          $response = $res->getBody();
+          
+          $results = json_decode($results);
+
+          $results->response->error;
+
+          if($results == 0){
+              
+          }
+          
+          } catch (ClientException $exception) {
+              $responseBody = $exception->getResponse()->getBody(true);
+              Log::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
+              return $responseBody;
+          }
+
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud eliminada",
+          ]
+        );
+
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al eliminar solicitud ".$e->getMessage(),
+          ]
+        );
+      }
+  }
 
 }
