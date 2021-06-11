@@ -705,7 +705,7 @@ function configprelacion()
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos=addSelect(d.grupo[0].grupo_clave);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
-        
+        input_check= addChecks(d.grupo[0].grupo_clave);
         if(d.grupo[0].url_prelacion!=null && b_pr!=null)
         {
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -718,21 +718,20 @@ function configprelacion()
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
-        }else{
-         input_check= addChecks(d.grupo[0].grupo_clave);
+          input_check="";
         }
        if(b_pr==null)
         { btn_prelacion="";
           input_check="";
           btn_rechazo="";
           select_rechazos="";}
-          if(exist==0)
+          /*if(exist==0)
           {
             btn_prelacion="";
           input_check="";
           btn_rechazo="";
           select_rechazos="";
-          }
+          }*/
         html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
