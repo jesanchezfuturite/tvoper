@@ -458,7 +458,7 @@ class PortalSolicitudesTicketController extends Controller
           }])->get()->toArray();
 
         }
-// dd($solicitudes);
+
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -493,8 +493,8 @@ class PortalSolicitudesTicketController extends Controller
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
                 "status"=>$dato["status"]
+                
               );
-
               array_push($datos, $data);
               $tramite["solicitudes"]= $datos;
 
@@ -515,7 +515,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener información",
+            "Message" => "Error al obtener información " .$e->getMessage(),
           ]
         );
       }
@@ -535,7 +535,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener detalle",
+            "Message" => "Error al obtener detalle ",
           ]
         );
       }
