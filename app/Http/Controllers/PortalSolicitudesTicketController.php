@@ -458,7 +458,7 @@ class PortalSolicitudesTicketController extends Controller
           }])->get()->toArray();
 
         }
-
+// dd($solicitudes);
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -487,6 +487,7 @@ class PortalSolicitudesTicketController extends Controller
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "id_transaccion"=>$dato["id_transaccion"],
                 "grupo_clave"=>$dato["grupo_clave"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
@@ -721,7 +722,7 @@ class PortalSolicitudesTicketController extends Controller
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2)){
-                Log::info("entro al if")
+                Log::info("entro al if");
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
@@ -744,7 +745,7 @@ class PortalSolicitudesTicketController extends Controller
 
           }else{
             if($value->status<>5){
-              Log::info("Tramites finalizados segundo else")
+              Log::info("Tramites finalizados segundo else");
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
@@ -856,7 +857,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al actualizar estatus "..$e->getMessage(),
+            "Message" => "Error al actualizar estatus ".$e->getMessage()
           ]);
       }else {
         return response()->json(
