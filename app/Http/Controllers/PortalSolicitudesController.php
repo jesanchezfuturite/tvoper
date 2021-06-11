@@ -626,6 +626,7 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
+        $this->cerrarCrearTicket($request->id,$request->grupo_clave);
         foreach($request->id as $i)
           {
            $this->ticket->update(['status'=>"2"],$i);
@@ -687,6 +688,48 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
+  public function cerrarCrearTicket($id,$grupo_clave){
+    try{
+        foreach($id as $i)
+        {   
+          $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
+          foreach ($findSolTicket as $e) { 
+            $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
+            if($findTicket->count()==0)
+            {
+              $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
+              if($findCatalogoHijo->count()>0)
+              {
+                $catalogoH=$findCatalogoHijo[0]->id;
+                $ins=$this->ticket->create([
+                  "clave"=>$e->clave,
+                  "grupo_clave"=>$e->grupo_clave,
+                  "id_tramite"=>$e->id_tramite,
+                  "recibo_referencia"=>$e->recibo_referencia,
+                  "catalogo_id"=>$catalogoH,
+                  "id_transaccion"=>$e->id_transaccion,
+                  "info"=>$e->info,
+                  "relacionado_a"=>$e->relacionado_a,
+                  "ticket_relacionado"=>$e->id,
+                  "ticket_padre"=>$e->ticket_padre,
+                  "user_id"=>$e->user_id,
+                  "creado_por"=>$e->creado_por,
+                  "asignado_a"=>$e->asignado_a,
+                  "en_carrito"=>$e->en_carrito,
+                  "firmado"=>$e->firmado,
+                  "por_firmar"=>$e->por_firmar,
+                  "doc_firmado"=>$e->doc_firmado,
+                  "required_docs"=>$e->required_docs,
+                  "status"=>$e->status
+                ]);
+              }
+            }
+          }
+        }
+      }catch(\Exception $e){
+        Log::info('Error Cerrar Ticket '.$e->getMessage());
+      }
+    }
   private function updateStatusTicket($id,$status)
   {
     for($x=0; $x<6;$x++)
