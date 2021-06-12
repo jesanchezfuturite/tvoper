@@ -627,14 +627,12 @@
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
         document.getElementById('rfc4').value='';
-        var option = document.querySelector('input[name = radio7]:checked').value;   
-        console.log(option);     
+        var option = document.querySelector('input[name = radio7]:checked').value;    
         if(option=="avanzado")
         {
-            timpicker2();
+            timpicker3();
         }else{
-            //$("#addTimerpicker2 div").remove();
-             $("#addTimerpicker2").css("display", "none");
+             $("#addTimerpicker4").css("display", "none");
             if(option=="undia")
             {
                 consultaTramites('1','1');
@@ -643,6 +641,7 @@
             }
         }
     }
+
     function timpicker()
     {
         //$("#addTimerpicker div").remove();
@@ -661,6 +660,13 @@
         document.getElementById('fechainicio2').value='';
         document.getElementById('fechafin2').value='';
         document.getElementById('rfc2').value='';
+    }
+    function timpicker3()
+    {
+        $("#addTimerpicker4").css("display", "block"); 
+        document.getElementById('fechainicio4').value='';
+        document.getElementById('fechafin4').value='';
+        document.getElementById('rfc4').value='';
     }
     
     $("#rfc").on("keypress", function(e)  {
