@@ -1012,62 +1012,39 @@
                 Command: toastr.warning("Registro No Encontrado", "Notifications")  
             });     
     }
-    function consultaOper(fechaIn,fechaF) {
-        Addtable1();
+    function consultaGpm(fechaIn,fechaF) {
+        Addtable3();
         //document.getElementById("blockui_sample_3_1").click();
-        var rfc_=$("#rfc").val();
-        var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url:  url: "{{ url('/consulta-transacciones-oper') }}",   ,
-        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {
-        document.getElementById('jsonCode1').value=response;        
-        $("#sample_3 tbody tr").remove();   
+        url: "{{ url('/consulta-transacciones-gpm') }}",
+        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        document.getElementById('jsonCode3').value=response;        
+        $("#sample_4 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
         var label='';
         
         $.each(Resp, function(i, item) { 
-             /*  if(item.estatus=='p')
-            {
-                color='success';
-                label='procesado';
-            }else if(item.estatus=='np')
-            {
-                color='danger';
-                label='No procesado';
-            }else if(item.estatus=='ad')
-            {f
-                color='warning';
-                label='ad';
-            }else{
-                color='Info';
-                label='ane';
-            }*/
-             $("#sample_3 tbody").append("<tr>"
-                +"<td>"+item.Folio+"</td>"
-                +"<td>"+item.Transaccion+"</td>"
-                +"<td>"+item.estatus+"</td>"
-                +"<td>"+item.Estatus+"</td>"
-                +"<td>"+item.RFC+"</td>"
-                +"<td>"+item.Familia+"</td>"
-                +"<td>"+item.Entidad+"</td>"
-                +"<td>"+item.Tramite+"</td>"
-                +"<td>"+item.Contribuyente+"</td>"
-                +"<td>"+item.Inicio_Tramite+"</td>"
-                +"<td>"+item.Banco+"</td>"
-                +"<td>"+item.Tipo_Pago+"</td>"
-                +"<td>"+item.Total_Tramite+"</td>"
+             $("#sample_4 tbody").append("<tr>"
+                +"<td>"+item.id_transaccion+"</td>"
+                +"<td>"+item.id_transaccion_entidad+"</td>"
+                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
+                +"<td>"+item.TotalTramite+"</td>"
+                +"<td>"+item.Tipo_Descripcion+"</td>"
+                +"<td>"+item.id_tramite+"</td>"
+                +"<td>"+item.id_tramite_entidad+"</td>"
+                +"<td>"+item.importe_tramite+"</td>"
                 +"</tr>");
             });        
-       cargatabla1();
+       cargatabla3();
         //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
             //document.getElementById("blockui_sample_3_1_1").click();
-            $("#sample_3 tbody tr").remove(); 
-            $("#sample_3 tbody").append("<tr>"
+            $("#sample_4 tbody tr").remove(); 
+            $("#sample_4 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
