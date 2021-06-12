@@ -110,11 +110,8 @@ class PortalSolicitudesTicketController extends Controller
       $catalogo_id = $tramite->id;
       $error =null;
       $info = json_decode($request->info);
-
-      if($request->has("solicitantes") && !$request->has("enajenantes")){
-        $datosrecorrer= $request->solicitantes;
-        $data = 1;
-      }else if($request->has("enajenantes")){
+      
+      if($request->has("enajenantes")){
         $datosrecorrer= $request->enajenantes;
         $data = 2;
       }
@@ -128,7 +125,7 @@ class PortalSolicitudesTicketController extends Controller
       try {
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-          if(!empty($datosrecorrer)){
+          if(!empty($datosrecorrer) && $data==2){
             $datosrecorrer = json_decode($datosrecorrer);
 
             $ids_entrada = array_column($datosrecorrer, 'id');
@@ -194,7 +191,7 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($status==99){
-          if(!empty($datosrecorrer)){
+          if(!empty($datosrecorrer) && $data==2){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
             $ids_entrada = array_column($datosrecorrer, 'id');
@@ -258,127 +255,63 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==7){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
-          if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);
-            foreach($datosrecorrer as $key => $value){
-              $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
-                "clave" => $clave,
-                "grupo_clave" => $grupo,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>1,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs, 
-                "ticket_padre"=>$request->ticket_anterior
+        
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            "clave" => $clave,
+            "grupo_clave" => $grupo,
+            "catalogo_id" => $catalogo_id,
+            "info"=> json_encode($info),
+            "user_id"=>$user_id,
+            "status"=>1,
+            "en_carrito"=>$carrito,
+            "required_docs"=>$request->required_docs,
+            "ticket_padre"=>$request->ticket_anterior
 
-              ]);
+          ]);
 
-             array_push($ids, $ticket->id);
-            }
-            $first_id = reset($ids);
-            if($request->has("file")){
+          if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'mensaje' => $request->descripcion[$key],
-                  'file'    =>  $value
+                  'file'    =>  $value,
                   ];
-
-                  $this->saveFile($data);
-
+                $this->saveFile($data);
               }
-            }
-          }else{
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
-              "clave" => $clave,
-              "grupo_clave" => $grupo,
-              "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
-              "user_id"=>$user_id,
-              "status"=>$estatus,
-              "en_carrito"=>$carrito,
-              "required_docs"=>$request->required_docs,
-              "ticket_padre"=>$request->ticket_anterior
-
-            ]);
-
-            if($request->has("file")){
-               foreach ($request->file as $key => $value) {
-                  $data =[
-                    'ticket_id'=> $ticket->id,
-                    'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    ];
-                  $this->saveFile($data);
-                }
 
 
-            }
           }
+        
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-          if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);
-            foreach($datosrecorrer as $key => $value){
-              $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
-                "clave" => $clave,
-                "grupo_clave" => $grupo,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>99,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs,
-                "ticket_padre"=>$request->ticket_anterior
+      
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            "clave" => $clave,
+            "grupo_clave" => $grupo,
+            "catalogo_id" => $catalogo_id,
+            "info"=> json_encode($info),
+            "user_id"=>$user_id,
+            "status"=>99,
+            "en_carrito"=>$carrito,
+            "required_docs"=>$request->required_docs,
+            "ticket_padre"=>$request->ticket_anterior
 
-              ]);
+          ]);
 
-             array_push($ids, $ticket->id);
-            }
-            $first_id = reset($ids);
-            if($request->has("file")){
+          if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'mensaje' => $request->descripcion[$key],
-                  'file'    =>  $value
+                  'file'    =>  $value,
                   ];
-
-                  $this->saveFile($data);
-
+                $this->saveFile($data);
               }
-            }
-          }else{
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
-              "clave" => $clave,
-              "grupo_clave" => $grupo,
-              "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
-              "user_id"=>$user_id,
-              "status"=>$estatus,
-              "en_carrito"=>$carrito,
-              "required_docs"=>$request->required_docs,
-              "ticket_padre"=>$request->ticket_anterior
-
-            ]);
-
-            if($request->has("file")){
-               foreach ($request->file as $key => $value) {
-                  $data =[
-                    'ticket_id'=> $ticket->id,
-                    'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    ];
-                  $this->saveFile($data);
-                }
 
 
-            }
           }
+          
         }
 
       } catch (\Exception $e) {
