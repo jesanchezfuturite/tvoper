@@ -262,7 +262,7 @@ class PortalSolicitudesTicketController extends Controller
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
-            "status"=>$estatus,
+            "status"=>1,
             "en_carrito"=>$carrito,
             "required_docs"=>$request->required_docs,
             "ticket_padre"=>$request->ticket_anterior
@@ -292,7 +292,7 @@ class PortalSolicitudesTicketController extends Controller
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
-            "status"=>$estatus,
+            "status"=>99,
             "en_carrito"=>$carrito,
             "required_docs"=>$request->required_docs,
             "ticket_padre"=>$request->ticket_anterior
