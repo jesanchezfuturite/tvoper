@@ -381,17 +381,20 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')->where("firma", 1);
           }])->get()->toArray();
         }else{
-          $solicitudes = PortalSolicitudesTicket::with("tramites")
-          ->whereIn('user_id', $users)->where('status', 99)
+          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
             $query->where('en_carrito', '=', 1);
           })
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get()->toArray();
-
+         
         }
-
+        $id_transaccion= array_column($solicitudes, "id_transaccion");
+        $ids_ticket= array_column($solicitudes, "id");
+        $ids_transaccion = array_unique($id_transaccion);
+        $solTramites = $this->solTramites->where("id", $id_transaccion)->first();
+        
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -405,17 +408,19 @@ class PortalSolicitudesTicketController extends Controller
 
 
         $tramites = $this->getTramites($idstmts);
-
+        
+        $costo_total=0;
         $tmts=[];
         $response =[];
         foreach($tramites as $t => $tramite){
           $datos=[];
-          foreach ($solicitudes as $d => $dato) {
+          foreach ($solicitudes as $d => $dato) {        
             if($dato["tramite_id"]== $tramite["tramite_id"]){
               if(empty($dato["info"])){
                 $info=json_decode($dato["info"]);
               }else{
                 $info = $this->asignarClavesCatalogo($dato["info"]);
+                $costo_total += (float)$info->costo_final;
               }
               $data=array(
                 "id"=>$dato["id"],
@@ -438,6 +443,13 @@ class PortalSolicitudesTicketController extends Controller
 
         }
 
+        $importe=json_decode($solTramites->json_envio);
+        $importe_total=(float)$importe->importe_transaccion;
+        if($importe_total==$costo_total && $type!="firma"){
+          $response["json_recibo"] = json_decode($solTramites->json_recibo);
+        }else{
+          $response["json_recibo"] = "";
+        }
         // $response["notary_offices"]=$notary_offices;
         $response["tramites"] =$tmts;
 
