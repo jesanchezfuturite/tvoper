@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\UrlGenerator;
 use DB;
 use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -1822,41 +1824,46 @@ class PortalSolicitudesTicketController extends Controller
         $json_recibo = json_decode($tramite->json_recibo);
         $referencia = $json_recibo->response->referencia;
         $id_transaccion = $tramite->id;
-        $link = "http://10.153.144.218/payments-api/v1/cancel";
-        try {
-          $res = (new Client())->request(
-              'POST',
-               $link,
-               [
-                "form_params" =>
-                  [
-                    "referencia" => $referencia,
-                  ]
-              ]
+
+        $data = array(
+          "referencia"=>$referencia
+        );
+       
+         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";  
+         header('Content-Type: application/json'); 
+         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel"); 
+         $post = json_encode($data); 
+         $authorization = "Authorization: Bearer ".$token; 
+         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization )); 
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt($ch, CURLOPT_POST, 1); 
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);  
+         $result = curl_exec($ch); 
+         curl_close($ch); 
+         $results = json_decode($result);
+         
+        if($results->data == "response"){
+            $estatus =$results->response->estatus;
+            $tramite =$this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
+            ->update(["estatus"=> $estatus]);
+
+            $ticket= $this->ticket->where("id_transaccion", $id_transaccion)
+            ->update(["id_transaccion"=>NULL]);
+        }else{
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => $results->error->message,
+            ]
           );
-          $response = $res->getBody();
+        }
           
-          $results = json_decode($results);
-
-          $results->response;
-
-          if($results->error == 0){
-              $tramite =$this->$solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
-              ->update(["estatus", $results->status]);
-              $ticket= $this->ticket->where("id_transaccion", $id_transaccion)
-              ->update(["id_transaccion"=>NULL]);
-          }
-          
-          } catch (ClientException $exception) {
-              $responseBody = $exception->getResponse()->getBody(true);
-              Log::error("GuzzleHttp Exception: ".json_encode($responseBody, JSON_PRETTY_PRINT));
-              return $responseBody;
-          }
+         
 
         return response()->json(
           [
             "Code" => "200",
-            "Message" => "Solicitud eliminada",
+            "Message" => "Transacción cancelada",
           ]
         );
 
@@ -1864,7 +1871,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al eliminar solicitud ".$e->getMessage(),
+            "Message" => "Error al cancelar transacción ".$e->getMessage(),
           ]
         );
       }
