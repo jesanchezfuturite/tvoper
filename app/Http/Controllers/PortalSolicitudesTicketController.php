@@ -442,15 +442,20 @@ class PortalSolicitudesTicketController extends Controller
             array_push($tmts, $tramite);
 
         }
-
-        $importe=json_decode($solTramites->json_envio);
-        $importe_total=(float)$importe->importe_transaccion;
-        if($importe_total==$costo_total && $type!="firma"){
-          $response["json_recibo"] = json_decode($solTramites->json_recibo);
+        if($solTramites!=null){
+          $importe=json_decode($solTramites->json_envio);
+          $importe_total=(float)$importe->importe_transaccion;
+          if($importe_total==$costo_total && $type!="firma"){
+            $response["json_recibo"] = json_decode($solTramites->json_recibo);
+          }else{
+            $response["json_recibo"] = "Null";
+          }
+  
         }else{
-          $response["json_recibo"] = "";
+          $response["json_recibo"]="Null";
         }
-        // $response["notary_offices"]=$notary_offices;
+        
+
         $response["tramites"] =$tmts;
 
         return $response;
