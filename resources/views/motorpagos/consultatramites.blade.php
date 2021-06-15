@@ -519,7 +519,7 @@
     {
         $.ajax({
            method: "get",
-           url: "{{ url()->route('familia-find-all') }}",
+           url:"{{ url('/familia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -627,14 +627,12 @@
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
         document.getElementById('rfc4').value='';
-        var option = document.querySelector('input[name = radio7]:checked').value;   
-        console.log(option);     
+        var option = document.querySelector('input[name = radio7]:checked').value;    
         if(option=="avanzado")
         {
-            timpicker2();
+            timpicker3();
         }else{
-            //$("#addTimerpicker2 div").remove();
-             $("#addTimerpicker2").css("display", "none");
+             $("#addTimerpicker4").css("display", "none");
             if(option=="undia")
             {
                 consultaTramites('1','1');
@@ -643,6 +641,7 @@
             }
         }
     }
+
     function timpicker()
     {
         //$("#addTimerpicker div").remove();
@@ -661,6 +660,13 @@
         document.getElementById('fechainicio2').value='';
         document.getElementById('fechafin2').value='';
         document.getElementById('rfc2').value='';
+    }
+    function timpicker3()
+    {
+        $("#addTimerpicker4").css("display", "block"); 
+        document.getElementById('fechainicio4').value='';
+        document.getElementById('fechafin4').value='';
+        document.getElementById('rfc4').value='';
     }
     
     $("#rfc").on("keypress", function(e)  {
@@ -687,6 +693,18 @@
             
         }
     }); 
+    $("#rfc4").keyup(function (e) {
+        if (e.keyCode  == 13) {
+            var rfc2=$('#rfc4').val();
+            if(rfc2.length==0)
+            {
+                Command: toastr.warning("RFC / Placas / Folio, Requerido!!", "Notifications")
+            }else{
+                consultaRangoFechasTramites();  
+            }
+            
+        }
+    }); 
 
     function consultaEgob(fechaIn,fechaF) {
         Addtable2();
@@ -694,7 +712,7 @@
         var rfc_=$("#rfc2").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->route('consulta-transacciones-egob') }}",
+        url:"{{ url('/consulta-transacciones-egob') }}",        
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode2').value=response;
@@ -752,8 +770,6 @@
     {
         $("#table_4").remove();
         $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
-        // $("#table_4").remove();
-        // $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead><tr><th>Transacción</th><th>Conciliacion</th><th>Estatus</th><th>Declarado</th><th>Familia</th> <th>Entidad</th><th>Tramite</th></tr> </thead><tbody>  <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>  </tbody> </table></div> </div>");
     }
     function Addtable3()
     {
@@ -905,7 +921,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->route('consulta-transacciones-oper') }}",
+        url:"{{ url('/consulta-transacciones-oper') }}",  
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
@@ -964,7 +980,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->route('consulta-transacciones-tramites') }}",
+        url:"{{ url('/consulta-transacciones-tramites') }}",   
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             // obj = JSON.stringify(response);
@@ -1012,62 +1028,39 @@
                 Command: toastr.warning("Registro No Encontrado", "Notifications")  
             });     
     }
-    function consultaOper(fechaIn,fechaF) {
-        Addtable1();
+    function consultaGpm(fechaIn,fechaF) {
+        Addtable3();
         //document.getElementById("blockui_sample_3_1").click();
-        var rfc_=$("#rfc").val();
-        var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url()->route('consulta-transacciones-oper') }}",
-        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {
-        document.getElementById('jsonCode1').value=response;        
-        $("#sample_3 tbody tr").remove();   
+        url:"{{ url('/consulta-transacciones-gpm') }}",
+        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) { 
+        document.getElementById('jsonCode3').value=response;        
+        $("#sample_4 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
         var label='';
         
         $.each(Resp, function(i, item) { 
-             /*  if(item.estatus=='p')
-            {
-                color='success';
-                label='procesado';
-            }else if(item.estatus=='np')
-            {
-                color='danger';
-                label='No procesado';
-            }else if(item.estatus=='ad')
-            {f
-                color='warning';
-                label='ad';
-            }else{
-                color='Info';
-                label='ane';
-            }*/
-             $("#sample_3 tbody").append("<tr>"
-                +"<td>"+item.Folio+"</td>"
-                +"<td>"+item.Transaccion+"</td>"
-                +"<td>"+item.estatus+"</td>"
-                +"<td>"+item.Estatus+"</td>"
-                +"<td>"+item.RFC+"</td>"
-                +"<td>"+item.Familia+"</td>"
-                +"<td>"+item.Entidad+"</td>"
-                +"<td>"+item.Tramite+"</td>"
-                +"<td>"+item.Contribuyente+"</td>"
-                +"<td>"+item.Inicio_Tramite+"</td>"
-                +"<td>"+item.Banco+"</td>"
-                +"<td>"+item.Tipo_Pago+"</td>"
-                +"<td>"+item.Total_Tramite+"</td>"
+             $("#sample_4 tbody").append("<tr>"
+                +"<td>"+item.id_transaccion+"</td>"
+                +"<td>"+item.id_transaccion_entidad+"</td>"
+                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
+                +"<td>"+item.TotalTramite+"</td>"
+                +"<td>"+item.Tipo_Descripcion+"</td>"
+                +"<td>"+item.id_tramite+"</td>"
+                +"<td>"+item.id_tramite_entidad+"</td>"
+                +"<td>"+item.importe_tramite+"</td>"
                 +"</tr>");
             });        
-       cargatabla1();
+       cargatabla3();
         //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
             //document.getElementById("blockui_sample_3_1_1").click();
-            $("#sample_3 tbody tr").remove(); 
-            $("#sample_3 tbody").append("<tr>"
+            $("#sample_4 tbody tr").remove(); 
+            $("#sample_4 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     
