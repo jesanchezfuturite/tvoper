@@ -449,6 +449,12 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
+    $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
+    if($relacion){
+      $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
+    }else{
+      $notaria=[];
+    }
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
@@ -458,6 +464,7 @@ class PortalSolicitudesController extends Controller
     })
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
+    ->select("c.atendido_por", "solicitudes_ticket.id", "solicitudes_ticket.grupo_clave")
     ->groupBy('solicitudes_ticket.grupo_clave');
  
     if($request->has('tipo_solicitud')){
@@ -478,9 +485,11 @@ class PortalSolicitudesController extends Controller
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
 
     }
-    $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
-
-
+    $ids_tickets = $filtro->get()->pluck('id')->toArray();
+    $grupo = $filtro->get()->pluck('grupo_clave')->toArray();
+  
+    // $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
+    
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
@@ -494,10 +503,12 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
     ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
     ->orderBy('tk.created_at', 'DESC')
-    ->whereIn('tk.grupo_clave',$filtro)->get();
+    // ->whereIn('tk.grupo_clave',$filtro)->get();
+    ->whereIn('tk.id',$ids_tickets)->get();
+   
 
     $newDato=[];
-    foreach($filtro as $i => $id){
+    foreach($grupo as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) {     
         if($value->grupo_clave== $id){
@@ -507,12 +518,13 @@ class PortalSolicitudesController extends Controller
           }
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
+          $newDato[$i]["notaria"]=$notaria;
           $newDato[$i]["grupo"]=$datos;
         }
       
       }
     }
-    return $newDato;
+     return $newDato;
   }
 
   public function listSolicitudes(){
