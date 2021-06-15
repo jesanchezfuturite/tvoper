@@ -640,6 +640,7 @@ class PortalSolicitudesController extends Controller
       {
         $attach= "doc_prelacion_".$request->grupo_clave."_".$fecha.".pdf";
         $this->savePdfprelacion($attach,$request->data);
+        $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
@@ -661,7 +662,7 @@ class PortalSolicitudesController extends Controller
             ]);
           }
 
-      if($request->rechazo==true)
+      if($request->rechazo=="true")
       {
         
         $rch=0;
@@ -673,13 +674,19 @@ class PortalSolicitudesController extends Controller
             $rch=8;
             break;
           default:
-            $rch=0;
+            $rch=1;
             break;
         }
         if($rch<>0){
           foreach($request->id as $i)
           {
            $this->ticket->update(['status'=>$rch],$i);
+            if($rch=="1")
+            {
+              $findTickerRelacion=$this->ticket->findWhere(['id'=>$i]);
+              $this->ticket->update(['status'=>$rch],$findTickerRelacion[0]->id);
+            }
+           
           }
           
           $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);

@@ -531,7 +531,7 @@ function configprelacion()
                     distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
                     if(typeof distrito==="object")
                     {
-                      if(distrito.clave=="1")
+                      if(distrito.clave=="1" && response[n].grupo[k].status=="1")
                       {
                         exit_distrito=distrito.clave;
                       }
@@ -706,7 +706,7 @@ function configprelacion()
         var select_rechazos=addSelect(d.grupo[0].grupo_clave);
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
         input_check= addChecks(d.grupo[0].grupo_clave);
-        if(d.grupo[0].url_prelacion!=null && b_pr!=null)
+        if(d.grupo[0].url_prelacion!=null && b_pr!=null && d.grupo[0].distrito==null)
         {
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
           btn_prelacion="";
@@ -989,9 +989,31 @@ function configprelacion()
             //console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
-          var soli=Resp.solicitante;
+          var soli=Resp.solicitantes;
           var tipo="";
           var obj="";
+          $.each(soli, function(i, item) { 
+           
+             for (n in item) {  
+            obj=n;
+            tipo=item[n];    
+            if(tipo=="pm"){tipo="Moral";}
+            if(tipo=="pf"){tipo="Fisica";}
+            if(obj=="tipoPersona"){obj="Tipo Persona";}
+            if(obj=="rfc"){obj="RFC";}
+            if(obj=="razonSocial"){obj="Razón Social";}
+            if(obj=="nombreSolicitante"){obj="Nombre del Solicitante";}            
+            if (typeof (tipo) !== 'object' && obj!="id")
+            {
+              if(obj=="notary"){obj="Notaria"}
+              if(obj=="apPat"){obj="Apellido Paterno";}
+              if(obj=="apMat"){obj="Apellido Materno";}
+              $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
+            }            
+          }
+          });
+
+
           for (n in soli) {  
             obj=n;
             tipo=soli[n];    
@@ -1009,10 +1031,10 @@ function configprelacion()
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
             }            
           }
-          if(typeof(Resp.solicitante.notary)==="object"){
+          if(typeof(Resp.solicitantes.notary)==="object"){
             $(".divNotaria").css("display", "block");
             dataNot='';
-            for (not in Resp.solicitante.notary) {  
+            for (not in Resp.solicitantes.notary) {  
               if(not=='notary_number' || not=='email' || not=='phone')
               { 
                 if(not=='notary_number')
@@ -1021,7 +1043,7 @@ function configprelacion()
                 {dataNot='Correo Electrónico';} 
                 if(not=='phone')
                 {dataNot='Teléfono';}            
-                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitante.notary[not]+"</label></div></div>");
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitantes.notary[not]+"</label></div></div>");
               }
             }
           }
@@ -1286,22 +1308,22 @@ function configprelacion()
     }
     Object.assign(data,{folioPago:Resp.id_transaccion_motor});
     Object.assign(data,{Municipio:"Monterrey, NL."});
-    Object.assign(data,{elaboro:Resp.info.solicitante.nombreSolicitante+" "+Resp.info.solicitante.apPat+" "+Resp.info.solicitante.apMat});
+    Object.assign(data,{elaboro:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.info.campos)});
     Object.assign(data,{folioTramite:Resp.id});
     Object.assign(data,{hojas:searchIndex('hojas',Resp.info.campos)});
     Object.assign(data,{tramite_id:Resp.info.tramite_id}); 
     Object.assign(data,{tramite:Resp.info.tramite}); 
     Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.info.campos)});
-    if(typeof(Resp.info.solicitante.notary)==="undefined")
+    if(typeof(Resp.info.solicitantes.notary)==="undefined")
     {
       Object.assign(data,{noNotaria:null});
     }else{
-      if(typeof(Resp.info.solicitante.notary)!=="object")
+      if(typeof(Resp.info.solicitantes.notary)!=="object")
         {
-          Object.assign(data,{noNotaria:Resp.info.solicitante.notary});
+          Object.assign(data,{noNotaria:Resp.info.solicitantes.notary});
         }else{
-          Object.assign(data,{noNotaria:Resp.info.solicitante.notary.notary_number});
+          Object.assign(data,{noNotaria:Resp.info.solicitantes.notary.notary_number});
         }
       
     }
