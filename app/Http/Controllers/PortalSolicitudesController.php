@@ -455,18 +455,20 @@ class PortalSolicitudesController extends Controller
     }else{
       $notaria=[];
     }
+
+    
+    
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
-     ->where(function($q) use ($user_id){
-      $q->whereNull('solicitudes_ticket.asignado_a')
-        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
-    })
+    //  ->where(function($q) use ($user_id){
+    //   $q->whereNull('solicitudes_ticket.asignado_a')
+    //     ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    // })
+    // ->whereIn("c.id", $responsables)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
-    ->select("c.atendido_por", "solicitudes_ticket.id", "solicitudes_ticket.grupo_clave")
-    ->groupBy('solicitudes_ticket.grupo_clave');
- 
+    ->select("c.atendido_por", "c.id as id_catalogo" ,"solicitudes_ticket.id", "solicitudes_ticket.grupo_clave");
     if($request->has('tipo_solicitud')){
         $filtro->where('c.id', $request->tipo_solicitud);
     }
@@ -483,12 +485,16 @@ class PortalSolicitudesController extends Controller
       $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
       ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
-
+      
     }
-    $ids_tickets = $filtro->get()->pluck('id')->toArray();
-    $grupo = $filtro->get()->pluck('grupo_clave')->toArray();
-  
-    // $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
+    $ids_catalogos = $filtro->get()->pluck("id_catalogo")->toArray();  
+
+    $responsables = $this->solicitudrespdb->where("user_id", $user_id)
+    ->get()->pluck("catalogo_id")->toArray();
+
+    $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
+    ->get()->pluck('grupo_clave')->toArray();
+    $catalogo = array_intersect($ids_catalogos, $responsables);
     
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
     ->select("tk.id", "c.titulo","tk.id_transaccion",
@@ -504,9 +510,8 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
     ->orderBy('tk.created_at', 'DESC')
     // ->whereIn('tk.grupo_clave',$filtro)->get();
-    ->whereIn('tk.id',$ids_tickets)->get();
+    ->whereIn('c.id',$catalogo)->get();
    
-
     $newDato=[];
     foreach($grupo as $i => $id){
       $datos=[];
