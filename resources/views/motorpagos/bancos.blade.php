@@ -308,7 +308,7 @@
            method: "POST",
             contentType: false,
             processData: false,
-           url: "{{ url('/banco-update-imagen') }}",
+           url: "{{ url()->route('banco-update-imagen') }}",
            data: formdata  })
         .done(function (response) {        
         if(response=="true")
@@ -328,7 +328,7 @@
         var items=$("#items").val();       
         $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-find') }}",
+           url: "{{ url()->route('banco-find') }}",
            data: {id:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -366,7 +366,7 @@
           var idbanco= $("#items").val();    
         $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-concilia-update') }}",
+           url: "{{ url()->route('banco-concilia-update') }}",
            data: {id:idbanco,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             
@@ -394,7 +394,7 @@
     }else{
           $.ajax({
            method: "get",           
-           url: "{{ url('/banco-find-allWhere') }}",
+           url: "{{ url()->route('banco-find-allWhere') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -437,7 +437,7 @@
            method: "POST",
             contentType: false,
             processData: false,
-           url: "{{ url('/banco-insert') }}",
+           url: "{{ url()->route('banco-insert') }}",
            data: formdata  })
         .done(function (responseinfo) { 
             $("#items option").remove();
@@ -486,7 +486,7 @@
         $("#borraheader").remove();
         $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-find') }}",
+           url: "{{ url()->route('banco-find') }}",
            data: {id:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -526,7 +526,7 @@
     function Cuentas(items){
      $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-find') }}",
+           url: "{{ url()->route('cuentasbanco-find') }}",
            data: {id:items,_token:'{{ csrf_token() }}'}  
        })
         .done(function (responseinfo) {                    
@@ -625,7 +625,7 @@
         else{
         $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-insert') }}",
+           url: "{{ url()->route('cuentasbanco-insert') }}",
            data: {banco_id:banco, metodopago:metodopago_,beneficiario:formdata, monto_min:monto_min_, monto_max:monto_max_, fechaIn:fechaIn_, _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
@@ -655,7 +655,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/metodopago-find') }}",
+           url: "{{ url()->route('metodopago-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             $("#itemMetodopago option").remove();
@@ -689,7 +689,7 @@
 
         $.ajax({
            method: "post",           
-           url: "{{ url('/cuentasbanco-desactiva') }}",
+           url: "{{ url()->route('cuentasbanco-desactiva') }}",
            data: {id:id_,status:estatus,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             if(!response)
@@ -709,7 +709,7 @@
 
          $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-edit') }}",
+           url: "{{ url()->route('cuentasbanco-edit') }}",
            data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         
@@ -784,7 +784,7 @@
         else{
         $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-update') }}",
+           url: "{{ url()->route('cuentasbanco-update') }}",
            data: {id:idCuenta, metodopago:metodopago_,beneficiario:formdata, monto_min:monto_min_, monto_max:monto_max_, fechaIn:fechaIn_, _token:'{{ csrf_token() }}'}  
        })
         .done(function (response) {
@@ -851,7 +851,7 @@
       var monto_min=$("#monto_min").val();
       $.ajax({
            method: "POST",           
-           url: "{{ url('/cuentasbanco-find-where') }}",
+           url: "{{ url()->route('cuentasbanco-find-where') }}",
            data: {id:idbacon,metodopago:metodP,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var item="";
@@ -920,7 +920,7 @@
         
         $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-find') }}",
+           url: "{{ url()->route('banco-find') }}",
            data: {id:items,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var item="";
@@ -954,7 +954,7 @@
         var iconB="";
          $.ajax({
            method: "POST",           
-           url: "{{ url('/banco-status-update') }}",
+           url: "{{ url()->route('banco-status-update') }}",
            data: {id:items,status:estatus,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var item="";

@@ -201,7 +201,7 @@
         tableadd();
         $.ajax({
            method: "post",           
-           url: "{{ url('/detallleaportacion-find') }}",
+           url: "{{ url()->route('detallleaportacion-find') }}",
            data: {partida:partida_,fechaInicio:fecha_inicio,fechaFin:fecha_fin,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(response);

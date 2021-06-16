@@ -26,6 +26,6 @@ class VerifyAssignment
         if(in_array($pwd, $routes) || session('is_admin'))
             return $next($request); 
         else
-            return redirect('/home');
+            return redirect()->route('home');
     }
 }
