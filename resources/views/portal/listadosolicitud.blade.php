@@ -519,6 +519,7 @@ function configprelacion()
         var objectResponse=[];
         var padre_id=0;
         var tickets_id=[];
+        var catalogos_id=[];
         if(typeof response=== 'object'){
           for (n in response) {             
                 var total=0;
@@ -526,8 +527,10 @@ function configprelacion()
                 for(k in response[n].grupo)
                 {
                   tickets_id.push(response[n].grupo[k].id);
+                  catalogos_id.push(response[n].grupo[k].catalogo);
                   total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   Object.assign(response[n],{"tickets_id":tickets_id});
+                  Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                    for(h in response[n].grupo)
                    {
@@ -627,7 +630,7 @@ function configprelacion()
             }
         }
         $("#select_"+row.data().grupo[0].grupo_clave).select2();
-       addSelect(row.data().grupo[0].grupo_clave,row.data().tickets_id)
+       addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id)
 
     }
   function getTemplateAcciones( data, type, row, meta){
@@ -894,6 +897,7 @@ function configprelacion()
     {
       var id_transaccion=$("#idgrupo").val();
       var estatus_=$("#select_"+id_transaccion).val();
+      var mot=$("#select_"+id_transaccion+"option:selected").text();
       if(estatus_=='0')
       {
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
@@ -906,7 +910,7 @@ function configprelacion()
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
-      data: {id:checks,estatus:estatus_,grupo_clave:id_transaccion,_token:'{{ csrf_token() }}'}  })
+      data: {id:checks,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
              findSolicitudes();

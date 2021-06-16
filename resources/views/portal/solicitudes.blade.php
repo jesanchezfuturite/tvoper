@@ -568,11 +568,11 @@
 	}
 	function findMotivosSelect(id)
 	{
-
+		id=[id];
 			$.ajax({
 			    method: "get",            
-			    url: "{{ url()->route('get-solicitudes-motivos', '') }}"+"/"+id,
-			    data: {_token:'{{ csrf_token() }}'}  })
+			    url: "{{ url()->route('get-solicitudes-motivos', '') }}",
+			    data: {solicitud_catalogo_id:id,_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        
 			        $.each($.parseJSON(response), function(i, item) {                
