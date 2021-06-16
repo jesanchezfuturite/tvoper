@@ -705,7 +705,7 @@ class PortalSolicitudesController extends Controller
           }         
         }
           $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
-        ->update(['status'=> "2"]);
+        ->update(['status'=> "3"]);
       }
       return response()->json(
         [
@@ -728,7 +728,7 @@ class PortalSolicitudesController extends Controller
     }
   }
   public function cerrarCrearTicket($id,$grupo_clave,$ticket_id){
-    //log::info($id); 
+    //log::info($ticket_id); 
     try{
      
         foreach($id as $i)
@@ -770,10 +770,10 @@ class PortalSolicitudesController extends Controller
         }
         foreach($ticket_id as $ti)
         { 
-          $fTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
+          $fTicket=$this->ticket->findWhere(['ticket_relacionado'=>$ti]);
           if($fTicket->count()>0)
           {
-          $upTicket=$this->ticket->update(["status"=>"1"],$fTicket[0]->id);
+            $upTicket=$this->ticket->update(["status"=>"1"],$fTicket[0]->id);
           }
         }
       }catch(\Exception $e){
@@ -1233,10 +1233,6 @@ class PortalSolicitudesController extends Controller
   {
     try {
         $id=$request->id;
-
-        $solicitudTicket = $this->ticket->whereIn('id' , $id)
-        ->update(['status'=> "2"]);
-
         foreach($id as $i)
         {
           $newid=$i;
@@ -1259,7 +1255,11 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
+            $solicitudTicket = $this->ticket->whereIn('id' , $id)
+        ->update(['status'=> "2"]);
           }else{
+            $solicitudTicket = $this->ticket->whereIn('id' , $id)
+        ->update(['status'=> "3"]);
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
             while(true)

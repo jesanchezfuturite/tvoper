@@ -328,6 +328,28 @@
         </div>
     </div>
 </div>
+<div id="portlet-cerrarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Finalizar Solicitudes: <label id="lbl_tickets" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="portlet-prelacion" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -359,6 +381,7 @@
 <input type="text" name="obj_grupo" id="obj_grupo" hidden="true">
 <input type="text" name="grp_clave" id="grp_clave" hidden="true">
 <input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
+<input type="text" name="tickets_id" id="tickets_id" hidden="true">
 @endsection
 
 @section('scripts')
@@ -570,6 +593,62 @@ function configprelacion()
        Command: toastr.warning("Error", "Notifications");
     });
   }
+  function findSolicitudesCerrar(grupo_clave){
+    
+    var formdata={ };
+    Object.assign(formdata,{id_solicitud:grupo_clave}); 
+    Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
+    $.ajax({
+         method: "POST", 
+         url: "{{ url()->route('filtrar-solicitudes') }}",
+         data: formdata })
+      .done(function (response) {
+        var tickets_id=[];
+        var grupo_clave="";
+        if(typeof response=== 'object'){
+          for (n in response) { 
+            for(k in response[n].grupo)
+            {                  
+              if(response[n].grupo[k].status=="1")
+              {
+                tickets_id.push(response[n].grupo[k].id);
+                grupo_clave=response[n].grupo[k].grupo_clave;
+              }                                                      
+            } 
+          }
+        }
+
+        document.getElementById("lbl_tickets").textContent=tickets_id;
+        $('#portlet-cerrarTickets').modal('show');
+        document.getElementById("idgrupo").value=grupo_clave;
+        document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
+    
+      })
+      .fail(function( msg ) {
+       Command: toastr.warning("Error", "Notifications");
+    });
+  }
+  function cerrarSolicitudes()
+    {
+      var id_transaccion=$("#idgrupo").val();
+      var tickets_id=$.parseJSON($("#tickets_id").val());
+      console.log(tickets_id);
+      $.ajax({
+      method: "post",            
+      url: "{{ url()->route('update-rechazo') }}",
+      data: {id:tickets_id,estatus:52,grupo_clave:id_transaccion,mensaje:"TICKET CERRADO ",_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+          if(response.Code=='200'){
+             findSolicitudes();
+            Command: toastr.success(response.Message, "Notifications") 
+          }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+          }
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+    }
   function searchSolicitudes(grupo_clave){
     var formdata={};
     Object.assign(formdata,{id_solicitud:grupo_clave});  
@@ -692,7 +771,11 @@ function configprelacion()
         var lote=searchIndex('lote',solicitud.info.campos);
         var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
         var municipio=searchIndex('municipio',solicitud.info.campos);
-        
+         if(typeof (escrituraActaOficio) === 'object'){
+          escrituraActaOficio=conctenaM(escrituraActaOficio);
+        }else{          
+           escrituraActaOficio=escrituraActaOficio;
+        }
         var Mp='';
         if(typeof (municipio) !== 'object'){
           Mp=municipio;
@@ -704,8 +787,6 @@ function configprelacion()
         let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
         if(solicitud.status==7 || solicitud.status==8){
           clase='warning';
-        }else if(solicitud.status==10 || solicitud.status==11  ){
-          clase='success';
         }else{
           clase='';
         }
@@ -714,6 +795,7 @@ function configprelacion()
 
         
       });
+      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
@@ -725,6 +807,7 @@ function configprelacion()
           select_rechazos="";
           btn_rechazo="";
           input_check="";
+          btn_cerrarTicket="";
         }
         if(d.grupo[0].url_prelacion==null)
         {
@@ -732,16 +815,22 @@ function configprelacion()
         }
         if(d.grupo[0].padre_exist!=null)
         {
-          btn_prelacion='';
-
+          btn_prelacion=''; 
+        }else{
+           btn_cerrarTicket='';
         }
-        if(d.grupo[0].distrito==null || b_pr==null){
+        if(d.grupo[0].distrito==null){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
           input_check="";
+          btn_cerrarTicket='';
         }
-        html += "<tr><th></th><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        if( b_pr==null){
+         url_prelacion='';
+         btn_cerrarTicket='';
+        }
+        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
@@ -897,7 +986,7 @@ function configprelacion()
     {
       var id_transaccion=$("#idgrupo").val();
       var estatus_=$("#select_"+id_transaccion).val();
-      var mot=$("#select_"+id_transaccion+"option:selected").text();
+      var mot=$("#select_"+id_transaccion+" option:selected").text();
       if(estatus_=='0')
       {
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
