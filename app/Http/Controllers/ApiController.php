@@ -35,6 +35,7 @@ class ApiController extends Controller
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
     protected $catastro_url = 'http://10.150.130.90/WSCatastro/json/index.php';
+    protected $catastro_url_reg = 'http://prueba.ircnl.gob.mx/WSCatastro/json/sw_notarios.php';
 
 	protected $insumos_url 	= 'https://insumos.nl.gob.mx/api/url';
 	protected $insumos_auth = 'https://insumos.nl.gob.mx/api/auth';
@@ -389,7 +390,8 @@ class ApiController extends Controller
 
         if(strcmp($pktramite,"9") == 0) // AVISO DE ENAJENACION
         {
-            if(empty($foliopago) || empty($fechapago) || empty($montopago) || empty($estadonotaria))
+        	// dd("foliopago => ", $foliopago, "fechapago => ", $fechapago, "montopago => ", $montopago, "estadonotaria => ", $estadonotaria);
+            if(empty($foliopago) || empty($fechapago) || empty($estadonotaria))
                 return response()->json(['response'=>'','message'=>'Faltan parametros para aviso de enajenacion'],400,$this->header,JSON_UNESCAPED_UNICODE); 
             else 
             {
@@ -410,8 +412,8 @@ class ApiController extends Controller
                     $elements.= '&isai='.$isai;
                     $elements.= '&fechaprot='.$fechaprot;
                     $elements.= '&fechafirma='.$fechafirma;
-                    $elements.= '&actafprot='.$actafprot;
-                    $elements.= '&escriturapub='.$escriturapub;
+                    if(!empty($actafprot) && empty($escriturapub)) $elements.= '&actafprot='.$actafprot;
+                    if(empty($actafprot) && !empty($escriturapub)) $elements.= '&escriturapub='.$escriturapub;
                     $elements.= '&operacion='.$operacion;
                     $elements.= '&motivooperacion='.$motivooperacion;
                     $elements.= '&folioforma='.$folioforma;
@@ -420,6 +422,7 @@ class ApiController extends Controller
                     $elements.= '&vendedores='.urlencode(serialize($vendedores));
 
                     $url = $this->catastro_url_reg . '?' . $elements;
+                    // dd($url);
                     
                     $response = $this->client->request('GET',$url);
 
@@ -922,6 +925,11 @@ class ApiController extends Controller
 
 		return $response;
 
+	}
+
+	private function toJSON($check){
+		parse_str($check, $parse);
+		return $parse;
 	}
 
 
