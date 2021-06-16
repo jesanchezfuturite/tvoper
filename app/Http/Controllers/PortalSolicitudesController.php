@@ -644,7 +644,7 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
-        $this->cerrarCrearTicket($request->id,$request->grupo_clave);
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave);
         foreach($request->id as $i)
           {
            $this->ticket->update(['status'=>"2"],$i);
@@ -713,17 +713,26 @@ class PortalSolicitudesController extends Controller
     }
   }
   public function cerrarCrearTicket($id,$grupo_clave){
+    //log::info($id); 
     try{
+     
         foreach($id as $i)
         {   
           $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
           foreach ($findSolTicket as $e) { 
+            $estatus=$e->status;
+            if($e->status=="2")
+            {
+              $estatus=1;
+            }
             $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
+            //log::info($findTicket); 
             if($findTicket->count()==0)
             {
               $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
               if($findCatalogoHijo->count()>0)
               {
+                
                 $catalogoH=$findCatalogoHijo[0]->id;
                 $ins=$this->ticket->create([
                   "clave"=>$e->clave,
@@ -744,9 +753,17 @@ class PortalSolicitudesController extends Controller
                   "por_firmar"=>$e->por_firmar,
                   "doc_firmado"=>$e->doc_firmado,
                   "required_docs"=>$e->required_docs,
-                  "status"=>$e->status
+                  "status"=>$estatus
                 ]);
               }
+            }else
+            {
+              $estatus=$findTicket[0]->status;
+              if($findTicket[0]->status=="2")
+              {
+                $estatus=1;
+              }
+              $upTicket=$this->ticket->update(["status"=>$estatus],$findTicket[0]->id);
             }
           }
         }
@@ -952,11 +969,11 @@ class PortalSolicitudesController extends Controller
 
     public function getSolicitudesMotivos($solicitud_catalogo_id=""){
       try{
-        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'solicitudes_motivo.solicitud_catalogo_id', 'motivos.motivo')
-        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id');
+        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'motivos.motivo')
+        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id')->groupBy('solicitudes_motivo.motivo_id', 'motivos.motivo');
 
         if($solicitud_catalogo_id){
-          $solicitudesMotivos->where('solicitudes_motivo.solicitud_catalogo_id', $solicitud_catalogo_id);
+          $solicitudesMotivos->whereIn('solicitudes_motivo.solicitud_catalogo_id', $solicitud_catalogo_id);
         }
         $solicitudesMotivos=$solicitudesMotivos->get();
       }
@@ -1204,8 +1221,41 @@ class PortalSolicitudesController extends Controller
   public   function upStatusRechazo(Request $request)
   {
     try {
-        $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
-        ->update(['status'=> $request->estatus]);
+        $id=$request->id;
+
+        $solicitudTicket = $this->ticket->whereIn('id' , $id)
+        ->update(['status'=> "2"]);
+
+        foreach($id as $i)
+        {
+          $newid=$i;
+          $rch=0;
+          switch ($request->estatus) {
+            case '50':
+              $rch=7;
+              break;
+            case '51':
+              $rch=8;
+              break;
+            default:
+              $rch=1;
+              break;
+          }
+          $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+          while(true)
+          {
+            $sTicket = $this->ticket->findWhere(["id"=>$newid]);
+            //log::info($sTicket);
+            if($sTicket[0]->ticket_relacionado==null)
+            {
+              $newid=$sTicket[0]->id;
+              $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+              break;
+            }else{
+              $newid=$sTicket[0]->ticket_relacionado;
+            }
+          }           
+        }
         return response()->json(
             [
               "Code" => "200",
