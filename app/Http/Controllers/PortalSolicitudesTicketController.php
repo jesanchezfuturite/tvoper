@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\UrlGenerator;
 use DB;
 use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -1753,5 +1755,65 @@ class PortalSolicitudesTicketController extends Controller
       return $newDato;
 
     }
+    public function cancelarTransaccion(Request $request){
+      try {
+        $tramite = $this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)->first();
+        $json_recibo = json_decode($tramite->json_recibo);
+        $referencia = $json_recibo->response->referencia;
+        $id_transaccion = $tramite->id;
+
+        $data = array(
+          "referencia"=>$referencia
+        );
+        //  $token = env("PAYMENTS_KEY");
+         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";  
+         header('Content-Type: application/json'); 
+        //  $url =  env("PAYMENTS_HOSTNAME")."/v1/cancel";
+         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel"); 
+         $ch = curl_init($url); 
+         $post = json_encode($data); 
+         $authorization = "Authorization: Bearer ".$token; 
+         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization )); 
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt($ch, CURLOPT_POST, 1); 
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);  
+         $result = curl_exec($ch); 
+         curl_close($ch); 
+         $results = json_decode($result);
+         
+        if($results->data == "response"){
+            $estatus =$results->response->estatus;
+            $tramite =$this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
+            ->update(["estatus"=> $estatus]);
+
+            $ticket= $this->ticket->where("id_transaccion", $id_transaccion)
+            ->update(["id_transaccion"=>NULL]);
+        }else{
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => $results->error->message,
+            ]
+          );
+        }
+          
+         
+
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción cancelada",
+          ]
+        );
+
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al cancelar transacción ".$e->getMessage(),
+          ]
+        );
+      }
+  }
 
 }
