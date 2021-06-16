@@ -39,7 +39,8 @@ class VerifyCsrfToken extends Middleware
             $prefix.'solicitudes-guardar-carrito*',
             $prefix.'solicitudes-filtrar/count*',
             $prefix.'save-files*',
-            $prefix.'edit-solicitudes-info*'
+            $prefix.'edit-solicitudes-info*',
+            $prefix.'registro-catastro'
         ];
     }
 }
