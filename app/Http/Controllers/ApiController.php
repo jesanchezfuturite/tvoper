@@ -26,6 +26,10 @@ use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 
+use App\Repositories\PortalpaisesRepositoryEloquent;
+use App\Repositories\PortalvialidadesRepositoryEloquent;
+
+
 
 class ApiController extends Controller
 {
@@ -84,7 +88,9 @@ class ApiController extends Controller
     protected $estados;
 	protected $campos;
 	protected $municipios;
-	protected $usernotary;
+    protected $usernotary;
+    protected $portalvialidades;
+	protected $portalpaises;
 
 	protected $expediente_catastral_id = 32;
 	protected $solicitudes_aviso_id = 71;
@@ -103,7 +109,9 @@ class ApiController extends Controller
         EstadosRepositoryEloquent $estados,
 		PortalcampoRepositoryEloquent $campos,
 		MunicipiosRepositoryEloquent $municipios,
-		PortalConfigUserNotaryOfficeRepositoryEloquent $usernotary
+        PortalConfigUserNotaryOfficeRepositoryEloquent $usernotary,
+        PortalpaisesRepositoryEloquent $portalpaises,
+		PortalvialidadesRepositoryEloquent $portalvialidades
     )
     {
 
@@ -135,7 +143,10 @@ class ApiController extends Controller
             $this->estados 				= $estados;
 			$this->campos  				= $campos;
 			$this->municipios 			= $municipios;
-			$this->usernotary 			= $usernotary;
+            $this->usernotary           = $usernotary;
+            $this->portalpaises         = $portalpaises;
+			$this->portalvialidades 	= $portalvialidades;
+
 
             // obtengo la url para
             $this->url = $url;
@@ -783,6 +794,56 @@ class ApiController extends Controller
 		return $response;
 
 	}
+
+    /**
+     * regresar todos los paises
+     * 
+     *
+     * @param ninguno
+     *
+     *
+     * @return todos los registros en la tabla paises
+     */
+
+    public function getPaises()
+    {
+        try
+        {
+
+            $paises = $this->portalpaises->all();
+
+            return json_encode($paises);
+
+        }catch(\Exception $e){
+            return json_encode($e->getMessage(),JSON_UNESCAPED_SLASHES);
+        }
+        
+    }
+
+    /**
+     * regresar todos los paises
+     * 
+     *
+     * @param ninguno
+     *
+     *
+     * @return void
+     */
+
+    public function getVialidades()
+    {
+        try
+        {
+
+            $vialidades = $this->portalvialidades->all();
+
+            return json_encode($vialidades);
+
+        }catch(\Exception $e){
+            return json_encode($e->getMessage(),JSON_UNESCAPED_SLASHES);
+        }
+        
+    }
 
 
 
