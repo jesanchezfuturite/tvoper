@@ -193,6 +193,67 @@
                                         <div id="addTimerpicker2" hidden="true">
                                             <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio2' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin2' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc2' id='rfc2' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscaregob' onclick='consultaRangoFechasEgob()'>Buscar</button></div></div>
                                         </div>
+                                    </div>                                                                 
+                                </div>                   
+                            </div>
+                                    <div class="row">
+                                        <div id="addTimerpicker2" hidden="true">
+                                            <div class='col-md-4'><span class='help-block'>&nbsp;</span> <div class='form-group'>   <label for='fecha'>Seleccionar Rango de Fechas. </label><div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'><span class='input-group-addon'>De</span><input type='text' class='form-control' name='from' id='fechainicio2' autocomplete='off'><span class='input-group-addon'>A</span><input type='text' class='form-control' name='to'id='fechafin2' autocomplete='off'></div></div></div><div class='col-md-3'><span class='help-block'>&nbsp;</span><div class='form-group'> <label> RFC / Placas / Folio</label> <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc2' id='rfc2' class='form-control'></div></div><div class='col-md-1'><span class='help-block'>&nbsp; </span><span class='help-block'>&nbsp; </span><div class='form-group'><button class='btn green' id='Buscaregob' onclick='consultaRangoFechasEgob()'>Buscar</button></div></div>
+                                        </div>
+                                    </div>
+                                        <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                    <div id="addTable_2">
+                                    <div id="table_2">
+                                    <div class="table-scrollable">
+                                    <table class="table table-hover table-responsive" id="sample_2">
+                                        <thead>
+                                            <tr> 
+
+                                                <th>Transacción</th>
+                                                <th>Conciliacion</th>
+                                                <th>Estatus</th>
+                                                <th>RFC</th>
+                                                <th>Declarado</th>
+                                                <th>Familia</th>
+                                                <th>Entidad</th>
+                                                <th>Tramite</th>
+                                                <th>Contribuyente</th> 
+                                                <th>Inicio Tramite</th>                       
+                                                <th>Banco</th>
+                                                <th>Tipo Pago</th>                                            
+                                                <th>Total Tamite</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody> 
+                                            <tr>
+                                                <td><span class="help-block">No Found</span></td>           
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>                                   
+                                        </tbody>
+                                        
+                                    </table>                            
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab_2">                            
+                            <div class="portlet box blue">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="fa fa-gift"></i>Contribuyente
                                     </div>
                                         <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
                                     <div id="addTable_2">
@@ -643,6 +704,7 @@
             }
         }
     }
+
     function timpicker()
     {
         //$("#addTimerpicker div").remove();
@@ -661,6 +723,13 @@
         document.getElementById('fechainicio2').value='';
         document.getElementById('fechafin2').value='';
         document.getElementById('rfc2').value='';
+    }
+    function timpicker3()
+    {
+        $("#addTimerpicker4").css("display", "block"); 
+        document.getElementById('fechainicio4').value='';
+        document.getElementById('fechafin4').value='';
+        document.getElementById('rfc4').value='';
     }
     
     $("#rfc").on("keypress", function(e)  {
@@ -687,13 +756,25 @@
             
         }
     }); 
+    $("#rfc4").keyup(function (e) {
+        if (e.keyCode  == 13) {
+            var rfc2=$('#rfc4').val();
+            if(rfc2.length==0)
+            {
+                Command: toastr.warning("RFC / Placas / Folio, Requerido!!", "Notifications")
+            }else{
+                consultaRangoFechasTramites();  
+            }
+            
+        }
+    }); 
 
     function consultaEgob(fechaIn,fechaF) {
         Addtable2();
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc2").val();
         $.ajax({
-        method: "post",            
+        method: "post",
         url: "{{ url()->route('consulta-transacciones-egob') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
