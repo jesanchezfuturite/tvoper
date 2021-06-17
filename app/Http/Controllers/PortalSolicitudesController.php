@@ -449,17 +449,26 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
+    $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
+    if($relacion){
+      $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
+    }else{
+      $notaria=[];
+    }
+
+    
+    
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
-     ->where(function($q) use ($user_id){
-      $q->whereNull('solicitudes_ticket.asignado_a')
-        ->orwhere('solicitudes_ticket.asignado_a', $user_id);
-    })
+    //  ->where(function($q) use ($user_id){
+    //   $q->whereNull('solicitudes_ticket.asignado_a')
+    //     ->orwhere('solicitudes_ticket.asignado_a', $user_id);
+    // })
+    // ->whereIn("c.id", $responsables)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
-    ->groupBy('solicitudes_ticket.grupo_clave');
- 
+    ->select("c.atendido_por", "c.id as id_catalogo" ,"solicitudes_ticket.id", "solicitudes_ticket.grupo_clave");
     if($request->has('tipo_solicitud')){
         $filtro->where('c.id', $request->tipo_solicitud);
     }
@@ -476,17 +485,23 @@ class PortalSolicitudesController extends Controller
       $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
       ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
-
+      
     }
-    $filtro = $filtro->get()->pluck('grupo_clave')->toArray();
+    $ids_catalogos = $filtro->get()->pluck("id_catalogo")->toArray();  
 
+    $responsables = $this->solicitudrespdb->where("user_id", $user_id)
+    ->get()->pluck("catalogo_id")->toArray();
 
+    $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
+    ->get()->pluck('grupo_clave')->toArray();
+    $catalogo = array_intersect($ids_catalogos, $responsables);
+    
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
     "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
-    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", "tk.grupo_clave", "pr.url_prelacion")
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", "tk.grupo_clave", "pr.url_prelacion", "c.padre_id")
     ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
@@ -494,10 +509,11 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
     ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
     ->orderBy('tk.created_at', 'DESC')
-    ->whereIn('tk.grupo_clave',$filtro)->get();
-
+    // ->whereIn('tk.grupo_clave',$filtro)->get();
+    ->whereIn('c.id',$catalogo)->get();
+   
     $newDato=[];
-    foreach($filtro as $i => $id){
+    foreach($grupo as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => $value) {     
         if($value->grupo_clave== $id){
@@ -507,12 +523,13 @@ class PortalSolicitudesController extends Controller
           }
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
+          $newDato[$i]["notaria"]=$notaria;
           $newDato[$i]["grupo"]=$datos;
         }
       
       }
     }
-    return $newDato;
+     return $newDato;
   }
 
   public function listSolicitudes(){
@@ -623,10 +640,11 @@ class PortalSolicitudesController extends Controller
       {
         $attach= "doc_prelacion_".$request->grupo_clave."_".$fecha.".pdf";
         $this->savePdfprelacion($attach,$request->data);
+        $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
-        $this->cerrarCrearTicket($request->id,$request->grupo_clave);
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id);
         foreach($request->id as $i)
           {
            $this->ticket->update(['status'=>"2"],$i);
@@ -644,29 +662,50 @@ class PortalSolicitudesController extends Controller
             ]);
           }
 
-      if($request->rechazo==true)
+      if($request->rechazo=="true")
       {
         
-        $rch=0;
-        switch ($request->rechazo_id) {
-          case '50':
-            $rch=7;
-            break;
-          case '51':
-            $rch=8;
-            break;
-          default:
-            $rch=0;
-            break;
-        }
-        if($rch<>0){
-          foreach($request->id as $i)
-          {
-           $this->ticket->update(['status'=>$rch],$i);
+        foreach($request->id as $i)
+        {
+          $newid=$i;
+          $rch=0;
+          switch ($request->rechazo_id) {
+            case '50':
+              $rch=7;
+              break;
+            case '51':
+              $rch=8;
+              break;
+            case '52':
+              $rch=2;
+              break;
+            default:
+              $rch=1;
+              break;
           }
           
-          $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+          if($rch==2){
+            $mensaje="Accion: ".$request->mensaje; 
+          }else{
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            while(true)
+            {
+              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
+              //log::info($sTicket);
+              if($sTicket[0]->ticket_relacionado==null)
+              {
+                $newid=$sTicket[0]->id;
+                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+                break;
+              }else{
+                $newid=$sTicket[0]->ticket_relacionado;
+              }
+            }
+          }         
         }
+          $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
+        ->update(['status'=> "3"]);
       }
       return response()->json(
         [
@@ -688,18 +727,20 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
-  public function cerrarCrearTicket($id,$grupo_clave){
+  public function cerrarCrearTicket($id,$grupo_clave,$ticket_id){
+    //log::info($ticket_id); 
     try{
+     
         foreach($id as $i)
         {   
           $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
-          foreach ($findSolTicket as $e) { 
+          foreach ($findSolTicket as $e) {            
             $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
             if($findTicket->count()==0)
             {
               $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
               if($findCatalogoHijo->count()>0)
-              {
+              {                
                 $catalogoH=$findCatalogoHijo[0]->id;
                 $ins=$this->ticket->create([
                   "clave"=>$e->clave,
@@ -724,6 +765,15 @@ class PortalSolicitudesController extends Controller
                 ]);
               }
             }
+          }
+          
+        }
+        foreach($ticket_id as $ti)
+        { 
+          $fTicket=$this->ticket->findWhere(['ticket_relacionado'=>$ti]);
+          if($fTicket->count()>0)
+          {
+            $upTicket=$this->ticket->update(["status"=>"1"],$fTicket[0]->id);
           }
         }
       }catch(\Exception $e){
@@ -926,15 +976,17 @@ class PortalSolicitudesController extends Controller
 
     }
 
-    public function getSolicitudesMotivos($solicitud_catalogo_id=""){
+    public function getSolicitudesMotivos($solicitud_catalogo_id="",Request $request){
       try{
-        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'solicitudes_motivo.solicitud_catalogo_id', 'motivos.motivo')
-        ->leftjoin('motivos', 'solicitudes_motivo.motivo_id', '=', 'motivos.id');
+         //Log::info($request->solicitud_catalogo_id);
+        $solicitudesMotivos = SolicitudesMotivo::select('solicitudes_motivo.motivo_id', 'motivos.motivo','solicitudes_motivo.solicitud_catalogo_id')
+        ->leftjoin('motivos',  'motivos.id', '=','solicitudes_motivo.motivo_id')->groupBy('solicitudes_motivo.motivo_id');
 
-        if($solicitud_catalogo_id){
-          $solicitudesMotivos->where('solicitudes_motivo.solicitud_catalogo_id', $solicitud_catalogo_id);
+        if($request->solicitud_catalogo_id){
+          $solicitudesMotivos->whereIn('solicitudes_motivo.solicitud_catalogo_id', $request->solicitud_catalogo_id);
         }
         $solicitudesMotivos=$solicitudesMotivos->get();
+        // Log::info($solicitudesMotivos);
       }
       catch(\Exception $e) {
         Log::info('Error Portal Solicitudes - consulta de motivos: '.$e->getMessage());
@@ -1180,8 +1232,58 @@ class PortalSolicitudesController extends Controller
   public   function upStatusRechazo(Request $request)
   {
     try {
-        $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
-        ->update(['status'=> $request->estatus]);
+        $id=$request->id;
+        foreach($id as $i)
+        {
+          $newid=$i;
+          $rch=0;
+          $mensaje="";
+          switch ($request->estatus) {
+            case '50':
+              $rch=7;
+              break;
+            case '51':
+              $rch=8;
+              break;
+            case '52':
+              $rch=2;
+              break;
+            default:
+              $rch=1;
+              break;
+          }
+          
+          if($rch==2){
+            $mensaje="Accion: ".$request->mensaje; 
+            $solicitudTicket = $this->ticket->whereIn('id' , $id)->update(['status'=> "2"]);
+            $this->cerrarCrearTicket($request->id,$request->grupo_clave,$request->id);
+          }else{
+            $solicitudTicket = $this->ticket->whereIn('id' , $id)
+        ->update(['status'=> "3"]);
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            while(true)
+            {
+              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
+              //log::info($sTicket);
+              if($sTicket[0]->ticket_relacionado==null)
+              {
+                $newid=$sTicket[0]->id;
+                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+                break;
+              }else{
+                $newid=$sTicket[0]->ticket_relacionado;
+              }
+            }
+          }
+           $mensajes =$this->mensajes->create([
+            'ticket_id'=> $i,
+            'mensaje' => $mensaje,
+            'mensaje_para' => 1,
+            'attach'    =>  ""
+            ]);          
+        }
+        
         return response()->json(
             [
               "Code" => "200",

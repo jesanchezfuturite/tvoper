@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\UrlGenerator;
 use DB;
 use Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -110,11 +112,8 @@ class PortalSolicitudesTicketController extends Controller
       $catalogo_id = $tramite->id;
       $error =null;
       $info = json_decode($request->info);
-
-      if($request->has("solicitantes") && !$request->has("enajenantes")){
-        $datosrecorrer= $request->solicitantes;
-        $data = 1;
-      }else if($request->has("enajenantes")){
+      
+      if($request->has("enajenantes")){
         $datosrecorrer= $request->enajenantes;
         $data = 2;
       }
@@ -128,7 +127,7 @@ class PortalSolicitudesTicketController extends Controller
       try {
         if($status==80){
           $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-          if(!empty($datosrecorrer)){
+          if(!empty($datosrecorrer) && $data==2){
             $datosrecorrer = json_decode($datosrecorrer);
 
             $ids_entrada = array_column($datosrecorrer, 'id');
@@ -194,7 +193,7 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($status==99){
-          if(!empty($datosrecorrer)){
+          if(!empty($datosrecorrer) && $data==2){
             $datosrecorrer = json_decode($datosrecorrer);
             $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
             $ids_entrada = array_column($datosrecorrer, 'id');
@@ -258,127 +257,63 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==7){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
-          if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);
-            foreach($datosrecorrer as $key => $value){
-              $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
-                "clave" => $clave,
-                "grupo_clave" => $grupo,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>1,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs, 
-                "ticket_padre"=>$request->ticket_anterior
+        
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            "clave" => $clave,
+            "grupo_clave" => $grupo,
+            "catalogo_id" => $catalogo_id,
+            "info"=> json_encode($info),
+            "user_id"=>$user_id,
+            "status"=>1,
+            "en_carrito"=>$carrito,
+            "required_docs"=>$request->required_docs,
+            "ticket_padre"=>$request->ticket_anterior
 
-              ]);
+          ]);
 
-             array_push($ids, $ticket->id);
-            }
-            $first_id = reset($ids);
-            if($request->has("file")){
+          if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'mensaje' => $request->descripcion[$key],
-                  'file'    =>  $value
+                  'file'    =>  $value,
                   ];
-
-                  $this->saveFile($data);
-
+                $this->saveFile($data);
               }
-            }
-          }else{
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
-              "clave" => $clave,
-              "grupo_clave" => $grupo,
-              "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
-              "user_id"=>$user_id,
-              "status"=>$estatus,
-              "en_carrito"=>$carrito,
-              "required_docs"=>$request->required_docs,
-              "ticket_padre"=>$request->ticket_anterior
-
-            ]);
-
-            if($request->has("file")){
-               foreach ($request->file as $key => $value) {
-                  $data =[
-                    'ticket_id'=> $ticket->id,
-                    'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    ];
-                  $this->saveFile($data);
-                }
 
 
-            }
           }
+        
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-          if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);
-            foreach($datosrecorrer as $key => $value){
-              $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
-                "clave" => $clave,
-                "grupo_clave" => $grupo,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>99,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs,
-                "ticket_padre"=>$request->ticket_anterior
+      
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            "clave" => $clave,
+            "grupo_clave" => $grupo,
+            "catalogo_id" => $catalogo_id,
+            "info"=> json_encode($info),
+            "user_id"=>$user_id,
+            "status"=>99,
+            "en_carrito"=>$carrito,
+            "required_docs"=>$request->required_docs,
+            "ticket_padre"=>$request->ticket_anterior
 
-              ]);
+          ]);
 
-             array_push($ids, $ticket->id);
-            }
-            $first_id = reset($ids);
-            if($request->has("file")){
+          if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'mensaje' => $request->descripcion[$key],
-                  'file'    =>  $value
+                  'file'    =>  $value,
                   ];
-
-                  $this->saveFile($data);
-
+                $this->saveFile($data);
               }
-            }
-          }else{
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
-              "clave" => $clave,
-              "grupo_clave" => $grupo,
-              "catalogo_id" => $catalogo_id,
-              "info"=> json_encode($info),
-              "user_id"=>$user_id,
-              "status"=>$estatus,
-              "en_carrito"=>$carrito,
-              "required_docs"=>$request->required_docs,
-              "ticket_padre"=>$request->ticket_anterior
-
-            ]);
-
-            if($request->has("file")){
-               foreach ($request->file as $key => $value) {
-                  $data =[
-                    'ticket_id'=> $ticket->id,
-                    'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
-                    ];
-                  $this->saveFile($data);
-                }
 
 
-            }
           }
+          
         }
 
       } catch (\Exception $e) {
@@ -455,9 +390,13 @@ class PortalSolicitudesTicketController extends Controller
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get()->toArray();
-
+         
         }
-
+        $id_transaccion= array_column($solicitudes, "id_transaccion");
+        $ids_ticket= array_column($solicitudes, "id");
+        $ids_transaccion = array_unique($id_transaccion);
+        $solTramites = $this->solTramites->where("id", $id_transaccion)->first();
+        
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -471,28 +410,31 @@ class PortalSolicitudesTicketController extends Controller
 
 
         $tramites = $this->getTramites($idstmts);
-
+        
+        $costo_total=0;
         $tmts=[];
         $response =[];
         foreach($tramites as $t => $tramite){
           $datos=[];
-          foreach ($solicitudes as $d => $dato) {
+          foreach ($solicitudes as $d => $dato) {        
             if($dato["tramite_id"]== $tramite["tramite_id"]){
               if(empty($dato["info"])){
                 $info=json_decode($dato["info"]);
               }else{
                 $info = $this->asignarClavesCatalogo($dato["info"]);
+                $costo_total += (float)$info->costo_final;
               }
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "id_transaccion"=>$dato["id_transaccion"],
                 "grupo_clave"=>$dato["grupo_clave"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
                 "status"=>$dato["status"]
+                
               );
-
               array_push($datos, $data);
               $tramite["solicitudes"]= $datos;
 
@@ -502,8 +444,20 @@ class PortalSolicitudesTicketController extends Controller
             array_push($tmts, $tramite);
 
         }
+        if($solTramites!=null){
+          $importe=json_decode($solTramites->json_envio);
+          $importe_total=(float)$importe->importe_transaccion;
+          if($importe_total==$costo_total && $type!="firma"){
+            $response["json_recibo"] = json_decode($solTramites->json_recibo);
+          }else{
+            $response["json_recibo"] = "Null";
+          }
+  
+        }else{
+          $response["json_recibo"]="Null";
+        }
+        
 
-        // $response["notary_offices"]=$notary_offices;
         $response["tramites"] =$tmts;
 
         return $response;
@@ -513,7 +467,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener información",
+            "Message" => "Error al obtener información " .$e->getMessage(),
           ]
         );
       }
@@ -533,7 +487,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al obtener detalle",
+            "Message" => "Error al obtener detalle ",
           ]
         );
       }
@@ -718,7 +672,7 @@ class PortalSolicitudesTicketController extends Controller
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
-              if(isset($key2)){
+              if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
@@ -738,6 +692,7 @@ class PortalSolicitudesTicketController extends Controller
 
           }else{
             if($value->status<>5){
+              Log::info("Tramites finalizados segundo else");
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
@@ -747,10 +702,11 @@ class PortalSolicitudesTicketController extends Controller
         $error = $e;
       }
       if($error){
+        Log::info('Error Guardar transaccion: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al guardar transaccion motor"
+            "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
           ]);
       }else{
         return response()->json(
@@ -814,7 +770,7 @@ class PortalSolicitudesTicketController extends Controller
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
-              if(isset($key2)){
+              if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor;
                  $verificar = array_search("1", array_column($valor, 'distrito'));
@@ -848,7 +804,7 @@ class PortalSolicitudesTicketController extends Controller
         return response()->json(
           [
             "Code" => "400",
-            "Message" => "Error al actualizar estatus"
+            "Message" => "Error al actualizar estatus ".$e->getMessage()
           ]);
       }else {
         return response()->json(
@@ -1123,6 +1079,7 @@ class PortalSolicitudesTicketController extends Controller
       $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1 && $ticket->status !=80 && $ticket->status !=99 && $ticket->status !=9 ){
         try{
+          Log::info("es asignado al admin");
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
@@ -1183,7 +1140,7 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $users = ["$user_id"];
       }
-
+    
 
       $ids = array();
       foreach($clave as $key => $v){
@@ -1195,11 +1152,10 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       try{
-        if($body["type"]=="en_carrito"){
-          $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
-          $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
-          $mensaje="Solicitudes en el carrito";
-
+        if($body["type"]=="en_carrito"){         
+            $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
+            $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
+            $mensaje="Solicitudes en el carrito";
         }
 
         if($body["type"]=="firmado"){
@@ -1799,5 +1755,65 @@ class PortalSolicitudesTicketController extends Controller
       return $newDato;
 
     }
+    public function cancelarTransaccion(Request $request){
+      try {
+        $tramite = $this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)->first();
+        $json_recibo = json_decode($tramite->json_recibo);
+        $referencia = $json_recibo->response->referencia;
+        $id_transaccion = $tramite->id;
+
+        $data = array(
+          "referencia"=>$referencia
+        );
+        //  $token = env("PAYMENTS_KEY");
+         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";  
+         header('Content-Type: application/json'); 
+        //  $url =  env("PAYMENTS_HOSTNAME")."/v1/cancel";
+         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel"); 
+         $ch = curl_init($url); 
+         $post = json_encode($data); 
+         $authorization = "Authorization: Bearer ".$token; 
+         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization )); 
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt($ch, CURLOPT_POST, 1); 
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);  
+         $result = curl_exec($ch); 
+         curl_close($ch); 
+         $results = json_decode($result);
+         
+        if($results->data == "response"){
+            $estatus =$results->response->estatus;
+            $tramite =$this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
+            ->update(["estatus"=> $estatus]);
+
+            $ticket= $this->ticket->where("id_transaccion", $id_transaccion)
+            ->update(["id_transaccion"=>NULL]);
+        }else{
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => $results->error->message,
+            ]
+          );
+        }
+          
+         
+
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción cancelada",
+          ]
+        );
+
+      } catch (\Exception $e) {
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al cancelar transacción ".$e->getMessage(),
+          ]
+        );
+      }
+  }
 
 }

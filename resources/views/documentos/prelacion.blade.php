@@ -278,17 +278,7 @@
         }
       }
       @media all {
-        .ExternalClass {
-          width: 100%; 
-        }
-        .ExternalClass,
-        .ExternalClass p,
-        .ExternalClass span,
-        .ExternalClass font,
-        .ExternalClass td,
-        .ExternalClass div {
-          line-height: 100%; 
-        }
+       
         .apple-link a {
           color: inherit !important;
           font-family: inherit !important;
@@ -325,9 +315,14 @@
         <td class="container">
           <div class="content">
            @foreach($data as $ind => $dat)
-            <table role="presentation" class="main" style="page-break-after:always;" width="100%">
+           @if($ind>0)
+           <div style="page-break-before: always;">
+            @else
+            <div>
+            @endif
+            <table role="presentation" class="main"  width="100%">
               <tr>
-                <td class="wrapper">
+                <td class="wrapper" colspan='2'>
                     @php //dd($dat); @endphp
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
@@ -369,32 +364,32 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="5" style="border:1px solid;border-color: #000;width: 90%; padding:0px 0px 0px 40px;" >
                     <tr>
                       <td>
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style=" padding:0px 0px 0px 60px;"  >
-                    <tbody>
-                    <tr>
-                        <td class="bl-lbl">
-                            <label><strong>Nombre del trámite:</strong></label>
-                              <label>{{$dat->tramite}} </label>
-                            
-                        </td>
-                    </tr> 
-                    <tr>
-                        <td  class="bl-lbl">
-                            <label><strong>Nombre del solicitante:</strong></label>
-                            <label>{{$dat->solicitanteNombre}}</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td  class="bl-lbl">
-                            <label><strong>Municipio destino:</strong></label>
-                            <label>{{$dat->municipioConc}}</label>
-                        </td>
-                    </tr>
-                  </tbody>
-                  </table>
-                </td>
-              </tr>
-                  </table>
+                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" style=" padding:0px 0px 0px 60px;"  >
+                          <tbody>
+                          <tr>
+                              <td class="bl-lbl">
+                                  <label><strong>Nombre del trámite:</strong></label>
+                                    <label>{{$dat->tramite}} </label>
+                                  
+                              </td>
+                          </tr> 
+                          <tr>
+                              <td  class="bl-lbl">
+                                  <label><strong>Nombre del solicitante:</strong></label>
+                                  <label>{{$dat->solicitanteNombre}}</label>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td  class="bl-lbl">
+                                  <label><strong>Municipio destino:</strong></label>
+                                  <label>{{$dat->municipioConc}}</label>
+                              </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
                 </center>
                 <br>
                 <table role="presentation" border="0" cellpadding="0" cellspacing="2">
@@ -478,10 +473,12 @@
                       </td>
                     </tr>
                   </table>
-                  <br>
-                  <br>
-                  @if(count($dat->municipio)>1)
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
+                </td>
+              </tr>
+          @if(count($dat->municipio)>1)
+              <tr>
+                <td style="width:50%;">  
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="4">
                       <tr>                      
                         <td >
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -582,7 +579,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label></label><label>
+                                          <label></label>
                                       </td>
                                       <td width="10%" class="tbl-label">
                                           <label><strong>TOTAL:</strong></label>
@@ -624,19 +621,16 @@
                                     </td>
                                   </tr>
                               </table>
-                          </td>
-                                              
+                          </td>                                              
                       </tr>
-
                     </table> 
+                  </td>
                     @foreach(json_decode(json_encode($dat->municipio),true) as  $indexKey => $munp)
-                      @if( $indexKey==0 || $indexKey==2 || $indexKey==4 || $indexKey==6 || $indexKey==8 || $indexKey==10 || $indexKey==11)
-                          <div style="page-break-after:always;">
-                        @else
-                          <div>
+                      @if( $indexKey==1 || $indexKey==3 || $indexKey==5 || $indexKey==7 || $indexKey==9 || $indexKey==11 || $indexKey==13)
+                          <tr>
                       @endif
-                   
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="4"style="width:50%;float: left;position:relative;">
+                    <td style="width:50%;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="4">
                       <tr>                      
                         <td >
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
@@ -735,7 +729,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label></label><label>
+                                          <label></label>
                                       </td>
                                       <td width="10%" class="tbl-label">
                                           <label><strong>TOTAL:</strong></label>
@@ -782,177 +776,177 @@
                       </tr>
 
                     </table> 
-                    </div>
-                    
+                    </td>
+                    @if( $indexKey==0 || $indexKey==2 || $indexKey==4 || $indexKey==6 || $indexKey==8 || $indexKey==10 || $indexKey==12)
+                          </tr>
+                          
+                      @endif
                     @endforeach
                   @else
                     @for ($i = 0; $i < 2; $i++)
-                    @if( $i==1 || $i==3 || $i==5)
-                        <div style="page-break-after:always;">
-                      @else
-                        <div>
-                    @endif
-                   
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="1"style="width:50%;float: left;position:relative;">
-                      <tr>                      
-                        <td >
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                  <tr>
-                                    <td> 
-                                      <div style="position: relative;">
-                                        <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
-                                        <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
-                                      </div>
-                                     <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
-                                     <br> 
-                                     <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
-                                     <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
-                                    </td>
-                                  </tr>
+                      @if( $i==0 || $i==2 || $i==4)
+                          <tr>
+                      @endif
+                     <td style="width:50%;">
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="1">
+                        <tr>                      
+                          <td >
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                      <td> 
+                                        <div style="position: relative;">
+                                          <img src="data:image/png;base64,<?php echo $img_irc ?>" width="135px" align="right"name="image_irc">
+                                          <img src="data:image/png;base64,<?php echo $img_nl ?>"  width="135px" align="left"name="image_nl">
+                                        </div>
+                                       <center><h5><strong>GOBIERNO DEL ESTADO <br/> DE NUEVO LEÓN</strong></h5></center>
+                                       <br> 
+                                       <center><h5><strong>DOCUMENTO PRELACIÓN</strong></h5></center> 
+                                       <center><h5>CENTRO DE RECEPCIÓN DE DOCUMENTOS</h5></center>                         
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  <table role="presentation" border="0" cellpadding="1" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th class="tbl-label">No. Notaria</th>
+                                            <th class="tbl-label">Municipio</th>
+                                            <th class="tbl-label">Fecha</th>
+                                            <th class="tbl-label">Folio trámite</th>
+                                            <th class="tbl-label">No. Control</th>
+                                            <th class="tbl-label">Folio Pago</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                          <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
+                                          <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
+                                          <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
+                                          <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
+                                          <td class="tbl-label" style="text-align: center;"></td>
+                                          <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
+                                        </tr>
+                                    </tbody> 
+                                  </table><br>
+                                  <center>
+                                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Nombre del trámite:</strong></label>
+                                            <label>{{$dat->tramite}}</label>
+                                        </td>
+                                    </tr> 
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Nombre del solicitante:</strong></label>
+                                            <label>{{$dat->solicitanteNombre}}</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Municipio destino:</strong></label>
+                                            @foreach(json_decode(json_encode($dat->municipio),true) as $munpd)<label>{{$munpd["nombre"]}}</label>@endforeach
+                                        </td>
+                                    </tr>
+                                  </table>
+                              </center>
+                              <br>
+                                <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>No. partida</strong></label>
+                                            <label>{{$dat->subsidio}}</label>
+                                        </td>
+                                        <td></td>
+                                    </tr> 
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Valor de operación:</strong></label>
+                                            <label> {{ is_numeric($dat->valorOperacion) ? '$' . number_format($dat->valorOperacion,2) : ' ' }}</label>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Unidad de calculo:</strong></label>
+                                            <label></label>
+                                        </td>
+                                        <td></td>                        
+                                    </tr>
+                                    <tr>
+                                        <td width="70%" class="tbl-label">
+                                            <label><strong>Hojas o lotes:</strong></label>
+                                            <label></label>
+                                        </td>
+                                        <td width="15%" class="tbl-label">
+                                            <label><strong>Derecho-15215900:</strong></label>
+                                        </td>
+                                        <td width="15%" class="tbl-label">
+                                            <label>$ {{number_format($dat->costo_final,2)}}</label>
+                                        </td>
+                                    </tr> 
+                                    <tr>
+                                        <td width="70%" class="tbl-label">
+                                            <label><strong>Oficio o decreto:</strong></label>
+                                            <label></label>
+                                        </td>
+                                        <td width="10%" class="tbl-label">
+                                            <label><strong>TOTAL:</strong></label>
+                                        </td>
+                                        <td width="10%" class="tbl-label">
+                                            <label>$ {{number_format($dat->costo_final,2)}}</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <strong>Elaboró:</strong></label>
+                                            <label>{{$dat->elaboro}}</label>
+                                        </td>
+                                        <td></td>                        
+                                    </tr>
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Recibe:</strong></label>
+                                            <label>{{$dat->recibe}}</label>
+                                        </td>
+                                        <td></td>
+                                    </tr> 
+                                    <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>IMPORTE CON LETRA:</strong></label>
+                                            <label>{{$dat->importe_letra}}</label>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                  </table>
+                                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td class="tbl-label">    
+                                            <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
+                                               <center> 
+                                                <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
+                                               </center>
+                                            <center>{{$dat->folio}}</center>                         
+                                      </td>
+                                    </tr>
                                 </table>
-                                <table role="presentation" border="0" cellpadding="1" cellspacing="0">
-                                  <thead>
-                                      <tr>
-                                          <th class="tbl-label">No. Notaria</th>
-                                          <th class="tbl-label">Municipio</th>
-                                          <th class="tbl-label">Fecha</th>
-                                          <th class="tbl-label">Folio trámite</th>
-                                          <th class="tbl-label">No. Control</th>
-                                          <th class="tbl-label">Folio Pago</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr>
-                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
-                                        <td class="tbl-label" style="text-align: center;"></td>
-                                        <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
-                                      </tr>
-                                  </tbody> 
-                                </table><br>
-                                <center>
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border:1px solid;border-color: #000; width:98%; padding:0px 10px 0px 10px; " >
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Nombre del trámite:</strong></label>
-                                          <label>{{$dat->tramite}}</label>
-                                      </td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Nombre del solicitante:</strong></label>
-                                          <label>{{$dat->solicitanteNombre}}</label>
-                                      </td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Municipio destino:</strong></label>
-                                          @foreach(json_decode(json_encode($dat->municipio),true) as $munpd)<label>{{$munpd["nombre"]}}</label>@endforeach
-                                      </td>
-                                  </tr>
-                                </table>
-                            </center>
-                            <br>
-                              <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>No. partida</strong></label>
-                                          <label>{{$dat->subsidio}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Valor de operación:</strong></label>
-                                          <label> {{ is_numeric($dat->valorOperacion) ? '$' . number_format($dat->valorOperacion,2) : ' ' }}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Unidad de calculo:</strong></label>
-                                          <label></label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
-                                          <label><strong>Hojas o lotes:</strong></label>
-                                          <label></label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr> 
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
-                                          <label><strong>Oficio o decreto:</strong></label>
-                                          <label></label><label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label><strong>TOTAL:</strong></label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <strong>Elaboró:</strong></label>
-                                          <label>{{$dat->elaboro}}</label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Recibe:</strong></label>
-                                          <label>{{$dat->recibe}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>IMPORTE CON LETRA:</strong></label>
-                                          <label>{{$dat->importe_letra}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                </table>
-                                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                  <tr>
-                                      <td class="tbl-label">    
-                                          <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
-                                             <center> 
-                                              <img src="data:image/png;base64,{{$dat->barcode}}"  width="120px">
-                                             </center>
-                                          <center>{{$dat->folio}}</center>                         
-                                    </td>
-                                  </tr>
-                              </table>
-                          </td>
-                                              
-                      </tr>
+                            </td>
+                                                
+                        </tr>
 
-                    </table> 
-                    </div>
-                    
-                    @endfor
-                  @endif
-
-               
-                </td>
-              </tr>
-            </table> @endforeach 
+                      </table> 
+                      </td>  
+                       @if( $i==1 || $i==3 || $i==5)
+                          </tr>
+                      @endif
+                @endfor
+              @endif
+            </table>
           </div>
-        </td>
-            <td>&nbsp;</td>
+           @endforeach 
+          </div>
+          <div style="page-break-inside: avoid;"></div>
+          </td>
         </tr>
-    </table>
+      </table>
     </body>
-  
-</html>
+  </html>
