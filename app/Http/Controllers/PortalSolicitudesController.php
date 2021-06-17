@@ -1255,8 +1255,8 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-            $solicitudTicket = $this->ticket->whereIn('id' , $id)
-        ->update(['status'=> "2"]);
+            $solicitudTicket = $this->ticket->whereIn('id' , $id)->update(['status'=> "2"]);
+            $this->cerrarCrearTicket($request->id,$request->grupo_clave,$request->id);
           }else{
             $solicitudTicket = $this->ticket->whereIn('id' , $id)
         ->update(['status'=> "3"]);
@@ -1283,7 +1283,7 @@ class PortalSolicitudesController extends Controller
             'attach'    =>  ""
             ]);          
         }
-        $this->cerrarCrearTicket($request->id,$request->grupo_clave,$request->id);
+        
         return response()->json(
             [
               "Code" => "200",

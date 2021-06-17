@@ -551,7 +551,10 @@ function configprelacion()
                 {
                   tickets_id.push(response[n].grupo[k].id);
                   catalogos_id.push(response[n].grupo[k].catalogo);
-                  total=total+parseFloat(response[n].grupo[k].info.costo_final);
+                  if(response[n].grupo[k].status!="11"){
+                    total=total+parseFloat(response[n].grupo[k].info.costo_final);
+                  }
+                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
@@ -571,10 +574,13 @@ function configprelacion()
                     }
                     if(typeof (response[n].grupo[k])!=="undefined" )
                     {
-                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null &&  response[n].grupo[h].status!="11" &&  response[n].grupo[h]!="10" && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe)
+                      
+                      //console.log(response[n].grupo[h].info.complementoDe);
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe)
                        {                       
                           Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
-                          response[n].grupo.splice(h,1);
+                          Object.assign(response[n].grupo[h],{"eliminar":1});
+                          //response[n].grupo.splice(h,1);
                        }
                     }
                      Object.assign(response[n].grupo[h],{"distrito":exit_distrito});
@@ -585,7 +591,8 @@ function configprelacion()
             }
            response=objectResponse;
 
-          }            
+          }       
+
           console.log(response);
         createTable(response);  
       })
@@ -739,7 +746,9 @@ function configprelacion()
       let html = ''; 
       var exist=0; 
       d.grupo.forEach( (solicitud) =>{ 
-        var clase='';
+        if(typeof solicitud.eliminar==="undefined" || b_pr==null)
+        {        
+          var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
         var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
         let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
@@ -793,7 +802,7 @@ function configprelacion()
 
         html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
 
-        
+        }
       });
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -827,6 +836,10 @@ function configprelacion()
           btn_cerrarTicket='';
         }
         if( b_pr==null){
+          select_rechazos="";
+          btn_rechazo="";
+          btn_prelacion="";
+          input_check="";
          url_prelacion='';
          btn_cerrarTicket='';
         }
