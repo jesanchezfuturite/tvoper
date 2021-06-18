@@ -452,7 +452,7 @@ class PortalSolicitudesTicketController extends Controller
         if($solTramites!=null){
           if($solTramites["json_recibo"]!=null){
             $importe=json_decode($solTramites["json_envio"]);
-            $importe_total=(float)$importe["importe_transaccion"];
+            $importe_total=(float)$importe->importe_transaccion;
             if($importe_total==$costo_total && $type!="firma"){
               $response["json_recibo"] = json_decode($solTramites["json_recibo"]);
             }else{
