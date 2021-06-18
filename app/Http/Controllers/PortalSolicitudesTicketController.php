@@ -462,9 +462,10 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $response["json_recibo"]="Null";
           }
-        }   
+        }else{
+          $response["json_recibo"]="Null";
+        }  
         
-
         $response["tramites"] =$tmts;
 
         return $response;
