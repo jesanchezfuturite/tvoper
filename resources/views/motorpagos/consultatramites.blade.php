@@ -1090,7 +1090,7 @@
         var arr=[];
         $.each(json, function(i, item) { 
             if('info_tramite' in item ){
-                console.log(item.info_tramite.info);
+                console.log(item);
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
@@ -1101,10 +1101,10 @@
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
                 obj.tipo_tramite = item.info_tramite.info.tipoTramite;
                 obj.no_notaria = item.info_tramite.notary_number;
-                obj.item.info_tramite.titular.apellido_paterno_titular =  "Null";
-                obj.item.info_tramite.titular.apellido_materno_titular =  "Null";
-                obj.item.info_tramite.titular.nombre_titular =  "Null";
-                obj.item.info_tramite.titular.rfc_titular =  "Null";
+                obj.apellido_paterno_titular = item.info_tramite.titular.apellido_paterno_titular;
+                obj.apellido_materno_titular =item.info_tramite.titular.apellido_materno_titular;
+                obj.nombre_titular = item.info_tramite.titular.nombre_titular;
+                obj.rfc_titular= item.info_tramite.titular.rfc_titular;
                 if('Escritura' in  item.info_tramite.info.campos){
                     obj.escritura = item.info_tramite.info.campos['Escritura'];
                                 
