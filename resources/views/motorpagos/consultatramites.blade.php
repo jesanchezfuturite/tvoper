@@ -1101,8 +1101,10 @@
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
                 obj.tipo_tramite = item.info_tramite.info.tipoTramite;
                 obj.no_notaria = item.info_tramite.notary_number;
-                var notario = item.info_tramite.titular;
-                var not = Object.assign(obj, notario);
+                obj.item.info_tramite.titular.apellido_paterno_titular =  "Null";
+                obj.item.info_tramite.titular.apellido_materno_titular =  "Null";
+                obj.item.info_tramite.titular.nombre_titular =  "Null";
+                obj.item.info_tramite.titular.rfc_titular =  "Null";
                 if('Escritura' in  item.info_tramite.info.campos){
                     obj.escritura = item.info_tramite.info.campos['Escritura'];
                                 
@@ -1297,6 +1299,10 @@
                 obj.fecha_tramite = "Null";
                 obj.tipo_tramite =  "Null";
                 obj.no_notaria =  "Null";
+                obj.apellido_paterno_titular =  "Null";
+                obj.apellido_materno_titular =  "Null";
+                obj.nombre_titular =  "Null";
+                obj.rfc_titular =  "Null";
                 obj.escritura = "Null";
                 obj.fecha_escritura="Null";
                 obj.porcentaje_enajena = "Null";
