@@ -993,7 +993,7 @@
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
                     +"<td>"+item.Folio+"</td>"
-                    +"<td>"+item.Transaccion+"</td>"
+                    +"<td>"+item.Ticket+"</td>"
                     +"<td>"+item.estatus+"</td>"
                     +"<td>"+item.Estatus+"</td>"
                     +"<td>"+item.RFC+"</td>"
@@ -1090,7 +1090,6 @@
         var arr=[];
         $.each(json, function(i, item) { 
             if('info_tramite' in item ){
-                console.log(item);
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
@@ -1199,8 +1198,22 @@
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var direcciones= item.info_tramite.info.campos["Expedientes"].expedientes;
                     if(direcciones){
-                        obj.direccion = direcciones.map(( obje) => obje.direccion).join();
+                      
+                        let direccionaRR = []
 
+                        direcciones.forEach( d => {  direccionaRR  = direccionaRR.concat(d)  } );
+                        obj.direccion = direccionaRR.map( obj => obj.calle + "," + obj.num_ext ).join();
+
+                        console.log(direccionaRR);
+                        // $.each(direcciones, function( key, value ) {
+                        //    var dir = value.direccion.datos_direccion[0];
+                        //     var direccion = dir.calle + dir.colonia + dir.lote + dir.manzana +
+                           
+                        //  });
+                        // direcciones.forEach(element => console.log(element));
+                        // datos = direcciones.map(( obje) => obje.direccion).join();
+                        // console.log(datos);
+                    //    obj.direccion = direcciones.map( expediente => expediente.direccion  ).map( direccion => direccion.datos_direccion );
                     }else{
                         obj.direccion = "Null";
                     }
