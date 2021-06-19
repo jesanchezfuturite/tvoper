@@ -1066,9 +1066,10 @@ class PortalSolicitudesController extends Controller
           $folio=999999999;
           $reg = (object) array_merge((array) $reg, array('folio'=>$folio,'fecha'=>$fecha,'hora'=>$hora));
         }else{
-          $fecha=Carbon::parse($reg->fecha);
-          $hora=$fecha->toTimeString();
+          $fecha=Carbon::parse($reg->fecha);          
           $fecha=$fecha->format('Y/m/d');
+          $hora=Carbon::now();
+          $hora=$hora->toTimeString();
           $reg = (object) array_merge((array) $reg, array('fecha'=>$fecha,'hora'=>$hora));
         }
         
