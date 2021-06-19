@@ -33,6 +33,7 @@ return array(
 			"lote"=>array(
 				"Numero de lotes",
 				"Cantidad de Lotes",
+				"Cantidad de lotes",
 				"Lote",
 				"*Lote",
 				"Lote Inicial",
@@ -47,7 +48,8 @@ return array(
 			),
 			"escrituraActaOficio"=>array(
 				"*Número de escritura / Acta / Oficio",
-				"*Número de escritura, acta u oficio"
+				"*Número de escritura, acta u oficio",
+				"Número de escritura, acta u oficio"
 			),
 			"valorCatastral"=>array(
 				"Valor catastral",
@@ -59,7 +61,9 @@ return array(
 			),
 			"valorISAI"=>array(
 				"Valor ISAI",
-				"*Valor ISAI"
+				"*Valor ISAI",
+				"ISAI",
+				"Folio del recibo ISAI"
 			),
 			"subsidio"=>array(
 				"subsidio",
@@ -88,7 +92,12 @@ return array(
 			),
 			"distrito"=>array(
 				"Distrito"
-			)
+			),
+			"instituciones"=>array( 
+				"*Instituciones",
+				"*Institución",
+				"Institución"
+			 )
 			
 		)
 
