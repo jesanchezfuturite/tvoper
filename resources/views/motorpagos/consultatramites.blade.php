@@ -1168,10 +1168,16 @@
                     obj.rfc_valuador = "Null";
                 }
                 //folio ae
+                let foliosarr = []
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var folios = item.info_tramite.info.campos["Expedientes"].expedientes;
                     if(folios){
-                        obj.folio_ae = folios.map(( obje) => obje.folio).join();
+                        $.each(folios, function( key, value ) {
+                           var folio = value.folio;                         
+                           foliosarr.push(folio);
+                           
+                         });
+                        obj.folio_ae = foliosarr.join();
 
                     }else{
                         obj.folio_ae = "Null";
