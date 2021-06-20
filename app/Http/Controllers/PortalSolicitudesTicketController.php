@@ -765,9 +765,9 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);         
+          $this->guardarCarrito($value->id, 2);        
           $info = json_decode($value->info);
-          if(isset($info->camposConfigurados)){
+          if(isset($info->camposConfigurados) && $value->status<>5){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
