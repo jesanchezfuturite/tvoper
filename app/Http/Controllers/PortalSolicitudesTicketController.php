@@ -392,11 +392,16 @@ class PortalSolicitudesTicketController extends Controller
           }])->get()->toArray();
          
         }
+     
         $id_transaccion= array_column($solicitudes, "id_transaccion");
         $ids_ticket= array_column($solicitudes, "id");
-        $ids_transaccion = array_unique($id_transaccion);
-        $solTramites = $this->solTramites->where("id", $id_transaccion)->first();
+        $transaccion_id = array_unique($id_transaccion);
+        $solTramites=null;
+        if($transaccion_id!=null){
+          $solTramites = $this->solTramites->where("id", $transaccion_id)->first()->toArray();
+        }
         
+               
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -445,19 +450,22 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($solTramites!=null){
-          $importe=json_decode($solTramites->json_envio);
-          $importe_total=(float)$importe->importe_transaccion;
-          if($importe_total==$costo_total && $type!="firma"){
-            $response["json_recibo"] = json_decode($solTramites->json_recibo);
+          if($solTramites["json_recibo"]!=null){
+            $importe=json_decode($solTramites["json_envio"]);
+            $importe_total=(float)$importe->importe_transaccion;
+            if($importe_total==$costo_total && $type!="firma"){
+              $response["json_recibo"] = json_decode($solTramites["json_recibo"]);
+            }else{
+              $response["json_recibo"] = "Null";
+            }
+    
           }else{
-            $response["json_recibo"] = "Null";
+            $response["json_recibo"]="Null";
           }
-  
         }else{
           $response["json_recibo"]="Null";
-        }
+        }  
         
-
         $response["tramites"] =$tmts;
 
         return $response;
