@@ -389,15 +389,20 @@ class PortalSolicitudesTicketController extends Controller
           })
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
-          }])->get()->toArray();
+          }])->get();
+          $solicitudes = $solicitudes->toArray();          
          
         }
-     
-        $id_transaccion= array_column($solicitudes, "id_transaccion");
+        $transaccion_id=null;
+        if(!empty($solicitudes)){
+          $transaccion_id = $solicitudes[0]["id_transaccion"];
+        }
+        
+        // $id_transaccion= array_column($solicitudes, "id_transaccion");
         $ids_ticket= array_column($solicitudes, "id");
-        $transaccion_id = array_unique($id_transaccion);
+        // $transaccion_id = array_unique($id_transaccion);
         $solTramites=null;
-        if($transaccion_id[0]!=null){
+        if($transaccion_id!=null){
           $solTramites = $this->solTramites->where("id", $transaccion_id)->first()->toArray();
         }
         
