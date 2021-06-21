@@ -875,7 +875,6 @@
 
     function cargatabla4()
     {
-        console.log("ola");
          var inin=0;
         $('#sample_7 thead tr').clone(true).appendTo('#sample_7 thead');       
         $('#sample_7').DataTable( {
@@ -1189,23 +1188,18 @@
                     //Direccion
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var direcciones= item.info_tramite.info.campos["Expedientes"].expedientes;
-                    if(direcciones){
-                      
+                    if(direcciones){ 
                         let direccionaRR = []
-
-                        direcciones.forEach( d => {  direccionaRR  = direccionaRR.concat(d)  } );
-                        obj.direccion = direccionaRR.map( obj => obj.calle + "," + obj.num_ext ).join();
-
-                        console.log(direccionaRR);
-                        // $.each(direcciones, function( key, value ) {
-                        //    var dir = value.direccion.datos_direccion[0];
-                        //     var direccion = dir.calle + dir.colonia + dir.lote + dir.manzana +
+                        $.each(direcciones, function( key, value ) {
+                           var dir = value.direccion.datos_direccion[0];
                            
-                        //  });
-                        // direcciones.forEach(element => console.log(element));
-                        // datos = direcciones.map(( obje) => obje.direccion).join();
-                        // console.log(datos);
-                    //    obj.direccion = direcciones.map( expediente => expediente.direccion  ).map( direccion => direccion.datos_direccion );
+                           var mun = value.direccion;
+                           var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
+                           direccionaRR.push(direccion);
+                           
+                        });
+                         obj.direccion= direccionaRR.join()
+                        
                     }else{
                         obj.direccion = "Null";
                     }
