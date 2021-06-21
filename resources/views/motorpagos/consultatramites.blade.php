@@ -1160,10 +1160,16 @@
                     obj.rfc_valuador = "Null";
                 }
                 //folio ae
+                let foliosarr = []
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var folios = item.info_tramite.info.campos["Expedientes"].expedientes;
                     if(folios){
-                        obj.folio_ae = folios.map(( obje) => obje.folio).join();
+                        $.each(folios, function( key, value ) {
+                           var folio = value.folio;                         
+                           foliosarr.push(folio);
+                           
+                         });
+                        obj.folio_ae = foliosarr.join();
 
                     }else{
                         obj.folio_ae = "Null";
@@ -1189,23 +1195,19 @@
                     //Direccion
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var direcciones= item.info_tramite.info.campos["Expedientes"].expedientes;
-                    if(direcciones){
-                      
+                    if(direcciones){                      
                         let direccionaRR = []
-
-                        direcciones.forEach( d => {  direccionaRR  = direccionaRR.concat(d)  } );
-                        obj.direccion = direccionaRR.map( obj => obj.calle + "," + obj.num_ext ).join();
-
-                        console.log(direccionaRR);
-                        // $.each(direcciones, function( key, value ) {
-                        //    var dir = value.direccion.datos_direccion[0];
-                        //     var direccion = dir.calle + dir.colonia + dir.lote + dir.manzana +
+                        $.each(direcciones, function( key, value ) {
+                           var dir = value.direccion.datos_direccion[0];
+                           var mun = value.direccion;
+                           var direccion = dir.calle + dir.colonia + dir.manzana + dir.lote  + dir.cp + mun.nombre_municipio + mun.nombre_EntFed;
+                           direccionaRR.push(direccion);
                            
-                        //  });
-                        // direcciones.forEach(element => console.log(element));
-                        // datos = direcciones.map(( obje) => obje.direccion).join();
-                        // console.log(datos);
-                    //    obj.direccion = direcciones.map( expediente => expediente.direccion  ).map( direccion => direccion.datos_direccion );
+                         });
+
+                         obj.direccion= direccionaRR.join()
+                        
+              
                     }else{
                         obj.direccion = "Null";
                     }
