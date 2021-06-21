@@ -397,7 +397,7 @@ class PortalSolicitudesTicketController extends Controller
         $ids_ticket= array_column($solicitudes, "id");
         $transaccion_id = array_unique($id_transaccion);
         $solTramites=null;
-        if($transaccion_id!=null){
+        if($transaccion_id[0]!=null){
           $solTramites = $this->solTramites->where("id", $transaccion_id)->first()->toArray();
         }
         
