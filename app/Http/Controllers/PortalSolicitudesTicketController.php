@@ -1778,11 +1778,9 @@ class PortalSolicitudesTicketController extends Controller
         $data = array(
           "referencia"=>$referencia
         );
-        //  $token = env("PAYMENTS_KEY");
-         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";  
+         $token = env("PAYMENTS_KEY");
          header('Content-Type: application/json'); 
-        //  $url =  env("PAYMENTS_HOSTNAME")."/v1/cancel";
-         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel"); 
+         $url =  env("PAYMENTS_HOSTNAME")."/v1/cancel";
          $ch = curl_init($url); 
          $post = json_encode($data); 
          $authorization = "Authorization: Bearer ".$token; 
