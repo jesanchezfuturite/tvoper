@@ -407,7 +407,7 @@
                                                         </tr> -->
                                                         <tr>
                                                             <th>Folio</th> 
-                                                            <th>Transacción</th> 
+                                                            <th>Ticket</th> 
                                                             <th>Conciliacion</th> 
                                                             <th>Estatus</th>
                                                             <th>RFC</th>
@@ -422,15 +422,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody> 
-                                                        <!-- <tr>
-                                                            <td><span class="help-block">No Found</span></td>           
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>                                    -->
+                                                    
                                                         <tr>
                                                             <td><span class="help-block">No Found</span></td>                     
                                                             <td></td>
@@ -769,7 +761,7 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead>  <tr><th>Folio</th> <th>Transacción</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead>  <tr><th>Folio</th> <th>Ticket</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
     }
     function Addtable3()
     {
@@ -996,11 +988,11 @@
                     +"<td>"+item.Ticket+"</td>"
                     +"<td>"+item.estatus+"</td>"
                     +"<td>"+item.Estatus+"</td>"
-                    +"<td>"+item.RFC+"</td>"
+                    +"<td>"+item.info_tramite.titular.rfc_titular+"</td>"
                     +"<td>"+item.Familia+"</td>"
                     +"<td>"+item.Entidad+"</td>"
                     +"<td>"+item.Tramite+"</td>"
-                    +"<td>"+item.Contribuyente+"</td>"
+                    +"<td>"+item.info_tramite.titular.apellido_paterno_titular+" "+item.info_tramite.titular.apellido_materno_titular+" "+item.info_tramite.titular.nombre_titular+"</td>"
                     +"<td>"+item.Inicio_Tramite+"</td>"
                     +"<td>"+item.Banco+"</td>"
                     +"<td>"+item.Tipo_Pago+"</td>"
