@@ -3487,6 +3487,7 @@ class MotorpagosController extends Controller
                         'curp_titular'=>$titular->curp,  
                     );
                     $res["info_tramite"] = $value;
+                    $res["Ticket"]= $value["id"];
                 }             
             
                 

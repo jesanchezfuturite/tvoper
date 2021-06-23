@@ -461,7 +461,7 @@
                                                         </tr> -->
                                                         <tr>
                                                             <th>Folio</th> 
-                                                            <th>Transacción</th> 
+                                                            <th>Ticket</th> 
                                                             <th>Conciliacion</th> 
                                                             <th>Estatus</th>
                                                             <th>RFC</th>
@@ -476,15 +476,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody> 
-                                                        <!-- <tr>
-                                                            <td><span class="help-block">No Found</span></td>           
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>                                    -->
+                                                    
                                                         <tr>
                                                             <td><span class="help-block">No Found</span></td>                     
                                                             <td></td>
@@ -941,7 +933,6 @@
 
     function cargatabla4()
     {
-        console.log("ola");
          var inin=0;
         $('#sample_7 thead tr').clone(true).appendTo('#sample_7 thead');       
         $('#sample_7').DataTable( {
@@ -1051,7 +1042,7 @@
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
                     +"<td>"+item.Folio+"</td>"
-                    +"<td>"+item.Transaccion+"</td>"
+                    +"<td>"+item.Ticket+"</td>"
                     +"<td>"+item.estatus+"</td>"
                     +"<td>"+item.Estatus+"</td>"
                     +"<td>"+item.RFC+"</td>"
@@ -1171,7 +1162,6 @@
         var arr=[];
         $.each(json, function(i, item) { 
             if('info_tramite' in item ){
-                console.log(item.info_tramite.info);
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
@@ -1182,8 +1172,10 @@
                 obj.fecha_tramite = item.info_tramite.fecha_creacion;
                 obj.tipo_tramite = item.info_tramite.info.tipoTramite;
                 obj.no_notaria = item.info_tramite.notary_number;
-                var notario = item.info_tramite.titular;
-                var not = Object.assign(obj, notario);
+                obj.apellido_paterno_titular = item.info_tramite.titular.apellido_paterno_titular;
+                obj.apellido_materno_titular =item.info_tramite.titular.apellido_materno_titular;
+                obj.nombre_titular = item.info_tramite.titular.nombre_titular;
+                obj.rfc_titular= item.info_tramite.titular.rfc_titular;
                 if('Escritura' in  item.info_tramite.info.campos){
                     obj.escritura = item.info_tramite.info.campos['Escritura'];
                                 
@@ -1277,9 +1269,18 @@
                     //Direccion
                 if('Expedientes' in  item.info_tramite.info.campos){
                     var direcciones= item.info_tramite.info.campos["Expedientes"].expedientes;
-                    if(direcciones){
-                        obj.direccion = direcciones.map(( obje) => obje.direccion).join();
-
+                    if(direcciones){ 
+                        let direccionaRR = []
+                        $.each(direcciones, function( key, value ) {
+                           var dir = value.direccion.datos_direccion[0];
+                           
+                           var mun = value.direccion;
+                           var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
+                           direccionaRR.push(direccion);
+                           
+                        });
+                         obj.direccion= direccionaRR.join()
+                        
                     }else{
                         obj.direccion = "Null";
                     }
@@ -1378,6 +1379,10 @@
                 obj.fecha_tramite = "Null";
                 obj.tipo_tramite =  "Null";
                 obj.no_notaria =  "Null";
+                obj.apellido_paterno_titular =  "Null";
+                obj.apellido_materno_titular =  "Null";
+                obj.nombre_titular =  "Null";
+                obj.rfc_titular =  "Null";
                 obj.escritura = "Null";
                 obj.fecha_escritura="Null";
                 obj.porcentaje_enajena = "Null";
