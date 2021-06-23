@@ -373,14 +373,19 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         if($type=="firma"){
-          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)
+          $solicitudes = PortalSolicitudesTicket::whereIn('solicitudes_ticket.user_id', $users)
+          ->select('solicitudes_ticket.*', 'tmt.id_transaccion_motor', 'op.fecha_limite_referencia',
+          'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
+          ->leftJoin('solicitudes_tramite as tmt', 'solicitudes_ticket.id_transaccion', '=', 'tmt.id')
+          ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
           ->where(function ($query) {
-            $query->where('por_firmar', '=', 1)
-            ->where('firmado', null)
-            ->whereNotNull('id_transaccion');
+            $query->where('solicitudes_ticket.por_firmar', '=', 1)
+            ->where('solicitudes_ticket.firmado', null)
+            ->whereNotNull('solicitudes_ticket.id_transaccion');
           })
           ->with(['catalogo' => function ($query) {
-            $query->select('id', 'tramite_id')->where("firma", 1);
+            $query->select('id', 'tramite_id')
+            ->where("firma", 1);
           }])->get()->toArray();
         }else{
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
@@ -433,6 +438,12 @@ class PortalSolicitudesTicketController extends Controller
               }else{
                 $info = $this->asignarClavesCatalogo($dato["info"]);
                 $costo_total += (float)$info->costo_final;
+                if(isset($info->detalle->Salidas)){
+                  $costo_tramite=$info->detalle->Salidas->{'Importe total'};
+                }else{
+                  $costo_tramite=$info->costo_final;
+                }
+                $costo_total += (float)$info->costo_final;
               }
               $data=array(
                 "id"=>$dato["id"],
@@ -442,7 +453,12 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
-                "status"=>$dato["status"]
+                "status"=>$dato["status"],
+                "folio"=>$dato["id_transaccion_motor"],
+                "fecha_pago"=>$dato["fecha_pago"],
+                "referencia"=>$dato["referencia"],
+                "fecha_limite_referencia"=>$dato["fecha_limite_referencia"],
+                "costo"=>$costo_tramite
                 
               );
               array_push($datos, $data);
