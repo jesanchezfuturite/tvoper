@@ -1222,7 +1222,8 @@ class PortalSolicitudesTicketController extends Controller
         ]);
       }
     }
-    public function filtrarSolicitudes(Request $request){
+    public function filtrarSolicitudes(Request $request){    
+  
         $max = Input::get('max');
         $request = $request->all();
         $flag=0;
@@ -1260,8 +1261,19 @@ class PortalSolicitudesTicketController extends Controller
             `solicitudes_ticket`.`required_docs`,
             `solicitudes_ticket`.`grupo_clave`
             ");
+
             $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
             ->select($select)
+            ->selectRaw("
+             @gpo_clave:=grupo_clave,
+             (select
+              CASE
+               WHEN count(*) > 1
+               THEN @gpo_clave
+               ELSE NULL
+              END
+             from solicitudes_ticket where grupo_clave = @gpo_clave) AS in_group
+            ")
             ->leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
             ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
             ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
