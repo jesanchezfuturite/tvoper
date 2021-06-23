@@ -389,14 +389,24 @@ class PortalSolicitudesTicketController extends Controller
           })
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
-          }])->get()->toArray();
+          }])->get();
+          $solicitudes = $solicitudes->toArray();          
          
         }
-        $id_transaccion= array_column($solicitudes, "id_transaccion");
-        $ids_ticket= array_column($solicitudes, "id");
-        $ids_transaccion = array_unique($id_transaccion);
-        $solTramites = $this->solTramites->where("id", $id_transaccion)->first();
+        $transaccion_id=null;
+        if(!empty($solicitudes)){
+          $transaccion_id = $solicitudes[0]["id_transaccion"];
+        }
         
+        // $id_transaccion= array_column($solicitudes, "id_transaccion");
+        $ids_ticket= array_column($solicitudes, "id");
+        // $transaccion_id = array_unique($id_transaccion);
+        $solTramites=null;
+        if($transaccion_id!=null){
+          $solTramites = $this->solTramites->where("id", $transaccion_id)->first()->toArray();
+        }
+        
+               
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -445,19 +455,22 @@ class PortalSolicitudesTicketController extends Controller
 
         }
         if($solTramites!=null){
-          $importe=json_decode($solTramites->json_envio);
-          $importe_total=(float)$importe->importe_transaccion;
-          if($importe_total==$costo_total && $type!="firma"){
-            $response["json_recibo"] = json_decode($solTramites->json_recibo);
+          if($solTramites["json_recibo"]!=null){
+            $importe=json_decode($solTramites["json_envio"]);
+            $importe_total=(float)$importe->importe_transaccion;
+            if($importe_total==$costo_total && $type!="firma"){
+              $response["json_recibo"] = json_decode($solTramites["json_recibo"]);
+            }else{
+              $response["json_recibo"] = "Null";
+            }
+    
           }else{
-            $response["json_recibo"] = "Null";
+            $response["json_recibo"]="Null";
           }
-  
         }else{
           $response["json_recibo"]="Null";
-        }
+        }  
         
-
         $response["tramites"] =$tmts;
 
         return $response;
@@ -765,9 +778,9 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);         
+          $this->guardarCarrito($value->id, 2);        
           $info = json_decode($value->info);
-          if(isset($info->camposConfigurados)){
+          if(isset($info->camposConfigurados) && $value->status<>5){
             $campos = $info->camposConfigurados;
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){

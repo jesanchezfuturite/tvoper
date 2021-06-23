@@ -450,13 +450,15 @@ function configprelacion()
     
   }
   function prelacion()
-  { objectResponse=[];
-    var resp=$.parseJSON(JSON.stringify(registroPublico()));
-    console.log(registroPublico());
-    console.log(resp);
+  { 
+    objectResponse=[];    
+    var reg=registroPublico();
+    var resp=$.parseJSON(reg);
+    //console.log(registroPublico());
+    //console.log(resp);
     document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
     //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
-    data=dataPrelacion(JSON.stringify(resp),null);
+    data=dataPrelacion(reg,null);
     //console.log(objectResponse);
     //var data=dataPrelacion({namd:"asd"});
     saveMessage(1,data);
@@ -465,16 +467,7 @@ function configprelacion()
   async function registroPublico()
   {
     var resp;
-     $.ajax({
-      method: "get",            
-      url: "{{ url()->route('wsrp', 'qa') }}",
-      data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {
-      resp=response; 
-       
-      })       
-      .fail(function( msg ) {
-         Command: toastr.warning("Error al Guardar", "Notifications")   }); 
+      
       await sleep(1000);
       return resp;
   }
@@ -593,7 +586,7 @@ function configprelacion()
 
           }       
 
-          console.log(response);
+          //console.log(response);
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -639,7 +632,7 @@ function configprelacion()
     {
       var id_transaccion=$("#idgrupo").val();
       var tickets_id=$.parseJSON($("#tickets_id").val());
-      console.log(tickets_id);
+      //console.log(tickets_id);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
@@ -800,7 +793,7 @@ function configprelacion()
           clase='';
         }
 
-        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td></td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
+        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
 
         }
       });
@@ -857,44 +850,52 @@ function configprelacion()
     }
     function prelacion_confirm_all()
     {
-      
+      var m_grupo_clave=$("#m_grupo_clave").val();
+      $(".btn_prelacion_"+m_grupo_clave).css("display", "none");
       var formdata=new FormData();
       var id_="";
       var grupo_clave="";
       count=0;
-      var response=$.parseJSON($("#obj_grupo").val());
+      var response_grp=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
-       var resp=$.parseJSON(JSON.stringify(registroPublico()));
-       console.log(resp);
-        if(typeof response=== 'object'){
-          for (n in response) { 
+       $.ajax({
+      method: "get",            
+      url: "{{ url()->route('wsrp', 'qa') }}",
+      data: {_token:'{{ csrf_token() }}'}  })
+      .done(function (response) {
+      resp=JSON.stringify(response); 
+       if(typeof response_grp=== 'object'){
+          for (n in response_grp) { 
                    
-            for(g in response[n].grupo)
+            for(g in response_grp[n].grupo)
             {
-              id_=response[n].grupo[g].id; 
+              id_=response_grp[n].grupo[g].id; 
                formdata.append("tickets_id[]", id_);   
-              grupo_clave=response[n].grupo[g].grupo_clave;
-              var distrito=searchIndex('distrito',response[n].grupo[g].info.campos);
+              grupo_clave=response_grp[n].grupo[g].grupo_clave;
+              var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos);
               if(typeof(distrito)==='object'){
-                if(response[n].grupo[g].status=='2' || response[n].grupo[g].status=='1' && distrito.clave=='1' && response[n].grupo[g].padre_id==null)
+                if(response_grp[n].grupo[g].status=='2' || response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
                 {
                   count+=1;
                   formdata.append("id[]", id_);
-                  Object.assign(response[n].grupo[g].info,{"tramite":response[n].grupo[g].tramite});
-                  document.getElementById("folioPago").value=response[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(resp,JSON.stringify(response[n].grupo[g]));
+                  Object.assign(response_grp[n].grupo[g].info,{"tramite":response_grp[n].grupo[g].tramite});
+                  document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
+                  datapr=dataPrelacion(resp,JSON.stringify(response_grp[n].grupo[g]));
                   formdata.append("data[]",JSON.stringify(datapr));
                 }   
-              }
-             
+              }             
             }
           }
         }
         if(count==0)
           {Command: toastr.warning("Sin Registros", "Notifications")
           return; }
-        $(".btn_prelacion_"+grupo_clave).css("display", "none");
+        
         savePrelacion(1,formdata,grupo_clave,resp);
+      })       
+      .fail(function( msg ) {
+         Command: toastr.warning("Error al generar la prelacion", "Notifications")   });
+        
         
     }
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
@@ -904,7 +905,7 @@ function configprelacion()
       var checkRechazo=false;
       var msjpublic="1";
       var rechazo=0;
-     // resp=$.parseJSON(resp);
+     resp=$.parseJSON(resp);
       //var formdata = new FormData();     
       mensaje="Prelación, Clave_grupo:"+grupo_clave+", Folio:"+resp.folio+", Fecha:"+resp.fecha;        
              
@@ -1162,16 +1163,21 @@ function configprelacion()
           for (n in Resp.campos) {  
             if(typeof (Resp.campos[n]) !== 'object') {         
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
-            }              
+            }else{
+                Mp=conctenaM(Resp.campos[n]); 
+                $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+ Mp+"</label></div></div>");
+            }             
           }
+         /* 
           var municipio=searchIndex('municipio',Resp.campos);
+          console.log(typeof (municipio));
             if(typeof (municipio) !== 'object')
             {
               Mp=municipio;
             }else{
-              Mp=conctenaM(municipio);
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Municipios:</strong></label><br><label>"+ Mp+"</label></div></div>");       
-            }
+                                 
+            } */
+           
           /*if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
           {
             $(".btnPrelacion").css("display", "block");
@@ -1378,13 +1384,15 @@ function configprelacion()
     }  
     var Resp=$.parseJSON(jsn);
     //console.log(dataP);
-    //var dataP=$.parseJSON(dataP);
+    dataP=$.parseJSON(dataP);
     //console.log(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);
+    var hoja_=searchIndex('hojas',Resp.info.campos);
     var municipio_=searchIndex('municipio',Resp.info.campos);
     var nombre_=searchIndex('nombre',Resp.info.campos);
     var apellidoMat_=searchIndex('apellidoMat',Resp.info.campos);
     var apellidoPat_=searchIndex('apellidoPat',Resp.info.campos);
+    var escrituraActaOficio_=searchIndex('escrituraActaOficio',Resp.info.campos);
     var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
     if(typeof (municipio_) !== 'object')
     {
@@ -1396,13 +1404,19 @@ function configprelacion()
     {
       municipio_=[municipio_];
     }
+    if(typeof (escrituraActaOficio_) === 'object'){
+      escrituraActaOficio_=conctenaM(escrituraActaOficio_);
+    }else{          
+       escrituraActaOficio_=escrituraActaOficio_;
+    }
     Mp=conctenaM(municipio_);
-    Object.assign(data,{solicitanteNombre:nombreSolicitante});    
-    Object.assign(data,{municipioConc:Mp});    
+    Object.assign(data,{solicitanteNombre:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});    
     Object.assign(data,{municipioConc:Mp});    
     Object.assign(data,{municipio:municipio_});    
+    Object.assign(data,{escrituraActaOficio:escrituraActaOficio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.info.campos)});    
-    if(typeof (subsidio_) !== 'object' || typeof(dataP.folio)=='undefined' )
+    Object.assign(data,{hoja:hoja_});    
+    if(typeof (subsidio_) !== 'object')
     {
       Object.assign(data,{subsidio:null});
     }else{
@@ -1447,7 +1461,7 @@ function configprelacion()
     }else{
       Object.assign(data,{costo_final:Resp.info.costo_final});
     }
-    console.log(data);
+    //console.log(data);
     return data;
 
   }

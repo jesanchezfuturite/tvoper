@@ -417,7 +417,7 @@
                     <tr>
                         <td width="70%">
                             <label><strong>Hojas o lotes:</strong></label>
-                            <label></label>
+                            <label>{{$dat->lote}} {{$dat->hoja}}</label>
                         </td>
                         <td width="20%">
                             <label><strong>Derecho-15215900:</strong></label>
@@ -429,7 +429,7 @@
                     <tr>
                         <td width="70%">
                           <label><strong>Oficio o decreto:</strong></label>
-                          <label></label>
+                          <label>{{$dat->escrituraActaOficio}}</label>
                         </td>
                         <td width="20%">
                             <label><strong>TOTAL:</strong></label>
@@ -567,7 +567,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Hojas o lotes:</strong></label>
-                                          <label></label>
+                                          <label>{{$dat->lote}} {{$dat->hoja}}</label>
                                       </td>
                                       <td width="15%" class="tbl-label">
                                           <label><strong>Derecho-15215900:</strong></label>
@@ -579,7 +579,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label></label>
+                                          <label>{{$dat->escrituraActaOficio}}</label>
                                       </td>
                                       <td width="10%" class="tbl-label">
                                           <label><strong>TOTAL:</strong></label>
@@ -717,7 +717,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Hojas o lotes:</strong></label>
-                                          <label></label>
+                                          <label>{{$dat->lote}} {{$dat->hoja}}</label>
                                       </td>
                                       <td width="15%" class="tbl-label">
                                           <label><strong>Derecho-15215900:</strong></label>
@@ -729,7 +729,7 @@
                                   <tr>
                                       <td width="70%" class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label></label>
+                                          <label>{{$dat->escrituraActaOficio}}</label>
                                       </td>
                                       <td width="10%" class="tbl-label">
                                           <label><strong>TOTAL:</strong></label>
@@ -875,7 +875,7 @@
                                     <tr>
                                         <td width="70%" class="tbl-label">
                                             <label><strong>Hojas o lotes:</strong></label>
-                                            <label></label>
+                                            <label>{{$dat->lote}} {{$dat->hoja}}</label>
                                         </td>
                                         <td width="15%" class="tbl-label">
                                             <label><strong>Derecho-15215900:</strong></label>
@@ -887,7 +887,7 @@
                                     <tr>
                                         <td width="70%" class="tbl-label">
                                             <label><strong>Oficio o decreto:</strong></label>
-                                            <label></label>
+                                            <label>{{$dat->escrituraActaOficio}}</label>
                                         </td>
                                         <td width="10%" class="tbl-label">
                                             <label><strong>TOTAL:</strong></label>
