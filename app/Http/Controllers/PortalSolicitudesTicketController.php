@@ -453,14 +453,18 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
-                "status"=>$dato["status"],
-                "folio"=>$dato["id_transaccion_motor"],
-                "fecha_pago"=>$dato["fecha_pago"],
-                "referencia"=>$dato["referencia"],
-                "fecha_limite_referencia"=>$dato["fecha_limite_referencia"],
-                "costo"=>$costo_tramite
+                "status"=>$dato["status"]              
                 
               );
+             
+              if($type=="firma"){
+                $data["folio"]=$dato["id_transaccion_motor"];
+                $data["fecha_pago"]=$dato["fecha_pago"];
+                $data["referencia"]=$dato["referencia"];
+                $data["fecha_limite_referencia"]=$dato["fecha_limite_referencia"];
+                $data["costo"]=$costo_tramite;
+              }
+            
               array_push($datos, $data);
               $tramite["solicitudes"]= $datos;
 
