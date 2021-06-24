@@ -1309,7 +1309,7 @@
                 obj.monto_operacion_ae="Null";
                 obj.municipio_expediente="Null";
                 obj.no_expediente_catastral="Null";
-                obj.apellido_materno_enajenante="Null";
+                obj.direccion="Null";                
                 obj.curp_enajenante = "Null";
                 obj.rfc_enajenante = "Null";
                 obj.nombre_enajenante = "Null";
@@ -1340,6 +1340,7 @@
             }
           
         });    
+        console.log(arr);
         var ReportTitle='Transacciones_tramites';
         JSONToCSVConvertor(arr, ReportTitle, true);
     }
