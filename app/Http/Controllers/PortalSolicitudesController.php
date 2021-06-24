@@ -448,13 +448,14 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    $user_id = auth()->user()->id;
-    $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
-    if($relacion){
-      $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
-    }else{
-      $notaria=[];
-    }
+    // $user_id = auth()->user()->id;
+    $user_id=2;
+    // $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
+    // if($relacion){
+    //   $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
+    // }else{
+    //   $notaria=[];
+    // }
 
     
     
@@ -495,27 +496,37 @@ class PortalSolicitudesController extends Controller
     $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
     $catalogo = array_intersect($ids_catalogos, $responsables);
-    
     $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
     "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
-    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", "tk.grupo_clave", "pr.url_prelacion", "c.padre_id")
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", 
+    "tk.grupo_clave", "pr.url_prelacion", "c.padre_id", "n.*", "usert.name as nombre_titular", 
+    "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular",
+    "userss.name as nombre_susbtituto", "userss.fathers_surname as apellido_pat_titular",
+    "userss.mothers_surname as apellido_mat_titular"
+    )
     ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
     ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
     ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
+    ->leftJoin('portal.users as u', 'tk.user_id', 'u.id')
+    ->leftJoin('portal.config_user_notary_offices as config', 'config.user_id', 'tk.user_id')
+    ->leftJoin('portal.notary_offices as n', 'n.id', 'config.notary_office_id')
+    ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
+    ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'DESC')
     // ->whereIn('tk.grupo_clave',$filtro)->get();
     ->whereIn('c.id',$catalogo)->get();
    
+    $notario = [];
     $newDato=[];
-    foreach($grupo as $i => $id){
+    foreach($grupo as $i => $id){   
       $datos=[];
-      foreach ($solicitudes as $d => $value) {     
+      foreach ($solicitudes as $d => $value) {          
         if($value->grupo_clave== $id){
           if(isset($value->info)){            
             $info=$this->asignarClavesCatalogo($value->info);
@@ -523,7 +534,6 @@ class PortalSolicitudesController extends Controller
           }
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
-          $newDato[$i]["notaria"]=$notaria;
           $newDato[$i]["grupo"]=$datos;
         }
       
