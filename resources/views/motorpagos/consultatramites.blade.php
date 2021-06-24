@@ -1222,7 +1222,12 @@
                     obj.fecha_nacimiento_enajenante = item.info_tramite.info.enajenante.datosPersonales.fechaNacimiento;
                     obj.clave_ine_enajenante = item.info_tramite.info.enajenante.datosPersonales.claveIne;
                     obj.porcentaje_venta =item.info_tramite.info.enajenante.porcentajeCompra;
-                    obj.monto_operacion =item.info_tramite.info.enajenante.datosParaDeterminarImpuesto.montoOperacion;
+                    if('Entradas' in  item.info_tramite.info.detalle){
+                        obj.monto_operacion =item.info_tramite.info.detalle["Entradas"].monto_operacion;
+                    }else{
+                        obj.monto_operacion = "Null";
+                    }
+                    
                 }else{
                     obj.curp_enajenante = "Null";
                     obj.rfc_enajenante = "Null";
@@ -1243,7 +1248,11 @@
                     obj.porcentaje_recargos = item.info_tramite.info.detalle.Salidas["Porcentaje de recargos"];
                     obj.ganancia_obtenida = item.info_tramite.info.detalle.Salidas['Ganancia Obtenida'];
                     obj.monto_obtenido_art_127 = item.info_tramite.info.detalle.Salidas["Monto obtenido conforme al art 127 LISR"];
-                    obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Pago provisional conforme al art 126 LISR"];
+                    if("Pago provisional conforme al art 126 LISR" in item.info_tramite.info.detalle.Salidas){
+                        obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Pago provisional conforme al art 126 LISR"];
+                    }else{
+                        obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Monto provisional conforme al art 126 LISR"];
+                    }                  
                     obj.imp_entidad_federativa = item.info_tramite.info.detalle.Salidas["Impuesto correspondiente a la entidad federativa"];
                     obj.parte_act_impuesto = item.info_tramite.info.detalle.Salidas["Parte actualizada del impuesto"];
                     obj.recargos = item.info_tramite.info.detalle.Salidas["Recargos"];
