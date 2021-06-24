@@ -3454,7 +3454,6 @@ class MotorpagosController extends Controller
 
         `solicitudes_ticket`.`info`,
         `solicitudes_ticket`.`recibo_referencia`,
-        `solicitudes_ticket`.`grupo_clave`,
         `notary_offices`.`notary_number`
         ");
         $solicitudes = PortalSolicitudesTicket::select($select)
