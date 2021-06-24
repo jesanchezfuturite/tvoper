@@ -1084,6 +1084,7 @@
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
+                obj.ticket = item.Ticket;
                 obj.folio = item.Folio;
                 obj.estatus = item.Estatus;
                 obj.banco = item.Banco;
@@ -1102,15 +1103,15 @@
                     obj.escritura = "Null";
                 }
                
-                if('Entradas' in  item.info_tramite.info.detalle){
-                    obj.fecha_escritura = item.info_tramite.info.detalle.Entradas.fecha_escritura;
+                if('Fecha de escritura o minuta' in  item.info_tramite.info.campos){
+                    obj.fecha_escritura = item.info_tramite.info.campos['Fecha de escritura o minuta'];
                 }else{
                     obj.fecha_escritura="Null";
                    
                 }
                 //porcentaje que enajena
-                if('enajenante' in  item.info_tramite.info){
-                    obj.porcentaje_enajena = item.info_tramite.info.enajenante.porcentajeCompra;
+                if('Listado de enajenantes' in  item.info_tramite.info.campos){
+                    obj.porcentaje_enajena = item.info_tramite.info.campos['Listado de enajenantes'].porcentajeVenta;
                   
                 }else{
                     obj.porcentaje_enajena = "Null";
@@ -1220,7 +1221,8 @@
                     }
                     obj.fecha_nacimiento_enajenante = item.info_tramite.info.enajenante.datosPersonales.fechaNacimiento;
                     obj.clave_ine_enajenante = item.info_tramite.info.enajenante.datosPersonales.claveIne;
-                  
+                    obj.porcentaje_venta =item.info_tramite.info.enajenante.porcentajeCompra;
+                    obj.monto_operacion =item.info_tramite.info.enajenante.datosParaDeterminarImpuesto.montoOperacion;
                 }else{
                     obj.curp_enajenante = "Null";
                     obj.rfc_enajenante = "Null";
@@ -1228,21 +1230,12 @@
                     obj.apellido_paterno_enajenante = "Null";
                     obj.apellido_materno_enajenante="Null";                   
                     obj.fecha_nacimiento_enajenante = "Null";
-                    obj.clave_ine_enajenante = "Null";                   
+                    obj.clave_ine_enajenante = "Null";        
+                    obj.porcentaje_venta = "Null";         
+                    obj.monto_operacion = "Null";
                 }
-                //porcentaje de venta
-                if('Listado de enajenantes' in  item.info_tramite.info.campos){
-                    obj.porcentaje_venta = item.info_tramite.info.campos['Listado de enajenantes'].porcentajeVenta;        
-                }else{
-                    obj.porcentaje_venta="Null";
-                }
-                //monto de operacion
-                if('Entradas' in  item.info_tramite.info.detalle){
-                    obj.monto_operacion = item.info_tramite.info.detalle.Entradas.monto_operacion;
-                }else{
-                    obj.monto_operacion ="Null";
-                   
-                }
+               
+               
                 if('Salidas' in  item.info_tramite.info.detalle){
                     obj.fecha_actual = item.info_tramite.info.detalle.Salidas['Fecha Actual'];
                     obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
@@ -1291,6 +1284,7 @@
                 var obj = {};
                 obj.tramite=item.Tramite;
                 obj.id_transaccion = item.Transaccion;
+                obj.ticket = item.Ticket;
                 obj.folio = item.Folio;
                 obj.estatus = item.Estatus;
                 obj.banco = item.Banco;
@@ -1311,6 +1305,7 @@
                 obj.apellido_paterno_valuador = "Null";
                 obj.apellido_materno_valuador = "Null";
                 obj.rfc_valuador = "Null";
+                obj.folio_ae = "Null";
                 obj.monto_operacion_ae="Null";
                 obj.municipio_expediente="Null";
                 obj.no_expediente_catastral="Null";
@@ -1342,7 +1337,6 @@
                 obj.pago_exceso = "Null";                   
            
                 arr.push(obj);
-                // console.log(obj); 
             }
           
         });    
