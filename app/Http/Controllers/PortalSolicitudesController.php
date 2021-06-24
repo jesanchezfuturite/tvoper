@@ -452,11 +452,6 @@ class PortalSolicitudesController extends Controller
     $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
-    //  ->where(function($q) use ($user_id){
-    //   $q->whereNull('solicitudes_ticket.asignado_a')
-    //     ->orwhere('solicitudes_ticket.asignado_a', $user_id);
-    // })
-    // ->whereIn("c.id", $responsables)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
     ->select("c.atendido_por", "c.id as id_catalogo" ,"solicitudes_ticket.id", "solicitudes_ticket.grupo_clave");
@@ -492,10 +487,13 @@ class PortalSolicitudesController extends Controller
     "tk.ticket_relacionado", "tk.asignado_a",
     "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
     "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", 
-    "tk.grupo_clave", "pr.url_prelacion", "c.padre_id", "n.*", "usert.name as nombre_titular", 
-    "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular",
-    "userss.name as nombre_susbtituto", "userss.fathers_surname as apellido_pat_titular",
-    "userss.mothers_surname as apellido_mat_titular"
+    "tk.grupo_clave", "pr.url_prelacion", "c.padre_id", "n.notary_number","n.titular_id","n.substitute_id",
+    "n.phone","n.fax","n.email", "n.street", "n.number", "n.indoor-number", "n.district", "n.federal_entity_id",
+    "n.city_id", "n.zip", "n.sat_constancy_file", "n.notary_constancy_file", "usert.name as nombre_titular", 
+    "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular", 
+    "usert.status as status_titular", "userss.name as nombre_susbtituto", 
+    "userss.fathers_surname as apellido_pat_titular",
+    "userss.mothers_surname as apellido_mat_titular", "userss.status as status_substituto"
     )
     ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
