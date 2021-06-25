@@ -1174,8 +1174,12 @@
   
                 //Monto de operacion ae, municipio expediente, no. expediente catastral
                 if('Expedientes' in  item.info_tramite.info.campos){
-                    if('data' in  item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos){
-                        obj.monto_operacion_ae = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                    if(item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos!=false && typeof item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos == 'object'){
+                        if('data' in  item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos){
+                            obj.monto_operacion_ae = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                        }else{
+                            obj.monto_operacion_ae="Null";
+                        }
                     }else{
                         obj.monto_operacion_ae="Null";
                     }
@@ -1192,11 +1196,12 @@
                     if(direcciones){ 
                         let direccionaRR = []
                         $.each(direcciones, function( key, value ) {
-                           var dir = value.direccion.datos_direccion[0];
-                           
-                           var mun = value.direccion;
-                           var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
-                           direccionaRR.push(direccion);
+                            console.log(value);
+                                var dir = value.direccion.datos_direccion[0];                           
+                                var mun = value.direccion;
+                                var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
+                                direccionaRR.push(direccion);
+                            
                            
                         });
                          obj.direccion= direccionaRR.join()
