@@ -1196,12 +1196,14 @@
                     if(direcciones){ 
                         let direccionaRR = []
                         $.each(direcciones, function( key, value ) {
-                            console.log(value);
+                            console.log(value.direccion);
+                            if("datos_direccion" in value.direccion){
                                 var dir = value.direccion.datos_direccion[0];                           
                                 var mun = value.direccion;
                                 var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
-                                direccionaRR.push(direccion);
-                            
+                                direccionaRR.push(direccion);   
+                            }                         
+                                                     
                            
                         });
                          obj.direccion= direccionaRR.join()
