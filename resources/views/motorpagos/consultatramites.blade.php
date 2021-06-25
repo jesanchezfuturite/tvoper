@@ -488,6 +488,7 @@
 
 @section('scripts')
 
+<script src="//cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 <script src="assets/global/dataTable/dataTables.min.js"></script>
 <script src="assets/global/dataTable/dataTables.buttons.min.js"></script>
 <script src="assets/global/dataTable/buttons.flash.min.js"></script>
@@ -1173,10 +1174,26 @@
                 }        
   
                 //Monto de operacion ae, municipio expediente, no. expediente catastral
+            
                 if('Expedientes' in  item.info_tramite.info.campos){
                     if(item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos!=false && typeof item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos == 'object'){
                         if('data' in  item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos){
-                            obj.monto_operacion_ae = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                            var insumos = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data;
+                            console.log(insumos);
+                            let insumosArr = []
+                            $.each(insumos, function( key, value ) {
+                                console.log(key, value);
+                                // if("datos_direccion" in value.direccion){
+                                //     var dir = value.direccion.datos_direccion[0];                           
+                                //     var mun = value.direccion;
+                                //     var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
+                                //     direccionaRR.push(direccion);   
+                                // }                         
+                                                        
+                            
+                            });
+                        //  obj.direccion= direccionaRR.join()                      
+                        // obj.monto_operacion_ae = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
                         }else{
                             obj.monto_operacion_ae="Null";
                         }
@@ -1196,7 +1213,6 @@
                     if(direcciones){ 
                         let direccionaRR = []
                         $.each(direcciones, function( key, value ) {
-                            console.log(value.direccion);
                             if("datos_direccion" in value.direccion){
                                 var dir = value.direccion.datos_direccion[0];                           
                                 var mun = value.direccion;
@@ -1250,7 +1266,11 @@
                
                 if('Salidas' in  item.info_tramite.info.detalle){
                     obj.fecha_actual = item.info_tramite.info.detalle.Salidas['Fecha Actual'];
-                    obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                    if("Pago provisional conforme al art 126 LISR" in item.info_tramite.info.detalle.Salidas){
+                        obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                    }else{
+                        obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha vencimiento'];
+                    }
                     obj.factor_actualizacion = item.info_tramite.info.detalle.Salidas["Factor de Actualizacion"];
                     obj.porcentaje_recargos = item.info_tramite.info.detalle.Salidas["Porcentaje de recargos"];
                     obj.ganancia_obtenida = item.info_tramite.info.detalle.Salidas['Ganancia Obtenida'];
