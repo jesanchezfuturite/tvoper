@@ -111,8 +111,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Folio</th> 
-                                                            <th>Transacción</th> 
-                                                            <th>Conciliacion</th> 
+                                                            <th>Ticket</th> 
                                                             <th>Estatus</th>
                                                             <th>RFC</th>
                                                             <th>Familia</th>
@@ -128,7 +127,6 @@
                                                     <tbody> 
                                                         <tr>
                                                             <td><span class="help-block">No Found</span></td>                     
-                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -355,7 +353,7 @@
                                     </div>
                                     <div class="row">
                                         <div id="addTimerpicker4" hidden="true">
-                                            <div class='col-md-4'>
+                                            <div class='col-md-3'>
                                                 <span class='help-block'>&nbsp;</span> 
                                                 <div class='form-group'>   
                                                     <label for='fecha'>Seleccionar Rango de Fechas. </label>
@@ -372,6 +370,35 @@
                                                 <div class='form-group'> 
                                                     <label> RFC / Placas / Folio</label> 
                                                     <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc4' id='rfc4' class='form-control'>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class='help-block'>&nbsp;</span>
+                                                <div class="form-group">
+                                                    <label>Familia</label>
+                                                    <select class="select2me form-control"  id="itemsFamilia2" >
+                                                        <option>------</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='col-md-2'>
+                                                <span class='help-block'>&nbsp;</span>
+                                                <div class='form-group'> 
+                                                    <label> Notaria</label> 
+                                                    <input type='text' placeholder='Ingrese numero de notaria' autocomplete='off' name='notaria' id='notaria' class='form-control'>
+                                                </div>
+                                            </div>
+                                            <div class='col-md-2'>
+                                                <span class='help-block'>&nbsp;</span>
+                                                <div class='form-group'> 
+                                                    <label> Tramite</label> 
+                                                    <select class="select2me form-control" name="servicio" id="servicio" onchange="">
+                                                    
+                                                    <option value="0">------</option>
+                                                        @foreach($servicios as $s)
+                                                        <option value="{{$s->id}}">{{$s->nombre}}</option>
+                                                        @endforeach    
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class='col-md-1'>
@@ -408,7 +435,6 @@
                                                         <tr>
                                                             <th>Folio</th> 
                                                             <th>Ticket</th> 
-                                                            <th>Conciliacion</th> 
                                                             <th>Estatus</th>
                                                             <th>RFC</th>
                                                             <th>Familia</th>
@@ -425,7 +451,6 @@
                                                     
                                                         <tr>
                                                             <td><span class="help-block">No Found</span></td>                     
-                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -523,6 +548,14 @@
                 $("#itemsFamilia").append("<option value='"+item.id+"'>"+item.nombre+"</option>");
                 
             });
+
+            $("#itemsFamilia2 option").remove();
+            $("#itemsFamilia2").append("<option value='0'>-------</option>");
+            $.each(Resp, function(i, item) {
+                
+                $("#itemsFamilia2").append("<option value='"+item.id+"'>"+item.nombre+"</option>");
+                
+            });
         })
         .fail(function( msg ) {
          Command: toastr.warning("No Success", "Notifications")  });
@@ -567,6 +600,7 @@
     {
        fechaIn=$("#fechainicio4").val();
         fechaF=$("#fechafin4").val();
+        var familia_=$("#itemsFamilia2").val();
         if(fechaIn.length<1 && fechaF.length<1){
             Command: toastr.warning("Fecha Inicio y Fin, Requerido!", "Notifications")            
         }else{
@@ -660,6 +694,7 @@
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
         document.getElementById('rfc4').value='';
+        $("#itemsFamilia2").val('0').change();
     }
     
     $("#rfc").on("keypress", function(e)  {
@@ -762,7 +797,34 @@
     function Addtable4()
     {
         $("#table_4").remove();
-        $("#addTable_4").append("<div id='table_4'><div class='table-scrollable'><table class='table table-hover table-responsive' id='sample_7'><thead>  <tr><th>Folio</th> <th>Ticket</th><th>Conciliacion</th><th>Estatus</th> <th>RFC</th> "+"<th>Familia</th>"+" <th>Entidad</th> <th>Tramite</th><th>Contribuyente</th>  <th>Inicio Tramite</th> <th>Banco</th> <th>Tipo Pago</th><th>Total Tamite</th></tr> </thead><tbody> <tr><td><strong>Espere Cargando...</strong></td><td></td><td></td><td></td>"+"<td></td>"+"<td></td><td></td><td></td><td></td><td></td><td></td></tr> </tbody></table></div> </div>");
+        $("#addTable_4").append("<div id='table_4'>"+
+        "<div class='table-scrollable'>"+
+        "<table class='table table-hover table-responsive' id='sample_7'><thead>"+  
+        "<tr><th>Folio</th> "+
+        "<th>Ticket</th>"+
+        "<th>Estatus</th>"+
+         "<th>RFC</th>"+
+         "<th>Familia</th>"+ 
+         "<th>Entidad</th>"+
+          "<th>Tramite</th>"+
+          "<th>Contribuyente</th>" +
+          "<th>Inicio Tramite</th>"+
+          "<th>Banco</th> "+
+          "<th>Tipo Pago</th>"+
+          "<th>Total Tamite</th></tr></thead><tbody> <tr>"+
+         " <td><strong>Espere Cargando...</strong></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "<td></td>"+
+          "</tr> </tbody></table></div> </div>");
     }
     function Addtable3()
     {
@@ -969,11 +1031,14 @@
     function consultaTramites(fechaIn,fechaF) {
         Addtable4();
         var rfc_=$("#rfc").val();
-        var familia_=$("#itemsFamilia").val();
+        var familia_=$("#itemsFamilia2").val();
+        var notaria = $("#notaria").val();
+        var servicio=$("#servicio").val();
+        console.log(servicio);
         $.ajax({
         method: "post",            
         url:"{{ url('/consulta-transacciones-tramites') }}",   
-        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF, servicio:servicio, notaria:notaria,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             // obj = JSON.stringify(response);
             document.getElementById('jsonCode4').value=response;        
@@ -984,31 +1049,22 @@
             
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
-                    +"<td>"+item.Folio+"</td>"
-                    +"<td>"+item.Ticket+"</td>"
-                    +"<td>"+item.estatus+"</td>"
-                    +"<td>"+item.Estatus+"</td>"
-                    +"<td>"+item.RFC+"</td>"
-                    +"<td>"+item.Familia+"</td>"
-                    +"<td>"+item.Entidad+"</td>"
-                    +"<td>"+item.Tramite+"</td>"
-                    +"<td>"+item.Contribuyente+"</td>"
-                    +"<td>"+item.Inicio_Tramite+"</td>"
-                    +"<td>"+item.Banco+"</td>"
-                    +"<td>"+item.Tipo_Pago+"</td>"
-                    +"<td>"+item.Total_Tramite+"</td>"
+                    +"<td>"+item.folio+"</td>"
+                    +"<td>"+item.ticket+"</td>"
+                    +"<td>"+item.status+"</td>"
+                    // +"<td>"+item.Estatus+"</td>"
+                    +"<td>"+item.rfc+"</td>"
+                    +"<td>"+item.familia+"</td>"
+                    +"<td>"+item.entidad+"</td>"
+                    +"<td>"+item.tramite+"</td>"
+                    +"<td>"+item.nombre+" "+item.apellido_paterno+" "+item.apellido_materno+"</td>"
+                    +"<td>"+item.fecha_transaccion+"</td>"
+                    +"<td>"+item.BancoSeleccion+"</td>"
+                    +"<td>"+item.tipopago+"</td>"
+                    +"<td>"+item.TotalTramite+"</td>"
                     +"</tr>");
                 });   
-            //  $("#sample_7 tbody").append("<tr>"
-            //     +"<td>"+item.id+"</td>"
-            //     +"<td>"+item.id_transaccion_motor+"</td>"
-            //     +"<td>"+item.fecha_transaccion+"</td>"
-            //     +"<td>"+item.notary_number+"</td>"
-            //     +"<td>"+item.titular.apellido_paterno_titular+"</td>"
-            //     +"<td>"+item.titular.apellido_materno_titular+"</td>"
-            //     +"<td>"+item.info.tipoTramite+"</td>"
-            //     +"</tr>");
-            // });        
+           
                 cargatabla4();
             })
             .fail(function( msg ) {
@@ -1081,55 +1137,54 @@
         json = JSON.parse(JSONData);
         var arr=[];
         $.each(json, function(i, item) { 
-            if('info_tramite' in item ){
+            if(item.info!=null){
                 var obj = {};
-                obj.tramite=item.Tramite;
-                obj.id_transaccion = item.Transaccion;
-                obj.ticket = item.Ticket;
-                obj.folio = item.Folio;
-                obj.estatus = item.Estatus;
-                obj.banco = item.Banco;
-                obj.fecha_pago = item.Inicio_Tramite;
-                obj.fecha_tramite = item.info_tramite.fecha_creacion;
-                obj.tipo_tramite = item.info_tramite.info.tipoTramite;
-                obj.no_notaria = item.info_tramite.notary_number;
-                obj.apellido_paterno_titular = item.info_tramite.titular.apellido_paterno_titular;
-                obj.apellido_materno_titular =item.info_tramite.titular.apellido_materno_titular;
-                obj.nombre_titular = item.info_tramite.titular.nombre_titular;
-                obj.rfc_titular= item.info_tramite.titular.rfc_titular;
-                if('Escritura' in  item.info_tramite.info.campos){
-                    obj.escritura = item.info_tramite.info.campos['Escritura'];
+                obj.tramite=item.tiposervicio;
+                obj.ticket = item.ticket;
+                obj.folio = item.folio;
+                obj.estatus = item.status;
+                obj.banco = item.BancoSeleccion;
+                obj.fecha_pago = item.fecha_transaccion;
+                obj.fecha_tramite = item.fecha_creacion;
+                obj.tipo_tramite = item.info.tipoTramite;
+                obj.no_notaria = item.notary_number;
+                obj.apellido_paterno_titular = item.titular.apellido_paterno_titular;
+                obj.apellido_materno_titular =item.titular.apellido_materno_titular;
+                obj.nombre_titular = item.titular.nombre_titular;
+                obj.rfc_titular= item.titular.rfc_titular;
+                if('Escritura' in  item.info.campos){
+                    obj.escritura = item.info.campos['Escritura'];
                                 
                 }else{
                     obj.escritura = "Null";
                 }
                
-                if('Fecha de escritura o minuta' in  item.info_tramite.info.campos){
-                    obj.fecha_escritura = item.info_tramite.info.campos['Fecha de escritura o minuta'];
+                if('Fecha de escritura o minuta' in  item.info.campos){
+                    obj.fecha_escritura = item.info.campos['Fecha de escritura o minuta'];
                 }else{
                     obj.fecha_escritura="Null";
                    
                 }
                 //porcentaje que enajena
-                if('Listado de enajenantes' in  item.info_tramite.info.campos){
-                    obj.porcentaje_enajena = item.info_tramite.info.campos['Listado de enajenantes'].porcentajeVenta;
+                if('Listado de enajenantes' in  item.info.campos){
+                    obj.porcentaje_enajena = item.info.campos['Listado de enajenantes'].porcentajeVenta;
                   
                 }else{
                     obj.porcentaje_enajena = "Null";
                    
                 }
                 //motivo
-                if('Listado de enajenantes' in  item.info_tramite.info.campos){
-                    if("motivo" in item.info_tramite.info.campos['Listado de enajenantes']){
-                        obj.motivo=item.info_tramite.info.campos['Listado de enajenantes'].motivo;
+                if('Listado de enajenantes' in  item.info.campos){
+                    if("motivo" in item.info.campos['Listado de enajenantes']){
+                        obj.motivo=item.info.campos['Listado de enajenantes'].motivo;
                     }else{
                         obj.motivo="Null";
                     }
                 }else{
                     obj.motivo="Null";
                 }
-                if('camposConfigurados' in  item.info_tramite.info){
-                    var documento = item.info_tramite.info.camposConfigurados.find(campo => campo.tipo == "file");
+                if('camposConfigurados' in  item.info){
+                    var documento = item.info.camposConfigurados.find(campo => campo.tipo == "file");
                     if(documento && ('nombreArchivoGuardado' in documento)){
                         obj.documento = documento.nombreArchivoGuardado;
                     }else{
@@ -1140,12 +1195,12 @@
                 }
                
                 //datos valuador
-                if('Valuador' in  item.info_tramite.info.campos ){
-                    if(item.info_tramite.info.campos["Valuador"].isValuable==true){
-                        obj.nombre_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.nombre;
-                        obj.apellido_paterno_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.apPat;
-                        obj.apellido_materno_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.apMat;
-                        obj.rfc_valuador = item.info_tramite.info.campos["Valuador"].datosValuo.valuador.rfc;
+                if('Valuador' in  item.info.campos ){
+                    if(item.info.campos["Valuador"].isValuable==true){
+                        obj.nombre_valuador = item.info.campos["Valuador"].datosValuo.valuador.nombre;
+                        obj.apellido_paterno_valuador = item.info.campos["Valuador"].datosValuo.valuador.apPat;
+                        obj.apellido_materno_valuador = item.info.campos["Valuador"].datosValuo.valuador.apMat;
+                        obj.rfc_valuador = item.info.campos["Valuador"].datosValuo.valuador.rfc;
 
                     }else{
                         obj.nombre_valuador = "Null";
@@ -1161,8 +1216,8 @@
                     obj.rfc_valuador = "Null";
                 }
                 //folio ae
-                if('Expedientes' in  item.info_tramite.info.campos){
-                    var folios = item.info_tramite.info.campos["Expedientes"].expedientes;
+                if('Expedientes' in  item.info.campos){
+                    var folios = item.info.campos["Expedientes"].expedientes;
                     if(folios){
                         obj.folio_ae = folios.map(( obje) => obje.folio).join();
 
@@ -1175,41 +1230,46 @@
   
                 //Monto de operacion ae, municipio expediente, no. expediente catastral
             
-                if('Expedientes' in  item.info_tramite.info.campos){
-                    if(item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos!=false && typeof item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos == 'object'){
-                        if('data' in  item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos){
-                            var insumos = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data;
-                            console.log(insumos);
-                            let insumosArr = []
-                            $.each(insumos, function( key, value ) {
-                                console.log(key, value);
-                                // if("datos_direccion" in value.direccion){
-                                //     var dir = value.direccion.datos_direccion[0];                           
-                                //     var mun = value.direccion;
-                                //     var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
-                                //     direccionaRR.push(direccion);   
-                                // }                         
+                if('Expedientes' in  item.info.campos){
+                    if(item.info.campos["Expedientes"].expedientes[0].insumos!=false && typeof item.info.campos["Expedientes"].expedientes[0].insumos == 'object'){
+                        if('data' in  item.info.campos["Expedientes"].expedientes[0].insumos){
+                            var insumos = item.info.campos["Expedientes"].expedientes[0].insumos.data;
+                            // console.log(typeof insumos, item.Ticket);
+                            console.log(Array.isArray(insumos) , item.Ticket);
+                            console.log(insumos.length , item.Ticket);
+                            let insumosArr = [];
+                            if(Array.isArray(insumos)==false){
+                                obj.monto_operacion_ae = item.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                            }else{
+                                $.each(insumos, function( key, value ) {
+                                // console.log(key);
+                                    console.log(value);                             
+                                   
+                                    insumosArr.push(value.valor_operacion);                                                        
                                                         
                             
-                            });
-                        //  obj.direccion= direccionaRR.join()                      
-                        // obj.monto_operacion_ae = item.info_tramite.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                                });
+                                obj.monto_operacion_ae= insumosArr.join()                      
+
+                            }
+    
+                        // obj.monto_operacion_ae = item.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
                         }else{
                             obj.monto_operacion_ae="Null";
                         }
                     }else{
                         obj.monto_operacion_ae="Null";
                     }
-                    obj.municipio_expediente = item.info_tramite.info.campos['Expedientes'].expedientes[0].municipio.nombre;
-                    obj.no_expediente_catastral = item.info_tramite.info.campos['Expedientes'].expedientes[0].expediente;
+                    obj.municipio_expediente = item.info.campos['Expedientes'].expedientes[0].municipio.nombre;
+                    obj.no_expediente_catastral = item.info.campos['Expedientes'].expedientes[0].expediente;
                 }else{
                     obj.monto_operacion_ae="Null";
                     obj.municipio_expediente="Null";
                     obj.no_expediente_catastral="Null";                  
                 }
                     //Direccion
-                if('Expedientes' in  item.info_tramite.info.campos){
-                    var direcciones= item.info_tramite.info.campos["Expedientes"].expedientes;
+                if('Expedientes' in  item.info.campos){
+                    var direcciones= item.info.campos["Expedientes"].expedientes;
                     if(direcciones){ 
                         let direccionaRR = []
                         $.each(direcciones, function( key, value ) {
@@ -1232,21 +1292,21 @@
                 }
     
                 //datos enajenante
-                if('enajenante' in  item.info_tramite.info){
-                    obj.curp_enajenante = item.info_tramite.info.enajenante.datosPersonales.curp;
-                    obj.rfc_enajenante = item.info_tramite.info.enajenante.datosPersonales.rfc;
-                    obj.nombre_enajenante = item.info_tramite.info.enajenante.datosPersonales.nombre;
-                    obj.apellido_paterno_enajenante = item.info_tramite.info.enajenante.datosPersonales.apPat;
-                    if('apMat' in item.info_tramite.info.enajenante.datosPersonales){
-                        obj.apellido_materno_enajenante = item.info_tramite.info.enajenante.datosPersonales.apMat;
+                if('enajenante' in  item.info){
+                    obj.curp_enajenante = item.info.enajenante.datosPersonales.curp;
+                    obj.rfc_enajenante = item.info.enajenante.datosPersonales.rfc;
+                    obj.nombre_enajenante = item.info.enajenante.datosPersonales.nombre;
+                    obj.apellido_paterno_enajenante = item.info.enajenante.datosPersonales.apPat;
+                    if('apMat' in item.info.enajenante.datosPersonales){
+                        obj.apellido_materno_enajenante = item.info.enajenante.datosPersonales.apMat;
                     }else{
                         obj.apellido_materno_enajenante="Null";
                     }
-                    obj.fecha_nacimiento_enajenante = item.info_tramite.info.enajenante.datosPersonales.fechaNacimiento;
-                    obj.clave_ine_enajenante = item.info_tramite.info.enajenante.datosPersonales.claveIne;
-                    obj.porcentaje_venta =item.info_tramite.info.enajenante.porcentajeCompra;
-                    if('Entradas' in  item.info_tramite.info.detalle){
-                        obj.monto_operacion =item.info_tramite.info.detalle["Entradas"].monto_operacion;
+                    obj.fecha_nacimiento_enajenante = item.info.enajenante.datosPersonales.fechaNacimiento;
+                    obj.clave_ine_enajenante = item.info.enajenante.datosPersonales.claveIne;
+                    obj.porcentaje_venta =item.info.enajenante.porcentajeCompra;
+                    if('Entradas' in  item.info.detalle){
+                        obj.monto_operacion =item.info.detalle["Entradas"].monto_operacion;
                     }else{
                         obj.monto_operacion = "Null";
                     }
@@ -1264,27 +1324,27 @@
                 }
                
                
-                if('Salidas' in  item.info_tramite.info.detalle){
-                    obj.fecha_actual = item.info_tramite.info.detalle.Salidas['Fecha Actual'];
-                    if("Pago provisional conforme al art 126 LISR" in item.info_tramite.info.detalle.Salidas){
-                        obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha de vencimiento'];
+                if('Salidas' in  item.info.detalle){
+                    obj.fecha_actual = item.info.detalle.Salidas['Fecha Actual'];
+                    if("Fecha de vencimiento" in item.info.detalle.Salidas){
+                        obj.fecha_vencimiento = item.info.detalle.Salidas['Fecha de vencimiento'];
                     }else{
-                        obj.fecha_vencimiento = item.info_tramite.info.detalle.Salidas['Fecha vencimiento'];
+                        obj.fecha_vencimiento = item.info.detalle.Salidas['Fecha vencimiento'];
                     }
-                    obj.factor_actualizacion = item.info_tramite.info.detalle.Salidas["Factor de Actualizacion"];
-                    obj.porcentaje_recargos = item.info_tramite.info.detalle.Salidas["Porcentaje de recargos"];
-                    obj.ganancia_obtenida = item.info_tramite.info.detalle.Salidas['Ganancia Obtenida'];
-                    obj.monto_obtenido_art_127 = item.info_tramite.info.detalle.Salidas["Monto obtenido conforme al art 127 LISR"];
-                    if("Pago provisional conforme al art 126 LISR" in item.info_tramite.info.detalle.Salidas){
-                        obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Pago provisional conforme al art 126 LISR"];
+                    obj.factor_actualizacion = item.info.detalle.Salidas["Factor de Actualizacion"];
+                    obj.porcentaje_recargos = item.info.detalle.Salidas["Porcentaje de recargos"];
+                    obj.ganancia_obtenida = item.info.detalle.Salidas['Ganancia Obtenida'];
+                    obj.monto_obtenido_art_127 = item.info.detalle.Salidas["Monto obtenido conforme al art 127 LISR"];
+                    if("Pago provisional conforme al art 126 LISR" in item.info.detalle.Salidas){
+                        obj.pago_provisional_art_126 = item.info.detalle.Salidas["Pago provisional conforme al art 126 LISR"];
                     }else{
-                        obj.pago_provisional_art_126 = item.info_tramite.info.detalle.Salidas["Monto provisional conforme al art 126 LISR"];
+                        obj.pago_provisional_art_126 = item.info.detalle.Salidas["Monto provisional conforme al art 126 LISR"];
                     }                  
-                    obj.imp_entidad_federativa = item.info_tramite.info.detalle.Salidas["Impuesto correspondiente a la entidad federativa"];
-                    obj.parte_act_impuesto = item.info_tramite.info.detalle.Salidas["Parte actualizada del impuesto"];
-                    obj.recargos = item.info_tramite.info.detalle.Salidas["Recargos"];
-                    obj.multa_correcion_fiscal = item.info_tramite.info.detalle.Salidas["Multa corrección fiscal"];                   
-                    obj.importe_total = item.info_tramite.info.detalle.Salidas["Importe total"];
+                    obj.imp_entidad_federativa = item.info.detalle.Salidas["Impuesto correspondiente a la entidad federativa"];
+                    obj.parte_act_impuesto = item.info.detalle.Salidas["Parte actualizada del impuesto"];
+                    obj.recargos = item.info.detalle.Salidas["Recargos"];
+                    obj.multa_correcion_fiscal = item.info.detalle.Salidas["Multa corrección fiscal"];                   
+                    obj.importe_total = item.info.detalle.Salidas["Importe total"];
                     
                 }else{
                     obj.fecha_actual = "Null";
@@ -1302,11 +1362,11 @@
                    
                 }
 
-                if('Complementaria' in  item.info_tramite.info.detalle){
-                    obj.numero_folio_declaracion_normal = item.info_tramite.info.detalle.Complementaria['Folio de la declaracion inmediata anterior'];
-                    obj.monto_pagado_anterioridad = item.info_tramite.info.detalle.Complementaria["Monto pagado en la declaracion inmediata anterior"];
-                    obj.cantidad_cargo = item.info_tramite.info.detalle.Complementaria["Pago en exceso"];
-                    obj.pago_exceso = item.info_tramite.info.detalle.Complementaria['Cantidad a cargo'];                    
+                if('Complementaria' in  item.info.detalle){
+                    obj.numero_folio_declaracion_normal = item.info.detalle.Complementaria['Folio de la declaracion inmediata anterior'];
+                    obj.monto_pagado_anterioridad = item.info.detalle.Complementaria["Monto pagado en la declaracion inmediata anterior"];
+                    obj.cantidad_cargo = item.info.detalle.Complementaria["Pago en exceso"];
+                    obj.pago_exceso = item.info.detalle.Complementaria['Cantidad a cargo'];                    
                 }else{
                     obj.numero_folio_declaracion_normal = "Null";
                     obj.monto_pagado_anterioridad = "Null";
@@ -1318,15 +1378,15 @@
                 // console.log(obj); 
             }else{
                 var obj = {};
-                obj.tramite=item.Tramite;
-                obj.id_transaccion = item.Transaccion;
-                obj.ticket = item.Ticket;
-                obj.folio = item.Folio;
-                obj.estatus = item.Estatus;
-                obj.banco = item.Banco;
-                obj.fecha_pago = item.Inicio_Tramite;
+
+                obj.tramite="Null";
+                obj.ticket ="Null";
+                obj.folio = "Null";
+                obj.estatus ="Null";
+                obj.banco = "Null";
+                obj.fecha_pago = "Null";
                 obj.fecha_tramite = "Null";
-                obj.tipo_tramite =  "Null";
+                obj.tipo_tramite = "Null";
                 obj.no_notaria =  "Null";
                 obj.apellido_paterno_titular =  "Null";
                 obj.apellido_materno_titular =  "Null";
