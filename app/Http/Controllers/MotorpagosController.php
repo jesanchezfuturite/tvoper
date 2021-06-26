@@ -3404,10 +3404,6 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaActual->format('Y-m-d').' 23:59:59';
           
         }
-
-
-        
-
                 
         $solicitudes = Transacciones::leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','oper_transacciones.entidad')       
         ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
@@ -3417,7 +3413,7 @@ class MotorpagosController extends Controller
         ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
         ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','oper_transacciones.tipo_pago')
         ->leftjoin('egobierno.status as status','.status.Status','=','oper_transacciones.estatus') 
-        
+
         ->leftJoin("portal.solicitudes_tramite", 'opertram.id_transaccion_motor', '=', 'solicitudes_tramite.id_transaccion_motor')
         ->leftJoin('portal.solicitudes_ticket', 'solicitudes_ticket.id_transaccion', '=', 'solicitudes_tramite.id')
         ->leftJoin('portal.solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
@@ -3446,80 +3442,61 @@ class MotorpagosController extends Controller
         // 'solicitudes_ticket.id_transaccion as ',
         'solicitudes_tramite.id_transaccion_motor',
         'solicitudes_ticket.created_at as fecha_creacion',
-
         'solicitudes_ticket.info',
         // 'solicitudes_ticket.recibo_referencia',
         'notary_offices.notary_number',
         
         )        
-    //    ->addSelect($select)
         ->whereBetween('fecha_transaccion',[$fecha_inicio,$fecha_fin]);
         // ->whereIn('solicitudes_ticket.id_transaccion', $ids);
         // ->groupBy('oper_transacciones.id_transaccion_motor')
         // ->get();
        
         if($rfc!=""){
-
             $solicitudes->where('oper_tramites.rfc','LIKE',"%$rfc%")
             ->orWhere('oper_tramites.auxiliar_2','LIKE',"%$rfc%")
             ->orWhere('oper_transacciones.id_transaccion_motor','LIKE',"%$rfc%");
-
-
-           
         }
         if($familia!='0'){
-            // dd($familia);
            $solicitudes->where('opf.id', $familia);
            
         }
 
         if($servicio!=null){
-            // dd($servicio);
             $solicitudes->where('tiposer.Tipo_Code', $servicio);
             
-         }
-           
-            
-    
-
+        }
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
         $solicitudes=$solicitudes->get()->toArray();
 
-// dd($solicitudes);
-
-            foreach ($solicitudes as $key => &$value) { 
-                // dd($value["titular_id"]);                 
-                    if(empty($value["info"])){
-                        $value["info"]=json_decode($value["info"]);
-                    }else{
-                        $value["info"] = $this->asignarClavesCatalogo($value["info"]);
-                    }
-                    if(!is_null($value["titular_id"])){
-                        $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
-                        
-                        $value["titular"] =array(
-                            'nombre_titular'=> $titular->name,
-                            'apellido_paterno_titular'=> $titular->fathers_surname,
-                            'apellido_materno_titular'=> $titular->mothers_surname ,
-                            'rfc_titular'=>$titular->rfc,             
-                            'curp_titular'=>$titular->curp,  
-                        );
-                    }else{
-                        $value["titular"] =array(
-                            'nombre_titular'=> "",
-                            'apellido_paterno_titular'=>"",
-                            'apellido_materno_titular'=>"",
-                            'rfc_titular'=>"",             
-                            'curp_titular'=>"",
-                        );
-                    }
-                  
-                
-                    
-                           
+        foreach ($solicitudes as $key => &$value) {              
+            if(empty($value["info"])){
+                $value["info"]=json_decode($value["info"]);
+            }else{
+                $value["info"] = $this->asignarClavesCatalogo($value["info"]);
             }
+            if(!is_null($value["titular_id"])){
+                $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
+                
+                $value["titular"] =array(
+                    'nombre_titular'=> $titular->name,
+                    'apellido_paterno_titular'=> $titular->fathers_surname,
+                    'apellido_materno_titular'=> $titular->mothers_surname ,
+                    'rfc_titular'=>$titular->rfc,             
+                    'curp_titular'=>$titular->curp,  
+                );
+            }else{
+                $value["titular"] =array(
+                    'nombre_titular'=> "",
+                    'apellido_paterno_titular'=>"",
+                    'apellido_materno_titular'=>"",
+                    'rfc_titular'=>"",             
+                    'curp_titular'=>"",
+                );
+            }   
+        }
                 
 
         
