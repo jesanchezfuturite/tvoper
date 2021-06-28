@@ -22,21 +22,25 @@ class ApircController extends Controller
      * @return void
      */
 
-	protected $prod_url = "10.144.0.186:8080";
-	protected $test_url = "10.153.144.39:8080";
+	// protected $prod_url = "10.144.0.186:8080";
 
-	protected $user = "INTERTRAMITE";
-
-	protected $pass = "D3C35332A6232C316E06F8D4C314649F3E8BF39E3682C7DA6AF7C188FF3F5A29578B5E09EC3B0971BB86C9B397E3D20DE658E0C2D5BB6FEDDF38EDF5B22341D3";	
-
+	protected $user;
+	protected $pass;
 	protected $url;
 	protected $token;
+
+    protected $header = array (
+                'Content-Type' => 'application/json; charset=UTF-8',
+                'charset' => 'utf-8'
+            );
 
 
     public function __construct()
     {
 
-        $this->url = $this->test_url;
+        $this->url = env("URL_REGISTRO_CIVIL");
+        $this->user = env("USR_REGISTRO_CIVIL");
+        $this->pass = env("PSS_REGISTRO_CIVIL");
 
         // inicializamos el api de insumos
         try
@@ -47,7 +51,7 @@ class ApircController extends Controller
 	    		$this->url . "/GobiernoNuevoLeon-war/webresources/Autenticacion/validar_credencial",
 	    		[
 	    			'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
-        			'body'    => '{"nombre_usuario":"INTERTRAMITE","pass":"D3C35332A6232C316E06F8D4C314649F3E8BF39E3682C7DA6AF7C188FF3F5A29578B5E09EC3B0971BB86C9B397E3D20DE658E0C2D5BB6FEDDF38EDF5B22341D3"}'
+        			'body'    => '{"nombre_usuario":"'.$this->user.'","pass":"'.$this->pass.'"}'
 	    		]
 	    	);
 
@@ -226,13 +230,11 @@ class ApircController extends Controller
             
             $results = json_decode($response->getBody());
             
-            $r = empty($results->result) ? [] : $results->result;
-
-            return response()->json($r);
-            
+            return empty($results->result) ? response()->json([],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json($results->result,200,$this->header,JSON_UNESCAPED_UNICODE);        
 
         }catch (\Exception $e){
             Log::info("Error Api RC @ buscarActDef ".$e->getMessage());
+            return response()->json([],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -289,13 +291,11 @@ class ApircController extends Controller
 
             $results = json_decode($results);
 
-            $r = empty($results->data) ? [] : $results->data;
-
-            return response()->json($r);
-            
+            return empty($results->data) ? response()->json([],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json($results->data,200,$this->header,JSON_UNESCAPED_UNICODE);            
 
         }catch (\Exception $e){
             Log::info("Error Api RC @ buscarActMat ".$e->getMessage());
+             return response()->json([],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
 
