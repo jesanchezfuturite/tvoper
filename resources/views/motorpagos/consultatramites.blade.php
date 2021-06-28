@@ -353,11 +353,11 @@
                                     </div>
                                     <div class="row">
                                         <div id="addTimerpicker4" hidden="true">
-                                            <div class='col-md-3'>
+                                            <div class='col-md-4'>
                                                 <span class='help-block'>&nbsp;</span> 
                                                 <div class='form-group'>   
                                                     <label for='fecha'>Seleccionar Rango de Fechas. </label>
-                                                    <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                                                    <div class='input-group input-large date-picker input-daterange'  data-date-format='yyyy-mm-dd'>
                                                         <span class='input-group-addon'>De</span>
                                                         <input type='text' class='form-control' name='from' id='fechainicio4' autocomplete='off'>
                                                         <span class='input-group-addon'>A</span>
@@ -388,7 +388,7 @@
                                                     <input type='text' placeholder='Ingrese numero de notaria' autocomplete='off' name='notaria' id='notaria' class='form-control'>
                                                 </div>
                                             </div>
-                                            <div class='col-md-2'>
+                                            <div class='col-md-3'>
                                                 <span class='help-block'>&nbsp;</span>
                                                 <div class='form-group'> 
                                                     <label> Tramite</label> 
@@ -396,6 +396,18 @@
                                                     
                                                     <option value="0">------</option>
                                                         @foreach($servicios as $s)
+                                                        <option value="{{$s->id}}">{{$s->nombre}}</option>
+                                                        @endforeach    
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class='col-md-3'>
+                                                <span class='help-block'>&nbsp;</span>
+                                                <div class='form-group'> 
+                                                    <label>Estatus</label> 
+                                                    <select class="select2me form-control" name="status" id="status" onchange="">
+                                                        <option value="0">------</option>
+                                                        @foreach($status as $s)
                                                         <option value="{{$s->id}}">{{$s->nombre}}</option>
                                                         @endforeach    
                                                     </select>
@@ -532,6 +544,8 @@
         cargatabla4();
         ComponentsPickers.init(); 
         findFamilia();
+           
+      
     });
     function findFamilia()
     {
@@ -690,6 +704,7 @@
     }
     function timpicker3()
     {
+ 
         $("#addTimerpicker4").css("display", "block"); 
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
@@ -1034,11 +1049,16 @@
         var familia_=$("#itemsFamilia2").val();
         var notaria = $("#notaria").val();
         var servicio=$("#servicio").val();
-        console.log(servicio);
+        var status=$("#status").val();
         $.ajax({
         method: "post",            
         url:"{{ url('/consulta-transacciones-tramites') }}",   
-        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF, servicio:servicio, notaria:notaria,_token:'{{ csrf_token() }}'}  })
+        data: {familia:familia_,rfc:rfc_,
+            fecha_inicio:fechaIn,fecha_fin:fechaF, 
+            servicio:servicio, 
+            status:status,
+            notaria:notaria,_token:'{{ csrf_token() }}'}  
+        })
         .done(function (response) { 
             // obj = JSON.stringify(response);
             document.getElementById('jsonCode4').value=response;        
@@ -1136,6 +1156,7 @@
         json = JSON.parse(JSONData);
         var arr=[];
         $.each(json, function(i, item) { 
+
             if(item.info!=null){
                 var obj = {};
                 obj.tramite=item.tiposervicio;
@@ -1233,26 +1254,21 @@
                     if(item.info.campos["Expedientes"].expedientes[0].insumos!=false && typeof item.info.campos["Expedientes"].expedientes[0].insumos == 'object'){
                         if('data' in  item.info.campos["Expedientes"].expedientes[0].insumos){
                             var insumos = item.info.campos["Expedientes"].expedientes[0].insumos.data;
-                            // console.log(typeof insumos, item.Ticket);
-                            console.log(Array.isArray(insumos) , item.Ticket);
-                            console.log(insumos.length , item.Ticket);
                             let insumosArr = [];
                             if(Array.isArray(insumos)==false){
                                 obj.monto_operacion_ae = item.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
-                            }else{
+                            }
+                            if(typeof insumos =="object"){
                                 $.each(insumos, function( key, value ) {
-                                // console.log(key);
-                                    console.log(value);                             
-                                   
-                                    insumosArr.push(value.valor_operacion);                                                        
-                                                        
-                            
+                                    insumosArr.push(value.valor_operacion);   
                                 });
                                 obj.monto_operacion_ae= insumosArr.join()                      
 
+                            }else{
+                                obj.monto_operacion_ae="Null";
                             }
     
-                        // obj.monto_operacion_ae = item.info.campos["Expedientes"].expedientes[0].insumos.data.valor_operacion;
+                       
                         }else{
                             obj.monto_operacion_ae="Null";
                         }
@@ -1378,19 +1394,20 @@
             }else{
                 var obj = {};
 
-                obj.tramite="Null";
-                obj.ticket ="Null";
-                obj.folio = "Null";
-                obj.estatus ="Null";
-                obj.banco = "Null";
-                obj.fecha_pago = "Null";
-                obj.fecha_tramite = "Null";
+                obj.tramite=item.tiposervicio;
+                obj.ticket = item.ticket;
+                obj.folio = item.folio;
+                obj.estatus = item.status;
+                obj.banco = item.BancoSeleccion;
+                obj.fecha_pago = item.fecha_transaccion;
+                obj.fecha_tramite = item.fecha_creacion;
                 obj.tipo_tramite = "Null";
-                obj.no_notaria =  "Null";
-                obj.apellido_paterno_titular =  "Null";
-                obj.apellido_materno_titular =  "Null";
-                obj.nombre_titular =  "Null";
-                obj.rfc_titular =  "Null";
+                obj.no_notaria = item.notary_number;
+                obj.apellido_paterno_titular = item.titular.apellido_paterno_titular;
+                obj.apellido_materno_titular =item.titular.apellido_materno_titular;
+                obj.nombre_titular = item.titular.nombre_titular;
+                obj.rfc_titular= item.titular.rfc_titular;
+
                 obj.escritura = "Null";
                 obj.fecha_escritura="Null";
                 obj.porcentaje_enajena = "Null";
