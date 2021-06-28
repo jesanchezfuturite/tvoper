@@ -37,6 +37,7 @@ jobs:
         script: |
           cd ${{ secrets.PROD_FOLDER }} &&
           git pull origin ${{ secrets.PROD_BRANCH }} &&
+          export COMPOSER_PROCESS_TIMEOUT=0 &&
           composer install &&
           composer dump-autoload &&
           npm install &&
