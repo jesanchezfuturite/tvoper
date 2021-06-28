@@ -2144,7 +2144,8 @@ class MotorpagosController extends Controller
     {
 
         $servicios = $this->findTipoServicioAll();
-        return view('motorpagos/consultatramites', ["servicios" => json_decode($servicios) ]);
+        $status =  $this->statusFindAll();
+        return view('motorpagos/consultatramites', ["servicios" => json_decode($servicios), "status"=>json_decode($status )]);
     }
     public function consultaTransaccionesEgob(Request $request)
     {
@@ -3375,7 +3376,8 @@ class MotorpagosController extends Controller
     public function consultaTransaccionesTramites(Request $request){ 
         $rfc=$request->rfc;        
         $familia=$request->familia;     
-        $servicio=$request->servicio;   
+        $servicio=$request->servicio;  
+        $status=$request->status;   
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
         $notaria=$request->notaria;
@@ -3447,6 +3449,7 @@ class MotorpagosController extends Controller
         'notary_offices.notary_number',
         
         )        
+        ->groupBy('oper_transacciones.id_transaccion_motor')
         ->whereBetween('fecha_transaccion',[$fecha_inicio,$fecha_fin]);
         // ->whereIn('solicitudes_ticket.id_transaccion', $ids);
         // ->groupBy('oper_transacciones.id_transaccion_motor')
@@ -3469,7 +3472,12 @@ class MotorpagosController extends Controller
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
+        if($status!=null){
+            $solicitudes->where('status.Status', $status);
+            
+        }
         $solicitudes=$solicitudes->get()->toArray();
+
 
         foreach ($solicitudes as $key => &$value) {              
             if(empty($value["info"])){
