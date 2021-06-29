@@ -439,7 +439,7 @@ class PortalSolicitudesTicketController extends Controller
                 $info = $this->asignarClavesCatalogo($dato["info"]);
                 $costo_total += (float)$info->costo_final;
                 if(isset($info->detalle->Salidas)){
-                  if($info->detalle->Salidas->{'Importe total'}){
+                  if(isset($info->detalle->Salidas->{'Importe total'})){
                     $costo_tramite=$info->detalle->Salidas->{'Importe total'};
                   }else{
                     $costo_tramite=$info->detalle->Salidas->{'Importe total a pagar'};
