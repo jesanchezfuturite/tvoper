@@ -1172,6 +1172,7 @@
                 obj.apellido_materno_titular =item.titular.apellido_materno_titular;
                 obj.nombre_titular = item.titular.nombre_titular;
                 obj.rfc_titular= item.titular.rfc_titular;
+                console.log(item, item.ticket);
                 if('Escritura' in  item.info.campos){
                     obj.escritura = item.info.campos['Escritura'];
                                 

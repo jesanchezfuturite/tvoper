@@ -3406,51 +3406,53 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaActual->format('Y-m-d').' 23:59:59';
           
         }
-                
-        $solicitudes = Transacciones::leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','oper_transacciones.entidad')       
-        ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
-        ->leftjoin('operacion.oper_familia as opf','opf.id','=','opfamen.familia_id')
-        ->leftjoin('operacion.oper_tramites as opertram','opertram.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
-        ->leftjoin('operacion.oper_processedregisters as opprocess','opprocess.referencia','=','oper_transacciones.referencia')
-        ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
-        ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','oper_transacciones.tipo_pago')
-        ->leftjoin('egobierno.status as status','.status.Status','=','oper_transacciones.estatus') 
-
-        ->leftJoin("portal.solicitudes_tramite", 'opertram.id_transaccion_motor', '=', 'solicitudes_tramite.id_transaccion_motor')
-        ->leftJoin('portal.solicitudes_ticket', 'solicitudes_ticket.id_transaccion', '=', 'solicitudes_tramite.id')
-        ->leftJoin('portal.solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-        ->leftJoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
-        ->leftJoin('egobierno.tipo_servicios', 'solicitudes_catalogo.tramite_id', 'tipo_servicios.Tipo_Code')
-        ->leftJoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
-        ->leftJoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
-        ->select('status.Descripcion as status','oper_transacciones.id_transaccion as idTrans',
-        'opentidad.nombre as entidad',
-        'tiposer.Tipo_Descripcion as tiposervicio','opertram.nombre','opertram.apellido_paterno','opertram.apellido_materno',
-        'oper_transacciones.fecha_transaccion',
-        'oper_transacciones.banco as BancoSeleccion','tipopag.Descripcion as tipopago',
-        'oper_transacciones.importe_transaccion as TotalTramite',
-        'tiposer.Tipo_Code as tiposervicio_id',
-        'oper_transacciones.estatus as estatus_id','opertram.rfc as rfc',
-        'opf.nombre as familia',
-        'oper_transacciones.referencia',
-        'oper_transacciones.id_transaccion_motor as folio',
-        'opprocess.id as idProceso',
-        'solicitudes_ticket.id as ticket',
-    //     'solicitudes_catalogo.titulo',
-    //    'solicitudes_catalogo.tramite_id as tramite',
-        'notary_offices.titular_id',
-        'notary_offices.substitute_id',
-        'solicitudes_ticket.status as status_ticket',
-        // 'solicitudes_ticket.id_transaccion as ',
-        'solicitudes_tramite.id_transaccion_motor',
-        'solicitudes_ticket.created_at as fecha_creacion',
-        'solicitudes_ticket.info',
-        // 'solicitudes_ticket.recibo_referencia',
-        'notary_offices.notary_number',
+        // dd($fecha_inicio, $fecha_fin);
+        $solicitudes =PortalSolicitudesTicket::leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
+        ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')
+       
+        // ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'operTrans.id_transaccion_motor')
+        // ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
         
-        )        
-        ->groupBy('oper_transacciones.id_transaccion_motor')
-        ->whereBetween('fecha_transaccion',[$fecha_inicio,$fecha_fin]);
+        // ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
+        // ->leftjoin('operacion.oper_familia as opf','opf.id','=','opfamen.familia_id')
+        // // ->leftleftjoin('operacion.oper_tramites as opertram','opertram.id_transaccion_motor','=','oper_transacciones.id_transaccion_motor')
+        // ->leftjoin('operacion.oper_processedregisters as opprocess','opprocess.referencia','=','operTrans.referencia')
+        // ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
+        // ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','operTrans.tipo_pago')
+        // ->leftjoin('egobierno.status as status','.status.Status','=','operTrans.estatus') 
+
+        // ->leftjoin('portal.solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
+        // ->leftjoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
+        // ->leftjoin('egobierno.tipo_servicios', 'solicitudes_catalogo.tramite_id', 'tipo_servicios.Tipo_Code')
+        // ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
+        // ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
+    //     ->select('status.Descripcion as status','operTrans.id_transaccion as idTrans',
+    //     'opentidad.nombre as entidad',
+    //     'tiposer.Tipo_Descripcion as tiposervicio','opertram.nombre','opertram.apellido_paterno',
+    //     'opertram.apellido_materno',
+    //     'operTrans.fecha_pago as fecha_transaccion',
+
+    //     'operTrans.banco as BancoSeleccion','tipopag.Descripcion as tipopago',
+    //     'operTrans.importe_transaccion as TotalTramite',
+    //     'tiposer.Tipo_Code as tiposervicio_id',
+    //     'operTrans.estatus as estatus_id','opertram.rfc as rfc',
+    //     'opf.nombre as familia',
+    //     'operTrans.id_transaccion_motor as folio',
+    //     'opprocess.id as idProceso',
+    //     'solicitudes_ticket.id as ticket',
+    //     'notary_offices.titular_id',
+    //     'notary_offices.substitute_id',
+    //     'solicitudes_ticket.status as status_ticket',
+    //     'tramite.id_transaccion_motor',
+    //     'solicitudes_ticket.created_at as fecha_creacion',
+    //     // 'solicitudes_ticket.info',
+    //     'notary_offices.notary_number',
+    //     'tramite.id_ticket as tickets_relacion',
+
+        
+    // )      
+        // ->groupBy('operTrans.id_transaccion_motor')
+        ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
         // ->whereIn('solicitudes_ticket.id_transaccion', $ids);
         // ->groupBy('oper_transacciones.id_transaccion_motor')
         // ->get();
@@ -3465,10 +3467,10 @@ class MotorpagosController extends Controller
            
         }
 
-        if($servicio!=null){
-            $solicitudes->where('tiposer.Tipo_Code', $servicio);
+        // if($servicio!=null){
+        //     $solicitudes->where('tiposer.Tipo_Code', $servicio);
             
-        }
+        // }
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
@@ -3477,7 +3479,8 @@ class MotorpagosController extends Controller
             
         }
         $solicitudes=$solicitudes->get()->toArray();
-
+        dd($solicitudes);
+       
 
         foreach ($solicitudes as $key => &$value) {              
             if(empty($value["info"])){
@@ -3485,6 +3488,7 @@ class MotorpagosController extends Controller
             }else{
                 $value["info"] = $this->asignarClavesCatalogo($value["info"]);
             }
+           
             if(!is_null($value["titular_id"])){
                 $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
                 
