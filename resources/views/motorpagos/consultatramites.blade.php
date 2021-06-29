@@ -1164,8 +1164,8 @@
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
-                obj.fecha_pago = item.fecha_transaccion;
                 obj.fecha_tramite = item.fecha_creacion;
+                obj.fecha_pago = item.fecha_transaccion;               
                 obj.tipo_tramite = item.info.tipoTramite;
                 obj.no_notaria = item.notary_number;
                 obj.apellido_paterno_titular = item.titular.apellido_paterno_titular;
@@ -1404,8 +1404,8 @@
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
-                obj.fecha_pago = item.fecha_transaccion;
                 obj.fecha_tramite = item.fecha_creacion;
+                obj.fecha_pago = item.fecha_transaccion;
                 obj.tipo_tramite = "Null";
                 obj.no_notaria = item.notary_number;
                 obj.apellido_paterno_titular = item.titular.apellido_paterno_titular;
