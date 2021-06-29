@@ -3409,7 +3409,7 @@ class MotorpagosController extends Controller
         // dd($fecha_inicio, $fecha_fin);
         $solicitudes =PortalSolicitudesTicket::leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
         ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')
-       
+       ->select("tramite.id_transaccion_motor", "solicitudes_ticket.id", "tramite.id_ticket", "operTrans.id_transaccion_motor")
         // ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'operTrans.id_transaccion_motor')
         // ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
         
@@ -3474,7 +3474,7 @@ class MotorpagosController extends Controller
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
-        if($status!=null){
+        if($status!=0 && $status!=null){
             $solicitudes->where('status.Status', $status);
             
         }
