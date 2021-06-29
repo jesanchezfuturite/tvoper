@@ -1262,6 +1262,9 @@
                                 return  expediente.insumos.data.valor_operacion 
                             }else if(expediente.insumos && expediente.insumos.msg){
                                return expediente.insumos.msg;
+                            }else if(expediente.insumos.data && typeof expediente.insumos.data == "string"){
+                               return expediente.insumos.data;
+                            
                             }else{
                                 return false;
                             }

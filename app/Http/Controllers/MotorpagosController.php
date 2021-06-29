@@ -3453,83 +3453,9 @@ class MotorpagosController extends Controller
     
             
         )      
-        // ->select(
-            
-        //     'solicitudes_ticket.id as ticket',
-        //     'notary_offices.titular_id',
-        //     'notary_offices.substitute_id',
-        //     'solicitudes_ticket.status as status_ticket',
-        //     'tramite.id_transaccion_motor',
-        //     'solicitudes_ticket.created_at as fecha_creacion',
-        //     // 'solicitudes_ticket.info',
-        //     'notary_offices.notary_number',
-        //     'tramite.id_ticket as tickets_relacion',
-        // )
-        
+
         ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
-        // ->get()->toArray();
-        // dd($sol);
-     
-    //     $solicitudes =PortalSolicitudesTicket::leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
-        
-    //     // ->leftjoin('portal.solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-    //     ->leftjoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
-    //     // ->leftjoin('egobierno.tipo_servicios as tiposer', 'solicitudes_catalogo.tramite_id', 'tiposer.Tipo_Code')
-    //     ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
-    //     ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
-    //     ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')   
-        
-    //     ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')
-    //     ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
-        
-    //     ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
-    //     ->leftjoin('operacion.oper_familia as opf','opf.id','=','opfamen.familia_id')
-        
-    //     ->leftjoin('operacion.oper_processedregisters as opprocess','opprocess.referencia','=','operTrans.referencia')
-    //     ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
-    //     ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','operTrans.tipo_pago')
-    //     ->leftjoin('egobierno.status as status','.status.Status','=','operTrans.estatus') 
-
-    //     ->select(
-    //     'status.Descripcion as status',
-        
-    //     'operTrans.id_transaccion as idTrans',
-    //     'opentidad.nombre as entidad',
-    //     'tiposer.Tipo_Descripcion as tiposervicio',
-    //     'opertram.nombre',
-    //     'opertram.apellido_paterno',
-    //     'opertram.apellido_materno',
-    //     'operTrans.fecha_pago as fecha_transaccion',
-
-    //     'operTrans.banco as BancoSeleccion',
-    //     'tipopag.Descripcion as tipopago',
-    //     'operTrans.importe_transaccion as TotalTramite',
-    //     'tiposer.Tipo_Code as tiposervicio_id',
-    //     'operTrans.estatus as estatus_id',
-    //     'opertram.rfc as rfc',
-    //     'opf.nombre as familia',
-    //     'operTrans.id_transaccion_motor as folio',
-    //     'opprocess.id as idProceso',
-    //     'solicitudes_ticket.id as ticket',
-    //     'notary_offices.titular_id',
-    //     'notary_offices.substitute_id',
-    //     'solicitudes_ticket.status as status_ticket',
-    //     'tramite.id_transaccion_motor',
-    //     'solicitudes_ticket.created_at as fecha_creacion',
-    //     // 'solicitudes_ticket.info',
-    //     'notary_offices.notary_number',
-    //     'tramite.id_ticket as tickets_relacion',
-
-        
-    // )      
-    // ->select("tramite.id_transaccion_motor", "solicitudes_ticket.id", "tramite.id_ticket", "operTrans.id_transaccion_motor")
-        // ->groupBy('operTrans.id_transaccion_motor')
-        // ->groupBy('opertram.id_transaccion_motor')
-
-        // ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
-        // ->whereIn('solicitudes_ticket.id_transaccion', $ids);
-        // ->groupBy('oper_transacciones.id_transaccion_motor')
-        // ->get();
+   
        
         if($rfc!=""){
             $solicitudes->where('oper_tramites.rfc','LIKE',"%$rfc%")
@@ -3551,13 +3477,7 @@ class MotorpagosController extends Controller
         if($status!=0 && $status!=null){
             $solicitudes->where('status.Status', $status);            
         }
-
-        // if($status!=0 && $status!=null){
-        //     $solicitudes->where('tramie.etatus', $status);            
-        // }
         $solicitudes=$solicitudes->get()->toArray();
-        // dd($solicitudes);
-       
 
         foreach ($solicitudes as $key => &$value) {              
             if(empty($value["info"])){
