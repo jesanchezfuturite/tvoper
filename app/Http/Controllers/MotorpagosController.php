@@ -3453,7 +3453,7 @@ class MotorpagosController extends Controller
     
             
         )      
-
+        ->groupBy("solicitudes_ticket.id")
         ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
    
        
