@@ -3411,7 +3411,7 @@ class MotorpagosController extends Controller
         ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
         ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
         ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')   
-        ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_tramite', '=', 'solicitudes_ticket.id')
+        ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'operTrans.id_transaccion_motor')
         ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
         
         ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
@@ -3454,7 +3454,8 @@ class MotorpagosController extends Controller
             
         )      
         ->groupBy("solicitudes_ticket.id")
-        ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
+        // ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
+        ->whereBetween('operTrans.fecha_transaccion',[$fecha_inicio,$fecha_fin]);
    
        
         if($rfc!=""){
@@ -3474,8 +3475,8 @@ class MotorpagosController extends Controller
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
-        if($status!=0 && $status!=null){
-            $solicitudes->where('status.Status', $status);            
+        if($status!=null){
+            $solicitudes->where('operTrans.estatus', $status);            
         }
         $solicitudes=$solicitudes->get()->toArray();
 
