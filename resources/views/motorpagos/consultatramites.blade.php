@@ -1280,7 +1280,7 @@
                                 }
                             }
                             
-                            ).filter(Boolean).join(", ");
+                            ).filter(Boolean).join(" ");
 
                             obj.monto_operacion_ae=result;
                             
