@@ -1853,5 +1853,25 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
   }
+  public function folios(Request $request){
+    // dd($request->all());
+    $ids = $request->id; 
+    $expedientes = $request->expedientes;
+    foreach ($ids as $key => $value) {
+      $exp = explode(",", $expedientes[$key]);
+      $exp2 =[];
+      $ticket = PortalSolicitudesTicket::where("id", $value)->first();
+      $info = $this->asignarClavesCatalogo($ticket["info"]);
+      $informativo = $info->campos["Resultados Informativo Valor Catastral"];
+      foreach ($informativo as $key => $value) {
+          dd($value->datos_catastrales);
+      }
+      dd($info);
+    }
+
+   
+   
+  
+  }
 
 }

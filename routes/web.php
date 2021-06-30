@@ -516,5 +516,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/siger-insertaconceptos', 'ApisigerController@InsertaConceptos');
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
+
+    Route::get('/folios', 'PortalSolicitudesTicketController@folios');
 });
 
