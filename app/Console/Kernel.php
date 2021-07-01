@@ -43,8 +43,8 @@ class Kernel extends ConsoleKernel
                 ->everyMinute();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
-        $schedule->command('conciliacion:egobt')
-                 ->everyFiveMinutes();
+        // $schedule->command('conciliacion:egobt')
+        //          ->everyFiveMinutes();
 
         /* revisa que no existan anomalías en el proceso de conciliacion */
         $schedule->command('conciliacion:operaciont')
