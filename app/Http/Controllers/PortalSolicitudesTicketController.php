@@ -1853,25 +1853,58 @@ class PortalSolicitudesTicketController extends Controller
         );
       }
   }
-  public function folios(Request $request){
-    // dd($request->all());
+  public function addFolios(Request $request){
     $ids = $request->id; 
     $expedientes = $request->expedientes;
+    $folios = $request->folios;
+    
     foreach ($ids as $key => $value) {
-      $exp = explode(",", $expedientes[$key]);
       $exp2 =[];
+      if(count($expedientes[$key])!=count($folios[$key])){
+          return response()->json(
+            [
+              "Code" => "409",
+              "Message" => "Expedientes y folios no coinciden con la cantidad",
+            ]
+          );
+      }
+      
       $ticket = PortalSolicitudesTicket::where("id", $value)->first();
       $info = $this->asignarClavesCatalogo($ticket["info"]);
       $informativo = $info->campos["Resultados Informativo Valor Catastral"];
-      foreach ($informativo as $key => $value) {
-          dd($value->datos_catastrales);
+      if (array_key_exists('folios', $info->campos["Resultados Informativo Valor Catastral"]) &&
+          array_key_exists('expedientes', $info->campos["Resultados Informativo Valor Catastral"])) {
+          return response()->json(
+            [
+              "Code" => "409",
+              "Message" => "Ya existen folios y expedientes agregados a esta solicitud",
+            ]
+          ); 
       }
-      dd($info);
-    }
-
-   
-   
-  
+      // return false;
+      foreach ($informativo as $key2 => $value2) {
+        array_push($exp2, $value2->datos_catastrales[$key]->expediente_catastral);
+      }
+       $res = array_diff($expedientes[$key], $exp2);
+       if($res==[]){
+          $info->campos["Resultados Informativo Valor Catastral"]["folios"]=$folios[$key];
+          $info->campos["Resultados Informativo Valor Catastral"]["expedientes"]=$expedientes[$key];
+          $ticket->update(["info"=>json_encode($info)]);  
+          return response()->json(
+            [
+              "Code" => "200",
+              "Message" => "Expedientes y folios agregados",
+            ]
+          );
+       }else{
+          return response()->json(
+            [
+              "Code" => "409",
+              "Message" => "Expedientes no coinciden",
+            ]
+          );
+       }
+    }  
   }
 
 }
