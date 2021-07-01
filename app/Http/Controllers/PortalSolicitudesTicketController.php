@@ -1854,7 +1854,7 @@ class PortalSolicitudesTicketController extends Controller
       }
   }
   public function addFolios(Request $request){
-    dd($request->all());
+    dd($request);
     $ids = $request->id; 
     $expedientes = $request->expedientes;
     $folios = $request->folios;
