@@ -177,7 +177,7 @@
                 $('#result-query').hide();
                 $('#imageloading').html('Procesando ...').show();
             },
-            url: "{{ url('/conciliacion-getinfo') }}",
+            url: "{{ url()->route('conciliacion-getinfo') }}",
             data: { f: fecha, _token: '{{ csrf_token() }}' }
         })
         .done(function(data){
@@ -402,7 +402,7 @@
     {
         // deshabilitar el boton
         $("#corte_button").attr("disabled", true);
-        var url = "{{ url('/') }}" + "/envio-corte/"+fecha;
+        var url = "{{ url()->route('envio-corte', '') }}/"+fecha;
         window.open( url, "_blank");
 
     }
@@ -427,7 +427,7 @@
                 $('#result-query').hide();
                 $('#imageloading').html('Procesando ...').show();
             },
-            url: "{{ url('/conciliacion-detalle-anomalia') }}",
+            url: "{{ url()->route('conciliacion-detalle-anomalia') }}",
             data: { f: fecha, fuente: fuente, alias: alias, cuenta: cuenta, opcion: opcion_,id_banco:banco_id, _token: '{{ csrf_token() }}' }
         })
         .done(function(data){

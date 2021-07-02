@@ -282,7 +282,7 @@
         var validaentidad=$("#newEntidad").val();
         $.ajax({
            method: "get",            
-           url: "{{ url('/entidad-find') }}",
+           url: "{{ url()->route('entidad-find') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
             var Resp=$.parseJSON(responseinfo); 
@@ -313,7 +313,7 @@
             }else{
                 $.ajax({
                 method: "POST",            
-                url: "{{ url('/entidad-insert') }}",
+                url: "{{ url()->route('entidad-insert') }}",
                 data: {nombre:validaentidad,_token:'{{ csrf_token() }}'}  })
                 .done(function (response) {
                     if(response=="true"){
@@ -340,7 +340,7 @@
         var id_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/familia-find-where') }}",
+        url: "{{ url()->route('familia-find-where') }}",
         data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             var Resp=$.parseJSON(response);            
@@ -358,7 +358,7 @@
         if(familia_.length>1){
         $.ajax({
         method: "post",            
-        url: "{{ url('/familia-update') }}",
+        url: "{{ url()->route('familia-update') }}",
         data: {id:id_,familia:familia_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
            if(response=="true"){
@@ -379,7 +379,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/familia-find-all') }}",
+        url: "{{ url()->route('familia-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#itemsFamilia option").remove();
@@ -410,7 +410,7 @@
         if(nombre_.length>1){
         $.ajax({
         method: "post",            
-        url: "{{ url('/familia-insert') }}",
+        url: "{{ url()->route('familia-insert') }}",
         data: {nombre:nombre_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -433,7 +433,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/familia-find-all') }}",
+        url: "{{ url()->route('familia-find-all') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#itemsFamilia option").remove();
@@ -470,7 +470,7 @@
         var id=$("#itemsFamilia").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/familiaentidad-find') }}",
+           url: "{{ url()->route('familiaentidad-find') }}",
            data: {familia_id:id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -499,7 +499,7 @@
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/entidad-find') }}",
+        url: "{{ url()->route('entidad-find') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);
@@ -545,7 +545,7 @@
         var id_entidad=$("#entidad").val();
          $.ajax({
         method: "post",            
-        url: "{{ url('/familiaentidad-insert') }}",
+        url: "{{ url()->route('familiaentidad-insert') }}",
         data: {familia_id:id_familia,entidad_id:id_entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             if(response=="true")
@@ -570,7 +570,7 @@
      var id=$("#itemsFamilia").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/familiaentidad-find') }}",
+           url: "{{ url()->route('familiaentidad-find') }}",
            data: {familia_id:id,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);
@@ -602,7 +602,7 @@ function actualizaFamiliEntidad() {
     var id_=$("#idupdate").val();
      $.ajax({
         method: "post",            
-        url: "{{ url('/familiaentidad-update') }}",
+        url: "{{ url()->route('familiaentidad-update') }}",
         data: {id:id_,familia_id:id_familia,entidad_id:id_entidad,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             if(response=="true")
@@ -628,7 +628,7 @@ function eliminarFamiliaEntidad()
     var id_=$("#iddeleted").val();
      $.ajax({
         method: "post",            
-        url: "{{ url('/familiaentidad-deleted') }}",
+        url: "{{ url()->route('familiaentidad-deleted') }}",
         data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
             if(response=="true")

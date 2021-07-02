@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="{{asset('assets/global/dataTable/dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
 <h3 class="page-title">Portal <small>Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -220,9 +220,9 @@
 @endsection
 
 @section('scripts')
-	<script src="assets/global/dataTable/dataTables.min.js"></script>
-	<script src="assets/global/dataTable/jszip.min.js"></script>
-	<script src="assets/global/dataTable/vfs_fonts.js"></script>
+	<script src="{{asset('assets/global/dataTable/dataTables.min.js')}}"></script>
+	<script src="{{asset('assets/global/dataTable/jszip.min.js')}}"></script>
+	<script src="{{asset('assets/global/dataTable/vfs_fonts.js')}}"></script>
 	<script>
 
 	    jQuery(document).ready(() => {
@@ -238,7 +238,7 @@
 		}
 
 		function getTramites(){
-			let url = "{{ url('/solicitud-tramites') }}";
+			let url = "{{ url()->route('solicitud-tramites') }}";
 			getApi( url , ((response) => {  
 	        	tramites = JSON.parse(response);
 	        	setTramites( $("#tramitesSelect") );
@@ -248,7 +248,7 @@
 		}
 		
 		function getUsers(){
-			let url = "{{ url('/solicitud-getUsers') }}";
+			let url = "{{ url()->route('solicitud-getUsers') }}";
 			getApi( url , ((response) => usuarios = JSON.parse(response)), 
 				(( msg ) => {
 	         	Command: toastr.warning("No Success", "Notifications") ;
@@ -282,7 +282,7 @@
 
 
 		function updateTablaSolicitudes(){
-			let url = "{{ url('/solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
+			let url = "{{ url()->route('solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
 			createTable( url);
 		}
 
@@ -389,7 +389,7 @@
 		function verificaInsert(e){
 			let solicitud = formularioValido( getSolicitud() );
 			if( solicitud ){
-				let url = solicitud.id_solcitud.length == 0 ? "{{ url('/solicitud-add') }}" :"{{ url('/solicitud-editar') }}";
+				let url = solicitud.id_solcitud.length == 0 ? "{{ url()->route('solicitud-add') }}" :"{{ url()->route('solicitud-editar') }}";
 	            postUpdate( url, solicitud );
 			}
 		}
@@ -447,7 +447,7 @@
 
 		function eliminar(){
 			activarSpinner( true , $("#btnDel"), $("#iconBtnDel"));
-			let url =  "{{ url('/solicitud-delete') }}";
+			let url =  "{{ url()->route('solicitud-delete') }}";
 			let data = { id_solcitud: $("#iddeleted").val(),_token:'{{ csrf_token() }}'}
 			$.ajax({
 	           method: "post", url,
@@ -500,7 +500,7 @@
 	    	$("#table2 tbody tr").remove();
 			$.ajax({
 			    method: "get",            
-			    url: "{{ url('/get-motivos') }}",
+			    url: "{{ url()->route('get-motivos') }}",
 			    data: {_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        
@@ -528,7 +528,7 @@
 		var catalogo_id=$("#idcatalogo").val();
 		$.ajax({
 			    method: "POST",            
-			    url: "{{ url('/create-solicitud-motivo') }}",
+			    url: "{{ url()->route('create-solicitud-motivo') }}",
 			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        if(response.Code=="200")
@@ -547,7 +547,7 @@
 		var catalogo_id=$("#idcatalogo").val();
 		$.ajax({
 			    method: "POST",            
-			    url: "{{ url('/delete-solicitudes-motivos') }}",
+			    url: "{{ url()->route('delete-solicitudes-motivos') }}",
 			    data: {solicitud_catalogo_id:catalogo_id,motivo_id:id_motivo,_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) { 
 			    //console.log(response);    
@@ -568,11 +568,11 @@
 	}
 	function findMotivosSelect(id)
 	{
-
+		id=[id];
 			$.ajax({
 			    method: "get",            
-			    url: "{{ url('/get-solicitudes-motivos') }}"+"/"+id,
-			    data: {_token:'{{ csrf_token() }}'}  })
+			    url: "{{ url()->route('get-solicitudes-motivos', '') }}",
+			    data: {solicitud_catalogo_id:id,_token:'{{ csrf_token() }}'}  })
 			    .done(function (response) {     
 			        
 			        $.each($.parseJSON(response), function(i, item) {                

@@ -53,7 +53,7 @@ class Estados extends Command
     public function getEstados(){
         try
         {
-            $path = $this->url->to('/') . '/wsent/qa';
+            $path = url()->route('wsent', 'qa');
 	        $this->client = new \GuzzleHttp\Client();
 
 	    	$response = $this->client->get(

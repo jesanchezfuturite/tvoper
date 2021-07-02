@@ -128,7 +128,7 @@ Configuración <small> Menu principal</small>
 
 <!-- we added the form here to post the data to the controller and saves the info in DB -->
 <!-- levels in menu -->
-<form action=" {{ url('/adminmenu/saveMenu') }}" method="POST">
+<form action=" {{ url()->route('adminmenu/saveMenu') }}" method="POST">
 @csrf
 <input type="hidden" id="first_level" name="first_level" value="{{ $first_level }}" >
 <input type="hidden" id="second_level" name="second_level" value="{{ $second_level }}" >

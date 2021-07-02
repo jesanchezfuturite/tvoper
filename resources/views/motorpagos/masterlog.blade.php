@@ -268,7 +268,7 @@
 
         $.ajax({
             method: "post",            
-            url: "{{ url('/report-paid-operation') }}",
+            url: "{{ url()->route('report-paid-operation') }}",
             data: {fechaInicio:fechaIn,fechaFin:fechaF,_token:'{{ csrf_token() }}'}  }
         )
         .done(function (response) { 

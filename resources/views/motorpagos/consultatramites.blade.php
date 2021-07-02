@@ -246,6 +246,60 @@
                                     <div class="caption">
                                         <i class="fa fa-gift"></i>Contribuyente
                                     </div>
+                                        <div class='row'> <div class='form-group'> <div class='col-md-12 text-right'> <button class='btn blue' onclick='saveEgob()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> </div></div> </div><span class='help-block'>&nbsp; </span>
+                                    <div id="addTable_2">
+                                    <div id="table_2">
+                                    <div class="table-scrollable">
+                                    <table class="table table-hover table-responsive" id="sample_2">
+                                        <thead>
+                                            <tr> 
+
+                                                <th>Transacción</th>
+                                                <th>Conciliacion</th>
+                                                <th>Estatus</th>
+                                                <th>RFC</th>
+                                                <th>Declarado</th>
+                                                <th>Familia</th>
+                                                <th>Entidad</th>
+                                                <th>Tramite</th>
+                                                <th>Contribuyente</th> 
+                                                <th>Inicio Tramite</th>                       
+                                                <th>Banco</th>
+                                                <th>Tipo Pago</th>                                            
+                                                <th>Total Tamite</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody> 
+                                            <tr>
+                                                <td><span class="help-block">No Found</span></td>           
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>                                   
+                                        </tbody>
+                                        
+                                    </table>                            
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tab_2">                            
+                            <div class="portlet box blue">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class="fa fa-gift"></i>Contribuyente
+                                    </div>
                                 </div>
                                 <div class="portlet-body" >
                                     <div class="row">
@@ -551,7 +605,7 @@
     {
         $.ajax({
            method: "get",
-           url:"{{ url('/familia-find-all') }}",
+           url: "{{ url()->route('familia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -668,12 +722,14 @@
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
         document.getElementById('rfc4').value='';
-        var option = document.querySelector('input[name = radio7]:checked').value;    
+        var option = document.querySelector('input[name = radio7]:checked').value;   
+        console.log(option);     
         if(option=="avanzado")
         {
-            timpicker3();
+            timpicker2();
         }else{
-             $("#addTimerpicker4").css("display", "none");
+            //$("#addTimerpicker2 div").remove();
+             $("#addTimerpicker2").css("display", "none");
             if(option=="undia")
             {
                 consultaTramites('1','1');
@@ -754,8 +810,8 @@
         //document.getElementById("blockui_sample_3_1").click();
         var rfc_=$("#rfc2").val();
         $.ajax({
-        method: "post",            
-        url:"{{ url('/consulta-transacciones-egob') }}",        
+        method: "post",
+        url: "{{ url()->route('consulta-transacciones-egob') }}",
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode2').value=response;
@@ -990,7 +1046,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-oper') }}",  
+        url: "{{ url()->route('consulta-transacciones-oper') }}",
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
@@ -1051,7 +1107,7 @@
         var servicio=$("#servicio").val();
         var status=$("#status").val();
         $.ajax({
-        method: "post",            
+        method: "post",
         url:"{{ url('/consulta-transacciones-tramites') }}",   
         data: {familia:familia_,rfc:rfc_,
             fecha_inicio:fechaIn,fecha_fin:fechaF, 
@@ -1095,39 +1151,62 @@
                 Command: toastr.warning("Registro No Encontrado", "Notifications")  
             });     
     }
-    function consultaGpm(fechaIn,fechaF) {
-        Addtable3();
+    function consultaOper(fechaIn,fechaF) {
+        Addtable1();
         //document.getElementById("blockui_sample_3_1").click();
+        var rfc_=$("#rfc").val();
+        var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-gpm') }}",
-        data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
-        .done(function (response) { 
-        document.getElementById('jsonCode3').value=response;        
-        $("#sample_4 tbody tr").remove();   
+        url: "{{ url()->route('consulta-transacciones-oper') }}",
+        data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {
+        document.getElementById('jsonCode1').value=response;        
+        $("#sample_3 tbody tr").remove();   
         var Resp=$.parseJSON(response);
          var color='';
         var label='';
         
         $.each(Resp, function(i, item) { 
-             $("#sample_4 tbody").append("<tr>"
-                +"<td>"+item.id_transaccion+"</td>"
-                +"<td>"+item.id_transaccion_entidad+"</td>"
-                +"<td>"+item.fechaTramite+" "+item.horaTramite+"</td>"
-                +"<td>"+item.TotalTramite+"</td>"
-                +"<td>"+item.Tipo_Descripcion+"</td>"
-                +"<td>"+item.id_tramite+"</td>"
-                +"<td>"+item.id_tramite_entidad+"</td>"
-                +"<td>"+item.importe_tramite+"</td>"
+             /*  if(item.estatus=='p')
+            {
+                color='success';
+                label='procesado';
+            }else if(item.estatus=='np')
+            {
+                color='danger';
+                label='No procesado';
+            }else if(item.estatus=='ad')
+            {f
+                color='warning';
+                label='ad';
+            }else{
+                color='Info';
+                label='ane';
+            }*/
+             $("#sample_3 tbody").append("<tr>"
+                +"<td>"+item.Folio+"</td>"
+                +"<td>"+item.Transaccion+"</td>"
+                +"<td>"+item.estatus+"</td>"
+                +"<td>"+item.Estatus+"</td>"
+                +"<td>"+item.RFC+"</td>"
+                +"<td>"+item.Familia+"</td>"
+                +"<td>"+item.Entidad+"</td>"
+                +"<td>"+item.Tramite+"</td>"
+                +"<td>"+item.Contribuyente+"</td>"
+                +"<td>"+item.Inicio_Tramite+"</td>"
+                +"<td>"+item.Banco+"</td>"
+                +"<td>"+item.Tipo_Pago+"</td>"
+                +"<td>"+item.Total_Tramite+"</td>"
                 +"</tr>");
             });        
-       cargatabla3();
+       cargatabla1();
         //document.getElementById("blockui_sample_3_1_1").click();
         })
         .fail(function( msg ) {
             //document.getElementById("blockui_sample_3_1_1").click();
-            $("#sample_4 tbody tr").remove(); 
-            $("#sample_4 tbody").append("<tr>"
+            $("#sample_3 tbody tr").remove(); 
+            $("#sample_3 tbody").append("<tr>"
                 +"<td>No Found</td>"
                 +"</tr>");
          Command: toastr.warning("Registro No Encontrado", "Notifications")  });     

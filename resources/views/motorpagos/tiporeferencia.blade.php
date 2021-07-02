@@ -223,7 +223,7 @@
         var dias_vigencia=$("#dias_vigencia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/tipo-referencia-insert') }}",
+        url: "{{ url()->route('tipo-referencia-insert') }}",
         data: {descripcion:descripcion_,digitoverificador:digito_verificador,longitud:longitud_,origen:origen_,diasvigencia:dias_vigencia,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -243,7 +243,7 @@
         var iddeleted=$("#iddeleted").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/tipo-referencia-deleted') }}",
+        url: "{{ url()->route('tipo-referencia-deleted') }}",
         data: {id:iddeleted,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         if(responseinfo=="true")
@@ -265,7 +265,7 @@
        
         $.ajax({
         method: "post",            
-        url: "{{ url('/tipo-referencia-find-where') }}",
+        url: "{{ url()->route('tipo-referencia-find-where') }}",
         data: {id:id_,_token:'{{ csrf_token() }}'}  })
         .done(function (responseinfo) {     
         var Resp=$.parseJSON(responseinfo);          
@@ -292,7 +292,7 @@
         var dias_vigencia=$("#dias_vigencia").val();
         $.ajax({
         method: "post",            
-        url: "{{ url('/tipo-referencia-update') }}",
+        url: "{{ url()->route('tipo-referencia-update') }}",
         data: {id:id_,descripcion:descripcion_,digitoverificador:digito_verificador,longitud:longitud_,origen:origen_,diasvigencia:dias_vigencia,_token:'{{ csrf_token() }}'} })
         .done(function (responseinfo) {     
             if(responseinfo=="true")
@@ -315,7 +315,7 @@
     {
         $.ajax({
            method: "get",           
-           url: "{{ url('/tipo-referencia-find-all') }}",
+           url: "{{ url()->route('tipo-referencia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
           var Resp=$.parseJSON(response);
@@ -350,7 +350,7 @@ function GuardarExcel()
     document.getElementById("blockui_sample_3_1").click();
      $.ajax({
            method: "GET",            
-           url: "{{ url('/tipo-referencia-find-all') }}",
+           url: "{{ url()->route('tipo-referencia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             //console.log(responseTipoServicio);

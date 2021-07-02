@@ -28,7 +28,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '';
 
     /**
      * Create a new controller instance.
@@ -37,6 +37,7 @@ class ResetPasswordController extends Controller
      */
     public function __construct()
     {
+        $this->redirectTo = (getenv('APP_PREFIX') ?? '').'/home';
         $this->middleware('guest');
     }
 

@@ -399,7 +399,7 @@
         var correo=$("#correo").val();
         $.ajax({
            method: "post",           
-           url: "{{ url('/pagoarrendamiento-insert') }}",
+           url: "{{ url()->route('pagoarrendamiento-insert') }}",
            data:{nombre:nombre_,rfc:rfc_,curp:curp_,calle:calle_,nointerior:nointerior_,noexterior:noexterior_,colonia:colonia_,municipio:municipio_,estado:estado_,cp:cp_,email:correo,pagos:pagos_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {             
             if(response=='[]'){
@@ -428,7 +428,7 @@
         var user_="andrea.gonzalez";
         $.ajax({
            method: "post",           
-           url: "{{ url('/acceso-partidas') }}",
+           url: "{{ url()->route('acceso-partidas') }}",
            data: {user:user_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
              //console.log(response);

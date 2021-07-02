@@ -146,7 +146,7 @@
 
     $.ajax({
       method: "get",
-      url: "{{ url('/find-avisos') }}",
+      url: "{{ url()->route('find-avisos') }}",
       data: { _token: '{{ csrf_token() }}' }
       })
       .done(function (response) {
@@ -205,7 +205,7 @@
     var description_=$("#description").val();
       $.ajax({
            method: "POST",
-           url: "{{ url('/create-avisos') }}",
+           url: "{{ url()->route('create-avisos') }}",
            data: {name:name_,title:title_,description:description_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -238,7 +238,7 @@
     var description_=$("#description").val();
       $.ajax({
            method: "POST",
-           url: "{{ url('/update-avisos') }}",
+           url: "{{ url()->route('update-avisos') }}",
            data: {id:id_,name:name_,title:title_,description:description_,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -263,7 +263,7 @@
     var id_=$("#iddeleted").val();
     $.ajax({
            method: "POST",
-           url: "{{ url('/delete-avisos') }}",
+           url: "{{ url()->route('delete-avisos') }}",
            data: {id:id_, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
