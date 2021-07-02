@@ -53,38 +53,87 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <!-- BEGIN SAMPLE TABLE PORTLET-->
-    <div class="portlet box blue">
-        <div class="portlet-title">
-            
-            <div class="caption" id="headerTabla">
-              	<div id="borraheader"> 
-              	 	<i class="fa fa-cogs"></i>&nbsp;Solicitudes &nbsp;
-            	</div>
-            </div>
-            <div class="tools" id="toolsSolicitudes">                
-                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
-                </a>
-            </div>
-        </div>
-        <div class="portlet-body">
-            <div class="table-scrollable" id="tablaSolicitudesDiv">
-               <table id="example" class="table table-hover" cellspacing="0" width="100%" >
-				    <thead>
-				        <tr>
-				            <th></th>
-				            <th>Titulo</th>
-				            <th></th>
-				        </tr>
-				    </thead>
-				</table>
+
+<div class="row">           
+    <div class="col-md-12">
+        <div class="tabbable-line boxless tabbable-reversed">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#tab_0" data-toggle="tab">Solicitudes</a>
+                </li>
+                <li>
+                    <a href="#tab_1" data-toggle="tab">Proceso de Solicitudes</a>
+                </li> 
+            </ul>
+            <div class="tab-content">                               
+                <div class="tab-pane active" id="tab_0">
+					<div class="row">
+					    <div class="portlet box blue">
+					        <div class="portlet-title">
+					            
+					            <div class="caption" id="headerTabla">
+					              	<div id="borraheader"> 
+					              	 	<i class="fa fa-cogs"></i>&nbsp;Solicitudes &nbsp;
+					            	</div>
+					            </div>
+					            <div class="tools" id="toolsSolicitudes">                
+					                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
+					                </a>
+					            </div>
+					        </div>
+					        <div class="portlet-body">
+					            <div class="table-scrollable" id="tablaSolicitudesDiv">
+					               <table id="example" class="table table-hover" cellspacing="0" width="100%" >
+									    <thead>
+									        <tr>
+									            <th></th>
+									            <th>Titulo</th>
+									            <th></th>
+									        </tr>
+									    </thead>
+									</table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                </div>
+                <div class="tab-pane" id="tab_1">
+                	<div class="row">
+					    <div class="portlet box blue">
+					        <div class="portlet-title">
+					            
+					            <div class="caption" id="headerTabla">
+					              	<div id="borraheader"> 
+					              	 	<i class="fa fa-cogs"></i>&nbsp;Proceso &nbsp;
+					            	</div>
+					            </div>
+					            <div class="tools" id="toolsSolicitudes">                
+					                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
+					                </a>
+					            </div>
+					        </div>
+					        <div class="portlet-body">
+					            <div class="table-scrollable" id="table_proceso">
+					               <table id="tableManaged" class="table table-hover" cellspacing="0" width="100%" >
+									    <thead>
+									        <tr>
+									            <th></th>
+									            <th>Proceso</th>
+									            <th></th>
+									        </tr>
+									    </thead>
+									</table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                </div>
             </div>
         </div>
     </div>
-    <!-- END SAMPLE TABLE PORTLET-->
-
 </div>
+
+
 
 <div class="modal fade" id="add-solicitud-modal" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
