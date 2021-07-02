@@ -345,9 +345,9 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/solicitud-find-folio', 'PortalSolicitudesController@findTicketidFolio')->name('solicitud-find-folio');
     Route::post('/solicitud-update-permisos', 'PortalSolicitudesController@updatePermisoSolicitud')->name('solicitud-update-permisos');
     Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle/{idticket?}');
-
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
+    Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion');
 
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');
@@ -516,5 +516,6 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/siger-insertaconceptos', 'ApisigerController@InsertaConceptos');
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
+
 });
 

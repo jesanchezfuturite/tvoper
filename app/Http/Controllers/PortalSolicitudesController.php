@@ -32,6 +32,7 @@ use App\Entities\SolicitudesMotivo;
 use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
+use App\Entities\EstatusAtencion;
 
 class PortalSolicitudesController extends Controller
 {
@@ -74,7 +75,7 @@ class PortalSolicitudesController extends Controller
 
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -1312,6 +1313,16 @@ class PortalSolicitudesController extends Controller
       return "0";
     }
     return $url;
+  }
+  public  function getEstatusAtencion()
+  {
+    try{
+     $estatus = EstatusAtencion::get()->toArray();
+     return $estatus;
+    }catch (\Exception $e) {
+      log::info("PortalSolicitudes@getEstatusAtencion " . $e);
+      return "0";
+    }
   }
   
 }
