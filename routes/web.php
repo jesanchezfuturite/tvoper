@@ -350,6 +350,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion');
     Route::post('/agregar-estatus-atencion', 'PortalSolicitudesController@agregarResponsableEstatusAtencion');
     Route::post('/editar-estatus-atencion', 'PortalSolicitudesController@editarAtenderSolicitud');
+    Route::get('/get-all-procesos/{id}', 'PortalSolicitudesController@getAllProcesos');
 
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');

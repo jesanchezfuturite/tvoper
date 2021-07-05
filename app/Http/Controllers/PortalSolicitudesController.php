@@ -1395,5 +1395,14 @@ class PortalSolicitudesController extends Controller
     }
 
   }
+  public function getAllProcesos($id){
+    try{
+      $array = $this->getEstatusAtencion();
+      return $array;
+    }
+    catch(\Exception $e) {
+      Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
+    }
+  }
   
 }
