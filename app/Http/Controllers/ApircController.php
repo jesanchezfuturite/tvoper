@@ -176,12 +176,11 @@ class ApircController extends Controller
 
             $results = json_decode($results);
 
-            $r = empty($results->data) ? [] : $results->data;
-
-            return response()->json($r);            
+            return empty($results->data) ? response()->json([],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json($results->data,200,$this->header,JSON_UNESCAPED_UNICODE);        
 
         }catch (\Exception $e){
             Log::info("Error Api RC @ buscarActaNac ".$e->getMessage());
+            return response()->json([],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
 
