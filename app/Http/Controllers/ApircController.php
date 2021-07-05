@@ -290,8 +290,8 @@ class ApircController extends Controller
             $results = $response->getBody();
 
             $results = json_decode($results);
-
-            return empty($results->data) ? response()->json([],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json($results->data,200,$this->header,JSON_UNESCAPED_UNICODE);            
+            
+            return empty($results->result) ? response()->json([],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json($results->result,200,$this->header,JSON_UNESCAPED_UNICODE);            
 
         }catch (\Exception $e){
             Log::info("Error Api RC @ buscarActMat ".$e->getMessage());
