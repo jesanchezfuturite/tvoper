@@ -114,7 +114,7 @@
 					        </div>
 					        <div class="portlet-body">
 					            <div class="table-scrollable" id="table_proceso">
-					               <table id="tableManaged" class="table table-hover" cellspacing="0" width="100%" >
+					               <table id="sample_2" class="table table-hover" cellspacing="0" width="100%" >
 									    <thead>
 									        <tr>
 									            <th></th>
@@ -278,6 +278,7 @@
 	    	getTramites();
 	    	getUsers();
 	    	findMotivos();
+	    	TableManaged2.init2();
 	    });
 		var tramites = [];
 		var usuarios = [];
@@ -640,5 +641,24 @@
         $(this).show();
         });
     });
+    function findProcesoSolicitudes()
+	    {
+	    	$("#sample_2 tbody tr").remove();
+			$.ajax({
+			    method: "get",            
+			    url: "{{ url()->route('get-motivos') }}",
+			    data: {_token:'{{ csrf_token() }}'}  })
+			    .done(function (response) {     
+			        
+			        $.each($.parseJSON(response), function(i, item) {                
+			            $("#sample_2").append("<tr>"
+			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='saveMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
+			              +"</tr>"
+			            );
+			        });
+			    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
 	</script>
 @endsection
