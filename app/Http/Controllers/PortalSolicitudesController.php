@@ -33,6 +33,7 @@ use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 use App\Entities\EstatusAtencion;
+use App\Entities\Portalsolicitudesresponsables;
 
 class PortalSolicitudesController extends Controller
 {
@@ -1323,6 +1324,76 @@ class PortalSolicitudesController extends Controller
       log::info("PortalSolicitudes@getEstatusAtencion " . $e);
       return "0";
     }
+  }
+
+  public function agregarResponsableEstatusAtencion(Request $request){
+    $id_tramite = $request->catalogo_id;
+    $status = $request->id_estatus_atencion;
+    $atiende = $request->user;
+    $users=explode(",",$atiende);
+    try {
+
+  
+      foreach ($users as $e) {
+        $responsables=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$id_tramite]);
+      }
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud asignada con éxito",
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+      Log::info('Error Asignar solicitud '.$e->getMessage());
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al agregar responsable a la solicitud",
+        ]
+      );
+    }
+
+  }
+
+  public function editarAtenderSolicitud(Request $request){
+    $tramite_id = $request->catalogo_id;
+    $atiende = $request->user;
+    $status = $request->id_estatus_atencion;
+    $users=explode(",",$atiende);
+    try{
+
+      $del = Portalsolicitudesresponsables::where('catalogo_id', '=', $tramite_id)
+            ->whereIn('id_estatus_atencion', $status)->get();
+
+      $del->each->delete();
+
+      foreach ($users as $e) {
+        $responsable=$this->solicitudrespdb->create(["user_id"=>$e,"catalogo_id"=>$tramite_id]);
+      }
+
+
+    return response()->json(
+      [
+        "Code" => "200",
+        "Message" => "Solicitud actualizada",
+      ]
+    );
+
+    }catch(\Exception $e){
+
+      Log::info('Error Editar solicitud '.$e->getMessage());
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al editar la solicitud",
+        ]
+      );
+    }
+
   }
   
 }

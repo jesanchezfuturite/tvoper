@@ -348,6 +348,8 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
     Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion');
+    Route::post('/agregar-estatus-atencion', 'PortalSolicitudesController@agregarResponsableEstatusAtencion');
+    Route::post('/editar-estatus-atencion', 'PortalSolicitudesController@editarAtenderSolicitud');
 
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');
