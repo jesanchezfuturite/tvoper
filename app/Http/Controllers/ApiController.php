@@ -115,24 +115,24 @@ class ApiController extends Controller
         // inicializamos el api de insumos
         try
         {
-	        // $this->client = new \GuzzleHttp\Client();
+	        $this->client = new \GuzzleHttp\Client();
 
-	    	// $response = $this->client->post(
-	    	// 	$this->insumos_auth,
-	    	// 	[
-	    	// 		"form_params" =>
-		    // 			[
-			//     			"username" => $this->insumos_user,
-			//     			"password" => $this->insumos_pass,
-		    // 			]
-	    	// 	]
-	    	// );
+	    	$response = $this->client->post(
+	    		$this->insumos_auth,
+	    		[
+	    			"form_params" =>
+		    			[
+			    			"username" => $this->insumos_user,
+			    			"password" => $this->insumos_pass,
+		    			]
+	    		]
+	    	);
 
-	    	// $results = $response->getBody();
+	    	$results = $response->getBody();
 
-			// $results = json_decode($results);
+			$results = json_decode($results);
 
-			// $this->key = $results->token;
+			$this->key = $results->token;
 
 			// inicializamos los repos necesarios
 			$this->solicitudes_tramite 	= $solicitudes_tramite;
