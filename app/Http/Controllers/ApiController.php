@@ -115,24 +115,24 @@ class ApiController extends Controller
         // inicializamos el api de insumos
         try
         {
-	        $this->client = new \GuzzleHttp\Client();
+	        // $this->client = new \GuzzleHttp\Client();
 
-	    	$response = $this->client->post(
-	    		$this->insumos_auth,
-	    		[
-	    			"form_params" =>
-		    			[
-			    			"username" => $this->insumos_user,
-			    			"password" => $this->insumos_pass,
-		    			]
-	    		]
-	    	);
+	    	// $response = $this->client->post(
+	    	// 	$this->insumos_auth,
+	    	// 	[
+	    	// 		"form_params" =>
+		    // 			[
+			//     			"username" => $this->insumos_user,
+			//     			"password" => $this->insumos_pass,
+		    // 			]
+	    	// 	]
+	    	// );
 
-	    	$results = $response->getBody();
+	    	// $results = $response->getBody();
 
-			$results = json_decode($results);
+			// $results = json_decode($results);
 
-			$this->key = $results->token;
+			// $this->key = $results->token;
 
 			// inicializamos los repos necesarios
 			$this->solicitudes_tramite 	= $solicitudes_tramite;
@@ -720,29 +720,34 @@ class ApiController extends Controller
             if($tramites_notaria->count() > 0)
             {
                 $response = array();
-
+                $campos =array();
                 foreach($tramites_notaria as $tn){
-
-                    $node = json_decode($tn->info);
-
-                    $in = $node->campos;
-
-                    $new = array();
-                    //dd($in);
-                    foreach($in as $i => $j)
-                    {
-                        $new[$i] = array(
-                            "field" => $fields[$i],
-                            "value" => $j,
-                        );
+                    if(isset($tn->info)){            
+                        $info=$this->claves($tn->info);
+                        $campos[$tn->id]=$info->campos;
                     }
+                   
+                   
+                    // $node = json_decode($tn->info);
 
-                    unset($node->campos);
+                    // $in = $node->campos;
 
-                    $node->campos= (object)$new;
+                    // $new = array();
+                    // //dd($in);
+                    // foreach($in as $i => $j)
+                    // {
+                    //     $new[$i] = array(
+                    //         "field" => $fields[$i],
+                    //         "value" => $j,
+                    //     );
+                    // }
 
-                    $response[]= (array)$node;
+                    // unset($node->campos);
+
+                    // $node->campos= (object)$new;
+
 				}
+                    $response[]= (array)$campos;
 
 
                 return json_encode($response,JSON_UNESCAPED_SLASHES);
@@ -932,6 +937,24 @@ class ApiController extends Controller
 		return $parse;
 	}
 
+    public function claves($info){
+        $informacion = json_decode($info);
+        $campos = [];
+        if(isset($informacion->campos)){
+          foreach($informacion->campos as $key=>$value){
+            if(is_numeric($key)){
+              $catalogo= $this->campos->select('descripcion')->where('id',$key)->first();
+              $campos[$catalogo->descripcion] = $value;
+            }else{
+              $campos[$key] = $value;
+            }
+    
+          }
+          $informacion->campos = $campos;
+        }
+    
+        return $informacion;
+      }
 
 
 }
