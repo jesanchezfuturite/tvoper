@@ -347,10 +347,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle/{idticket?}');
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
-    Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion');
-    Route::post('/agregar-estatus-atencion', 'PortalSolicitudesController@agregarResponsableEstatusAtencion');
-    Route::post('/editar-estatus-atencion', 'PortalSolicitudesController@editarAtenderSolicitud');
-    Route::get('/get-all-procesos/{id}', 'PortalSolicitudesController@getAllProcesos');
+    Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion')->name('get-estatus-atencion');
+    Route::post('/agregar-estatus-atencion', 'PortalSolicitudesController@agregarResponsableEstatusAtencion')->name('agregar-estatus-atencion');
+    Route::post('/editar-estatus-atencion', 'PortalSolicitudesController@editarAtenderSolicitud')->name('editar-estatus-atencion');
+    Route::get('/get-all-procesos/{id}', 'PortalSolicitudesController@getAllProcesos')->name('get-all-procesos/{id}');
 
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');
