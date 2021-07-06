@@ -112,12 +112,11 @@
 					                </a>
 					            </div>
 					        </div>
-					        <div class="portlet-body">
-					            <div class="table-scrollable" id="table_proceso">
+					        <div class="portlet-body" id="addtables">
+					            <div >
 					               <table id="sample_2" class="table table-hover" cellspacing="0" width="100%" >
 									    <thead>
 									        <tr>
-									            <th></th>
 									            <th>Proceso</th>
 									            <th></th>
 									        </tr>
@@ -376,6 +375,7 @@
 		function updateTablaSolicitudes(){
 			let url = "{{ url()->route('solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
 			createTable( url);
+			findProcesos();
 		}
 
 		function getTemplateAcciones( data, type, row, meta  ){
@@ -683,22 +683,32 @@
         $(this).show();
         });
     });
-    function findProcesoSolicitudes()
+  function addtable()
+  {
+    $("#addtables div").remove();
+    $("#addtables").append("<div><table class='table table-hover' id='sample_2'> <thead><tr><th>Proceso</th><th></th></tr> </thead> <tbody></tbody> </table></div>");
+     //TableManaged3.init3();<th>&nbsp;</th>
+
+  }
+    function findProcesos()
     {
-    	$("#sample_2 tbody tr").remove();
+    	addtable();
+    	var id_tramite=$("#tramitesSelect").val();    	
 		$.ajax({
 		    method: "get",            
-		    url: "{{ url()->route('/') }}",
+		    url: "{{ url()->route('get-all-procesos','') }}"+"/"+id_tramite,
 		    data: {_token:'{{ csrf_token() }}'}  })
 		    .done(function (response) {     
-		        
-		        $.each($.parseJSON(response), function(i, item) {                
+		        console.log(response);
+		        $("#sample_2 tbody tr").remove();
+		        $.each(response, function(i, item) {                
 		            $("#sample_2").append("<tr>"
-		              +"<td>"+item.nombre+"</td>"
-		              +"<td><a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='editarUsers("+  JSON.stringify(response) + ")'><i class='fa fa-pencil'></i></a></td>"
+		              +"<td>"+item.descripcion+"</td>"
+		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(response) + ")'><i class='fa fa-plus'></i></a></td>"
 		              +"</tr>"
 		            );
 		        });
+		        TableManaged2.init2();
 		    })
 		.fail(function( msg ) {
 		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
@@ -729,7 +739,7 @@
 		.fail(function( msg ) {
 		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
 	}
-	function findProcesoSolicitudes()
+	function findProcesoUsers()
 	{
 		var users_new=$("#itemsUsuario").val();
 		$.ajax({
@@ -747,7 +757,7 @@
 		var users_new=$("#itemsUsuario").val();
 		var users=$("#jsonCode").val();
 		var tramite=$("#tramitesSelect").val();
-		
+
 		if(checkArrays(users,users_new))
 		{
 			saveUsers();
