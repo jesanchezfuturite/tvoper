@@ -41,5 +41,8 @@ class PortalSolicitudesTicket extends Model implements Transformable
     public function tramites(){
         return $this->hasMany('App\Entities\PortalTramites', 'id', 'id_transaccion');
     }
+    public function bitacora(){
+        return $this->hasMany('App\Entities\TicketBitacora', 'id_ticket', 'id');
+    }
 
 }

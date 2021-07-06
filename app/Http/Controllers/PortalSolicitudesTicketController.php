@@ -214,6 +214,15 @@ class PortalSolicitudesTicketController extends Controller
 
               ]);
 
+              if($ticket->wasRecentlyCreated){
+                $bitacora=TicketBitacora::create([
+                  "id_ticket" => $ticket->id,
+                  "grupo_clave" => $grupo,
+                  "id_estatus_atencion" => 1,
+                  "status"=>$status
+                ]);
+              }
+
              array_push($ids, $ticket->id);
             }
             $first_id = reset($ids);
