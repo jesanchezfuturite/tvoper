@@ -34,6 +34,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 use App\Entities\EstatusAtencion;
 use App\Entities\Portalsolicitudesresponsables;
+use App\Entities\Users;
 
 class PortalSolicitudesController extends Controller
 {
@@ -1406,8 +1407,15 @@ class PortalSolicitudesController extends Controller
 
         foreach ($responsables as $r => $res) {
           if($res->id_estatus_atencion==$value["id"]){
-            $users[]=$res->user_id;
+            // $users[]=$res->user_id;
+            $user=Users::find($res->user_id);
+            $users[]=array(
+              'id' => $user->id,
+              'nombre'  =>$user->name,
+              'correo' => $user->email
+            );
             $value["users"]=$users;
+
           }
         }
        
