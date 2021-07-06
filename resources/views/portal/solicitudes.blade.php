@@ -108,7 +108,7 @@
 					            	</div>
 					            </div>
 					            <div class="tools" id="toolsSolicitudes">                
-					                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
+					                <a href="#add-users"   data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
 					                </a>
 					            </div>
 					        </div>
@@ -196,7 +196,46 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal-dialog -->
-
+<div class="modal fade" id="add-users" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiaUser()"></button>
+                <h4 class="modal-title">Agregar Usuarios</h4>
+            </div>
+            <div class="modal-body">
+	             <form action="#" class="form-horizontal">    
+	                <div class="form-body">
+	                    <div class="row">
+	                        <div class="col-lg-12">
+	                        	<div class="form-group">
+		                            <label class="col-md-3 control-label">Usuario</label>
+		                            <div class="col-md-8">
+		                                <select class="select2me form-control" placeholder="Usuario"  multiple name="itemsUsuario" id="itemsUsuario">
+								    	</select>   
+		                            </div>
+		                        </div>
+	                        </div>	                        
+	                    </div>         
+                        <div class="form-group">
+                        	<div class="col-md-10"> 
+                                <button type="button" id="btnVerf" class="btn blue" onclick="verificaInsertUsers()">
+                                	<i class="fa fa-check" id="iconBtnSave"></i> 
+                                	Guardar
+                                </button>
+                            </div>
+                        </div>
+	                    <div class="modal-footer">
+	                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiaUser()">Cerrar</button>
+	                    </div>                        
+	                </div>
+	             </form>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 <div id="modalDelete" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -266,6 +305,9 @@
 
 </div>
 </div>
+<input type="text" name="jsonCode" id="jsonCode" hidden="true">
+
+
 @endsection
 
 @section('scripts')
@@ -642,23 +684,90 @@
         });
     });
     function findProcesoSolicitudes()
-	    {
-	    	$("#sample_2 tbody tr").remove();
-			$.ajax({
-			    method: "get",            
-			    url: "{{ url()->route('get-motivos') }}",
-			    data: {_token:'{{ csrf_token() }}'}  })
-			    .done(function (response) {     
-			        
-			        $.each($.parseJSON(response), function(i, item) {                
-			            $("#sample_2").append("<tr>"
-			              +"<td> <label  style='cursor:pointer'><input id='ch_"+item.id+"'style='cursor:pointer' name='checkMotivo' type='checkbox'onclick='saveMotivos("+item.id+");' value='"+item.id+"'>&nbsp;"+item.motivo+"</label></td>"
-			              +"</tr>"
-			            );
-			        });
-			    })
-			.fail(function( msg ) {
-			Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+    {
+    	$("#sample_2 tbody tr").remove();
+		$.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('/') }}",
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        
+		        $.each($.parseJSON(response), function(i, item) {                
+		            $("#sample_2").append("<tr>"
+		              +"<td>"+item.nombre+"</td>"
+		              +"<td><a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='editarUsers("+  JSON.stringify(response) + ")'><i class='fa fa-pencil'></i></a></td>"
+		              +"</tr>"
+		            );
+		        });
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function editarUsers()
+	{
+		$.ajax({
+		    method: "post",            
+		    url: "{{ url()->route('editar-estatus-atencion') }}",
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        
+		        
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error editar estatus atencion", "Notifications")   });
+	}
+	function saveUsers()
+	{
+		var users_new=$("#itemsUsuario").val();
+		$.ajax({
+		    method: "post",            
+		    url: "{{ url()->route('agregar-estatus-atencion') }}",
+		    data: {user:users_new,_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        		        
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
+	}
+	function findProcesoSolicitudes()
+	{
+		var users_new=$("#itemsUsuario").val();
+		$.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('get-motivos') }}",
+		    data: {user:users_new,_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {
+
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function verificaInsertUsers()
+	{
+		var users_new=$("#itemsUsuario").val();
+		var users=$("#jsonCode").val();
+		var tramite=$("#tramitesSelect").val();
+		
+		if(checkArrays(users,users_new))
+		{
+			saveUsers();
+		}else{
+			editar();
+		}
+	}
+	function limpiaUser()
+	{
+		return;
+	}
+	
+	function checkArrays( arrA, arrB ){
+	    if(arrA.length !== arrB.length) return false;
+	    var cA = arrA.slice().sort(); 
+	    var cB = arrB.slice().sort();
+	    for(var i=0;i<cA.length;i++){
+	         if(cA[i]!==cB[i]) return false;
+	    }
+	    return true;
 	}
 	</script>
 @endsection
