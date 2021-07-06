@@ -305,6 +305,8 @@
 </div>
 </div>
 <input type="text" name="jsonCode" id="jsonCode" hidden="true">
+<input type="text" name="id_proceso" id="id_proceso" hidden="true">
+<input type="text" name="id_catalogo" id="id_catalogo" hidden="true">
 
 
 @endsection
@@ -320,6 +322,7 @@
 	    	getUsers();
 	    	findMotivos();
 	    	TableManaged2.init2();
+
 	    });
 		var tramites = [];
 		var usuarios = [];
@@ -356,6 +359,7 @@
 
 		function setUsuarios(){
 			usuarios.forEach(usuario => addOptionToSelect( $("#usuarioSelectModal"),  usuario.nombre + " - " + usuario.email , usuario.id ));
+			usuarios.forEach(usuario => addOptionToSelect( $("#itemsUsuario"),  usuario.nombre + " - " + usuario.email , usuario.id ));
 		}
 
 		function onlyUnique(value, index, self) { 
@@ -375,6 +379,8 @@
 		function updateTablaSolicitudes(){
 			let url = "{{ url()->route('solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
 			createTable( url);
+			console.log(url);			
+			findCatalogos();
 			findProcesos();
 		}
 
@@ -428,6 +434,7 @@
 		            tr.addClass('shown');
 		        }
 		    }
+		  
 		}
 
 		function showMore( solicitud, e){
@@ -517,6 +524,8 @@
 		function format ( d ) {		    
 		    let html = '<table class="table table-hover">';
 		    html += "<tr> <th></th><th>Titulo</th> <th></th></tr>";
+			
+		    
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
 		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
@@ -692,6 +701,7 @@
   }
     function findProcesos()
     {
+    	setUsuarios();
     	addtable();
     	var id_tramite=$("#tramitesSelect").val();    	
 		$.ajax({
@@ -700,11 +710,15 @@
 		    data: {_token:'{{ csrf_token() }}'}  })
 		    .done(function (response) {     
 		        console.log(response);
+		        
 		        $("#sample_2 tbody tr").remove();
-		        $.each(response, function(i, item) {                
+		        $.each(response, function(i, item) {
+		        	var users=item.users;
+			        if(typeof users==="undefined")
+			        { users=[]; }                
 		            $("#sample_2").append("<tr>"
 		              +"<td>"+item.descripcion+"</td>"
-		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(response) + ")'><i class='fa fa-plus'></i></a></td>"
+		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(users) + ","+item.id+")'><i class='fa fa-plus'></i></a></td>"
 		              +"</tr>"
 		            );
 		        });
@@ -713,63 +727,107 @@
 		.fail(function( msg ) {
 		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
 	}
-	function editarUsers()
+	function editarUsers(users,id_proceso)
 	{
-		$.ajax({
-		    method: "post",            
-		    url: "{{ url()->route('editar-estatus-atencion') }}",
-		    data: {_token:'{{ csrf_token() }}'}  })
-		    .done(function (response) {     
-		        
-		        
-		    })
-		.fail(function( msg ) {
-		Command: toastr.warning("Error editar estatus atencion", "Notifications")   });
+		console.log(id_proceso);
+		var usr=[];
+		$.each(users, function(i, item) {                
+	       usr.push(item.id);
+	    });
+	    document.getElementById("jsonCode").value=JSON.stringify(usr);
+	    document.getElementById("id_proceso").value=JSON.stringify(id_proceso);
+	    $("#itemsUsuario").val(usr).trigger('change');
 	}
 	function saveUsers()
 	{
-		var users_new=$("#itemsUsuario").val();
+		var usuariosArray=$("#itemsUsuario").val();
+		var id_proceso=$("#id_proceso").val();
+		var id_catalogo=$("#id_catalogo").val();
+		usuariosArray = usuariosArray ? usuariosArray.filter( onlyUnique ) : [];
 		$.ajax({
 		    method: "post",            
 		    url: "{{ url()->route('agregar-estatus-atencion') }}",
-		    data: {user:users_new,_token:'{{ csrf_token() }}'}  })
+		    data: {catalogo_id:id_catalogo,id_estatus_atencion:id_proceso,user:usuariosArray.join(),_token:'{{ csrf_token() }}'}  })
 		    .done(function (response) {     
-		        		        
+		        if(response.Code=='200'){
+		        	findProcesos();
+		            Command: toastr.success(response.Message, "Notifications") 
+		        }else{
+		            Command: toastr.warning(response.Message, "Notifications") 
+		        } 		        
 		    })
 		.fail(function( msg ) {
 		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
 	}
-	function findProcesoUsers()
+	function editUsers()
 	{
-		var users_new=$("#itemsUsuario").val();
+		var usuariosArray=$("#itemsUsuario").val();
+		var id_proceso=$("#id_proceso").val();
+		var id_catalogo=$("#id_catalogo").val();
+		usuariosArray = usuariosArray ? usuariosArray.filter( onlyUnique ) : [];
 		$.ajax({
-		    method: "get",            
-		    url: "{{ url()->route('get-motivos') }}",
-		    data: {user:users_new,_token:'{{ csrf_token() }}'}  })
-		    .done(function (response) {
-
-		    })
+		    method: "post",            
+		    url: "{{ url()->route('agregar-estatus-atencion') }}",
+		    data: {catalogo_id:id_catalogo,id_estatus_atencion:id_proceso,user:usuariosArray.join(),_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        if(response.Code=='200'){
+		        	findProcesos();
+		            Command: toastr.success(response.Message, "Notifications") 
+		        }else{
+		            Command: toastr.warning(response.Message, "Notifications") 
+		        } 		        
+		})
 		.fail(function( msg ) {
-		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
 	}
 	function verificaInsertUsers()
 	{
 		var users_new=$("#itemsUsuario").val();
-		var users=$("#jsonCode").val();
+		var users=$.parseJSON($("#jsonCode").val());
 		var tramite=$("#tramitesSelect").val();
-
-		if(checkArrays(users,users_new))
-		{
-			saveUsers();
-		}else{
-			editar();
+		var id_catalogo=$("#id_catalogo").val();
+		if (id_catalogo==0) {
+			Command: toastr.warning("Solicitud sin Agregar" , "Notifications") 
+			return;
+		}else if(tramite=="limpia"){
+			Command: toastr.warning("Selecciona el Tramite, Requerido" , "Notifications") 
+			return;
 		}
+		console.log(users);
+		console.log(users_new);
+		if(users.length==0){
+			saveUsers();
+		}else if(!checkArrays(users,users_new)){
+			editUsers();
+		}
+	}
+	function findCatalogos()
+	{
+		var id_tramite=$("#tramitesSelect").val();
+		$.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('solicitud-all') }}"+"?id_tramite="+id_tramite,
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {  
+		    	response=$.parseJSON(response);  	         
+			    var id_catalogo=response[0].id_solcitud;
+				if(typeof (id_catalogo)!=="undefined")
+				{
+					document.getElementById("id_catalogo").value=id_catalogo;
+				}else{
+					document.getElementById("id_catalogo").value=0;
+				}		       
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error find Catalogo", "Notifications")   });
+	
+	 
 	}
 	function limpiaUser()
 	{
-		return;
+		$("#itemsUsuario").val([]).trigger('change');
 	}
-	
+
 	function checkArrays( arrA, arrB ){
 	    if(arrA.length !== arrB.length) return false;
 	    var cA = arrA.slice().sort(); 
