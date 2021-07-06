@@ -108,16 +108,15 @@
 					            	</div>
 					            </div>
 					            <div class="tools" id="toolsSolicitudes">                
-					                <a href="#add-solicitud-modal"  onclick="setInfoModal(true)" data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
+					                <a href="#add-users"   data-toggle="modal" class="config" data-original-title="" title="Agregar Solicitud">
 					                </a>
 					            </div>
 					        </div>
-					        <div class="portlet-body">
-					            <div class="table-scrollable" id="table_proceso">
-					               <table id="tableManaged" class="table table-hover" cellspacing="0" width="100%" >
+					        <div class="portlet-body" id="addtables">
+					            <div >
+					               <table id="sample_2" class="table table-hover" cellspacing="0" width="100%" >
 									    <thead>
 									        <tr>
-									            <th></th>
 									            <th>Proceso</th>
 									            <th></th>
 									        </tr>
@@ -196,7 +195,46 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- modal-dialog -->
-
+<div class="modal fade" id="add-users" tabindex="-1" data-backdrop="static" role="dialog" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiaUser()"></button>
+                <h4 class="modal-title">Agregar Usuarios</h4>
+            </div>
+            <div class="modal-body">
+	             <form action="#" class="form-horizontal">    
+	                <div class="form-body">
+	                    <div class="row">
+	                        <div class="col-lg-12">
+	                        	<div class="form-group">
+		                            <label class="col-md-3 control-label">Usuario</label>
+		                            <div class="col-md-8">
+		                                <select class="select2me form-control" placeholder="Usuario"  multiple name="itemsUsuario" id="itemsUsuario">
+								    	</select>   
+		                            </div>
+		                        </div>
+	                        </div>	                        
+	                    </div>         
+                        <div class="form-group">
+                        	<div class="col-md-10"> 
+                                <button type="button" id="btnVerf" class="btn blue" onclick="verificaInsertUsers()">
+                                	<i class="fa fa-check" id="iconBtnSave"></i> 
+                                	Guardar
+                                </button>
+                            </div>
+                        </div>
+	                    <div class="modal-footer">
+	                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiaUser()">Cerrar</button>
+	                    </div>                        
+	                </div>
+	             </form>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 <div id="modalDelete" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -266,6 +304,11 @@
 
 </div>
 </div>
+<input type="text" name="jsonCode" id="jsonCode" hidden="true">
+<input type="text" name="id_proceso" id="id_proceso" hidden="true">
+<input type="text" name="id_catalogo" id="id_catalogo" hidden="true">
+
+
 @endsection
 
 @section('scripts')
@@ -278,6 +321,8 @@
 	    	getTramites();
 	    	getUsers();
 	    	findMotivos();
+	    	TableManaged2.init2();
+
 	    });
 		var tramites = [];
 		var usuarios = [];
@@ -314,6 +359,7 @@
 
 		function setUsuarios(){
 			usuarios.forEach(usuario => addOptionToSelect( $("#usuarioSelectModal"),  usuario.nombre + " - " + usuario.email , usuario.id ));
+			usuarios.forEach(usuario => addOptionToSelect( $("#itemsUsuario"),  usuario.nombre + " - " + usuario.email , usuario.id ));
 		}
 
 		function onlyUnique(value, index, self) { 
@@ -333,6 +379,9 @@
 		function updateTablaSolicitudes(){
 			let url = "{{ url()->route('solicitud-all') }}?" + "_token=" + '{{ csrf_token() }}' +"&id_tramite="+ $("#tramitesSelect").val();
 			createTable( url);
+			console.log(url);			
+			findCatalogos();
+			findProcesos();
 		}
 
 		function getTemplateAcciones( data, type, row, meta  ){
@@ -385,6 +434,7 @@
 		            tr.addClass('shown');
 		        }
 		    }
+		  
 		}
 
 		function showMore( solicitud, e){
@@ -474,6 +524,8 @@
 		function format ( d ) {		    
 		    let html = '<table class="table table-hover">';
 		    html += "<tr> <th></th><th>Titulo</th> <th></th></tr>";
+			
+		    
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
 		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
@@ -640,5 +692,150 @@
         $(this).show();
         });
     });
+  function addtable()
+  {
+    $("#addtables div").remove();
+    $("#addtables").append("<div><table class='table table-hover' id='sample_2'> <thead><tr><th>Proceso</th><th></th></tr> </thead> <tbody></tbody> </table></div>");
+     //TableManaged3.init3();<th>&nbsp;</th>
+
+  }
+    function findProcesos()
+    {
+    	setUsuarios();
+    	addtable();
+    	var id_tramite=$("#tramitesSelect").val();    	
+		$.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('get-all-procesos','') }}"+"/"+id_tramite,
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        console.log(response);
+		        
+		        $("#sample_2 tbody tr").remove();
+		        $.each(response, function(i, item) {
+		        	var users=item.users;
+			        if(typeof users==="undefined")
+			        { users=[]; }                
+		            $("#sample_2").append("<tr>"
+		              +"<td>"+item.descripcion+"</td>"
+		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(users) + ","+item.id+")'><i class='fa fa-plus'></i></a></td>"
+		              +"</tr>"
+		            );
+		        });
+		        TableManaged2.init2();
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+	}
+	function editarUsers(users,id_proceso)
+	{
+		console.log(id_proceso);
+		var usr=[];
+		$.each(users, function(i, item) {                
+	       usr.push(item.id);
+	    });
+	    document.getElementById("jsonCode").value=JSON.stringify(usr);
+	    document.getElementById("id_proceso").value=JSON.stringify(id_proceso);
+	    $("#itemsUsuario").val(usr).trigger('change');
+	}
+	function saveUsers()
+	{
+		var usuariosArray=$("#itemsUsuario").val();
+		var id_proceso=$("#id_proceso").val();
+		var id_catalogo=$("#id_catalogo").val();
+		usuariosArray = usuariosArray ? usuariosArray.filter( onlyUnique ) : [];
+		$.ajax({
+		    method: "post",            
+		    url: "{{ url()->route('agregar-estatus-atencion') }}",
+		    data: {catalogo_id:id_catalogo,id_estatus_atencion:id_proceso,user:usuariosArray.join(),_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        if(response.Code=='200'){
+		        	findProcesos();
+		            Command: toastr.success(response.Message, "Notifications") 
+		        }else{
+		            Command: toastr.warning(response.Message, "Notifications") 
+		        } 		        
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
+	}
+	function editUsers()
+	{
+		var usuariosArray=$("#itemsUsuario").val();
+		var id_proceso=$("#id_proceso").val();
+		var id_catalogo=$("#id_catalogo").val();
+		usuariosArray = usuariosArray ? usuariosArray.filter( onlyUnique ) : [];
+		$.ajax({
+		    method: "post",            
+		    url: "{{ url()->route('agregar-estatus-atencion') }}",
+		    data: {catalogo_id:id_catalogo,id_estatus_atencion:id_proceso,user:usuariosArray.join(),_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {     
+		        if(response.Code=='200'){
+		        	findProcesos();
+		            Command: toastr.success(response.Message, "Notifications") 
+		        }else{
+		            Command: toastr.warning(response.Message, "Notifications") 
+		        } 		        
+		})
+		.fail(function( msg ) {
+		Command: toastr.warning("Error agregar estatus atencion", "Notifications")   });
+	}
+	function verificaInsertUsers()
+	{
+		var users_new=$("#itemsUsuario").val();
+		var users=$.parseJSON($("#jsonCode").val());
+		var tramite=$("#tramitesSelect").val();
+		var id_catalogo=$("#id_catalogo").val();
+		if (id_catalogo==0) {
+			Command: toastr.warning("Solicitud sin Agregar" , "Notifications") 
+			return;
+		}else if(tramite=="limpia"){
+			Command: toastr.warning("Selecciona el Tramite, Requerido" , "Notifications") 
+			return;
+		}
+		console.log(users);
+		console.log(users_new);
+		if(users.length==0){
+			saveUsers();
+		}else if(!checkArrays(users,users_new)){
+			editUsers();
+		}
+	}
+	function findCatalogos()
+	{
+		var id_tramite=$("#tramitesSelect").val();
+		$.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('solicitud-all') }}"+"?id_tramite="+id_tramite,
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {  
+		    	response=$.parseJSON(response);  	         
+			    var id_catalogo=response[0].id_solcitud;
+				if(typeof (id_catalogo)!=="undefined")
+				{
+					document.getElementById("id_catalogo").value=id_catalogo;
+				}else{
+					document.getElementById("id_catalogo").value=0;
+				}		       
+		    })
+		.fail(function( msg ) {
+		Command: toastr.warning("Error find Catalogo", "Notifications")   });
+	
+	 
+	}
+	function limpiaUser()
+	{
+		$("#itemsUsuario").val([]).trigger('change');
+	}
+
+	function checkArrays( arrA, arrB ){
+	    if(arrA.length !== arrB.length) return false;
+	    var cA = arrA.slice().sort(); 
+	    var cB = arrB.slice().sort();
+	    for(var i=0;i<cA.length;i++){
+	         if(cA[i]!==cB[i]) return false;
+	    }
+	    return true;
+	}
 	</script>
 @endsection
