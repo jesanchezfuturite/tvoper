@@ -711,7 +711,7 @@ class PortalSolicitudesTicketController extends Controller
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)
         ->whereNotIn('status',  [99, 80, 9])
-        ->get(["id", "status", "info"]);
+        ->get(["id", "status", "info", "grupo_clave", "status"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
@@ -729,6 +729,12 @@ class PortalSolicitudesTicketController extends Controller
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
+                    $bitacora=TicketBitacora::create([
+                      "id_ticket" => $value->id->id,
+                      "grupo_clave" =>$value->grupo_clave,
+                      "id_estatus_atencion" => 4,
+                      "status"=>$value->status
+                    ]);
                  }
               }else{
                 if($value->status<>5){
@@ -809,7 +815,7 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
-        ->get(["id", "status", "info"]);
+        ->get(["id", "status", "info", "grupo_clave", "status"]);
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);        
@@ -827,6 +833,12 @@ class PortalSolicitudesTicketController extends Controller
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
+                    $bitacora=TicketBitacora::create([
+                      "id_ticket" => $value->id->id,
+                      "grupo_clave" =>$value->grupo_clave,
+                      "id_estatus_atencion" => 4,
+                      "status"=>$value->status
+                    ]);
                  }
               }else{
                 if($value->status<>5){
@@ -1126,10 +1138,16 @@ class PortalSolicitudesTicketController extends Controller
       $solCatalogo = $this->solicitudes->where("id", $ticket->catalogo_id)->first();
       if($solCatalogo->atendido_por==1 && $ticket->status !=80 && $ticket->status !=99 && $ticket->status !=9 ){
         try{
-          Log::info("es asignado al admin");
         $solicitudTicket = $this->ticket->where('id',$id)
         ->update(['status'=>2]);
 
+        $bitacora=TicketBitacora::create([
+          "id_ticket" => $ticket->id->id,
+          "grupo_clave" =>$ticket->grupo_clave,
+          "id_estatus_atencion" => 4,
+          "status"=>$ticket->status
+        ]);
+          
         $mensajes =$this->mensajes->create([
           'ticket_id'=> $id,
           'mensaje' => "Solicitud cerrada porque esta asignado al admin - admin"
