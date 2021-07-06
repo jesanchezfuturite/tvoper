@@ -1395,5 +1395,28 @@ class PortalSolicitudesController extends Controller
     }
 
   }
+  public function getAllProcesos($id){
+    try{
+      $procesos = $this->getEstatusAtencion();
+      $responsables = Portalsolicitudesresponsables::where('catalogo_id', '=', $id)
+      ->get();
+     
+      foreach ($procesos as $key => &$value) {
+      $users=[];
+
+        foreach ($responsables as $r => $res) {
+          if($res->id_estatus_atencion==$value["id"]){
+            $users[]=$res->user_id;
+            $value["users"]=$users;
+          }
+        }
+       
+      }
+      return $procesos;
+    }
+    catch(\Exception $e) {
+      Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
+    }
+  }
   
 }
