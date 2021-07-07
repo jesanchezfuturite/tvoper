@@ -17,6 +17,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--<![endif]-->
 <!-- BEGIN HEAD -->
 <head>
+<base href="{{ env('APP_URL') }}/">
 <meta charset="utf-8"/>
 <title>Tesorería Virtual | Módulo de operación</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -527,7 +528,7 @@ License: You must have a valid license purchased only from themeforest(the above
 										@endforeach
 										<li>
 											@if($sub==1)<a href="javascript:;">@endif
-											@if($sub==0)<a href="{{ $values->route }}">@endif
+											@if($sub==0)<a href="{{ substr($values->route, 0, 1) == "/" || substr($values->route, 0, 1) == "\\" ? substr($values->route, 1) : $values->route }}">@endif
 
 											
 											{{ $values->title }}
@@ -539,7 +540,7 @@ License: You must have a valid license purchased only from themeforest(the above
 													@if($submenu->id_father == $values->id)
 													
 														<li>
-														<a href="{{ $submenu->route }}">
+														<a href="{{ substr($submenu->route, 0, 1) == "/" || substr($submenu->route, 0, 1) == "\\" ? substr($submenu->route, 1) : $submenu->route }}">
 															{{ $submenu->title }} 
 														</a>											
 													</li>
