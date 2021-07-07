@@ -451,8 +451,7 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    // $user_id = auth()->user()->id;
-    $user_id =2;
+    $user_id = auth()->user()->id;
     $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
     if($relacion){
       $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
@@ -501,6 +500,7 @@ class PortalSolicitudesController extends Controller
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
+    "tk.info",
     "c.id as catalogo", "tmt.id_transaccion_motor",
     "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", 
     "tk.grupo_clave", "pr.url_prelacion", "c.padre_id",
