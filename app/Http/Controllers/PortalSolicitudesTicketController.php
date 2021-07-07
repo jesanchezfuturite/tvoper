@@ -20,6 +20,7 @@ use DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
+use App\Entities\TicketBitacora;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -249,6 +250,16 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+
+            if($ticket->wasRecentlyCreated){
+              $bitacora=TicketBitacora::create([
+                "id_ticket" => $ticket->id,
+                "grupo_clave" => $grupo,
+                "id_estatus_atencion" => 1,
+                "status"=>$status
+              ]);
+            }
+
 
             if($request->has("file")){
                foreach ($request->file as $key => $value) {
