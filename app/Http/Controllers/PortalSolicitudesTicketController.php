@@ -741,7 +741,7 @@ class PortalSolicitudesTicketController extends Controller
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                     $bitacora=TicketBitacora::create([
-                      "id_ticket" => $value->id->id,
+                      "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
@@ -845,7 +845,7 @@ class PortalSolicitudesTicketController extends Controller
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                     $bitacora=TicketBitacora::create([
-                      "id_ticket" => $value->id->id,
+                      "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
@@ -1153,7 +1153,7 @@ class PortalSolicitudesTicketController extends Controller
         ->update(['status'=>2]);
 
         $bitacora=TicketBitacora::create([
-          "id_ticket" => $ticket->id->id,
+          "id_ticket" => $ticket->id,
           "grupo_clave" =>$ticket->grupo_clave,
           "id_estatus_atencion" => 4,
           "status"=>$ticket->status
