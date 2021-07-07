@@ -406,7 +406,7 @@
                                                 <div class='form-group'> 
                                                     <label>Estatus</label> 
                                                     <select class="select2me form-control" name="status" id="status" onchange="">
-                                                        <option value="0">------</option>
+                                                        <option value="null">------</option>
                                                         @foreach($status as $s)
                                                         <option value="{{$s->id}}">{{$s->nombre}}</option>
                                                         @endforeach    
@@ -1070,7 +1070,7 @@
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
                     +"<td>"+item.folio+"</td>"
-                    +"<td>"+item.ticket+"</td>"
+                    +"<td>"+item.id+"</td>"
                     +"<td>"+item.status+"</td>"
                     +"<td>"+item.rfc+"</td>"
                     +"<td>"+item.familia+"</td>"
@@ -1160,7 +1160,7 @@
             if(item.info!=null){
                 var obj = {};
                 obj.tramite=item.tiposervicio;
-                obj.ticket = item.ticket;
+                obj.ticket = item.id;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
@@ -1172,7 +1172,6 @@
                 obj.apellido_materno_titular =item.titular.apellido_materno_titular;
                 obj.nombre_titular = item.titular.nombre_titular;
                 obj.rfc_titular= item.titular.rfc_titular;
-                console.log(item, item.ticket);
                 if(item.info.campos){
                     if('Escritura' in  item.info.campos ){
                        obj.escritura = item.info.campos['Escritura'];
@@ -1214,13 +1213,18 @@
                     obj.motivo="Null";
                 }
                 
-                if('camposConfigurados' in  item.info){
-                    var documento = item.info.camposConfigurados.find(campo => campo.tipo == "file");
-                    if(documento && ('nombreArchivoGuardado' in documento)){
-                        obj.documento = documento.nombreArchivoGuardado;
-                    }else{
-                        obj.documento = "Null";
-                    }             
+                if(item.mensajes!=[]){
+                    var documentos = item.mensajes;
+
+                    let doc = documentos.map( obje => {
+                                if(obje.attach!=null){
+                                    return obje.attach;
+                                }
+                            }
+                            
+                            ).filter(Boolean).join(", ");
+                            obj.documento=doc;
+                       
                 }else{
                     obj.documento="Null";
                 }
@@ -1442,12 +1446,12 @@
                
 
                 arr.push(obj);
-                // console.log(obj); 
+                console.log(obj); 
             }else{
                 var obj = {};
 
                 obj.tramite=item.tiposervicio;
-                obj.ticket = item.ticket;
+                obj.ticket = item.id;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
