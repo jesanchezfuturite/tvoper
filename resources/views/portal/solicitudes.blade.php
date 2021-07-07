@@ -141,20 +141,11 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
                 <h4 class="modal-title">Agregar</h4>
             </div>
-            <div class="modal-body">
-	             <form action="#" class="form-horizontal">    
+            <div class="modal-body">   
 	                <div class="form-body">
 	                    <input hidden="true" type="text"  id="idupdate">
 	                    <input hidden="true" type="text"  id="padre_id">
 	                    <div class="row">
-	                        <div class="col-md-12">                        
-	                           <div class="form-group">
-	                                <label class="col-md-3 control-label ">Titulo</label>
-	                                <div class="col-md-8">
-	                                    <input id="titulo" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Titulo">
-	                                </div>
-	                            </div>
-	                        </div>
 	                        <div class="col-lg-12" id="divSelectTramites" hidden>
 	                        	<div class="form-group">
 		                            <label class="col-md-3 control-label">Trámite</label>
@@ -165,6 +156,18 @@
 		                            </div>
 		                        </div>
 	                        </div>
+	                    </div>
+	                    <div class="row">
+	                        <div class="col-md-12">                        
+	                           <div class="form-group">
+	                                <label class="col-md-3 control-label ">Titulo</label>
+	                                <div class="col-md-8">
+	                                    <input id="titulo" name="titulo" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Titulo">
+	                                </div>
+	                            </div>
+	                        </div>
+	                     </div>
+	                     <div class="row">   
 	                        <div class="col-lg-12">
 	                        	<div class="form-group">
 		                            <label class="col-md-3 control-label">Usuario</label>
@@ -174,20 +177,26 @@
 		                            </div>
 		                        </div>
 	                        </div>	                        
-	                    </div>         
-                        <div class="form-group">
-                        	<div class="col-md-10"> 
-                                <button type="button" id="btnSav" class="btn blue" onclick="verificaInsert()">
-                                	<i class="fa fa-check" id="iconBtnSave"></i> 
-                                	Guardar
-                                </button>
-                            </div>
-                        </div>
-	                    <div class="modal-footer">
-	                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
-	                    </div>                        
+	                    </div> 
+	                    <div class="row"> 
+		                     <div class="col-lg-12">       
+		                        <div class="form-group">
+			                        <div class="col-md-10"> 
+		                                <button type="button" id="btnSav" class="btn blue" onclick="verificaInsert()">
+		                                	<i class="fa fa-check" id="iconBtnSave"></i> 
+		                                	Guardar
+		                                </button>
+		                                <span class="help-block">&nbsp;</span>
+		                            </div>
+		                        </div>
+		                    </div>
+	                    </div>
+	                    <div class="row">
+		                    <div class="modal-footer">
+		                        <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Cerrar</button>
+		                    </div>                        
+		                </div>
 	                </div>
-	             </form>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -322,7 +331,7 @@
 	    	getUsers();
 	    	findMotivos();
 	    	TableManaged2.init2();
-
+	    	getUsers2();
 	    });
 		var tramites = [];
 		var usuarios = [];
@@ -348,6 +357,22 @@
 	         	Command: toastr.warning("No Success", "Notifications") ;
 	        }));	
 		}
+		function getUsers2(){
+			
+	        $.ajax({
+		    method: "get",            
+		    url: "{{ url()->route('solicitud-getUsers') }}",
+		    data: {_token:'{{ csrf_token() }}'}  })
+		    .done(function (response) {    
+		        $("#itemsUsuario option").remove();
+            	$('#itemsUsuario').append("<option value='0'>------</option>");
+	            $.each($.parseJSON(response), function(i, item) {            
+	                $('#itemsUsuario').append("<option value='"+item.id+"'>"+item.nombre+"- "+item.email+"</option>");
+	            });
+		    })
+			.fail(function( msg ) {
+			Command: toastr.warning("Error al Cargar Select user", "Notifications")   });	
+		}
 
 		function setTramites(element){
         	tramites.forEach(tramite => addOptionToSelect( element, tramite.tramite, tramite.id_tramite ));
@@ -359,7 +384,6 @@
 
 		function setUsuarios(){
 			usuarios.forEach(usuario => addOptionToSelect( $("#usuarioSelectModal"),  usuario.nombre + " - " + usuario.email , usuario.id ));
-			usuarios.forEach(usuario => addOptionToSelect( $("#itemsUsuario"),  usuario.nombre + " - " + usuario.email , usuario.id ));
 		}
 
 		function onlyUnique(value, index, self) { 
