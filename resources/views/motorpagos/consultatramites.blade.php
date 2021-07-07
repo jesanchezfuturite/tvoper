@@ -1220,9 +1220,7 @@
                                 if(obje.attach!=null){
                                     return obje.attach;
                                 }
-                            }
-                            
-                            ).filter(Boolean).join(", ");
+                            }).filter(Boolean).join(", ");
                             obj.documento=doc;
                        
                 }else{
