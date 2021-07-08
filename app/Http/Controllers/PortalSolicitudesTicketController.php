@@ -20,6 +20,7 @@ use DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
+use App\Entities\TicketBitacora;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -249,6 +250,16 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+
+            if($ticket->wasRecentlyCreated){
+              $bitacora=TicketBitacora::create([
+                "id_ticket" => $ticket->id,
+                "grupo_clave" => $grupo,
+                "id_estatus_atencion" => 1,
+                "status"=>$status
+              ]);
+            }
+
 
             if($request->has("file")){
                foreach ($request->file as $key => $value) {
@@ -730,7 +741,7 @@ class PortalSolicitudesTicketController extends Controller
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                     $bitacora=TicketBitacora::create([
-                      "id_ticket" => $value->id->id,
+                      "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
@@ -834,7 +845,7 @@ class PortalSolicitudesTicketController extends Controller
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
                     $bitacora=TicketBitacora::create([
-                      "id_ticket" => $value->id->id,
+                      "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
@@ -1142,7 +1153,7 @@ class PortalSolicitudesTicketController extends Controller
         ->update(['status'=>2]);
 
         $bitacora=TicketBitacora::create([
-          "id_ticket" => $ticket->id->id,
+          "id_ticket" => $ticket->id,
           "grupo_clave" =>$ticket->grupo_clave,
           "id_estatus_atencion" => 4,
           "status"=>$ticket->status
