@@ -340,7 +340,7 @@
                   </table>
                   <table role="presentation" border="0" cellpadding="10" cellspacing="0" style="width: 100%; padding:0px 10px 0px 10px !important;">
                     <tr>
-                      <td><label><strong>No. Notaria</strong></label>
+                      <td style="text-align: center;"><label><strong>No. Notaria</strong></label>
                         <br><label>{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</label>
                       </td>
                       <td><label><strong>Municipio</strong></label>
@@ -393,76 +393,86 @@
                 </center>
                 <br>
                 <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                    <tr>
-                        <td>
-                            <label><strong>No. partida</strong></label>
-                            <label>{{$dat->subsidio}}</label>
-                        </td>
-                        <td></td>
-                    </tr> 
-                    <tr>
-                        <td>
-                            <label><strong>Valor de operación:</strong></label>
-                            <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label><strong>Unidad de calculo:</strong></label>
-                            <label></label>
-                        </td>
-                        <td></td>                        
-                    </tr>
-                    <tr>
-                        <td width="70%">
-                            <label><strong>Hojas o lotes:</strong></label>
-                            <label>{{$dat->lote}} {{$dat->hoja}}</label>
-                        </td>
-                        <td width="20%">
+                  <tr>
+                    <td style="width:70%;">
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                        <tr>
+                          <td>
+                              <label><strong>No. partida</strong></label>
+                              <label>{{$dat->subsidio}}</label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              <label><strong>Valor de operación:</strong></label>
+                              <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
+                          </td>
+                        </tr>  
+                        <tr>
+                          <td>
+                              <label><strong>Unidad de calculo:</strong></label>
+                              <label></label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              <label><strong>Hojas o lotes:</strong></label>
+                              <label>{{$dat->lote}} {{$dat->hoja}}</label>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <label><strong>Oficio o decreto:</strong></label>
+                            <label>{{$dat->escrituraActaOficio}}</label>
+                          </td>
+                        </tr>                  
+                        <tr>
+                          <td > 
+                            <label><strong>Elaboró:</strong></label>
+                            <label>{{$dat->elaboro}}</label>
+                              
+                          </td>                        
+                        </tr>
+                        <tr>
+                          <td>
+                              <label><strong>Recibe:</strong></label>
+                              <label>{{$dat->recibe}}</label>
+                          </td>
+                        </tr> 
+                        <tr>
+                          <td>
+                              <label><strong>IMPORTE CON LETRA:</strong></label>
+                              <label>{{$dat->importe_letra}}</label>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td style="width:30%; vertical-align:bottom;">
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
+                        @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
+                        <tr> 
+                          <td>
                             <label><strong>Derecho-15215900:</strong></label>
-                        </td>
-                        <td width="10%">
-                            <label>$ {{number_format($dat->costo_final,2)}}</label>
-                        </td>
-                    </tr> 
-                    <tr>
-                        <td width="70%">
-                          <label><strong>Oficio o decreto:</strong></label>
-                          <label>{{$dat->escrituraActaOficio}}</label>
-                        </td>
-                        <td width="20%">
+                          </td>
+                          <td>
+                            <label>$ {{number_format($pag,2)}}</label>
+                          </td>
+                        </tr>
+                        @endforeach
+                        <tr>
+                          <td>
                             <label><strong>TOTAL:</strong></label>
-                        </td>
-                        <td width="10%">
+                          </td>
+                          <td>
                             <label>$ {{number_format($dat->costo_final,2)}}</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td > 
-                          <label><strong>Elaboró:</strong></label>
-                          <label>{{$dat->elaboro}}</label>
-                            
-                        </td>
-                        <td></td>                        
-                    </tr>
-                    <tr>
-                        <td>
-                            <label><strong>Recibe:</strong></label>
-                            <label>{{$dat->recibe}}</label>
-                        </td>
-                        <td></td>
-                    </tr> 
-                    <tr>
-                        <td>
-
-                            <label><strong>IMPORTE CON LETRA:</strong></label>
-                            <label>{{$dat->importe_letra}}</label>
-                        </td>
-                        <td></td>
-                    </tr>
-                  </table>
-                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                          </td>
+                        </tr>  
+                        <tr><td>&nbsp;</td></tr>                
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         <td>    
                           <center><label>{{$dat->fecha}} {{$dat->hora}}</label></center> 
@@ -543,73 +553,85 @@
                             </center>
                             <br>
                               <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>No. partida</strong></label>
-                                          <label>{{$dat->subsidio}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Valor de operación:</strong></label>
-                                          <label> {{ is_numeric($dat->valorOperacion) ? '$'.  number_format($dat->valorOperacion,2) : ' ' }}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Unidad de calculo:</strong></label>
-                                          <label></label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
-                                          <label><strong>Hojas o lotes:</strong></label>
-                                          <label>{{$dat->lote}} {{$dat->hoja}}</label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr> 
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
+                                <tr>
+                                  <td style="width:70%;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>No. partida</strong></label>
+                                            <label>{{$dat->subsidio}}</label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Valor de operación:</strong></label>
+                                            <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
+                                        </td>
+                                      </tr>  
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Unidad de calculo:</strong></label>
+                                            <label></label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Hojas o lotes:</strong></label>
+                                            <label>{{$dat->lote}} {{$dat->hoja}}</label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
                                           <label>{{$dat->escrituraActaOficio}}</label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label><strong>TOTAL:</strong></label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <strong>Elaboró:</strong></label>
+                                        </td>
+                                      </tr>                  
+                                      <tr>
+                                        <td  class="tbl-label"> 
+                                          <label><strong>Elaboró:</strong></label>
                                           <label>{{$dat->elaboro}}</label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Recibe:</strong></label>
-                                          <label>{{$dat->recibe}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>IMPORTE CON LETRA:</strong></label>
-                                          <label>{{$dat->importe_letra}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                </table>
+                                            
+                                        </td>                        
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Recibe:</strong></label>
+                                            <label>{{$dat->recibe}}</label>
+                                        </td>
+                                      </tr> 
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>IMPORTE CON LETRA:</strong></label>
+                                            <label>{{$dat->importe_letra}}</label>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width:30%; vertical-align:bottom;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
+                                      @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
+                                      <tr> 
+                                        <td class="tbl-label">
+                                          <label><strong>Derecho-15215900:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($pag,2)}}</label>
+                                        </td>
+                                      </tr>
+                                      @endforeach
+                                      <tr>
+                                        <td class="tbl-label">
+                                          <label><strong>TOTAL:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
+                                        </td>
+                                      </tr>  
+                                      <tr><td>&nbsp;</td></tr>                
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tr>
                                       <td class="tbl-label">    
@@ -693,73 +715,85 @@
                             </center>
                             <br>
                               <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>No. partida</strong></label>
-                                          <label>{{$dat->subsidio}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Valor de operación:</strong></label>
-                                          <label> {{ is_numeric($dat->valorOperacion) ? '$'.  number_format($dat->valorOperacion,2) : ' ' }}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Unidad de calculo:</strong></label>
-                                          <label></label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
-                                          <label><strong>Hojas o lotes:</strong></label>
-                                          <label>{{$dat->lote}} {{$dat->hoja}}</label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
-                                      </td>
-                                      <td width="15%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr> 
-                                  <tr>
-                                      <td width="70%" class="tbl-label">
+                                <tr>
+                                  <td style="width:70%;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>No. partida</strong></label>
+                                            <label>{{$dat->subsidio}}</label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Valor de operación:</strong></label>
+                                            <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
+                                        </td>
+                                      </tr>  
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Unidad de calculo:</strong></label>
+                                            <label></label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Hojas o lotes:</strong></label>
+                                            <label>{{$dat->lote}} {{$dat->hoja}}</label>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
                                           <label>{{$dat->escrituraActaOficio}}</label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label><strong>TOTAL:</strong></label>
-                                      </td>
-                                      <td width="10%" class="tbl-label">
-                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                      </td>
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <strong>Elaboró:</strong></label>
+                                        </td>
+                                      </tr>                  
+                                      <tr>
+                                        <td  class="tbl-label"> 
+                                          <label><strong>Elaboró:</strong></label>
                                           <label>{{$dat->elaboro}}</label>
-                                      </td>
-                                      <td></td>                        
-                                  </tr>
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>Recibe:</strong></label>
-                                          <label>{{$dat->recibe}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr> 
-                                  <tr>
-                                      <td class="tbl-label">
-                                          <label><strong>IMPORTE CON LETRA:</strong></label>
-                                          <label>{{$dat->importe_letra}}</label>
-                                      </td>
-                                      <td></td>
-                                  </tr>
-                                </table>
+                                            
+                                        </td>                        
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>Recibe:</strong></label>
+                                            <label>{{$dat->recibe}}</label>
+                                        </td>
+                                      </tr> 
+                                      <tr>
+                                        <td class="tbl-label">
+                                            <label><strong>IMPORTE CON LETRA:</strong></label>
+                                            <label>{{$dat->importe_letra}}</label>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width:30%; vertical-align:bottom;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
+                                      @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
+                                      <tr> 
+                                        <td class="tbl-label">
+                                          <label><strong>Derecho-15215900:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($pag,2)}}</label>
+                                        </td>
+                                      </tr>
+                                      @endforeach
+                                      <tr>
+                                        <td class="tbl-label">
+                                          <label><strong>TOTAL:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
+                                        </td>
+                                      </tr>  
+                                      <tr><td>&nbsp;</td></tr>                
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                   <tr>
                                       <td class="tbl-label">    
@@ -851,73 +885,85 @@
                               </center>
                               <br>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="2">
-                                    <tr>
+                                <tr>
+                                  <td style="width:70%;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2">
+                                      <tr>
                                         <td class="tbl-label">
                                             <label><strong>No. partida</strong></label>
                                             <label>{{$dat->subsidio}}</label>
                                         </td>
-                                        <td></td>
-                                    </tr> 
-                                    <tr>
+                                      </tr>
+                                      <tr>
                                         <td class="tbl-label">
                                             <label><strong>Valor de operación:</strong></label>
-                                            <label> {{ is_numeric($dat->valorOperacion) ? '$' . number_format($dat->valorOperacion,2) : ' ' }}</label>
+                                            <label>{{ is_numeric($dat->valorOperacion) ? '$'  .number_format($dat->valorOperacion,2) : ' ' }}</label>
                                         </td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
+                                      </tr>  
+                                      <tr>
                                         <td class="tbl-label">
                                             <label><strong>Unidad de calculo:</strong></label>
                                             <label></label>
                                         </td>
-                                        <td></td>                        
-                                    </tr>
-                                    <tr>
-                                        <td width="70%" class="tbl-label">
+                                      </tr>
+                                      <tr>
+                                        <td class="tbl-label">
                                             <label><strong>Hojas o lotes:</strong></label>
                                             <label>{{$dat->lote}} {{$dat->hoja}}</label>
                                         </td>
-                                        <td width="15%" class="tbl-label">
-                                            <label><strong>Derecho-15215900:</strong></label>
-                                        </td>
-                                        <td width="15%" class="tbl-label">
-                                            <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                        </td>
-                                    </tr> 
-                                    <tr>
-                                        <td width="70%" class="tbl-label">
-                                            <label><strong>Oficio o decreto:</strong></label>
-                                            <label>{{$dat->escrituraActaOficio}}</label>
-                                        </td>
-                                        <td width="10%" class="tbl-label">
-                                            <label><strong>TOTAL:</strong></label>
-                                        </td>
-                                        <td width="10%" class="tbl-label">
-                                            <label>$ {{number_format($dat->costo_final,2)}}</label>
-                                        </td>
-                                    </tr>
-                                    <tr>
+                                      </tr>
+                                      <tr>
                                         <td class="tbl-label">
-                                            <strong>Elaboró:</strong></label>
-                                            <label>{{$dat->elaboro}}</label>
+                                          <label><strong>Oficio o decreto:</strong></label>
+                                          <label>{{$dat->escrituraActaOficio}}</label>
                                         </td>
-                                        <td></td>                        
-                                    </tr>
-                                    <tr>
+                                      </tr>                  
+                                      <tr>
+                                        <td  class="tbl-label"> 
+                                          <label><strong>Elaboró:</strong></label>
+                                          <label>{{$dat->elaboro}}</label>
+                                            
+                                        </td>                        
+                                      </tr>
+                                      <tr>
                                         <td class="tbl-label">
                                             <label><strong>Recibe:</strong></label>
                                             <label>{{$dat->recibe}}</label>
                                         </td>
-                                        <td></td>
-                                    </tr> 
-                                    <tr>
+                                      </tr> 
+                                      <tr>
                                         <td class="tbl-label">
                                             <label><strong>IMPORTE CON LETRA:</strong></label>
                                             <label>{{$dat->importe_letra}}</label>
                                         </td>
-                                        <td></td>
-                                    </tr>
-                                  </table>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td style="width:30%; vertical-align:bottom;">
+                                    <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
+                                      @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
+                                      <tr> 
+                                        <td class="tbl-label">
+                                          <label><strong>Derecho-15215900:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($pag,2)}}</label>
+                                        </td>
+                                      </tr>
+                                      @endforeach
+                                      <tr>
+                                        <td class="tbl-label">
+                                          <label><strong>TOTAL:</strong></label>
+                                        </td>
+                                        <td class="tbl-label">
+                                          <label>$ {{number_format($dat->costo_final,2)}}</label>
+                                        </td>
+                                      </tr>  
+                                      <tr><td>&nbsp;</td></tr>                
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
                                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td class="tbl-label">    

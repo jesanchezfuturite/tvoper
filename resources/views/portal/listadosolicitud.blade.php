@@ -382,6 +382,8 @@
 <input type="text" name="grp_clave" id="grp_clave" hidden="true">
 <input type="text" name="jsonStatus" id="jsonStatus"hidden="true" value="{{json_encode($status,true)}}">
 <input type="text" name="tickets_id" id="tickets_id" hidden="true">
+<input type="text" name="ids" id="ids" hidden="true">
+<input type="text" name="data" id="data" hidden="true">
 @endsection
 
 @section('scripts')
@@ -396,6 +398,11 @@
       $(".selectMotivos").css("display", "none")
       configprelacion();
     }); 
+  $("#noSolicitud").keypress(function(event) {
+            if (event.keyCode === 13) {
+               findSolicitudes();
+            }
+        });
 function configprelacion()
 {
   $.ajax({
@@ -546,13 +553,13 @@ function configprelacion()
                   catalogos_id.push(response[n].grupo[k].catalogo);
                   if(response[n].grupo[k].status!="11"){
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
-                  }
-                  
+                  }                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total)});
                    for(h in response[n].grupo)
                    {
+                    Object.assign(response[n].grupo[h],{"tickets_id":tickets_id});
                     distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
                     if(typeof distrito==="object")
                     {
@@ -564,18 +571,7 @@ function configprelacion()
                     if(response[n].grupo[h].padre_id==null)
                     {
                       padre_id=null;
-                    }
-                    if(typeof (response[n].grupo[k])!=="undefined" )
-                    {
-                      
-                      //console.log(response[n].grupo[h].info.complementoDe);
-                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe)
-                       {                       
-                          Object.assign(response[n].grupo[k],{"grupo":[response[n].grupo[h]]});
-                          Object.assign(response[n].grupo[h],{"eliminar":1});
-                          //response[n].grupo.splice(h,1);
-                       }
-                    }
+                    }                    
                      Object.assign(response[n].grupo[h],{"distrito":exit_distrito});
                      Object.assign(response[n].grupo[h],{"padre_exist":padre_id});
                    }                     
@@ -585,8 +581,6 @@ function configprelacion()
            response=objectResponse;
 
           }       
-
-          //console.log(response);
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -604,14 +598,16 @@ function configprelacion()
          data: formdata })
       .done(function (response) {
         var tickets_id=[];
+        var ids=[];
         var grupo_clave="";
         if(typeof response=== 'object'){
           for (n in response) { 
             for(k in response[n].grupo)
-            {                  
+            {   
+              tickets_id.push(response[n].grupo[k].id);               
               if(response[n].grupo[k].status=="1")
               {
-                tickets_id.push(response[n].grupo[k].id);
+                ids.push(response[n].grupo[k].id);
                 grupo_clave=response[n].grupo[k].grupo_clave;
               }                                                      
             } 
@@ -622,7 +618,7 @@ function configprelacion()
         $('#portlet-cerrarTickets').modal('show');
         document.getElementById("idgrupo").value=grupo_clave;
         document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
-    
+        document.getElementById("ids").value=JSON.stringify(ids);
       })
       .fail(function( msg ) {
        Command: toastr.warning("Error", "Notifications");
@@ -631,12 +627,14 @@ function configprelacion()
   function cerrarSolicitudes()
     {
       var id_transaccion=$("#idgrupo").val();
-      var tickets_id=$.parseJSON($("#tickets_id").val());
+      var ticks_id=$.parseJSON($("#tickets_id").val());
+      var ids=$.parseJSON($("#ids").val());
+
       //console.log(tickets_id);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
-      data: {id:tickets_id,estatus:52,grupo_clave:id_transaccion,mensaje:"TICKET CERRADO ",_token:'{{ csrf_token() }}'}  })
+      data: {id:ids,tickets_id:ticks_id,estatus:52,grupo_clave:id_transaccion,mensaje:"TICKET CERRADO ",_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
              findSolicitudes();
@@ -737,13 +735,14 @@ function configprelacion()
       var input_check="";            
       var valid='0';            
       let html = ''; 
-      var exist=0; 
+      var exist=0;     
       d.grupo.forEach( (solicitud) =>{ 
         if(typeof solicitud.eliminar==="undefined" || b_pr==null)
-        {        
-          var clase='';
+        { 
+       // console.log( solicitud);       
+        var clase='';
         var distrito=searchIndex('distrito',solicitud.info.campos);
-        var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
+        var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
         let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
         var dist='0';
         if(typeof(distrito)==='object'){
@@ -801,7 +800,7 @@ function configprelacion()
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
-        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\")'>Rechazar</a>";
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\")'>Rechazar</a>";
         input_check= addChecks(d.grupo[0].grupo_clave);
         if(d.grupo[0].url_prelacion!=null && b_pr!=null && d.grupo[0].distrito==null )
         {          
@@ -858,6 +857,7 @@ function configprelacion()
       count=0;
       var response_grp=$.parseJSON($("#obj_grupo").val());
        var objectResponse=[];
+
        $.ajax({
       method: "get",            
       url: "{{ url()->route('wsrp', 'qa') }}",
@@ -865,33 +865,65 @@ function configprelacion()
       .done(function (response) {
       resp=JSON.stringify(response); 
        if(typeof response_grp=== 'object'){
-          for (n in response_grp) { 
-                   
+          for (n in response_grp) {              
             for(g in response_grp[n].grupo)
-            {
+            { var pagos=[]; 
+              total=0;
+              total=total+parseFloat(response_grp[n].grupo[g].info.costo_final);
+              if(typeof response_grp[n].grupo[g].total!=="undefined")
+              {
+                total=total+parseFloat(response_grp[n].grupo[g].total);
+                pagos=response_grp[n].grupo[g].pagos;
+              }
+              pagos.push(parseFloat(response_grp[n].grupo[g].info.costo_final));
+              Object.assign(response_grp[n].grupo[g],{"pagos":pagos});
               id_=response_grp[n].grupo[g].id; 
                formdata.append("tickets_id[]", id_);   
               grupo_clave=response_grp[n].grupo[g].grupo_clave;
-              var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos);
-              if(typeof(distrito)==='object'){
-                if(response_grp[n].grupo[g].status=='2' || response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
-                {
-                  count+=1;
-                  formdata.append("id[]", id_);
-                  Object.assign(response_grp[n].grupo[g].info,{"tramite":response_grp[n].grupo[g].tramite});
-                  document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(resp,JSON.stringify(response_grp[n].grupo[g]));
-                  formdata.append("data[]",JSON.stringify(datapr));
-                }   
-              }             
+              for(h in response_grp[n].grupo)
+              {
+                if(response_grp[n].grupo[g].id==response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[h].info.complementoDe != null && response_grp[n].grupo[h].id!=response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[g].status!="11"){ 
+                    total=total+parseFloat(response_grp[n].grupo[h].info.costo_final);
+                    Object.assign(response_grp[n].grupo[h],{"total":total});
+                     pagos.push(parseFloat(response_grp[n].grupo[h].info.costo_final));
+                     Object.assign(response_grp[n].grupo[h],{"pagos":pagos});
+                }
+              }
+
+              Object.assign(response_grp[n].grupo[g].info,{"tramite":response_grp[n].grupo[g].tramite});
             }
           }
         }
-        if(count==0)
-          {Command: toastr.warning("Sin Registros", "Notifications")
-          return; }
-        
-        savePrelacion(1,formdata,grupo_clave,resp);
+          if(typeof response_grp=== 'object'){
+          for (n in response_grp) {              
+            for(g in response_grp[n].grupo)
+            { 
+              var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos); 
+              if(typeof(distrito)==='object'){
+                if(response_grp[n].grupo[g].status=='2' || response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
+                {
+                   
+                  count+=1;
+                  formdata.append("id[]", id_);
+                 
+                  document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
+                  datapr=dataPrelacion(resp,JSON.stringify(response_grp[n].grupo[g]));
+                  formdata.append("data[]",JSON.stringify(datapr)); 
+                  
+                }   
+              } 
+
+            }
+          }//console.log(response_grp);  
+           if(count==0)
+          {
+            Command: toastr.warning("Sin Registros", "Notifications")
+           return;
+          } 
+                  
+          savePrelacion(1,formdata,grupo_clave,resp);
+        }
+       
       })       
       .fail(function( msg ) {
          Command: toastr.warning("Error al generar la prelacion", "Notifications")   });
@@ -977,8 +1009,9 @@ function configprelacion()
       input_check="<label style='cursor:pointer;font-weight: bold;font-size: 13px;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'>Marcar Todos</label>";
       return input_check;
     }
-    function rechazarArray(id_transaccion)
+    function rechazarArray(id_transaccion,tickets_id)
     {
+      //console.log(tickets_id);
       var estatus_=$("#select_"+id_transaccion).val();
       if(estatus_=='0')
       {
@@ -993,12 +1026,14 @@ function configprelacion()
         document.getElementById("lbl_idsolicitudes").textContent=checks;
          $('#portlet-rechazar').modal('show');
          document.getElementById("idgrupo").value=id_transaccion;
+         document.getElementById("tickets_id").value=tickets_id;
       }
 
     }
     function rechazarSolicitudes()
     {
       var id_transaccion=$("#idgrupo").val();
+      var tick_id=$.parseJSON($("#tickets_id").val());
       var estatus_=$("#select_"+id_transaccion).val();
       var mot=$("#select_"+id_transaccion+" option:selected").text();
       if(estatus_=='0')
@@ -1010,10 +1045,11 @@ function configprelacion()
       $("input[name = check_"+id_transaccion+"]:checked").each(function(){
           checks.push($(this).val());
         });
+      //console.log(tick_id);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
-      data: {id:checks,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,_token:'{{ csrf_token() }}'}  })
+      data: {id:checks,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,tickets_id:tick_id,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
              findSolicitudes();
@@ -1087,22 +1123,20 @@ function configprelacion()
       //document.getElementById("btn_guardar").disabled = true;
       //document.getElementById("file").disabled = true;
     }
-    function findAtender(id,estatus,grupo_clave,folioPago,catalogo_id)
+    function findAtender(id,estatus,grupo_clave,folioPago,catalogo_id,tickets_id,data_o)
     {addInfo();
       document.getElementById("idmodal").textContent=id;
       document.getElementById("idTicket").value=id;
       document.getElementById("folioPago").value=folioPago;
       document.getElementById("grp_clave").value=grupo_clave;
+      document.getElementById("tickets_id").value=tickets_id;
+      document.getElementById("data").value=data_o;
+      //console.log(tickets_id);
       findMessage(id);
-      $.ajax({
-           method: "GET", 
-           url: "{{ url()->route('atender-solicitudes', '') }}" + "/"+id,
-           data:{ _token:'{{ csrf_token() }}'} })
-        .done(function (response) {
-            //console.log(response);
+            response=$.parseJSON(JSON.stringify(data_o));
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
-          var soli=Resp.solicitantes;
+          var soli=Resp.info.solicitantes;
           var tipo="";
           var obj="";
           $.each(soli, function(i, item) { 
@@ -1144,75 +1178,31 @@ function configprelacion()
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
             }            
           }
-          if(typeof(Resp.solicitantes.notary)==="object"){
+          if(typeof(Resp.notary_number)!=="undefined" && typeof(Resp.notary_number)!=="object" ){
             $(".divNotaria").css("display", "block");
             dataNot='';
-            for (not in Resp.solicitantes.notary) {  
-              if(not=='notary_number' || not=='email' || not=='phone')
+            for (not in Resp) {  
+              if(not=='notary_number' || not=='email' || not=='nombre_titular' || not=='apellido_pat_titular' || not=='apellido_mat_titular')
               { 
-                if(not=='notary_number')
-                {dataNot='Numero de Notaria';}
-                if(not=='email')
-                {dataNot='Correo Electrónico';} 
-                if(not=='phone')
-                {dataNot='Teléfono';}            
-                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp.solicitantes.notary[not]+"</label></div></div>");
+                if(not=='notary_number'){dataNot='Numero de Notaria';}
+                if(not=='email'){dataNot='Correo Electrónico';}  
+                 if(not=='nombre_titular'){dataNot='Nombre';}
+                if(not=='apellido_pat_titular'){dataNot='Apellido Paterno';} 
+                if(not=='apellido_mat_titular'){dataNot='Apellido Materno';}           
+                $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+Resp[not]+"</label></div></div>");
               }
             }
           }
-          for (n in Resp.campos) {  
-            if(typeof (Resp.campos[n]) !== 'object') {         
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
+          for (n in Resp.info.campos) {  
+            if(typeof (Resp.info.campos[n]) !== 'object') {         
+              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.info.campos[n]+"</label></div></div>");  
             }else{
-                Mp=conctenaM(Resp.campos[n]); 
+                Mp=conctenaM(Resp.info.campos[n]); 
                 $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+ Mp+"</label></div></div>");
             }             
           }
-         /* 
-          var municipio=searchIndex('municipio',Resp.campos);
-          console.log(typeof (municipio));
-            if(typeof (municipio) !== 'object')
-            {
-              Mp=municipio;
-            }else{
-                                 
-            } */
-           
-          /*if(Resp.continuar_solicitud==0 && Resp.tramite_prelacion!=null && Resp.mensaje_prelacion==null && asignado_a!='null') 
-          {
-            $(".btnPrelacion").css("display", "block");
-          }else{
-             $(".btnPrelacion").css("display", "none");
-          }*/
-          /*if( asignado_a!='null' )
-          {
-            document.getElementById("btn_guardar").disabled = false;
-            document.getElementById("file").disabled = false;
-          }*/
 
-         //var btn_1=document.getElementById('btn_cerrar_1');
-         //var btn_2=document.getElementById('btn_cerrar_2'); 
-         
-          //console.log(btn_1);
-          /*if(asignado_a=="null")
-          {
-            btn_1.innerHTML="N/A";
-            //btn_2.innerHTML="N/A";
-           // btn_2.value="return";             
-          }else if(Resp.continuar_solicitud==0){
-            btn_1.innerHTML="Cerrar Ticket";
-            //btn_2.innerHTML="Cerrar Ticket";
-            //btn_2.value="cerrar";
-          }else{
-            btn_1.innerHTML="Continuar Solicitud";
-           //btn_2.innerHTML="Continuar Solicitud";
-           //btn_2.value="continuar";
-          }*/
           findMotivosSelect([catalogo_id]);
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("Error al obtener el registro", "Notifications");
-        });
     }
     function findMessage(id_)    
     {
@@ -1307,6 +1297,7 @@ function configprelacion()
       var mot=$("#itemsMotivos option:selected").text();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
+      var ticks_id=$.parseJSON($("#tickets_id").val());
       var grp_clave=$("#grp_clave").val();
       var check=$("#checkbox30").prop("checked");
       var checkRechazo=$("#checkbox1").prop("checked");
@@ -1328,6 +1319,10 @@ function configprelacion()
         } 
         mensaje="Motivo de rechazo: "+mot +mensaje;
         formdata.append("rechazo_id",select);
+        for(r in ticks_id)
+        {
+          formdata.append("tickets_id[]", ticks_id[r]);  
+        }
       }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
@@ -1416,6 +1411,7 @@ function configprelacion()
     Object.assign(data,{escrituraActaOficio:escrituraActaOficio_});    
     Object.assign(data,{lote:searchIndex('lote',Resp.info.campos)});    
     Object.assign(data,{hoja:hoja_});    
+    Object.assign(data,{pagos:Resp.pagos});    
     if(typeof (subsidio_) !== 'object')
     {
       Object.assign(data,{subsidio:null});
@@ -1434,32 +1430,32 @@ function configprelacion()
     }
     Object.assign(data,{folioPago:Resp.id_transaccion_motor});
     Object.assign(data,{Municipio:"Monterrey, NL."});
-    Object.assign(data,{elaboro:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});
+    
     Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.info.campos)});
     Object.assign(data,{folioTramite:Resp.id});
     Object.assign(data,{hojas:searchIndex('hojas',Resp.info.campos)});
     Object.assign(data,{tramite_id:Resp.info.tramite_id}); 
     Object.assign(data,{tramite:Resp.info.tramite}); 
     Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.info.campos)});
-    if(typeof(Resp.info.solicitantes.notary)==="undefined")
-    {
-      Object.assign(data,{noNotaria:null});
+   
+    if(typeof(Resp.notary_number)!=="undefined"){
+      Object.assign(data,{noNotaria:Resp.notary_number});
+      Object.assign(data,{elaboro:Resp.nombre_titular+" "+Resp.apellido_pat_titular+" "+Resp.apellido_mat_titular});
     }else{
-      if(typeof(Resp.info.solicitantes.notary)!=="object")
-        {
-          Object.assign(data,{noNotaria:Resp.info.solicitantes.notary});
-        }else{
-          Object.assign(data,{noNotaria:Resp.info.solicitantes.notary.notary_number});
-        }
-      
+      Object.assign(data,{noNotaria:0});
+      Object.assign(data,{elaboro:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});
     }
-    
     Object.assign(data,{recibe:"{{ Auth::user()->name }}"});
-    if(Resp.info.costo_final=="undefined")
+    if(typeof(Resp.total)==="undefined")
     {
-      Object.assign(data,{costo_final:Resp.info.detalle.costo_final});
+      if(Resp.info.costo_final=="undefined")
+      {
+        Object.assign(data,{costo_final:Resp.info.detalle.costo_final});
+      }else{
+        Object.assign(data,{costo_final:Resp.info.costo_final});
+      }
     }else{
-      Object.assign(data,{costo_final:Resp.info.costo_final});
+      Object.assign(data,{costo_final:Resp.total});
     }
     //console.log(data);
     return data;
