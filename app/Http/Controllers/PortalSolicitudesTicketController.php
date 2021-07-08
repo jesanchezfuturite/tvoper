@@ -451,7 +451,7 @@ class PortalSolicitudesTicketController extends Controller
 
       $number = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
       ->select("notary.notary_number")
-      ->leftjoin("config_users_notary_offices as config", "tk.user_id", "=", "config.user_id")
+      ->leftjoin("config_user_notary_offices as config", "tk.user_id", "=", "config.user_id")
       ->leftjoin("notary_offices as notary", "config.notary_office_id", "=", "notary.id")
       ->where("tk.id", $ticket_id)
       ->first();
