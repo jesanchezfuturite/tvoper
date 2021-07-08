@@ -166,7 +166,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/consulta-transacciones-oper', 'MotorpagosController@consultaTransaccionesOper')->name('consulta-transacciones-oper');
     Route::post('/consulta-transacciones-gpm', 'MotorpagosController@consultaTransaccionesGpm')->name('consulta-transacciones-gpm');
     Route::post('/consulta-transacciones-tramites','MotorpagosController@consultaTransaccionesTramites')->name('consulta-transacciones-tramites');
-    
+
     Route::get('/reporte-actualizaciones', 'MasterlogController@index')->name('reporte-actualizaciones');
     Route::post('/report-paid-operation', 'MasterlogController@consultamasterlog')->name('report-paid-operation');
 
@@ -432,7 +432,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite')->name('solicitudes-get-tramite-pdf');
     Route::get('/download/{file}', 'PortalSolicitudesTicketController@downloadFile')->name('download');
     Route::post('/solicitudes-guardar-carrito', 'PortalSolicitudesTicketController@enCarrito')->name('solicitudes-guardar-carrito');
-    Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales');
+    Route::get('/getInfoNormales/{folio}/{id}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales');
 
     Route::post('/solicitudes-filtrar/count', 'PortalSolicitudesTicketController@countFiltrado')->name('solicitudes-filtrar/count');
     Route::post('/save-files', 'PortalSolicitudesTicketController@saveFiles')->name('save-files');
@@ -484,7 +484,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/obtener-distritos', 'CatalogosController@obtDistritos')->name('obtener-distritos');
     Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones')->name('obtener-instituciones');
     Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion')->name('obtener-region');
-    
+
     Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes')->name('porcentaje-recargos');
     Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes')->name('porcentaje-find-all');
     Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes')->name('porcentaje-insert');
@@ -501,7 +501,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
     Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo');
-  
+
     /************************* api siger *********************************************/
     Route::get('/siger-datefix/{date}', 'ApisigerController@datefix');
     Route::get('/siger-finalizarticket/{boleta}', 'ApisigerController@FinalizarTicket');
@@ -517,4 +517,3 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
 });
-

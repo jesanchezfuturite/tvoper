@@ -112,7 +112,7 @@ class PortalSolicitudesTicketController extends Controller
       $catalogo_id = $tramite->id;
       $error =null;
       $info = json_decode($request->info);
-      
+
       if($request->has("enajenantes")){
         $datosrecorrer= $request->enajenantes;
         $data = 2;
@@ -247,7 +247,7 @@ class PortalSolicitudesTicketController extends Controller
                     'ticket_id'=> $ticket->id,
                     'mensaje' => $request->descripcion[$key],
                     'file'    =>  $value,
-                    ];  
+                    ];
                   $this->saveFile($data);
                 }
 
@@ -257,7 +257,7 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==7){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
-        
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" => $grupo,
@@ -283,11 +283,11 @@ class PortalSolicitudesTicketController extends Controller
 
 
           }
-        
+
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-      
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" => $grupo,
@@ -313,7 +313,7 @@ class PortalSolicitudesTicketController extends Controller
 
 
           }
-          
+
         }
 
       } catch (\Exception $e) {
@@ -395,14 +395,14 @@ class PortalSolicitudesTicketController extends Controller
           ->with(['catalogo' => function ($query) {
             $query->select('id', 'tramite_id');
           }])->get();
-          $solicitudes = $solicitudes->toArray();          
-         
+          $solicitudes = $solicitudes->toArray();
+
         }
         $transaccion_id=null;
         if(!empty($solicitudes)){
           $transaccion_id = $solicitudes[0]["id_transaccion"];
         }
-        
+
         // $id_transaccion= array_column($solicitudes, "id_transaccion");
         $ids_ticket= array_column($solicitudes, "id");
         // $transaccion_id = array_unique($id_transaccion);
@@ -410,8 +410,8 @@ class PortalSolicitudesTicketController extends Controller
         if($transaccion_id!=null){
           $solTramites = $this->solTramites->where("id", $transaccion_id)->first()->toArray();
         }
-        
-               
+
+
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
           foreach($sol["catalogo"]  as $s){
@@ -425,13 +425,13 @@ class PortalSolicitudesTicketController extends Controller
 
 
         $tramites = $this->getTramites($idstmts);
-        
+
         $costo_total=0;
         $tmts=[];
         $response =[];
         foreach($tramites as $t => $tramite){
           $datos=[];
-          foreach ($solicitudes as $d => $dato) {        
+          foreach ($solicitudes as $d => $dato) {
             if($dato["tramite_id"]== $tramite["tramite_id"]){
               if(empty($dato["info"])){
                 $info=json_decode($dato["info"]);
@@ -443,8 +443,8 @@ class PortalSolicitudesTicketController extends Controller
                     $costo_tramite=$info->detalle->Salidas->{'Importe total'};
                   }else{
                     $costo_tramite=$info->detalle->Salidas->{'Importe total a pagar'};
-                  } 
-                 
+                  }
+
                 }else if(isset($info->costo_final)){
                   $costo_tramite=$info->costo_final;
                 }else{
@@ -460,10 +460,10 @@ class PortalSolicitudesTicketController extends Controller
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
-                "status"=>$dato["status"]              
-                
+                "status"=>$dato["status"]
+
               );
-             
+
               if($type=="firma"){
                 $data["folio"]=$dato["id_transaccion_motor"];
                 $data["fecha_pago"]=$dato["fecha_pago"];
@@ -471,7 +471,7 @@ class PortalSolicitudesTicketController extends Controller
                 $data["fecha_limite_referencia"]=$dato["fecha_limite_referencia"];
                 $data["costo"]=$costo_tramite;
               }
-            
+
               array_push($datos, $data);
               $tramite["solicitudes"]= $datos;
 
@@ -490,14 +490,14 @@ class PortalSolicitudesTicketController extends Controller
             }else{
               $response["json_recibo"] = "Null";
             }
-    
+
           }else{
             $response["json_recibo"]="Null";
           }
         }else{
           $response["json_recibo"]="Null";
-        }  
-        
+        }
+
         $response["tramites"] =$tmts;
 
         return $response;
@@ -707,7 +707,7 @@ class PortalSolicitudesTicketController extends Controller
         ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);         
+          $this->guardarCarrito($value->id, 2);
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
@@ -727,7 +727,7 @@ class PortalSolicitudesTicketController extends Controller
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
-      
+
               }
 
           }else{
@@ -801,11 +801,11 @@ class PortalSolicitudesTicketController extends Controller
 
         ]);
 
-        $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
+        $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])
         ->get(["id", "status", "info"]);
 
         foreach ($ids as $key => $value) {
-          $this->guardarCarrito($value->id, 2);        
+          $this->guardarCarrito($value->id, 2);
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados) && $value->status<>5){
             $campos = $info->camposConfigurados;
@@ -825,7 +825,7 @@ class PortalSolicitudesTicketController extends Controller
                 if($value->status<>5){
                   $tramites_finalizados = $this->tramites_finalizados($value->id);
                 }
-      
+
               }
 
           }else{
@@ -1180,7 +1180,7 @@ class PortalSolicitudesTicketController extends Controller
       }else{
         $users = ["$user_id"];
       }
-    
+
 
       $ids = array();
       foreach($clave as $key => $v){
@@ -1192,7 +1192,7 @@ class PortalSolicitudesTicketController extends Controller
 
       }
       try{
-        if($body["type"]=="en_carrito"){         
+        if($body["type"]=="en_carrito"){
             $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['en_carrito'=>$body['status']]);
             $count = $this->ticket->where(["en_carrito" => 1, "status" => 99])->whereIn('user_id', $users)->count();
             $mensaje="Solicitudes en el carrito";
@@ -1628,11 +1628,9 @@ class PortalSolicitudesTicketController extends Controller
           $id_transaccion = $s->id;
           $catalogo_id = $s->catalogo_id;
         }
-
+        //Validar catalogo_id
         //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
         $solicitudes = $this->ticket->where("id_transaccion", $id_transaccion)->where("id", $idTicket)->with(['catalogo'])->get()->toArray();
-
-
 
         $ids_tramites=[];
         foreach ($solicitudes as &$sol){
@@ -1645,7 +1643,6 @@ class PortalSolicitudesTicketController extends Controller
         $ids_tramites= array_column((array)$solicitudes, 'tramite_id');
 
         $idstmts = array_unique($ids_tramites);
-
 
         $tramites = $this->getTramites($idstmts);
 
@@ -1806,21 +1803,21 @@ class PortalSolicitudesTicketController extends Controller
           "referencia"=>$referencia
         );
         //  $token = env("PAYMENTS_KEY");
-         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";  
-         header('Content-Type: application/json'); 
+         $token= "yf3puRWCxfgV9kTTg9xK8mmo74QAhatjtvN2662RUrfC9WVaH7RGD7yUFJQyNF22JJvdhibXKv7kc298wLKtEYd39H9mfijq6XLk";
+         header('Content-Type: application/json');
         //  $url =  env("PAYMENTS_HOSTNAME")."/v1/cancel";
-         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel"); 
-         $ch = curl_init($url); 
-         $post = json_encode($data); 
-         $authorization = "Authorization: Bearer ".$token; 
-         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization )); 
+         $ch = curl_init("http://10.153.144.218/payments-api/v1/cancel");
+         $ch = curl_init($url);
+         $post = json_encode($data);
+         $authorization = "Authorization: Bearer ".$token;
+         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-         curl_setopt($ch, CURLOPT_POST, 1); 
-         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);  
-         $result = curl_exec($ch); 
-         curl_close($ch); 
+         curl_setopt($ch, CURLOPT_POST, 1);
+         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+         $result = curl_exec($ch);
+         curl_close($ch);
          $results = json_decode($result);
-         
+
         if($results->data == "response"){
             $estatus =$results->response->estatus;
             $tramite =$this->solTramites->where("id_transaccion_motor", $request->id_transaccion_motor)
@@ -1836,8 +1833,8 @@ class PortalSolicitudesTicketController extends Controller
             ]
           );
         }
-          
-         
+
+
 
         return response()->json(
           [
