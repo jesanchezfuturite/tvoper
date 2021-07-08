@@ -26,7 +26,7 @@ class Permissions
 
         if($value == false){
 
-            return redirect('/home');
+            return redirect()->route('home');
         }
         
         return $next($request);
