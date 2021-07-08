@@ -163,6 +163,7 @@
 	                                <label class="col-md-3 control-label ">Titulo</label>
 	                                <div class="col-md-8">
 	                                    <input id="titulo" name="titulo" class="valida-num form-control" autocomplete="off" placeholder="Ingresar Titulo">
+	                                    <span class="help-block">&nbsp;</span>
 	                                </div>
 	                            </div>
 	                        </div>
@@ -405,7 +406,6 @@
 			createTable( url);
 			console.log(url);			
 			findCatalogos();
-			findProcesos();
 		}
 
 		function getTemplateAcciones( data, type, row, meta  ){
@@ -727,7 +727,7 @@
     {
     	setUsuarios();
     	addtable();
-    	var id_tramite=$("#tramitesSelect").val();    	
+    	var id_tramite=$("#id_catalogo").val();    	
 		$.ajax({
 		    method: "get",            
 		    url: "{{ url()->route('get-all-procesos','') }}"+"/"+id_tramite,
@@ -838,6 +838,7 @@
 				if(typeof (id_catalogo)!=="undefined")
 				{
 					document.getElementById("id_catalogo").value=id_catalogo;
+					findProcesos();
 				}else{
 					document.getElementById("id_catalogo").value=0;
 				}		       

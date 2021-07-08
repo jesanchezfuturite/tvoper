@@ -541,10 +541,12 @@ function configprelacion()
       .done(function (response) {
         var objectResponse=[];
         var padre_id=0;
-        var tickets_id=[];
-        var catalogos_id=[];
+       
+        
         if(typeof response=== 'object'){
-          for (n in response) {             
+          for (n in response) { 
+            var tickets_id=[]; 
+            var catalogos_id=[];            
                 var total=0;
                 var exit_distrito=null;
                 for(k in response[n].grupo)
@@ -571,7 +573,14 @@ function configprelacion()
                     if(response[n].grupo[h].padre_id==null)
                     {
                       padre_id=null;
-                    }                    
+                    } 
+                    if(typeof (response[n].grupo[k])!=="undefined" )
+                    {
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe && response[n].grupo[k].status==11)
+                       {                       
+                          Object.assign(response[n].grupo[h],{"id_transaccion_motor":[response[n].grupo[k].id_transaccion_motor]});
+                       }
+                    }                   
                      Object.assign(response[n].grupo[h],{"distrito":exit_distrito});
                      Object.assign(response[n].grupo[h],{"padre_exist":padre_id});
                    }                     
@@ -690,6 +699,11 @@ function configprelacion()
               ]
         });
       $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
+      if(dataS.length<2){
+        dataS.forEach((grupo) =>{
+          $("#iconShow-"+grupo.grupo_clave).trigger("click");
+        });
+      }
     }
     function buildTemplateChild(){
       var table = $('#example').DataTable();
@@ -703,7 +717,8 @@ function configprelacion()
             } else {
                 $("#iconShow-" + row.data().grupo_clave).removeClass("fa-plus").addClass("fa-minus");
                 row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data(),1) + "</div>").show();
-                tr.addClass('shown');
+                tr.addClass('shown'); 
+                
             }
         }
         $("#select_"+row.data().grupo[0].grupo_clave).select2();
@@ -737,68 +752,73 @@ function configprelacion()
       let html = ''; 
       var exist=0;     
       d.grupo.forEach( (solicitud) =>{ 
-        if(typeof solicitud.eliminar==="undefined" || b_pr==null)
+        if(solicitud.bitacora.length==0)
+        {
+          solicitud.bitacora.push({nombre:"N/A",id:0});
+        }
+        solicitud.bitacora.forEach((bitacora)=>{
         { 
-       // console.log( solicitud);       
-        var clase='';
-        var distrito=searchIndex('distrito',solicitud.info.campos);
-        var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Atender' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Atender &nbsp;&nbsp; </strong> </a>";
-        let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
-        var dist='0';
-        if(typeof(distrito)==='object'){
-          dist=distrito.clave;            
-        }      
-       
-        if(dist!='1')
-        {
-            Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
+              
+          var clase='';
+          var distrito=searchIndex('distrito',solicitud.info.campos);
+          var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
+          let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
+          var dist='0';
+          if(typeof(distrito)==='object'){
+            dist=distrito.clave;            
+          }      
+         
+          if(dist!='1')
+          {
+              Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
+              checks='';
+          }
+          if(solicitud.status!=1 && dist=='1')
+          {
+              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
+              checks='';
+          }  
+          let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
+          
+          if(solicitud.status=='1' && dist=='1'){
+            exist+=1;  
+          }
+          if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null)
+          {
             checks='';
-        }
-        if(solicitud.status!=1 && dist=='1')
-        {
-            Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
-            checks='';
-        }  
-        let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
-        
-        if(solicitud.status=='1' && dist=='1'){
-          exist+=1;  
-        }
-        if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null)
-        {
-          checks='';
-        }
-        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
-        var lote=searchIndex('lote',solicitud.info.campos);
-        var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
-        var municipio=searchIndex('municipio',solicitud.info.campos);
-         if(typeof (escrituraActaOficio) === 'object'){
-          escrituraActaOficio=conctenaM(escrituraActaOficio);
-        }else{          
-           escrituraActaOficio=escrituraActaOficio;
-        }
-        var Mp='';
-        if(typeof (municipio) !== 'object'){
-          Mp=municipio;
-        }else{          
-           Mp=conctenaM(municipio);
-        }      
-        var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
-        var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
-        let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
-        if(solicitud.status==7 || solicitud.status==8){
-          clase='warning';
-        }else{
-          clase='';
-        }
+          }
+          var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+          var lote=searchIndex('lote',solicitud.info.campos);
+          var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
+          var municipio=searchIndex('municipio',solicitud.info.campos);
+           if(typeof (escrituraActaOficio) === 'object'){
+            escrituraActaOficio=conctenaM(escrituraActaOficio);
+          }else{          
+             escrituraActaOficio=escrituraActaOficio;
+          }
+          var Mp='';
+          if(typeof (municipio) !== 'object'){
+            Mp=municipio;
+          }else{          
+             Mp=conctenaM(municipio);
+          }      
+          var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
+          var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
+          let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
+          if(solicitud.status==7 || solicitud.status==8){
+            clase='warning';
+          }else{
+            clase='';
+          }
 
-        html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
 
-        }
+          }
+        })
       });
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
+      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+","+JSON.stringify(d)+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\")'>Rechazar</a>";
         input_check= addChecks(d.grupo[0].grupo_clave);
@@ -837,12 +857,13 @@ function configprelacion()
         }
         html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
     }
-    function relacion_mult(grupo_clave)
+    function relacion_mult(grupo_clave,data)
     {
-      searchSolicitudes(grupo_clave);
+      //searchSolicitudes(grupo_clave);
+       document.getElementById("obj_grupo").value=JSON.stringify([data]);
       document.getElementById("m_grupo_clave").value=grupo_clave;
       document.getElementById("lbl_grupo_clave").textContent=grupo_clave;
       $('#portlet-prelacion').modal('show');
@@ -855,9 +876,11 @@ function configprelacion()
       var id_="";
       var grupo_clave="";
       count=0;
+      
       var response_grp=$.parseJSON($("#obj_grupo").val());
+      var response_grp=$.parseJSON(JSON.stringify(response_grp));
        var objectResponse=[];
-
+       //
        $.ajax({
       method: "get",            
       url: "{{ url()->route('wsrp', 'qa') }}",
@@ -897,13 +920,13 @@ function configprelacion()
           if(typeof response_grp=== 'object'){
           for (n in response_grp) {              
             for(g in response_grp[n].grupo)
-            { 
+            {   count+=1;
               var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos); 
               if(typeof(distrito)==='object'){
                 if(response_grp[n].grupo[g].status=='2' || response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
                 {
                    
-                  count+=1;
+                
                   formdata.append("id[]", id_);
                  
                   document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
@@ -914,7 +937,8 @@ function configprelacion()
               } 
 
             }
-          }//console.log(response_grp);  
+          }
+          
            if(count==0)
           {
             Command: toastr.warning("Sin Registros", "Notifications")
@@ -1378,7 +1402,7 @@ function configprelacion()
       jsn=$("#jsonCode").val();
     }  
     var Resp=$.parseJSON(jsn);
-    //console.log(dataP);
+    //console.log(jsn);
     dataP=$.parseJSON(dataP);
     //console.log(dataP);
     var subsidio_=searchIndex('subsidio',Resp.info.campos);

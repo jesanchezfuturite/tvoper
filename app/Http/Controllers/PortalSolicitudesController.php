@@ -645,7 +645,7 @@ class PortalSolicitudesController extends Controller
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
-    //log::info($request->all());
+    $mensajes;
    
     if($request->has("file")){
       $file = $request->file('file');
@@ -663,31 +663,27 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
-        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id);
-        foreach($request->id as $i)
-          {
-           $this->ticket->update(['status'=>"2"],$i);
-          }
+         foreach($request->id as $i)
+        {
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
+        }
+
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
       }
-    try {
-          foreach($request->id as $i)
-          {
-
-            $mensajes =$this->mensajes->create([
-            'ticket_id'=> $i,
-            'mensaje' => $mensaje,
-            'mensaje_para' => $mensaje_para,
-            'attach'    =>  $attach
-            ]);
-          }
-
+    try {  
       if($request->rechazo=="true")
       {
-        
-        foreach($request->id as $i)
+        $rch=0;
+
+        foreach($request->tickets_id as $i)
         {
           $newid=$i;
-          $rch=0;
+          $status="";
           switch ($request->rechazo_id) {
             case '50':
               $rch=7;
@@ -705,33 +701,48 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-          }else{
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
+          }else{            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
-            while(true)
-            {
-              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
-              //log::info($sTicket);
-              if($sTicket[0]->ticket_relacionado==null)
+            $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
+
+            $newCatalogoid=$findSolTicket[0]->catalogo_id;
+
+            /*while(true)
+            {                
+              $findCatalogoPadre=$this->solicitudes->findWhere(["id"=>$newCatalogoid]);
+              if($findCatalogoPadre[0]->padre_id==null)
               {
-                $newid=$sTicket[0]->id;
-                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+                $upTicket=$this->ticket->update(["catalogo_id"=>$newCatalogoid],$i);
                 break;
               }else{
-                $newid=$sTicket[0]->ticket_relacionado;
-              }
+                 $newCatalogoid=$findCatalogoPadre[0]->padre_id;
+              }           
+            }*/
+            if (in_array($i, (array)$request->id))
+            {
+              $ins=$this->ticket->update(["status"=>$rch],$i);
+              $status=$rch;
+            }else{
+              $status=$findSolTicket[0]->status;
             }
-          }         
+            //$this->saveTicketBitacora($i,$request->grupo_clave,auth()->user()->id,$mensaje,$findSolTicket[0]->catalogo_id,$newCatalogoid,$findSolTicket[0]->status,$status);
+          }
+          
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
         }
-          $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
-        ->update(['status'=> "3"]);
       }
+
       return response()->json(
         [
           "Code" => "200",
-          "Message" => "Mensaje guardado con éxito",
-          "data"=>$mensajes
-
+          "Message" => "Mensaje guardado con éxito"
         ]
       );
 
@@ -746,54 +757,30 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
-  public function cerrarCrearTicket($id,$grupo_clave,$ticket_id){
+  public function cerrarCrearTicket($ticket_id,$grupo_clave,$id,$mensaje){
     //log::info($ticket_id); 
     try{
      
-        foreach($id as $i)
+        foreach($ticket_id as $i)
         {   
           $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
-          foreach ($findSolTicket as $e) {            
-            $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
-            if($findTicket->count()==0)
-            {
-              $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
-              if($findCatalogoHijo->count()>0)
-              {                
-                $catalogoH=$findCatalogoHijo[0]->id;
-                $ins=$this->ticket->create([
-                  "clave"=>$e->clave,
-                  "grupo_clave"=>$e->grupo_clave,
-                  "id_tramite"=>$e->id_tramite,
-                  "recibo_referencia"=>$e->recibo_referencia,
-                  "catalogo_id"=>$catalogoH,
-                  "id_transaccion"=>$e->id_transaccion,
-                  "info"=>$e->info,
-                  "relacionado_a"=>$e->relacionado_a,
-                  "ticket_relacionado"=>$e->id,
-                  "ticket_padre"=>$e->ticket_padre,
-                  "user_id"=>$e->user_id,
-                  "creado_por"=>$e->creado_por,
-                  "asignado_a"=>$e->asignado_a,
-                  "en_carrito"=>$e->en_carrito,
-                  "firmado"=>$e->firmado,
-                  "por_firmar"=>$e->por_firmar,
-                  "doc_firmado"=>$e->doc_firmado,
-                  "required_docs"=>$e->required_docs,
-                  "status"=>$e->status
-                ]);
+          foreach ($findSolTicket as $e) { 
+            $status=$e->status;
+            $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
+            $catalogoH=$e->catalogo_id;
+            if($findCatalogoHijo->count()>0){ 
+              $catalogoH=$findCatalogoHijo[0]->id; 
+              //$ins=$this->ticket->update(["status"=>$e->status,"catalogo_id"=>$catalogoH],$e->id);
+            }else{
+              if($e->status=="1"){
+                $status="2";
+                $ins=$this->ticket->update(["status"=>"2"],$e->id);
+              }else{
+                 $ins=$this->ticket->update(["status"=>$e->status],$e->id);
               }
             }
-          }
-          
-        }
-        foreach($ticket_id as $ti)
-        { 
-          $fTicket=$this->ticket->findWhere(['ticket_relacionado'=>$ti]);
-          if($fTicket->count()>0)
-          {
-            $upTicket=$this->ticket->update(["status"=>"1"],$fTicket[0]->id);
-          }
+            //$this->saveTicketBitacora($i,$grupo_clave,auth()->user()->id,$mensaje,$e->catalogo_id,$catalogoH,$e->status,$status);
+          }          
         }
       }catch(\Exception $e){
         Log::info('Error Cerrar Ticket '.$e->getMessage());
@@ -1251,12 +1238,14 @@ class PortalSolicitudesController extends Controller
   }
   public   function upStatusRechazo(Request $request)
   {
+    //log::info($request->all());
     try {
-        $id=$request->id;
+        $id=$request->tickets_id;
+        $rch=0;
         foreach($id as $i)
         {
           $newid=$i;
-          $rch=0;
+          $status="";
           $mensaje="";
           switch ($request->estatus) {
             case '50':
@@ -1275,30 +1264,38 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-            $solicitudTicket = $this->ticket->whereIn('id' , $id)->update(['status'=> "2"]);
-            $this->cerrarCrearTicket($request->id,$request->grupo_clave,$request->id);
-          }else{
-            $solicitudTicket = $this->ticket->whereIn('id' , $id)
-        ->update(['status'=> "3"]);
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
+          }else{            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
-            while(true)
-            {
-              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
-              //log::info($sTicket);
-              if($sTicket[0]->ticket_relacionado==null)
+            $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
+
+            $newCatalogoid=$findSolTicket[0]->catalogo_id;
+
+           /* while(true)
+            {                
+              $findCatalogoPadre=$this->solicitudes->findWhere(["id"=>$newCatalogoid]);
+              if($findCatalogoPadre[0]->padre_id==null)
               {
-                $newid=$sTicket[0]->id;
-                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+                $upTicket=$this->ticket->update(["catalogo_id"=>$newCatalogoid],$i);
                 break;
               }else{
-                $newid=$sTicket[0]->ticket_relacionado;
-              }
+                 $newCatalogoid=$findCatalogoPadre[0]->padre_id;
+              }           
+            }*/
+            if (in_array($i, $request->id))
+            {
+              $ins=$this->ticket->update(["status"=>$rch],$i);
+              $status=$rch;
+            }else{
+              $status=$findSolTicket[0]->status;
             }
+           // $this->saveTicketBitacora($i,$request->grupo_clave,auth()->user()->id,$mensaje,$findSolTicket[0]->catalogo_id,$newCatalogoid,$findSolTicket[0]->status,$status);
           }
+          //$ins=$this->ticket->whereIn("id",$request->id)->update(["status"=>$rch]);
            $mensajes =$this->mensajes->create([
             'ticket_id'=> $i,
-            'mensaje' => $mensaje,
+            'mensaje' => $mensaje . " , Por: ".auth()->user()->name,
             'mensaje_para' => 1,
             'attach'    =>  ""
             ]);          
