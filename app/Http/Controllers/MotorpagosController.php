@@ -3406,7 +3406,8 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaActual->format('Y-m-d').' 23:59:59';
           
         }
-        $solicitudes = PortalSolicitudesTicket::leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
+        $solicitudes = PortalSolicitudesTicket::with("mensajes")
+        ->leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
         ->leftjoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
         ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
         ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
@@ -3439,9 +3440,8 @@ class MotorpagosController extends Controller
             'operTrans.estatus as estatus_id',
             'opertram.rfc as rfc',
             'opf.nombre as familia',
-            'operTrans.id_transaccion_motor as folio',
-            'opprocess.id as idProceso',
-            'solicitudes_ticket.id as ticket',
+            'operTrans.id_transaccion_motor as folio',            
+            'solicitudes_ticket.id',
             'notary_offices.titular_id',
             'notary_offices.substitute_id',
             'solicitudes_ticket.status as status_ticket',
@@ -3452,9 +3452,8 @@ class MotorpagosController extends Controller
             'tramite.id_ticket as tickets_relacion',
     
             
-        )      
+        )    
         ->groupBy("solicitudes_ticket.id")
-        // ->whereBetween('operTrans.fecha_pago',[$fecha_inicio,$fecha_fin]);
         ->whereBetween('operTrans.fecha_transaccion',[$fecha_inicio,$fecha_fin]);
    
        
@@ -3468,19 +3467,19 @@ class MotorpagosController extends Controller
            
         }
 
-        if($servicio!=null){
+        if($servicio!=0){
             $solicitudes->where('tiposer.Tipo_Code', $servicio);
             
         }
         if($notaria!=null){
             $solicitudes->where('notary_offices.notary_number', $notaria);  
         }
-        if($status!=null){
+        if($status!='null'){
             $solicitudes->where('operTrans.estatus', $status);            
         }
         $solicitudes=$solicitudes->get()->toArray();
 
-        foreach ($solicitudes as $key => &$value) {              
+        foreach ($solicitudes as $key => &$value) {         
             if(empty($value["info"])){
                 $value["info"]=json_decode($value["info"]);
             }else{
@@ -3505,7 +3504,9 @@ class MotorpagosController extends Controller
                     'rfc_titular'=>"",             
                     'curp_titular'=>"",
                 );
-            }   
+            } 
+            
+            
         }
                 
 

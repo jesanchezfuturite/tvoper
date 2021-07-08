@@ -32,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/register';
+    protected $redirectTo = '';
     protected $menudb;
     /**
      * Create a new controller instance.
@@ -41,6 +41,7 @@ class RegisterController extends Controller
      */
     public function __construct(AdministratorsRepositoryEloquent $menudb)
     {
+        $this->redirectTo = (getenv('APP_PREFIX') ?? '').'/register';
         $this->middleware('auth');
 
         $this->menudb=$menudb;

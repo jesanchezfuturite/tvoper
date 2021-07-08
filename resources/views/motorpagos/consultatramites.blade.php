@@ -406,7 +406,7 @@
                                                 <div class='form-group'> 
                                                     <label>Estatus</label> 
                                                     <select class="select2me form-control" name="status" id="status" onchange="">
-                                                        <option value="0">------</option>
+                                                        <option value="null">------</option>
                                                         @foreach($status as $s)
                                                         <option value="{{$s->id}}">{{$s->nombre}}</option>
                                                         @endforeach    
@@ -551,7 +551,7 @@
     {
         $.ajax({
            method: "get",
-           url:"{{ url('/familia-find-all') }}",
+           url:"{{ url()->route('familia-find-all') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         var Resp=$.parseJSON(response);
@@ -755,7 +755,7 @@
         var rfc_=$("#rfc2").val();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-egob') }}",        
+        url:"{{ url()->route('consulta-transacciones-egob') }}",        
         data: {rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode2').value=response;
@@ -990,7 +990,7 @@
         var familia_=$("#itemsFamilia").val();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-oper') }}",  
+        url:"{{ url()->route('consulta-transacciones-oper') }}",  
         data: {familia:familia_,rfc:rfc_,fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
         document.getElementById('jsonCode1').value=response;        
@@ -1052,7 +1052,7 @@
         var status=$("#status").val();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-tramites') }}",   
+        url:"{{ url()->route('consulta-transacciones-tramites') }}",   
         data: {familia:familia_,rfc:rfc_,
             fecha_inicio:fechaIn,fecha_fin:fechaF, 
             servicio:servicio, 
@@ -1070,7 +1070,7 @@
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
                     +"<td>"+item.folio+"</td>"
-                    +"<td>"+item.ticket+"</td>"
+                    +"<td>"+item.id+"</td>"
                     +"<td>"+item.status+"</td>"
                     +"<td>"+item.rfc+"</td>"
                     +"<td>"+item.familia+"</td>"
@@ -1100,7 +1100,7 @@
         //document.getElementById("blockui_sample_3_1").click();
         $.ajax({
         method: "post",            
-        url:"{{ url('/consulta-transacciones-gpm') }}",
+        url:"{{ url()->route('consulta-transacciones-gpm') }}",
         data: {fecha_inicio:fechaIn,fecha_fin:fechaF,_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
         document.getElementById('jsonCode3').value=response;        
@@ -1160,7 +1160,7 @@
             if(item.info!=null){
                 var obj = {};
                 obj.tramite=item.tiposervicio;
-                obj.ticket = item.ticket;
+                obj.ticket = item.id;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
@@ -1172,7 +1172,6 @@
                 obj.apellido_materno_titular =item.titular.apellido_materno_titular;
                 obj.nombre_titular = item.titular.nombre_titular;
                 obj.rfc_titular= item.titular.rfc_titular;
-                console.log(item, item.ticket);
                 if(item.info.campos){
                     if('Escritura' in  item.info.campos ){
                        obj.escritura = item.info.campos['Escritura'];
@@ -1214,13 +1213,16 @@
                     obj.motivo="Null";
                 }
                 
-                if('camposConfigurados' in  item.info){
-                    var documento = item.info.camposConfigurados.find(campo => campo.tipo == "file");
-                    if(documento && ('nombreArchivoGuardado' in documento)){
-                        obj.documento = documento.nombreArchivoGuardado;
-                    }else{
-                        obj.documento = "Null";
-                    }             
+                if(item.mensajes!=[]){
+                    var documentos = item.mensajes;
+
+                    let doc = documentos.map( obje => {
+                                if(obje.attach!=null){
+                                    return obje.attach;
+                                }
+                            }).filter(Boolean).join(", ");
+                            obj.documento=doc;
+                       
                 }else{
                     obj.documento="Null";
                 }
@@ -1442,12 +1444,12 @@
                
 
                 arr.push(obj);
-                // console.log(obj); 
+                console.log(obj); 
             }else{
                 var obj = {};
 
                 obj.tramite=item.tiposervicio;
-                obj.ticket = item.ticket;
+                obj.ticket = item.id;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
