@@ -447,6 +447,14 @@ class PortalSolicitudesTicketController extends Controller
       $ticket_id = $data["ticket_id"];
       $file = $data['file'];
       $extension = $file->getClientOriginalExtension();
+      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+      $number = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
+      ->select("notary.notary_number")
+      ->leftjoin("config_users_notary_offices as config", "tk.user_id", "=", "config.user_id")
+      ->leftjoin("notary_offices as notary", "config.notary_office_id", "=", "notary.id")
+      ->where("tk.id", $ticket_id)
+      ->first();
 
       try {
 
@@ -455,7 +463,7 @@ class PortalSolicitudesTicketController extends Controller
           'mensaje' => $mensaje,
         ]);
 
-        $name = "archivo_solicitud_".$mensajes->id.".".$extension;
+        $name = $nombre."-".$ticket_id."_".$number->notary_number."_".date("U").".".$extension;
         $attach = $this->url->to('/') . '/download/'.$name;
 
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
