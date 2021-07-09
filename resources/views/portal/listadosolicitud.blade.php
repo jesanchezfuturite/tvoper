@@ -750,15 +750,16 @@ function configprelacion()
       var input_check="";            
       var valid='0';            
       let html = ''; 
+      let g_prelacion = 0; 
       var exist=0;     
       d.grupo.forEach( (solicitud) =>{ 
+        var bitacora_end=solicitud.bitacora.length-1;
         if(solicitud.bitacora.length==0)
         {
           solicitud.bitacora.push({nombre:"N/A",id:0});
         }
-        solicitud.bitacora.forEach((bitacora)=>{
-        { 
-              
+        solicitud.bitacora.forEach((bitacora,index)=>{
+        {    
           var clase='';
           var distrito=searchIndex('distrito',solicitud.info.campos);
           var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
@@ -766,8 +767,7 @@ function configprelacion()
           var dist='0';
           if(typeof(distrito)==='object'){
             dist=distrito.clave;            
-          }      
-         
+          }
           if(dist!='1')
           {
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
@@ -778,15 +778,15 @@ function configprelacion()
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
               checks='';
           }  
-          let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
-          
           if(solicitud.status=='1' && dist=='1'){
             exist+=1;  
           }
-          if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null)
+          if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
           {
+            Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
             checks='';
-          }
+          } 
+          let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
           var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
@@ -815,6 +815,10 @@ function configprelacion()
 
           }
         })
+        if(solicitud.bitacora[bitacora_end].id_estatus_atencion==2)
+        {
+          g_prelacion=1;
+        }
       });
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -822,9 +826,8 @@ function configprelacion()
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\")'>Rechazar</a>";
         input_check= addChecks(d.grupo[0].grupo_clave);
-        if(d.grupo[0].url_prelacion!=null && b_pr!=null && d.grupo[0].distrito==null )
-        {          
-          btn_prelacion="";
+        if(d.grupo[0].url_prelacion!=null && b_pr!=null)
+        { btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
           input_check="";
@@ -833,10 +836,12 @@ function configprelacion()
         if(d.grupo[0].url_prelacion==null)
         {
           url_prelacion='';
+
         }
-        if(d.grupo[0].padre_exist!=null)
+        if(g_prelacion==0 )
         {
           btn_prelacion=''; 
+          url_prelacion='';
         }else{
            btn_cerrarTicket='';
         }
@@ -855,7 +860,7 @@ function configprelacion()
          url_prelacion='';
          btn_cerrarTicket='';
         }
-        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
