@@ -432,7 +432,6 @@
                                                         
                                                         <tr>
                                                             <th>Folio</th> 
-                                                            <th>FSE</th> 
                                                             <th>Ticket</th> 
                                                             <th>Estatus</th>
                                                             <th>RFC</th>
@@ -450,7 +449,6 @@
                                                     
                                                         <tr>
                                                             <td><span class="help-block">No Found</span></td>                     
-                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -807,7 +805,6 @@
         "<div class='table-scrollable'>"+
         "<table class='table table-hover table-responsive' id='sample_7'><thead>"+  
         "<tr><th>Folio</th> "+
-        "<tr><th>FSE</th> "+
         "<th>Ticket</th>"+
         "<th>Estatus</th>"+
          "<th>RFC</th>"+
@@ -820,7 +817,6 @@
           "<th>Tipo Pago</th>"+
           "<th>Total Tamite</th></tr></thead><tbody> <tr>"+
          " <td><strong>Espere Cargando...</strong></td>"+
-          "<td></td>"+
           "<td></td>"+
           "<td></td>"+
           "<td></td>"+
@@ -1064,7 +1060,6 @@
             $.each(response, function(i, item) { 
                 $("#sample_7 tbody").append("<tr>"
                     +"<td>"+item.folio+"</td>"
-                    +"<td>"+item.idTrans+"</td>"
                     +"<td>"+item.id+"</td>"
                     +"<td>"+item.status+"</td>"
                     +"<td>"+item.rfc+"</td>"
@@ -1157,7 +1152,7 @@
                 
                 obj.tramite=item.tiposervicio;
                 obj.ticket = item.id;
-                obj.fse=idTrans;
+                obj.fse=item.idTrans;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
@@ -1447,7 +1442,7 @@
 
                 obj.tramite=item.tiposervicio;
                 obj.ticket = item.id;
-                obj.fse=idTrans;
+                obj.fse=item.idTrans;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
