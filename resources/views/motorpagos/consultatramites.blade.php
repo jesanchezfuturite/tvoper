@@ -322,7 +322,7 @@
                                 <div class="portlet-body" >
                                     <div class="row">
                                         <div class="col-md-12 text-right"> 
-                                            <span class="help-block">Selecciona una Opcion. </span>
+                                            <span class="help-block">Selecciona una opción todos los campos marcados con * son obligatorios. </span>
                                             <div class="md-radio-inline">
                                                 <div class="md-radio">
                                                     <input type="radio" id="radio_1" name="radio7" class="md-radiobtn" value="undia" onclick="radiobuttonsTramites()">
@@ -356,7 +356,7 @@
                                             <div class='col-md-4'>
                                                 <span class='help-block'>&nbsp;</span> 
                                                 <div class='form-group'>   
-                                                    <label for='fecha'>Seleccionar Rango de Fechas. </label>
+                                                    <label for='fecha'>Seleccionar Rango de Fechas. * </label>
                                                     <div class='input-group input-large date-picker input-daterange'  data-date-format='yyyy-mm-dd'>
                                                         <span class='input-group-addon'>De</span>
                                                         <input type='text' class='form-control' name='from' id='fechainicio4' autocomplete='off'>
@@ -365,13 +365,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class='col-md-3'>
-                                                <span class='help-block'>&nbsp;</span>
-                                                <div class='form-group'> 
-                                                    <label> RFC / Placas / Folio</label> 
-                                                    <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc4' id='rfc4' class='form-control'>
-                                                </div>
-                                            </div>
+                                      
                                             <div class="col-md-3">
                                                 <span class='help-block'>&nbsp;</span>
                                                 <div class="form-group">
@@ -391,7 +385,7 @@
                                             <div class='col-md-3'>
                                                 <span class='help-block'>&nbsp;</span>
                                                 <div class='form-group'> 
-                                                    <label> Tramite</label> 
+                                                    <label> Tramite *</label> 
                                                     <select class="select2me form-control" name="servicio" id="servicio" onchange="">
                                                     
                                                     <option value="0">------</option>
@@ -435,15 +429,7 @@
                                             <div class="table-scrollable">
                                                 <table class="table table-hover table-responsive" id="sample_7">
                                                     <thead>
-                                                        <!-- <tr> 
-                                                            <th>Transacción</th>
-                                                            <th>Conciliacion</th>
-                                                            <th>Estatus</th>
-                                                            <th>Declarado</th>
-                                                            <th>Familia</th>
-                                                            <th>Entidad</th>
-                                                            <th>Tramite</th>
-                                                        </tr> -->
+                                                        
                                                         <tr>
                                                             <th>Folio</th> 
                                                             <th>Ticket</th> 
@@ -611,13 +597,16 @@
         }
     }
     function consultaRangoFechasTramites()
-    {
-       fechaIn=$("#fechainicio4").val();
+    {   
+        fechaIn=$("#fechainicio4").val();
         fechaF=$("#fechafin4").val();
-        var familia_=$("#itemsFamilia2").val();
+        var servicio=$("#servicio").val();
         if(fechaIn.length<1 && fechaF.length<1){
             Command: toastr.warning("Fecha Inicio y Fin, Requerido!", "Notifications")            
-        }else{
+        }else if(servicio==0){
+            Command: toastr.warning("Tramite, Requerido!", "Notifications")   
+        }
+        else{
             consultaTramites(fechaIn,fechaF);                    
         }
     }
@@ -667,7 +656,7 @@
     {
         document.getElementById('fechainicio4').value='';
         document.getElementById('fechafin4').value='';
-        document.getElementById('rfc4').value='';
+        // document.getElementById('rfc4').value='';
         var option = document.querySelector('input[name = radio7]:checked').value;    
         if(option=="avanzado")
         {
@@ -1045,7 +1034,7 @@
     }
     function consultaTramites(fechaIn,fechaF) {
         Addtable4();
-        var rfc_=$("#rfc").val();
+        // var rfc_=$("#rfc").val();
         var familia_=$("#itemsFamilia2").val();
         var notaria = $("#notaria").val();
         var servicio=$("#servicio").val();
@@ -1053,7 +1042,8 @@
         $.ajax({
         method: "post",            
         url:"{{ url()->route('consulta-transacciones-tramites') }}",   
-        data: {familia:familia_,rfc:rfc_,
+        data: {familia:familia_,
+            // rfc:rfc_,
             fecha_inicio:fechaIn,fecha_fin:fechaF, 
             servicio:servicio, 
             status:status,
@@ -1159,8 +1149,10 @@
 
             if(item.info!=null){
                 var obj = {};
+                
                 obj.tramite=item.tiposervicio;
                 obj.ticket = item.id;
+                obj.fse=item.idTrans;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
@@ -1450,6 +1442,7 @@
 
                 obj.tramite=item.tiposervicio;
                 obj.ticket = item.id;
+                obj.fse=item.idTrans;
                 obj.folio = item.folio;
                 obj.estatus = item.status;
                 obj.banco = item.BancoSeleccion;
