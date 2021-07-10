@@ -463,7 +463,7 @@ class PortalSolicitudesTicketController extends Controller
           'mensaje' => $mensaje,
         ]);
 
-        $name = $nombre."-".$ticket_id."_".$number->notary_number."_".date("U").".".$extension;
+        $name = $nombre."-".$ticket_id.$number->notary_number.date("U").".".$extension;
         $attach = $this->url->to('/') . '/download/'.$name;
 
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
