@@ -665,7 +665,7 @@ function configprelacion()
        Command: toastr.warning("Error", "Notifications");
     });
   }
-  function createTable( dataS){
+  async function createTable( dataS){
       //console.log(dataS);
       var table = $('#example').DataTable();
                 table.destroy();    
@@ -692,6 +692,7 @@ function configprelacion()
               ]
         });
       $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
+      await sleep(1000);
       if(dataS.length<2){
         dataS.forEach((grupo) =>{
           $("#iconShow-"+grupo.grupo_clave).trigger("click");
@@ -957,7 +958,7 @@ function configprelacion()
         
         
     }
-    function savePrelacion(prelacion_,formdata,grupo_clave,resp,id_proceso)
+    function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
       var mensaje=$("#message").val();
       var file=$("#file").val();
@@ -973,7 +974,7 @@ function configprelacion()
         formdata.append("prelacion", prelacion_);
         formdata.append("rechazo", checkRechazo);
         formdata.append("grupo_clave", grupo_clave);
-        formdata.append("id_estatus_atencion", id_proceso);
+        //formdata.append("id_estatus_atencion", id_proceso);
         //formdata.append("data[]", JSON.stringify(data));
         formdata.append("_token",'{{ csrf_token() }}');
       $.ajax({
