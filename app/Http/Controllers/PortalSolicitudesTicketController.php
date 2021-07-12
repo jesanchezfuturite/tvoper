@@ -465,8 +465,10 @@ class PortalSolicitudesTicketController extends Controller
                     $costo_tramite=$info->detalle->Salidas->{'Importe total a pagar'};
                   } 
                  
-                }else{
+                }else if(isset($info->costo_final)){
                   $costo_tramite=$info->costo_final;
+                }else{
+                  $costo_tramite=null;
                 }
                 $costo_total += (float)$info->costo_final;
               }
