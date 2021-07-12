@@ -37,7 +37,6 @@ use App\Entities\Portalsolicitudesresponsables;
 use App\Entities\Users;
 use App\Entities\TicketBitacora;
 
-
 class PortalSolicitudesController extends Controller
 {
   protected $users;
@@ -81,7 +80,7 @@ class PortalSolicitudesController extends Controller
 
     )
     {
-      // $this->middleware('auth');
+      $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -457,15 +456,7 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
-    $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
-    if($relacion){
-      $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
-    }else{
-      $notaria=[];
-    }
 
-    
-    
     $filtro = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
@@ -492,12 +483,12 @@ class PortalSolicitudesController extends Controller
     }
     $ids_catalogos = $filtro->get()->pluck("id_catalogo")->toArray();  
 
-    $responsables = $this->solicitudrespdb->where("user_id", $user_id)
-    ->get()->pluck("catalogo_id")->toArray();
+     $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
+    ->get()->toArray();
 
     $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
-    $catalogo = array_intersect($ids_catalogos, $responsables);
+    // $catalogo = array_intersect($ids_catalogos, $responsables);
    
   
     $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
@@ -505,7 +496,7 @@ class PortalSolicitudesController extends Controller
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
-    "tk.info",
+    "tk.info", 
     "c.id as catalogo", "tmt.id_transaccion_motor",
     "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", 
     "tk.grupo_clave", "pr.url_prelacion", "c.padre_id",
@@ -528,14 +519,23 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
     ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'DESC')
-    ->whereIn('c.id',$catalogo)->get();
+    ->whereIn('c.id',$ids_catalogos)->get();
 
    
     $newDato=[];
     foreach($grupo as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) {   
+      foreach ($solicitudes as $d => &$value) {         
         if($value->grupo_clave== $id){
+          foreach ($responsables as $r => $res) {
+            if($res["catalogo_id"] ==$value->catalogo){
+              if($res["user_id"]==$user_id){
+                $value->permiso=1;
+              }else{
+                $value->permiso=0;
+              }
+            }
+          } 
           if(isset($value->info)){            
             $info=$this->asignarClavesCatalogo($value->info);
             $value->info=$info;
@@ -1401,18 +1401,18 @@ class PortalSolicitudesController extends Controller
     return response()->json(
       [
         "Code" => "200",
-        "Message" => "Solicitud actualizada",
+        "Message" => "Atender solicitud actualizada",
       ]
     );
 
     }catch(\Exception $e){
 
-      Log::info('Error Editar solicitud '.$e->getMessage());
+      Log::info('Error editar atender solicitud '.$e->getMessage());
 
       return response()->json(
         [
           "Code" => "400",
-          "Message" => "Error al editar la solicitud",
+          "Message" => "Error editar atender solicitud ".$e->getMessage(),
         ]
       );
     }
@@ -1444,7 +1444,36 @@ class PortalSolicitudesController extends Controller
       return $procesos;
     }
     catch(\Exception $e) {
-      Log::info('Error Portal Solicitudes - carga de Solicitudes: '.$e->getMessage());
+      Log::info('Error Portal Solicitudes - Obtener procesos de solicitudes: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al obtener procesos" .$e->getMessage()
+        ]
+      );
+    }
+  }
+  public function agregarTicketBitacora(Request $request){
+    $data = $request->all();
+    try {
+      $create = TicketBitacora::create($data);
+      if($create){
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Ticket agregado a bitacora "
+          ]
+        );
+      }
+    
+    } catch (\Exception $e) {
+      Log::info('Error Portal Solicitudes - registro de bitacora: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al obtener procesos" .$e->getMessage()
+        ]
+      );
     }
   }
   private function saveTicketBitacora($ticket_id,$grupo_clave,$id_estatus_atencion,$user_id,$mensaje,$status)
