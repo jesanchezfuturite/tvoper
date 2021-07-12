@@ -55,6 +55,7 @@ class PortalSolicitudesController extends Controller
   protected $solicitudesMotivos;
   protected $motivos;
   protected $userEstatus;
+  protected $ticketBitacoradb;
 
 
 
@@ -74,7 +75,8 @@ class PortalSolicitudesController extends Controller
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
-     OperacionUsuariosEstatusRepositoryEloquent $userEstatus
+     OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
+     TicketBitacora $ticketBitacoradb
 
     )
     {
@@ -95,6 +97,7 @@ class PortalSolicitudesController extends Controller
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
       $this->userEstatus = $userEstatus;
+      $this->ticketBitacoradb = $ticketBitacoradb;
 
 
     }
@@ -564,6 +567,7 @@ class PortalSolicitudesController extends Controller
     $status = json_decode($status->estatus);
 
     $status = $this->status->whereIn("id", $status)->get()->toArray();
+
     
     return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
 
@@ -675,7 +679,7 @@ class PortalSolicitudesController extends Controller
           ]);
         }
 
-        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id_estatus_atencion,$mensaje,1);
       }
     try {  
       if($request->rechazo=="true")
@@ -703,7 +707,7 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
           }else{            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
@@ -729,7 +733,7 @@ class PortalSolicitudesController extends Controller
             }else{
               $status=$findSolTicket[0]->status;
             }
-            //$this->saveTicketBitacora($i,$request->grupo_clave,auth()->user()->id,$mensaje,$findSolTicket[0]->catalogo_id,$newCatalogoid,$findSolTicket[0]->status,$status);
+            $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,$status);
           }
           
           $mensajes =$this->mensajes->create([
@@ -759,7 +763,7 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
-  public function cerrarCrearTicket($ticket_id,$grupo_clave,$id,$mensaje){
+  public function cerrarCrearTicket($ticket_id,$grupo_clave,$id,$mensaje,$id_estatus_atencion){
     //log::info($ticket_id); 
     try{
      
@@ -767,21 +771,16 @@ class PortalSolicitudesController extends Controller
         {   
           $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
           foreach ($findSolTicket as $e) { 
-            $status=$e->status;
-            $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
-            $catalogoH=$e->catalogo_id;
-            if($findCatalogoHijo->count()>0){ 
-              $catalogoH=$findCatalogoHijo[0]->id; 
-              //$ins=$this->ticket->update(["status"=>$e->status,"catalogo_id"=>$catalogoH],$e->id);
+            $status=$e->status;           
+            if($id_estatus_atencion=="3"){
+              $status="2";
+              $ins=$this->ticket->update(["status"=>"2"],$e->id);
+              $this->saveTicketBitacora($i,$grupo_clave,4,auth()->user()->id,$mensaje,$status);
+            }else if($id_estatus_atencion==2){
+               $this->saveTicketBitacora($i,$grupo_clave,3,auth()->user()->id,$mensaje,$status);
             }else{
-              if($e->status=="1"){
-                $status="2";
-                $ins=$this->ticket->update(["status"=>"2"],$e->id);
-              }else{
-                 $ins=$this->ticket->update(["status"=>$e->status],$e->id);
-              }
-            }
-            //$this->saveTicketBitacora($i,$grupo_clave,auth()->user()->id,$mensaje,$e->catalogo_id,$catalogoH,$e->status,$status);
+               $this->saveTicketBitacora($i,$grupo_clave,$id_estatus_atencion,auth()->user()->id,$mensaje,$status);
+            }  
           }          
         }
       }catch(\Exception $e){
@@ -1266,7 +1265,7 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje);
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
           }else{            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
@@ -1292,7 +1291,7 @@ class PortalSolicitudesController extends Controller
             }else{
               $status=$findSolTicket[0]->status;
             }
-           // $this->saveTicketBitacora($i,$request->grupo_clave,auth()->user()->id,$mensaje,$findSolTicket[0]->catalogo_id,$newCatalogoid,$findSolTicket[0]->status,$status);
+            $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,$status);
           }
           //$ins=$this->ticket->whereIn("id",$request->id)->update(["status"=>$rch]);
            $mensajes =$this->mensajes->create([
@@ -1476,6 +1475,15 @@ class PortalSolicitudesController extends Controller
         ]
       );
     }
+  }
+  private function saveTicketBitacora($ticket_id,$grupo_clave,$id_estatus_atencion,$user_id,$mensaje,$status)
+  {
+    try {
+      $this->ticketBitacoradb->create(["id_ticket"=>$ticket_id,"grupo_clave"=>$grupo_clave,"id_estatus_atencion"=>$id_estatus_atencion,"user_id"=>$user_id,"mensaje"=>$mensaje,"status"=>$status]);
+    } catch (Exception $e) {
+      log::info("saveTicketBitacora: ".$e);
+    }
+      
   }
   
 }

@@ -75,7 +75,7 @@ class Pagosas400 extends Command
     public function handle()
     {
         //
-        $last_register = $this->pagosapi->latest()->first();
+        $last_register = $this->pagosapi->orderby('id_transaccion_motor','desc')->first();
 
         if(is_null($last_register))
         {
@@ -83,8 +83,8 @@ class Pagosas400 extends Command
             $this->fillTable();
         }else{
             $this->updateTable($last_register->id_transaccion_motor);
-            
         }
+    
     }
 
 
@@ -102,21 +102,14 @@ class Pagosas400 extends Command
 
             Log::info("[Pagosas400@updateTable]-Obtener todos los pagos ya realizados" );
 
-            $inserted = $this->pagosapi->all(['id_transaccion_motor']);
-
-            $procesados = array();
-
             Log::info("[Pagosas400@updateTable]-obtener los que ya existen");
-            
-            foreach($inserted as $i)
-            {
-                $procesados[]= $i->id_transaccion_motor;
-            }
-
+                 
             $registros = $this->transacciones
                 ->where('estatus',0)
-                ->whereNotIn('id_transaccion_motor', $procesados)->get();
+                ->where('id_transaccion_motor','>',$last)
+                ->get();
 
+            Log::info("[Pagosas400@updateTable]-Registros a buscar " . $registros->count() );
 
             if($registros->count() > 0){
                 foreach($registros as $reg)
@@ -136,14 +129,22 @@ class Pagosas400 extends Command
                         'procesado'             => 0
                     );
 
-                    Log::info("[Pagosas400@updateTable]-Insertar pago" );
-                    $this->pagosapi->create($info);
+                    //Log::info("[Pagosas400@updateTable]-Insertar pago" );
+                    
+                    if ($this->pagosapi->where('id_transaccion_motor', '=', $reg->id_transaccion_motor)->count() == 0) {
+
+                        $this->pagosapi->create( $info );
+                    
+                    }    
+                    
 
                 }    
             }else{
                 Log::info("[Pagosas400@updateTable]-No existen pagos sin procesar");
             }
+    
         }catch(\Exception $e){
+            Log::info("[Pagosas400@updateTable]-ERROR-".$e->getMessage());
             dd($e->getMessage());
         }
         Log::info("[Pagosas400@updateTable]-Proceso terminado");
