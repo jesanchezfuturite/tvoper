@@ -747,12 +747,12 @@ function configprelacion()
       let g_prelacion = 0; 
       var exist=0;     
       var status_proceso=0;     
-      d.grupo.forEach( (solicitud) =>{ 
-        var bitacora_end=solicitud.bitacora.length-1;
+      d.grupo.forEach( (solicitud) =>{         
         if(solicitud.bitacora.length==0)
         {
-          solicitud.bitacora.push({nombre:"N/A",id:0});
+          solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:2});
         }
+        var bitacora_end=solicitud.bitacora.length-1;
         solicitud.bitacora.forEach((bitacora,index)=>{
         {    
           var clase='';

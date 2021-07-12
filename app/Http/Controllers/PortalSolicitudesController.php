@@ -679,7 +679,7 @@ class PortalSolicitudesController extends Controller
           ]);
         }
 
-        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id_estatus_atencion,$mensaje,1);
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
       }
     try {  
       if($request->rechazo=="true")
