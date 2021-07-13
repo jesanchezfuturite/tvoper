@@ -53,6 +53,8 @@ use App\Repositories\ApplicableSubjectRepositoryEloquent;
 
 
 use App\Entities\PortalSolicitudesTicket;
+
+use App\Entities\Transacciones;
 use DB;
 use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
@@ -2140,7 +2142,10 @@ class MotorpagosController extends Controller
     }
     public function consultaTransacciones()
     {
-        return view('motorpagos/consultatramites');
+
+        $servicios = $this->findTipoServicioAll();
+        $status =  $this->statusFindAll();
+        return view('motorpagos/consultatramites', ["servicios" => json_decode($servicios), "status"=>json_decode($status )]);
     }
     public function consultaTransaccionesEgob(Request $request)
     {
@@ -3370,12 +3375,16 @@ class MotorpagosController extends Controller
     }
     public function consultaTransaccionesTramites(Request $request){ 
         $rfc=$request->rfc;        
-        $familia=$request->familia;        
+        $familia=$request->familia;     
+        $servicio=$request->servicio;  
+        $status=$request->status;   
         $fecha_inicio=$request->fecha_inicio.' 00:00:00';
         $fecha_fin=$request->fecha_fin.' 23:59:59';
+        $notaria=$request->notaria;
         $response=array();
-        //log::info('inicio');
         $fechaActual=Carbon::now();
+        
+
         if((int)$fecha_inicio==(int)"1")
         {           
             $fechaAterior=Carbon::now()->subDays(1);
@@ -3388,112 +3397,121 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaAterior->format('Y-m-d').' 00:00:00';
             $fecha_fin=$fechaActual->format('Y-m-d').' 23:59:59';            
         }       
-        if($rfc=="" && $familia=='0')
-        {
-         $transaccion=$this->oper_transaccionesdb->consultaTransacciones($fecha_inicio,$fecha_fin); 
-            if($transaccion<>null){
-                $response=$this->reponseTransacciones($transaccion,$response);
-            }      
-        }else{
-            if($fecha_inicio==" 00:00:00" && $fecha_fin==" 23:59:59")
-            {
-                $fechaIn=$fechaActual->subYears(1);
-                $fechaIn=$fechaIn->format('Y');
-                $fechaIn=$fechaIn.'-01-01 00:00:00';
-                $fechaFin=$fechaActual->format('Y-m-d').' 23:59:59';
-                $transaccion=$this->tramitedb->consultaRFCoper(['rfc'=>$rfc],$fechaIn,$fechaFin);
-                if($transaccion<>null){
-                    $response=$this->reponseTransacciones($transaccion,$response);
-                }
-                $transaccionplaca=$this->tramitedb->consultaRFCoper(['auxiliar_2'=>$rfc],$fechaIn,$fechaFin);
-               //log::info($rfc.$transaccionplaca);
-                 if($transaccionplaca<>null){
-                    $response=$this->reponseTransacciones($transaccionplaca,$response);
-                }
-                $findFolio=$this->oper_transaccionesdb->consultaFolioTransacciones($rfc,$fechaIn,$fechaFin);
-                //log::info($findFolio);
-                 if($findFolio<>null){
-                    $response=$this->reponseTransacciones($findFolio,$response);
-                }
-            }else{
-                if($rfc!=""){
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.rfc'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    } 
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_tramites.auxiliar_2'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    } 
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_transacciones.id_transaccion_motor'=>$rfc]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                    }
-                }
-                if($familia!='0'){
-                    $transaccion=$this->oper_transaccionesdb->consultaTransaccionesWhere($fecha_inicio,$fecha_fin,['oper_familia.id'=>$familia]);
-                    if($transaccion<>null){
-                        $response=$this->reponseTransacciones($transaccion,$response);
-                     
-                    }
-                }
-            }
-        }    
-        $ids = array_column($response, 'Transaccion');
-
-        $select = DB::raw("
-        `solicitudes_ticket`.`id`,
-        `tipo_servicios`.`Tipo_Descripcion` as `nombre_servicio`,
-        `solicitudes_catalogo`.`titulo`,
-        `notary_offices`.`titular_id`,
       
-        `solicitudes_ticket`.`status`,
-        `solicitudes_ticket`.`id_transaccion`,
-        `solicitudes_tramite`.`id_transaccion_motor`,
-        `solicitudes_ticket`.`created_at` as `fecha_creacion`,
-
-        `solicitudes_ticket`.`info`,
-        `solicitudes_ticket`.`recibo_referencia`,
-        `solicitudes_ticket`.`grupo_clave`,
-        `notary_offices`.`notary_number`
-        ");
-        $solicitudes = PortalSolicitudesTicket::select($select)
-        ->leftJoin('solicitudes_tramite', 'solicitudes_ticket.id_transaccion', '=', 'solicitudes_tramite.id')
-        ->leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-        ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
-        ->leftJoin('egobierno.tipo_servicios', 'solicitudes_catalogo.tramite_id', 'tipo_servicios.Tipo_Code')
-        ->leftJoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
-        ->leftJoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
-        ->whereIn('solicitudes_ticket.id_transaccion', $ids);
+        if($fecha_inicio==" 00:00:00" && $fecha_inicio==" 23:59:59")
+        {
+            $fecha_inicio=$fechaActual->subYears(1);
+            $fecha_inicio=$fecha_inicio->format('Y');
+            $fecha_inicio=$fecha_inicio.'-01-01 00:00:00';
+            $fecha_inicio=$fechaActual->format('Y-m-d').' 23:59:59';
+          
+        }
+        $solicitudes = PortalSolicitudesTicket::with("mensajes")
+        ->leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
+        ->leftjoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
+        ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
+        ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
+        ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')   
+        ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'operTrans.id_transaccion_motor')
+        ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
+        
+        ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
+        ->leftjoin('operacion.oper_familia as opf','opf.id','=','opfamen.familia_id')
+        
+        ->leftjoin('operacion.oper_processedregisters as opprocess','opprocess.referencia','=','operTrans.referencia')
+        ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
+        ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','operTrans.tipo_pago')
+        ->leftjoin('egobierno.status as status','.status.Status','=','operTrans.estatus') 
+        ->select(
+            'status.Descripcion as status',
+            
+            'operTrans.id_transaccion as idTrans',
+            'opentidad.nombre as entidad',
+            'tiposer.Tipo_Descripcion as tiposervicio',
+            'opertram.nombre',
+            'opertram.apellido_paterno',
+            'opertram.apellido_materno',
+            'operTrans.fecha_pago as fecha_transaccion',
+    
+            'operTrans.banco as BancoSeleccion',
+            'tipopag.Descripcion as tipopago',
+            'operTrans.importe_transaccion as TotalTramite',
+            'tiposer.Tipo_Code as tiposervicio_id',
+            'operTrans.estatus as estatus_id',
+            'opertram.rfc as rfc',
+            'opf.nombre as familia',
+            'operTrans.id_transaccion_motor as folio',            
+            'solicitudes_ticket.id',
+            'notary_offices.titular_id',
+            'notary_offices.substitute_id',
+            'solicitudes_ticket.status as status_ticket',
+            'tramite.id_transaccion_motor',
+            'solicitudes_ticket.created_at as fecha_creacion',
+            'solicitudes_ticket.info',
+            'notary_offices.notary_number',
+            'tramite.id_ticket as tickets_relacion',
+    
+            
+        )    
+        ->groupBy("solicitudes_ticket.id")
+        ->whereBetween('operTrans.fecha_transaccion',[$fecha_inicio,$fecha_fin]);
+   
        
+        if($rfc!=""){
+            $solicitudes->where('oper_tramites.rfc','LIKE',"%$rfc%")
+            ->orWhere('oper_tramites.auxiliar_2','LIKE',"%$rfc%")
+            ->orWhere('oper_transacciones.id_transaccion_motor','LIKE',"%$rfc%");
+        }
+        if($familia!='0'){
+           $solicitudes->where('opf.id', $familia);
+           
+        }
+
+        if($servicio!=0){
+            $solicitudes->where('tiposer.Tipo_Code', $servicio);
+            
+        }
+        if($notaria!=null){
+            $solicitudes->where('notary_offices.notary_number', $notaria);  
+        }
+        if($status!='null'){
+            $solicitudes->where('operTrans.estatus', $status);            
+        }
         $solicitudes=$solicitudes->get()->toArray();
 
-        foreach ($response as $r => &$res) {
-            foreach ($solicitudes as $key => &$value) {
-                if($value["id_transaccion"]== $res["Transaccion"]){                    
-                    if(empty($value["info"])){
-                        $value["info"]=json_decode($value["info"]);
-                    }else{
-                        $value["info"] = $this->asignarClavesCatalogo($value["info"]);
-                    }
-    
-                    $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
-    
-                    $value["titular"] =array(
-                        'nombre_titular'=> $titular->name,
-                        'apellido_paterno_titular'=> $titular->fathers_surname,
-                        'apellido_materno_titular'=> $titular->mothers_surname ,
-                        'rfc_titular'=>$titular->rfc,             
-                        'curp_titular'=>$titular->curp,  
-                    );
-                    $res["info_tramite"] = $value;
-                }             
-            
-                
+        foreach ($solicitudes as $key => &$value) {         
+            if(empty($value["info"])){
+                $value["info"]=json_decode($value["info"]);
+            }else{
+                $value["info"] = $this->asignarClavesCatalogo($value["info"]);
             }
-
+           
+            if(!is_null($value["titular_id"])){
+                $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
+                
+                $value["titular"] =array(
+                    'nombre_titular'=> $titular->name,
+                    'apellido_paterno_titular'=> $titular->fathers_surname,
+                    'apellido_materno_titular'=> $titular->mothers_surname ,
+                    'rfc_titular'=>$titular->rfc,             
+                    'curp_titular'=>$titular->curp,  
+                );
+            }else{
+                $value["titular"] =array(
+                    'nombre_titular'=> "",
+                    'apellido_paterno_titular'=>"",
+                    'apellido_materno_titular'=>"",
+                    'rfc_titular'=>"",             
+                    'curp_titular'=>"",
+                );
+            } 
+            
+            
         }
-        return json_encode($response);
+                
+
+        
+        return json_encode($solicitudes);
 
     }
 
