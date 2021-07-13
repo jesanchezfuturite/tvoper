@@ -680,8 +680,11 @@ class PortalSolicitudesController extends Controller
           'attach'    =>  $attach
           ]);
         }
-
-        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
+        foreach($request->tickets_id as $i)
+        {
+          $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,1);
+        }
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,"Pasa a Validador",$request->id_estatus_atencion);
       }
     try {  
       if($request->rechazo=="true")
@@ -779,7 +782,7 @@ class PortalSolicitudesController extends Controller
               $ins=$this->ticket->update(["status"=>"2"],$e->id);
               $this->saveTicketBitacora($i,$grupo_clave,4,auth()->user()->id,$mensaje,$status);
             }else if($id_estatus_atencion==2){
-               $this->saveTicketBitacora($i,$grupo_clave,3,auth()->user()->id,$mensaje,$status);
+               $this->saveTicketBitacora($i,$grupo_clave,3,null,$mensaje,$status);
             }else{
                $this->saveTicketBitacora($i,$grupo_clave,$id_estatus_atencion,auth()->user()->id,$mensaje,$status);
             }  

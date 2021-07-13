@@ -754,6 +754,7 @@ function configprelacion()
           solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1});
         }
         var bitacora_end=solicitud.bitacora.length-1;
+        status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
         solicitud.bitacora.forEach((bitacora,index)=>{
         {    
           var clase='';
@@ -783,11 +784,10 @@ function configprelacion()
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
             checks='';btn_revisar='';
           } 
-          if(solicitud.permiso=='0')
+          if(bitacora.permiso==0 && index==status_proceso)
           {
+             Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
             checks='';btn_revisar='';
-          }else{
-            valid=1
           }
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
@@ -815,14 +815,15 @@ function configprelacion()
           }
 
           html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
-
+            if(bitacora.id_estatus_atencion==2 && bitacora.user_id=='{{Auth::user()->id}}'){
+                g_prelacion=1;
+            }
           }
         })
-        status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
-        if(status_proceso==2 || status_proceso==3)
+        
+        /*if(status_proceso==2 || status_proceso==3)
         {
-          g_prelacion=1;
-        }
+                  }*/
       });
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -862,6 +863,9 @@ function configprelacion()
           input_check="";
          url_prelacion='';
          btn_cerrarTicket='';
+        }
+        if(g_prelacion==1){
+          url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
         }
         html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th></th><th>"+btn_rechazo+"</th></tr>";
 
