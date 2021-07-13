@@ -26,9 +26,9 @@ use App\Repositories\EstadosRepositoryEloquent;
 use App\Repositories\MunicipiosRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 
-use App\Repositories\PortalpaisesRepositoryEloquent;
 use App\Repositories\PortalvialidadesRepositoryEloquent;
-
+use App\Repositories\PortalestadosfullRepositoryEloquent;
+use App\Repositories\PaisesRepositoryEloquent;
 
 
 class ApiController extends Controller
@@ -90,6 +90,7 @@ class ApiController extends Controller
 	protected $municipios;
     protected $usernotary;
     protected $portalvialidades;
+    protected $portalestadosfull;
 	protected $portalpaises;
 
 	protected $expediente_catastral_id = 32;
@@ -110,8 +111,10 @@ class ApiController extends Controller
 		PortalcampoRepositoryEloquent $campos,
 		MunicipiosRepositoryEloquent $municipios,
         PortalConfigUserNotaryOfficeRepositoryEloquent $usernotary,
-        PortalpaisesRepositoryEloquent $portalpaises,
-		PortalvialidadesRepositoryEloquent $portalvialidades
+        PortalestadosfullRepositoryEloquent $portalestadosfull,
+		PortalvialidadesRepositoryEloquent $portalvialidades,
+        PaisesRepositoryEloquent $portalpaises
+
     )
     {
 
@@ -144,8 +147,9 @@ class ApiController extends Controller
 			$this->campos  				= $campos;
 			$this->municipios 			= $municipios;
             $this->usernotary           = $usernotary;
-            $this->portalpaises         = $portalpaises;
+            $this->portalestadosfull    = $portalestadosfull;
 			$this->portalvialidades 	= $portalvialidades;
+            $this->portalpaises         = $portalpaises;
 
 
             // obtengo la url para
@@ -805,6 +809,33 @@ class ApiController extends Controller
      * @return todos los registros en la tabla paises
      */
 
+    public function getEstados()
+    {
+        try
+        {
+
+            $paises = $this->portalestadosfull->all();
+
+            return json_encode($paises);
+
+        }catch(\Exception $e){
+            return json_encode($e->getMessage(),JSON_UNESCAPED_SLASHES);
+        }
+        
+    }
+
+
+
+    /**
+     * regresar todos los paises
+     * 
+     *
+     * @param ninguno
+     *
+     *
+     * @return todos los registros en la tabla paises
+     */
+
     public function getPaises()
     {
         try
@@ -814,8 +845,9 @@ class ApiController extends Controller
 
             return json_encode($paises);
 
+
         }catch(\Exception $e){
-            return json_encode($e->getMessage(),JSON_UNESCAPED_SLASHES);
+            dd($e->getMessage());
         }
         
     }

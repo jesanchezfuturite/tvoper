@@ -9,7 +9,7 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  *
  * @package namespace App\Repositories;
  */
-interface PortalpaisesRepository extends RepositoryInterface
+interface PortalestadosfullRepository extends RepositoryInterface
 {
     //
 }

@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\PortalpaisesRepository;
-use App\Entities\Portalpaises;
-use App\Validators\PortalpaisesValidator;
+use App\Repositories\PortalestadosfullRepository;
+use App\Entities\Portalestadosfull;
+use App\Validators\PortalestadosfullValidator;
 
 /**
  * Class PortalpaisesRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class PortalpaisesRepositoryEloquent extends BaseRepository implements PortalpaisesRepository
+class PortalestadosfullRepositoryEloquent extends BaseRepository implements PortalestadosfullRepository
 {
     /**
      * Specify Model class name
@@ -22,7 +22,7 @@ class PortalpaisesRepositoryEloquent extends BaseRepository implements Portalpai
      */
     public function model()
     {
-        return Portalpaises::class;
+        return Portalestadosfull::class;
     }
 
     

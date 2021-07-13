@@ -473,9 +473,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/aviso/{expediente}/{userid}/{tramite}', 'ApiController@getTicketsAviso');
 
-    Route::get('/obtener-estados', 'CatalogosController@getEntidad');
+    //Route::get('/obtener-estados', 'CatalogosController@getEntidad');
     Route::get('/obtener-municipios/{clave_estado}', 'CatalogosController@getMunicipios');
 
+    Route::get('/obtener-estados', 'ApiController@getEstados');
     Route::get('/obtener-paises', 'ApiController@getPaises');
     Route::get('/obtener-vialidades', 'ApiController@getVialidades');
 

@@ -11,7 +11,7 @@ use Prettus\Repository\Traits\TransformableTrait;
  *
  * @package namespace App\Entities;
  */
-class Portalpaises extends Model implements Transformable
+class Portalestadosfull extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -21,6 +21,6 @@ class Portalpaises extends Model implements Transformable
      * @var array
      */
     protected $connection = "mysql6";
-    protected $table = "paises";
+    protected $table = "estados_full";
 
 }

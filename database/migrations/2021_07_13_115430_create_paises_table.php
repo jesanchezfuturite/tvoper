@@ -4,9 +4,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreatePortalpaisesTable.
+ * Class CreatePaisesTable.
  */
-class CreatePortalpaisesTable extends Migration
+class CreatePaisesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,11 +15,10 @@ class CreatePortalpaisesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('portal.paises', function(Blueprint $table) {
+		Schema::create('paises', function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('catalog_key');
-            $table->string('entidad_federativa',90);
-            $table->string('abreviatura',2);
+            $table->string('name',200);
+            $table->string('alpha',3);
             $table->timestamps();
 		});
 	}
@@ -31,6 +30,6 @@ class CreatePortalpaisesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::drop('portal.paises');
+		Schema::drop('paises');
 	}
 }
