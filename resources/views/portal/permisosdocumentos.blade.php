@@ -151,6 +151,7 @@
 </div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
+<input type="text" name="required_docs" id="required_docs" hidden="true">
 @endsection
 
 @section('scripts')
@@ -160,31 +161,35 @@
     TableManaged2.init2();
     });
 
-  function updatePermisos(id,folio)
+  function updatePermisos(id,folio,status)
   { 
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
     $('#portlet-update').modal('show');    
-     if($("#check_"+id).prop("checked") == true)
+     if($("#check_"+id).prop("checked") == true && status==0)
     {
        labl.textContent="Habilitar";
     }else{
        labl.textContent="Deshabilitar";
     }
     document.getElementById("id_registro").value=id;
+    document.getElementById("required_docs").value=status;
   }
   function cerrarModal()
-  {var id=$("#id_registro").val();
-    //console.log($("#check_"+id).prop("checked") );
-    if($("#check_"+id).prop("checked")==true)
+  {
+    var id=$("#id_registro").val();
+    var required_docs=$("#required_docs").val();
+    //console.log($("#check_"+id).prop("checked") )
+    console.log(required_docs);
+    if(required_docs==1)
     {
       $("#row_"+id).empty(); 
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"'>&nbsp;&nbsp;&nbsp;<a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+id+"\")'><i class='fa fa-list'></i> </a>");
-      $('#check_'+id).prop('checked', false);
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+","+required_docs+")' id='check_"+id+"'>");
+      $('#check_'+id).prop('checked', true);
     }else{
       $("#row_"+id).empty();       
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+")' id='check_"+id+"' checked>&nbsp;&nbsp;&nbsp;<a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+id+"\")'><i class='fa fa-list'></i> </a>");
-       $('#check_'+id).prop('checked', true);
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+","+required_docs+")' id='check_"+id+"' checked>");
+       $('#check_'+id).prop('checked', false);
     }
      $("[name='check_permiso']").bootstrapSwitch();
     //console.log($("#check_"+id).prop("checked") );
@@ -240,7 +245,8 @@
                 	+"<td>"+item.clave+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
-                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+")' id='check_"+item.id+"'>&nbsp;&nbsp;&nbsp;<a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
+                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+","+item.required_docs+")' id='check_"+item.id+"'></td>"
+                  +"<td><a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
               if(item.required_docs==1)
@@ -298,7 +304,7 @@
   }
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th> </tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th> </tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
   {
