@@ -816,7 +816,7 @@ class ApiController extends Controller
 
             $paises = $this->portalestadosfull->all();
 
-            return json_encode($paises);
+            return json_encode($paises, JSON_UNESCAPED_UNICODE);
 
         }catch(\Exception $e){
             return json_encode($e->getMessage(),JSON_UNESCAPED_SLASHES);
@@ -843,7 +843,7 @@ class ApiController extends Controller
 
             $paises = $this->portalpaises->all();
 
-            return json_encode($paises);
+            return json_encode($paises, JSON_UNESCAPED_UNICODE);
 
 
         }catch(\Exception $e){
