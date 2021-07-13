@@ -742,20 +742,23 @@ function configprelacion()
     }
   function format ( d ,b_pr) { 
       var input_check="";            
-      var valid='0';            
+      var valid=0;            
       let html = ''; 
       let g_prelacion = 0; 
       var exist=0;     
       var status_proceso=0;     
-      d.grupo.forEach( (solicitud) =>{ 
-        var bitacora_end=solicitud.bitacora.length-1;
+      d.grupo.forEach( (solicitud) =>{     
+      //console.log(solicitud.permiso);    
         if(solicitud.bitacora.length==0)
         {
-          solicitud.bitacora.push({nombre:"N/A",id:0});
+          solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1});
         }
+        var bitacora_end=solicitud.bitacora.length-1;
+        status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
         solicitud.bitacora.forEach((bitacora,index)=>{
         {    
           var clase='';
+          var btn_revisar="<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora.id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
           var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
           let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
@@ -766,12 +769,12 @@ function configprelacion()
           if(dist!='1')
           {
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
-              checks='';
+              checks='';btn_revisar='';
           }
           if(solicitud.status!=1 && dist=='1')
           {
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
-              checks='';
+              checks='';btn_revisar='';
           }  
           if(solicitud.status=='1' && dist=='1'){
             exist+=1;  
@@ -779,8 +782,13 @@ function configprelacion()
           if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
           {
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
-            checks='';
+            checks='';btn_revisar='';
           } 
+          if(bitacora.permiso==0 && index==status_proceso)
+          {
+             Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
+            checks='';btn_revisar='';
+          }
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
@@ -806,15 +814,16 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
-
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
+            if(bitacora.id_estatus_atencion==2 && bitacora.user_id=='{{Auth::user()->id}}'){
+                g_prelacion=1;
+            }
           }
         })
-        status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
-        if(status_proceso==2 || status_proceso==3)
+        
+        /*if(status_proceso==2 || status_proceso==3)
         {
-          g_prelacion=1;
-        }
+                  }*/
       });
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -832,7 +841,6 @@ function configprelacion()
         if(d.grupo[0].url_prelacion==null)
         {
           url_prelacion='';
-
         }
         if(status_proceso!=2)
         {
@@ -848,7 +856,7 @@ function configprelacion()
           input_check="";
           btn_cerrarTicket='';
         }
-        if( b_pr==null){
+        if( b_pr==null ){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
@@ -856,10 +864,31 @@ function configprelacion()
          url_prelacion='';
          btn_cerrarTicket='';
         }
-        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th>"+btn_rechazo+"</th></tr>";
+        if(g_prelacion==1){
+          url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+        }
+        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th></th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
         return tbl_head;
+    }
+    function revisar(id_tick,grupo_clv,id_atencion,status_){
+
+      $.ajax({
+      method: "post",            
+      url: "{{ url()->route('registro-bitacora') }}",
+      data: {id_ticket:id_tick,grupo_clave:grupo_clv,id_estatus_atencion:id_atencion,user_id:'{{Auth::user()->id}}',mensaje:"Revisado",status:status_,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+          if(response.Code=='200'){
+             findSolicitudes();
+            Command: toastr.success(response.Message, "Notifications") 
+          }else{
+              Command: toastr.warning(response.Message, "Notifications") 
+          }
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
     }
     function relacion_mult(grupo_clave,data,id_proceso)
     {
