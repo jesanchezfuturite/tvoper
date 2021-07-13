@@ -485,6 +485,7 @@ class PortalSolicitudesController extends Controller
 
      $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
     ->get()->toArray();
+   
 
     $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
@@ -525,25 +526,26 @@ class PortalSolicitudesController extends Controller
     $newDato=[];
     foreach($grupo as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => &$value) {         
-        if($value->grupo_clave== $id){
-          foreach ($responsables as $r => $res) {
-            if($res["catalogo_id"] ==$value->catalogo){
-              if($res["user_id"]==$user_id){
-                $value->permiso=1;
-              }else{
-                $value->permiso=0;
-              }
-            }
-          } 
+      foreach ($solicitudes as $d => &$value){         
+        if($value->grupo_clave== $id){   
           if(isset($value->info)){            
             $info=$this->asignarClavesCatalogo($value->info);
             $value->info=$info;
           }
           if(!empty($value->bitacora)){
-            foreach ($value->bitacora as $bit => $bitacora) {
+            foreach ($value->bitacora as $bit => &$bitacora) {
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
                 $bitacora->nombre = $estatus->descripcion;
+
+                foreach ($responsables as $r => $res) {
+                  if($res["catalogo_id"] ==$value->catalogo){
+                    if($res["user_id"]==$user_id && $res["id_estatus_atencion"]==$bitacora->id_estatus_atencion){
+                      $bitacora->permiso=1;
+                    }else{
+                      $bitacora->permiso=0;
+                    }
+                  }
+                } 
             }
           }
           array_push($datos, $value);
