@@ -22,7 +22,7 @@ class Operanomalias extends Model implements Transformable
      */
     protected $connection = "mysql";
 
-    protected $fillable = ['id','origen','referencia','transaccion_id','monto','banco_id','cuenta_banco','cuenta_alias','fecha_ejecucion','fecha_pago','estatus_anomalia','created_at','updated_at'];
+    protected $fillable = ['id','origen','referencia','id_processed','transaccion_id','monto','banco_id','cuenta_banco','cuenta_alias','fecha_ejecucion','fecha_pago','estatus_anomalia','created_at','updated_at'];
 
     protected $table = "oper_anomalias";
 
