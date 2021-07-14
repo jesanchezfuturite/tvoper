@@ -90,14 +90,14 @@
   </div>
 </div>
 <div class="row">     
-  <div class='col-md-1'>
+  <div class='col-md-2'>
       <span class='help-block'>&nbsp; </span>
       <span class='help-block'>&nbsp; </span>
       <div class='form-group'>
           <button class='btn green' id="usuarios"  >CSV Usuarios</button>
       </div>
     </div>
-  <div class='col-md-1'>
+  <div class='col-md-2'>
       <span class='help-block'>&nbsp; </span>
       <span class='help-block'>&nbsp; </span>
       <div class='form-group'>

@@ -37,7 +37,7 @@ class ReportesController extends Controller
             );
             
 
-            if($status!=null){
+            if($status!="null"){
                $users->where("u.status", $status); 
             }
             if($notaria!=""){
@@ -46,6 +46,7 @@ class ReportesController extends Controller
             if($role!=0){
                 $users->where("u.role_id", $role); 
             }
+            $users->orderBy("u.id", "DESC");
             
             $users= $users->get();
             return json_encode($users);
