@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Entities\PortalSolicitudesTicket;
+use App\Entities\PortalSolicitudesMensajes;
 use App\Repositories\PortalcampoRepositoryEloquent;
 use App\Repositories\PortalsolicitudescatalogoRepositoryEloquent;
 use App\Repositories\PortalSolicitudesStatusRepositoryEloquent;
@@ -83,7 +84,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){
+    public function registrarSolicitud(Request $request){     
       $name= \Request::route()->getName();
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
@@ -114,44 +115,45 @@ class PortalSolicitudesTicketController extends Controller
       $ids = [];
       try {
         if($status==80){
-          $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-          if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);
+          // $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
+          // if(!empty($datosrecorrer)){
+          //   // $datosrecorrer = json_decode($datosrecorrer);
 
-            $ids_entrada = array_column($datosrecorrer, 'id');
-            $ids_eliminar = array_diff($ids_originales, $ids_entrada);
-            $ids_agregar = array_diff($ids_entrada, $ids_originales);
-            $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+          //   // $ids_entrada = array_column($datosrecorrer, 'id');
+          //   // $ids_eliminar = array_diff($ids_originales, $ids_entrada);
+          //   // $ids_agregar = array_diff($ids_entrada, $ids_originales);
+          //   // $eliminar_datosrecorrer = $this->ticket->whereIn('id', $request->id)
+          //   // ->update(['status' => 9]);
 
-            foreach($datosrecorrer as $key => $value){
-              $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
-                "clave" => $clave,
-                "catalogo_id" => $catalogo_id,
-                "info"=> json_encode($info),
-                "user_id"=>$user_id,
-                "status"=>$status,
-                "en_carrito"=>$carrito,
-                "required_docs"=>$request->required_docs
+          //   foreach($datosrecorrer as $key => $value){
+          //     $data==1 ? $info->solicitante=$value :  $info=$value;
+          //     $ticket = $this->ticket->updateOrCreate(["id" =>$value->id], [
+          //       "clave" => $clave,
+          //       "catalogo_id" => $catalogo_id,
+          //       "info"=> json_encode($info),
+          //       "user_id"=>$user_id,
+          //       "status"=>$status,
+          //       "en_carrito"=>$carrito,
+          //       "required_docs"=>$request->required_docs
 
-              ]);
-             array_push($ids, $ticket->id);
-            }
-            $first_id = reset($ids);
-            if($request->has("file")){
-              $this->deleteFiles($clave);
-              foreach ($request->file as $key => $value) {
-                  $data =[
-                    'ticket_id'=> $first_id,
-                    'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value
-                    ];
-                  $this->saveFile($data);
+          //     ]);
+          //    array_push($ids, $ticket->id);
+          //   }
+          //   $first_id = reset($ids);
+          //   if($request->has("file")){
+          //     foreach ($request->file as $key => $value) {
+          //         $data =[
+          //           'ticket_id'=> $first_id,
+          //           'mensaje' => $request->descripcion[$key],
+          //           'file'    =>  $value
+          //           ];
+          //         $this->saveFile($data);
 
 
-              }
-            }
-          }else{
+          //     }
+          //   }
+          // }
+          // else{
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
@@ -163,7 +165,7 @@ class PortalSolicitudesTicketController extends Controller
             ]);
 
             if($request->has("file")){
-              $this->deleteFiles($clave);
+
                foreach ($request->file as $key => $value) {
                   $data =[
                     'ticket_id'=> $ticket->id,
@@ -175,19 +177,21 @@ class PortalSolicitudesTicketController extends Controller
 
 
             }
-          }
+          // }
 
         }else{
+          $eliminar_ticket = $this->ticket->where('id', $request->id)
+          ->update(['status' => 9]);
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);
-            $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
-            $ids_entrada = array_column($datosrecorrer, 'id');
-            $ids_eliminar = array_diff($ids_originales, $ids_entrada);
-            $ids_agregar = array_diff($ids_entrada, $ids_originales);
-            $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+            // $ids_originales =$this->ticket->where('clave', $clave)->pluck('id')->toArray();
+            // $ids_entrada = array_column($datosrecorrer, 'id');
+            // $ids_eliminar = array_diff($ids_originales, $ids_entrada);
+            // $ids_agregar = array_diff($ids_entrada, $ids_originales);
+           
             foreach($datosrecorrer as $key => $value){
               $data==1 ? $info->solicitante=$value :  $info=$value;
-              $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
+              $ticket = $this->ticket->create([
                 "clave" => $clave,
                 "catalogo_id" => $catalogo_id,
                 "info"=> json_encode($info),
@@ -200,21 +204,28 @@ class PortalSolicitudesTicketController extends Controller
 
              array_push($ids, $ticket->id);
             }
-            $first_id = reset($ids);
+            // $first_id = reset($ids);
             if($request->has("file")){
-              foreach ($request->file as $key => $value) {
-                $data =[
-                  'ticket_id'=> $first_id,
-                  'mensaje' => $request->descripcion[$key],
-                  'file'    =>  $value
-                  ];
-
-                  $this->saveFile($data);
-
-              }
+              $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
+              $archivo = explode("/", $consultar->attach);
+              $file=$request->file;
+              $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+              
+              if (strcmp($archivo, $nombre) !== 0) {
+                foreach ($ids as $key => $value) {
+                  $data =[
+                    'ticket_id'=> $value,
+                    'mensaje' => $request->descripcion[$key],
+                    'file'    => $request->file
+                    ];
+  
+                    $this->saveFile($data);
+  
+                }
+              }           
             }
           }else{
-            $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+            $ticket = $this->ticket->create([
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
@@ -223,19 +234,37 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
-
             if($request->has("file")){
-               foreach ($request->file as $key => $value) {
+              $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
+              $archivo = explode("/", $consultar->attach);
+              $file=$request->file;
+              $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+              
+              if (strcmp($archivo, $nombre) !== 0) {
+                foreach ($ids as $key => $value) {
                   $data =[
-                    'ticket_id'=> $ticket->id,
+                    'ticket_id'=> $value,
                     'mensaje' => $request->descripcion[$key],
-                    'file'    =>  $value,
+                    'file'    => $request->file
                     ];
-                  $this->saveFile($data);
+  
+                    $this->saveFile($data);
+  
                 }
-
-
+              }           
             }
+            // if($request->has("file")){
+            //    foreach ($request->file as $key => $value) {
+            //       $data =[
+            //         'ticket_id'=> $ticket->id,
+            //         'mensaje' => $request->descripcion[$key],
+            //         'file'    =>  $value,
+            //         ];
+            //       $this->saveFile($data);
+            //     }
+
+
+            // }
           }
         }
 
