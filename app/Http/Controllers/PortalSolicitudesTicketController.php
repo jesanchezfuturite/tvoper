@@ -211,7 +211,7 @@ class PortalSolicitudesTicketController extends Controller
               $file=$request->file;
               $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
               
-              if (strcmp($archivo, $nombre) !== 0) {
+              if (strcmp($archivo[5], $nombre) !== 0) {
                 foreach ($ids as $key => $value) {
                   $data =[
                     'ticket_id'=> $value,
@@ -240,7 +240,7 @@ class PortalSolicitudesTicketController extends Controller
               $file=$request->file;
               $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
               
-              if (strcmp($archivo, $nombre) !== 0) {
+              if (strcmp($archivo[5], $nombre) !== 0) {
                 foreach ($ids as $key => $value) {
                   $data =[
                     'ticket_id'=> $value,
