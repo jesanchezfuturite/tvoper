@@ -1256,7 +1256,7 @@ class PortalSolicitudesController extends Controller
   }
   public   function upStatusRechazo(Request $request)
   {
-    //log::info($request->all());
+    log::info($request->all());
     try {
         $id=$request->tickets_id;
         $rch=0;
