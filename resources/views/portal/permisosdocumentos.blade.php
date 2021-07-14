@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css')}}"/>
 <h3 class="page-title">Portal <small>Permisos de descarga de documentos firmados</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -149,13 +149,76 @@
     </div>
   </div>
 </div>
+<div id="portlet-file-upload" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Cargadar Archivo </h4>
+            </div>
+            <div class="modal-body" >
+              <br>
+              <div class="row">
+               <div class="col-md-12"> 
+
+                  <div class="form-group">
+                    <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <span class="btn green btn-file">
+                            <span class="fileinput-new">
+                            <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Archivo </span>
+                            <span class="fileinput-exists">
+                            <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
+                            <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
+                            </span>
+                            <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                            </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 215px;top: 4px" id="delFileSAT">
+                            </a></div>
+                            
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+              <div class="row">
+               <div class="col-md-4"> 
+                  <div class="form-group">
+                    <button type="submit" class="btn blue btn-save-Not" onclick="saveFile()"><i class="fa fa-check"></i> Guardar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default" >Salir</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="portlet-file" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="width: 80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Archivo Cargado</h4>
+            </div>
+            <div class="modal-body" id="addurlfile">
+                             
+                <iframe src="" id="file_pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn default" >Salir</button>
+            </div>
+        </div>
+    </div>
+</div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="required_docs" id="required_docs" hidden="true">
 @endsection
 
 @section('scripts')
-
+<script src="{{ asset('assets/global/scripts/validar_pdf.js')}}" type="text/javascript"></script>
+<script type="text/javascript" src="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js')}}"></script>
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
@@ -165,12 +228,17 @@
   { 
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
-    $('#portlet-update').modal('show');    
-     if($("#check_"+id).prop("checked") == true && status==0)
+    //$('#portlet-update').modal('show');    
+     if($("#check_"+id).prop("checked") == true && status==1)
     {
-       labl.textContent="Habilitar";
-    }else{
+    }else if($("#check_"+id).prop("checked") == false && status==null || status==0)
+    {       
+    }else if($("#check_"+id).prop("checked") == true){
+      labl.textContent="Habilitar";
+      $('#portlet-update').modal('show');    
+    }else if($("#check_"+id).prop("checked") == false){
        labl.textContent="Deshabilitar";
+       $('#portlet-update').modal('show');    
     }
     document.getElementById("id_registro").value=id;
     document.getElementById("required_docs").value=status;
@@ -239,13 +307,22 @@
             if(response.status=='400')
             	{TableManaged2.init2();  return;}         
             $.each(response.Message, function(i, item) {
-             
+              var btn_file='';
+              console.log(item.attach);
+              if(item.attach!=null)
+              {
+                btn_file="<a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Detalles' onclick='verArchivo(\""+item.file_data+"\",\""+item.file_name+"\",\""+item.file_extension+"\",)'><i class='fa  fa-file'></i> </a>";
+              }
+
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
                 	+"<td>"+item.clave+"</td>"
                 	+"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.created_at+"</td>"
                 	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+","+item.required_docs+")' id='check_"+item.id+"'></td>"
+                  +"<td>"+btn_file+"</td>"
+                  +"<td><a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Detalles' onclick='subirArchivo(\""+item.id+"\")'><i class='fa fa-edit'></i> </a></td>"
+                 
                   +"<td><a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
@@ -263,6 +340,28 @@
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
         });
+  }
+  function saveFile()
+  {
+
+  }
+  function subirArchivo(id)
+  {
+    $('#portlet-file-upload').modal('show');
+  }
+  function verArchivo(file_data,file_name,file_extension)
+  {
+    $('#portlet-file').modal('show');
+    if(file_extension=='xlsx'){
+      document.getElementById('file_pdf').src = "";
+    }else if(file_extension=='png' || file_extension=='jpg'){
+       document.getElementById('file_pdf').src = "data:image/"+file_extension+";base64,"+file_data;
+    } else{
+      document.getElementById('file_pdf').src = "data:application/"+file_extension+";base64,"+file_data;
+    }     
+    
+    $("#addurlfile a").empty();
+    $("#addurlfile").append("<a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name+"<i class='fa fa-download blue'></i></a>");
   }
   function findDetalles(id)
   {
@@ -304,7 +403,7 @@
   }
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th> </tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th><th></th> </tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
   {
