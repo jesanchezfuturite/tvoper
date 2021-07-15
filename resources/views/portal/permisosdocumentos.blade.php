@@ -344,12 +344,13 @@
         });
   }
   function saveFile()
-  {  
+  { 
+     var file=$("#file").val();
     var file_old=$("#file_old").val();
     var id_attch=$("#id_mensaje").val();
     var id_ticket=$("#id_ticket").val();
     var fileV = $("#file")[0].files[0];    
-    if(fileV.length==0){ 
+    if(file.length==0){ 
       Command: toastr.warning("Archivo, Requerido!", "Notifications")
       return ;
     }              

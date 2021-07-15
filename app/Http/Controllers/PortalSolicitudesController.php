@@ -980,14 +980,18 @@ class PortalSolicitudesController extends Controller
       $response2=array_merge($response2,$findClav);
       $response2=array_merge($response2,$findid);
       foreach ($response2 as $key => $value) {
+        $imageData='';
         $attach=$value["attach"];
         $file_name=explode("/",$attach);        
         $name=$file_name[count($file_name)-1];
         if($attach<>null)
         {
+          
           $extension=explode(".",$name); 
           $extension=$extension[count($extension)-1];
-          $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+          if (File::exists(storage_path('app/'.$name))){
+            $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+          }
           $value=array_merge($value,array('file_data' =>$imageData ));
           $value=array_merge($value,array('file_extension' =>$extension ));
 
