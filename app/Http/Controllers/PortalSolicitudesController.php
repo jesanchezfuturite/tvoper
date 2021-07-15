@@ -524,6 +524,7 @@ class PortalSolicitudesController extends Controller
 
    
     $newDato=[];
+
     foreach($grupo as $i => $id){
       $datos=[];
       foreach ($solicitudes as $d => &$value){         
@@ -537,27 +538,34 @@ class PortalSolicitudesController extends Controller
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
                 $bitacora->nombre = $estatus->descripcion;
                 $bitacora->catalogo = $value->catalogo;
-                foreach ($responsables as $r => $res) {
-                  if($res["catalogo_id"] ==$bitacora->catalogo){
-                    if($res["id_estatus_atencion"]==$bitacora->id_estatus_atencion){
-                      if( $res["user_id"]==null || $res["user_id"]==$user_id ){                       
-                        $bitacora->permiso=1;
-                        $bitacora->usuario_logueado=$user_id;
-                        $bitacora->user_id_responsable=$res["user_id"];
-                        $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];
-                        $bitacora->catalogo_id_responsable=$res["catalogo_id"];
-                      }else{     
-                        $bitacora->permiso=0;
-                        $bitacora->usuario_logueado=$user_id;
-                        $bitacora->user_id_responsable=$res["user_id"];
-                        $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];   
-                        $bitacora->catalogo_id_responsable=$res["catalogo_id"];                               
+
+                $res = $this->solicitudrespdb
+                ->where("catalogo_id", $bitacora->catalogo)
+                ->where("id_estatus_atencion", $bitacora->id_estatus_atencion)
+                ->where("user_id", $user_id)->first();
+
+                // foreach ($responsables as $r => $res) {
+                  
+                  // if($res["catalogo_id"] ==$bitacora->catalogo){
+                  //   if($res["id_estatus_atencion"]==$bitacora->id_estatus_atencion){
+                  //     if( $res["user_id"]==null || $res["user_id"]==$user_id ){                       
+                  //       $bitacora->permiso=1;
+                  //       $bitacora->usuario_logueado=$user_id;
+                  //       $bitacora->user_id_responsable=$res["user_id"];
+                  //       $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];
+                  //       $bitacora->catalogo_id_responsable=$res["catalogo_id"];
+                  //     }else{     
+                  //       $bitacora->permiso=0;
+                  //       $bitacora->usuario_logueado=$user_id;
+                  //       $bitacora->user_id_responsable=$res["user_id"];
+                  //       $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];   
+                  //       $bitacora->catalogo_id_responsable=$res["catalogo_id"];                               
                         
-                      }
-                    }
+                  //     }
+                  //   }
                     
-                  }
-                } 
+                  // }
+                // } 
             }
           }
           array_push($datos, $value);
