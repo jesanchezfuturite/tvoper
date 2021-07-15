@@ -39,10 +39,13 @@
            @else 
                 <td>Inactivo</td>
            @endif
-           <td>{{url()->route('download', $user->sat_constancy_file) }}</td>
-          
-           <td>{{url()->route('download', $user->notary_constancy_file) }}</td>
-         
+
+           @if($user->role=="Notario Titular" && $user->status==1)
+                <td>{{url()->route('download', $user->sat_constancy_file) }}</td>
+                <td>{{url()->route('download', $user->notary_constancy_file) }}</td>
+           @else
+           <td></td>
+           @endif
         </tr>
     @endforeach
     </tbody>
