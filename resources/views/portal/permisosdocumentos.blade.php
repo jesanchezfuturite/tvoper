@@ -158,33 +158,9 @@
             </div>
             <div class="modal-body" >
               <br>
+              
               <div class="row">
-               <div class="col-md-12"> 
-
-                  <div class="form-group">
-                    <div class="fileinput fileinput-new" data-provides="fileinput">
-                            <span class="btn green btn-file">
-                            <span class="fileinput-new">
-                            <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Archivo </span>
-                            <span class="fileinput-exists">
-                            <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                            <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
-                            </span>
-                            <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
-                            </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 215px;top: 4px" id="delFileSAT">
-                            </a></div>
-                            
-                    </div>
-                  </div>
-                </div>
-                
-              </div>
-              <div class="row">
-               <div class="col-md-4"> 
-                  <div class="form-group">
-                    <button type="submit" class="btn blue btn-save-Not" onclick="saveFile()"><i class="fa fa-check"></i> Guardar</button>
-                  </div>
-                </div>
+              
               </div>
             </div>
             <div class="modal-footer">
@@ -200,13 +176,44 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
                 <h4 class="modal-title">Archivo Cargado</h4>
             </div>
-            <div class="modal-body" id="addurlfile">
-                             
-                <iframe src="" id="file_pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
-                <br>
+            <div class="modal-body" >
+              <div class="row" >          
+                <iframe src="" id="file_pdf" class="file_pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
+              </div>
+              <span class="help-block">&nbsp;</span>
+              <div class="row">
+                <div class="col-md-8"> 
+                  <div class="form-group" id="addurlfile">
+                  
+                  </div>
+                </div>
+               <div class="col-md-2"> 
+
+                  <div class="form-group">
+                    <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
+                        <input type="file" name="file" accept="application/pdf" id="file">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
+                        </a></div>
+                        
+                    </div>
+                  </div>
+                </div>
+                 <div class="col-md-2"> 
+                  <div class="form-group">
+                    <button type="submit" class="btn blue btn-save-Not" onclick="saveFile()"><i class="fa fa-check"></i> Guardar</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn default" >Salir</button>
+                <button type="button" data-dismiss="modal" class="btn default" onclick="limpiar()">Salir</button>
             </div>
         </div>
     </div>
@@ -214,6 +221,9 @@
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="id_registro" id="id_registro" hidden="true">
 <input type="text" name="required_docs" id="required_docs" hidden="true">
+<input type="text" name="id_mensaje" id="id_mensaje" hidden="true">
+<input type="text" name="id_ticket" id="id_ticket" hidden="true">
+<input type="text" name="file_old" id="file_old" hidden="true">
 @endsection
 
 @section('scripts')
@@ -248,7 +258,7 @@
     var id=$("#id_registro").val();
     var required_docs=$("#required_docs").val();
     //console.log($("#check_"+id).prop("checked") )
-    console.log(required_docs);
+    //console.log(required_docs);
     if(required_docs==1)
     {
       $("#row_"+id).empty(); 
@@ -307,22 +317,14 @@
             if(response.status=='400')
             	{TableManaged2.init2();  return;}         
             $.each(response.Message, function(i, item) {
-              var btn_file='';
-              console.log(item.attach);
-              if(item.attach!=null)
-              {
-                btn_file="<a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Detalles' onclick='verArchivo(\""+item.file_data+"\",\""+item.file_name+"\",\""+item.file_extension+"\",)'><i class='fa  fa-file'></i> </a>";
-              }
-
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
                 	+"<td>"+item.clave+"</td>"
-                	+"<td>"+item.descripcion+"</td>"
+                  +"<td>"+item.descripcion+"</td>"
+                	+"<td>"+item.mensaje+"</td>"
                 	+"<td>"+item.created_at+"</td>"
                 	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+","+item.required_docs+")' id='check_"+item.id+"'></td>"
-                  +"<td>"+btn_file+"</td>"
-                  +"<td><a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Detalles' onclick='subirArchivo(\""+item.id+"\")'><i class='fa fa-edit'></i> </a></td>"
-                 
+                  +"<td><a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Ver Archivo' onclick='verArchivo(\""+item.file_data+"\",\""+item.file_name+"\",\""+item.file_extension+"\",\""+item.attach+"\",\""+item.id+"\",\""+item.id_mensaje+"\")'><i class='fa  fa-file'></i> </a></td>"
                   +"<td><a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
@@ -342,26 +344,65 @@
         });
   }
   function saveFile()
-  {
-
+  {  
+    var file_old=$("#file_old").val();
+    var id_attch=$("#id_mensaje").val();
+    var id_ticket=$("#id_ticket").val();
+    var fileV = $("#file")[0].files[0];    
+    if(fileV.length==0){ 
+      Command: toastr.warning("Archivo, Requerido!", "Notifications")
+      return ;
+    }              
+    var formdata = new FormData();
+    formdata.append("ticket_id", id_ticket);
+    formdata.append("attch_old", file_old);
+    formdata.append("id_mensaje", id_attch);
+    formdata.append("file", fileV);
+    formdata.append("_token",'{{ csrf_token() }}');
+    $.ajax({
+       method: "POST",
+       contentType: false,
+       processData: false, 
+       url: "{{ url('/solicitud-save-documento') }}",
+       data:formdata})
+    .done(function (response) {
+       if(response.Code =="200"){
+          Command: toastr.success(response.Message, "Notifications")
+          
+          findTramiteSolicitud();
+        }else{
+          Command: toastr.warning(response.Message, "Notifications")
+        }
+    })
+    .fail(function( msg ) {
+     Command: toastr.warning("Error", "Notifications");
+    });
   }
   function subirArchivo(id)
   {
     $('#portlet-file-upload').modal('show');
   }
-  function verArchivo(file_data,file_name,file_extension)
+  function verArchivo(file_data,file_name,file_extension,attach,id_ticket,id_mensaje_)
   {
+    document.getElementById("id_ticket").value=id_ticket;
+    document.getElementById("id_mensaje").value=id_mensaje_;
+    document.getElementById("file_old").value=attach;
+    $(".file_pdf").css("display", "block");
     $('#portlet-file').modal('show');
-    if(file_extension=='xlsx'){
-      document.getElementById('file_pdf').src = "";
+    if(file_extension=='pdf'){
+     document.getElementById('file_pdf').src = "data:application/"+file_extension+";base64,"+file_data; 
     }else if(file_extension=='png' || file_extension=='jpg'){
        document.getElementById('file_pdf').src = "data:image/"+file_extension+";base64,"+file_data;
     } else{
-      document.getElementById('file_pdf').src = "data:application/"+file_extension+";base64,"+file_data;
+        document.getElementById('file_pdf').src = "";
+        $(".file_pdf").css("display", "none");
     }     
     
-    $("#addurlfile a").empty();
-    $("#addurlfile").append("<a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name+"<i class='fa fa-download blue'></i></a>");
+    $("#addurlfile div").empty();
+    if(file_name!=''){
+      $("#addurlfile").append("<div><label>Descargar Directa:</label><br><a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name+"<i class='fa fa-download blue'></i></a></div>");
+    }
+    
   }
   function findDetalles(id)
   {
@@ -374,7 +415,7 @@
            url: "{{ url('/solicitud-find-detalle') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          console.log(response);
+          //console.log(response);
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
           var soli=Resp.solicitante;
@@ -403,11 +444,11 @@
   }
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>clave</th><th>Estatus</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th><th></th> </tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Clave</th><th>Estatus</th><th>Descripcion</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
   {
-    document.getElementById("").value="";
+     document.getElementById('delFile').click();
     
   }
 	</script>

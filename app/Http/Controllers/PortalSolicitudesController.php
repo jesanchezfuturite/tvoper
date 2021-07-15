@@ -22,6 +22,8 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
+use App\Repositories\PortalDocumentosBitacoraRepositoryEloquent;
+use Illuminate\Routing\UrlGenerator;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
@@ -50,7 +52,8 @@ class PortalSolicitudesController extends Controller
   protected $msjprelaciondb;
   protected $solicitudesMotivos;
   protected $motivos;
-
+  protected $docbitacoradb;
+  protected $url;
 
 
   public function __construct(
@@ -68,8 +71,9 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
-     MotivosRepositoryEloquent $motivos
-
+     MotivosRepositoryEloquent $motivos,
+     PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
+     UrlGenerator $url
     )
     {
       // $this->middleware('auth');
@@ -88,7 +92,8 @@ class PortalSolicitudesController extends Controller
       $this->msjprelaciondb = $msjprelaciondb;
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
-
+      $this->docbitacoradb = $docbitacoradb;
+      $this->url = $url;
 
     }
 
@@ -921,7 +926,49 @@ class PortalSolicitudesController extends Controller
     return view('portal/permisosdocumentos');
   }
 
-
+  public function saveFile(Request $request)
+  {
+    
+    try {
+      $fech=Carbon::now();
+      $fech=$fech->format("Hms");
+      $file = $request['file'];
+      $extension = $file->getClientOriginalExtension();
+      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $name = $nombre . "-" . $request->ticket_id . $fech . "." . $extension;
+      $attach = $this->url->to('/') . '/download/'.$name;
+      $path=storage_path('app/'.$name);
+      \Storage::disk('local')->put($name,  \File::get($file));
+      if($request->id_mensaje=='null')
+      {
+        $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"DOCUMENTO CARGADO DESDE EL ADMIN"]);
+        $this->saveDocBitacora($request->ticket_id,$attach,"nuevo documento");
+      }else{
+        $this->mensajes->update(["attach"=>$attach],$request->id_mensaje);
+        $this->saveDocBitacora($request->ticket_id,$request->attch_old,"documento Anterior");
+        $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      }
+      
+      return response()->json([
+        "Code" => "200",
+        "Message" => "Guardado correctamente"
+      ]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveFile ").$e;
+      return response()->json([
+        "Code" => "400",
+        "Message" => "Error al guardar"
+      ]);
+    }
+  }
+  public function saveDocBitacora($ticket_id,$attch,$descripcion)
+  {
+    try {
+      $this->docbitacoradb->create(["ticket_id"=>$ticket_id,"attach"=>$attch,"descripcion"=>$descripcion,"user_id"=>auth()->user()->id]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveDocBitacora ").$e;
+    }
+  }
   public  function findTicketidFolio(Request $request)
   {
     try {
@@ -965,6 +1012,7 @@ class PortalSolicitudesController extends Controller
   {
     try {
       $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
+      $this->saveDocBitacora($request->id,"","Permiso ".(string)$request->required_docs);
          return response()->json(
           [
             "Code" => "200",
