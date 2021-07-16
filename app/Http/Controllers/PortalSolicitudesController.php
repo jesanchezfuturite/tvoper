@@ -522,16 +522,36 @@ class PortalSolicitudesController extends Controller
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('c.id',$ids_catalogos)->get();
 
-   
     $newDato=[];
 
     foreach($grupo as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => &$value){         
+      $campos_catalogo = [];
+      foreach ($solicitudes as $key => $value){         
         if($value->grupo_clave== $id){   
-          if(isset($value->info)){            
-            $info=$this->asignarClavesCatalogo($value->info);
-            $value->info=$info;
+          if(isset($value->info)){    
+            $value->info = json_decode($value->info);
+            if(isset($value->info->campos)) $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
+            $campos_catalogo = array_unique($campos_catalogo);
+            $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
+            ->whereIn('id', $campos_catalogo)->get()->toArray();           
+   
+            $campos = [];
+            foreach($value->info->campos as $key2 => $val){
+              // var_dump($key2);
+                if(is_numeric($key2)){
+                  $key2 = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
+                  var_dump($key2);
+
+                  $campos[$key2] = $val;
+                } 
+            // $value->info->campos = $campos;
+                
+            }
+            dd($campos);
+            
+          
+
           }
           if(!empty($value->bitacora)){
             foreach ($value->bitacora as $bit => &$bitacora) {             
@@ -539,33 +559,18 @@ class PortalSolicitudesController extends Controller
                 $bitacora->nombre = $estatus->descripcion;
                 $bitacora->catalogo = $value->catalogo;
 
-                $res = $this->solicitudrespdb
-                ->where("catalogo_id", $bitacora->catalogo)
-                ->where("id_estatus_atencion", $bitacora->id_estatus_atencion)
-                ->where("user_id", $user_id)->first();
+                $res = Portalsolicitudesresponsables::from("solicitudes_responsables as r")
+                ->where("r.catalogo_id", $bitacora->catalogo)
+                ->where("r.id_estatus_atencion", $bitacora->id_estatus_atencion)
+                ->select('r.*', DB::raw('(CASE 
+                  WHEN r.user_id = '."$user_id".' THEN "1" 
+                  WHEN r.user_id = "null" THEN "1" 
+                  ELSE "0" 
+                  END) AS permiso'))
+                ->first();
+                $bitacora->permiso=$res->permiso;
+                $bitacora->responsables = $res;
 
-                // foreach ($responsables as $r => $res) {
-                  
-                  // if($res["catalogo_id"] ==$bitacora->catalogo){
-                  //   if($res["id_estatus_atencion"]==$bitacora->id_estatus_atencion){
-                  //     if( $res["user_id"]==null || $res["user_id"]==$user_id ){                       
-                  //       $bitacora->permiso=1;
-                  //       $bitacora->usuario_logueado=$user_id;
-                  //       $bitacora->user_id_responsable=$res["user_id"];
-                  //       $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];
-                  //       $bitacora->catalogo_id_responsable=$res["catalogo_id"];
-                  //     }else{     
-                  //       $bitacora->permiso=0;
-                  //       $bitacora->usuario_logueado=$user_id;
-                  //       $bitacora->user_id_responsable=$res["user_id"];
-                  //       $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];   
-                  //       $bitacora->catalogo_id_responsable=$res["catalogo_id"];                               
-                        
-                  //     }
-                  //   }
-                    
-                  // }
-                // } 
             }
           }
           array_push($datos, $value);
