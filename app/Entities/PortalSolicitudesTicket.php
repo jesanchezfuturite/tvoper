@@ -43,4 +43,8 @@ class PortalSolicitudesTicket extends Model implements Transformable
         return $this->hasMany('App\Entities\PortalTramites', 'id', 'id_transaccion');
     }
 
+    public function archivos(){
+        return $this->mensajes();
+    }
+
 }

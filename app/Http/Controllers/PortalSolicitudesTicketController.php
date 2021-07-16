@@ -136,10 +136,9 @@ class PortalSolicitudesTicketController extends Controller
                 $verificar=strcmp($archivo[1], $nombre); 
                  
                   if ($verificar!== 0) {
-                    //se borra el registo y el archivo
-                    $pathtoFile = storage_path('app/'.$archivo[1]);
-                    unlink($pathtoFile);
-                    $consultar->delete();
+                    //se hace un borrado logico al registo anterior
+            
+                    $consultar->update(["status"=>0]);
 
                     //se guarda un archivo nuevo
                       $data =[
@@ -420,7 +419,7 @@ class PortalSolicitudesTicketController extends Controller
 
     public function detalleTramite($clave){
       try {
-        $tickets = $this->ticket->where('clave', $clave)->get()->toArray();
+        $tickets = PortalSolicitudesTicket::where('clave', $clave)->get()->toArray();
         return response()->json(
           [
             "Code" => "200",
@@ -506,6 +505,7 @@ class PortalSolicitudesTicketController extends Controller
           'ticket_id'=> $ticket_id,
           'mensaje' => $mensaje,
           'clave' => $clave,
+          'status'=>1
 
         ]);
 
@@ -732,11 +732,11 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function getRegistroTramite($id){
       try {
-        $solicitud =  $this->ticket->where('clave' , $id)->get();
-        $solicitud = json_decode($solicitud);
-        $archivos = $this->mensajes->where('ticket_id', $solicitud[0]->id)->get();
+        $solicitud = PortalSolicitudesTicket::with(["archivos" => function( $query ){
+          $query->where('status', 1);
 
-        $solicitud[0]->archivos = $archivos;
+         }])->where('clave' , $id)->get();
+
 
         return $solicitud;
 
