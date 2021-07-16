@@ -538,20 +538,13 @@ class PortalSolicitudesController extends Controller
    
             $campos = [];
             foreach($value->info->campos as $key2 => $val){
-              // var_dump($key2);
                 if(is_numeric($key2)){
-                  $key2 = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
-                  var_dump($key2);
-
+                  $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
                   $campos[$key2] = $val;
                 } 
-            // $value->info->campos = $campos;
+                $value->info->campos = $campos;
                 
-            }
-            dd($campos);
-            
-          
-
+            }    
           }
           if(!empty($value->bitacora)){
             foreach ($value->bitacora as $bit => &$bitacora) {             
