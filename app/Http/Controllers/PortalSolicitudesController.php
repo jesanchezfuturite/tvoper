@@ -24,6 +24,7 @@ use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
 use App\Repositories\PortalDocumentosBitacoraRepositoryEloquent;
 use Illuminate\Routing\UrlGenerator;
+use App\Repositories\PortalTramitesRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
@@ -54,6 +55,7 @@ class PortalSolicitudesController extends Controller
   protected $motivos;
   protected $docbitacoradb;
   protected $url;
+  protected$tramitesdb;
 
 
   public function __construct(
@@ -73,7 +75,8 @@ class PortalSolicitudesController extends Controller
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
      PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
-     UrlGenerator $url
+     UrlGenerator $url,
+     PortalTramitesRepositoryEloquent $tramitesdb
     )
     {
       // $this->middleware('auth');
@@ -94,6 +97,7 @@ class PortalSolicitudesController extends Controller
       $this->motivos = $motivos;
       $this->docbitacoradb = $docbitacoradb;
       $this->url = $url;
+      $this->tramitesdb = $tramitesdb;
 
     }
 
@@ -972,14 +976,22 @@ class PortalSolicitudesController extends Controller
   public  function findTicketidFolio(Request $request)
   {
     try {
-      $response2=array();
+      $folios=array();
       $response=array();
-      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
-      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+      if(strlen($request->folio)<10)
+      {
+        $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
+        foreach ($findFolios as $f) {
+          $folios []= $f->id;
+        }
+      }else{
+        $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
+        $folios=json_decode($findFolios[0]->id_ticket);
+      }
+      //log::info($folios);
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
 
-      $response2=array_merge($response2,$findClav);
-      $response2=array_merge($response2,$findid);
-      foreach ($response2 as $key => $value) {
+      foreach ($findTickets as $key => $value) {
         $imageData='';
         $attach=$value["attach"];
         $file_name=explode("/",$attach);        

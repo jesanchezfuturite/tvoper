@@ -50,9 +50,11 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
     }
     public function findTicket($campo,$var)
     {
-        $data = PortalSolicitudesTicket::where('solicitudes_ticket.'.$campo,$var)
+        $data = PortalSolicitudesTicket::whereIn('solicitudes_ticket.'.$campo,$var)
         ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')        
-        ->leftjoin('solicitudes_mensajes','solicitudes_mensajes.ticket_id','=','solicitudes_ticket.id')       
+        ->leftjoin('solicitudes_mensajes','solicitudes_mensajes.ticket_id','=','solicitudes_ticket.id')   
+        ->where('solicitudes_ticket.status','=','2')    
+        ->where('solicitudes_ticket.doc_firmado','<>',null)    
         ->select('solicitudes_ticket.id',
             'solicitudes_ticket.clave',
             'solicitudes_ticket.id_tramite',

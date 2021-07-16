@@ -31,7 +31,7 @@
 		        <div class="row">		          
 		            <div class="col-md-4 col-ms-12">
 		                <div class="form-group">
-		                	<label >Folio</label>
+		                	<label >Folio Pago / FSE</label>
                       <input type="text" name="folio" id="folio" class="form-control" placeholder="Ingresa el folio.." autocomplete="off"> 
 		                </div>
 		            </div>		            
@@ -178,7 +178,7 @@
             </div>
             <div class="modal-body" >
               <div class="row" >          
-                <iframe src="" id="file_pdf" class="file_pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
+                <iframe src="" id="file_pdf" class="file_pdf" type="application/pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
               </div>
               <span class="help-block">&nbsp;</span>
               <div class="row">
@@ -196,7 +196,7 @@
                         <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
                         <span class="fileinput-exists">
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                        <input type="file" name="file" accept="application/pdf" id="file">
+                        <input type="file" name="file" accept="application/pdf" id="file" onchange="previewFile()">
                         </span>
                         <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
                         </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
@@ -224,6 +224,9 @@
 <input type="text" name="id_mensaje" id="id_mensaje" hidden="true">
 <input type="text" name="id_ticket" id="id_ticket" hidden="true">
 <input type="text" name="file_old" id="file_old" hidden="true">
+<input type="text" name="file_data" id="file_data"  hidden="true">
+<input type="text" name="file_extension" id="file_extension" hidden="true">
+<input type="text" name="file_name" id="file_name" hidden="true">
 @endsection
 
 @section('scripts')
@@ -388,12 +391,14 @@
     document.getElementById("id_ticket").value=id_ticket;
     document.getElementById("id_mensaje").value=id_mensaje_;
     document.getElementById("file_old").value=attach;
+    document.getElementById("file_data").value=file_data;
+    document.getElementById("file_extension").value=file_extension;
+    document.getElementById("file_name").value=file_name;
     $(".file_pdf").css("display", "block");
     $('#portlet-file').modal('show');
-    if(file_extension=='pdf'){
-     document.getElementById('file_pdf').src = "data:application/"+file_extension+";base64,"+file_data; 
-    }else if(file_extension=='png' || file_extension=='jpg'){
-       document.getElementById('file_pdf').src = "data:image/"+file_extension+";base64,"+file_data;
+    if(file_extension=='pdf' && file_data.length>0){
+      const blob = this.dataURItoBlob(file_data);
+      document.getElementById('file_pdf').src = URL.createObjectURL(blob); 
     } else{
         document.getElementById('file_pdf').src = "";
         $(".file_pdf").css("display", "none");
@@ -452,5 +457,34 @@
      document.getElementById('delFile').click();
     
   }
+  function previewFile() {
+    var file_data=$("#file_data").val();
+    var file_extension=$("#file_extension").val();
+    var file_name=$("#file_name").val();
+    var file    = document.querySelector('input[type=file]').files[0];
+    var file2    = $("#file").val();
+    var reader  = new FileReader();
+    if(file2.length>0)
+    {
+     document.getElementById('file_pdf').src = URL.createObjectURL(file);
+    }else{
+      if(file_data.length>0){
+        const blob = this.dataURItoBlob(file_data);
+       document.getElementById('file_pdf').src = URL.createObjectURL(blob);
+      }else{
+        document.getElementById('file_pdf').src ="";
+      }
+    }
+  }
+ function dataURItoBlob(dataURI) {
+      const byteString = window.atob(dataURI);
+      const arrayBuffer = new ArrayBuffer(byteString.length);
+      const int8Array = new Uint8Array(arrayBuffer);
+      for (let i = 0; i < byteString.length; i++) {
+        int8Array[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([int8Array], { type: 'application/pdf'});
+      return blob;
+    }
 	</script>
 @endsection
