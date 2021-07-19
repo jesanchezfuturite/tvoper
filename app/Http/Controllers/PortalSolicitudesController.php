@@ -80,7 +80,7 @@ class PortalSolicitudesController extends Controller
 
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -581,15 +581,34 @@ class PortalSolicitudesController extends Controller
     $tipoSolicitud=$this->findSol();
 
     $user_id = auth()->user()->id;
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
 
+    $atencion= $responsable!=null ? "true" : "false";
+        
     $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+    if($status==null){
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Este usuario no tiene asignado estatus." 
+        ]
+      );
+    }
 
     $status = json_decode($status->estatus);
 
     $status = $this->status->whereIn("id", $status)->get()->toArray();
 
     
-    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
+    return view('portal/listadosolicitud', [
+      "tipo_solicitud" => $tipoSolicitud , 
+      "status" => $status, 
+      "user_id"=>$user_id, 
+      "atencion"=>$atencion
+    ]);
 
   }
   public function findSol()
@@ -1507,6 +1526,36 @@ class PortalSolicitudesController extends Controller
       log::info("saveTicketBitacora: ".$e);
     }
       
+  }
+
+  public function revertirStatus(Request $request){
+    $user_id = auth()->user()->id;
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
+    try {
+      if($responsable!=null){
+        $ticket = TicketBitacora::where('id_ticket',$request->id_ticket)
+        ->update(["status"=>1, "user_id", $user_id]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "No tiene permisos de supervisor"
+          ]
+        );
+      }
+    } catch (\Exception $e) {
+      Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al revertir status" .$e->getMessage()
+        ]
+      );
+    }
+    
+    
   }
   
 }
