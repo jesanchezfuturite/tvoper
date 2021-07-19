@@ -29,8 +29,10 @@ class UsersExport implements FromView
          "u.name", "u.mothers_surname", "u.fathers_surname", "u.curp",
          "u.rfc","u.phone","u.status",
          "r.description as role",
+         "u.username",
          "m.nombre as municipio", "edo.nombre as estado")
-         ->whereIn("u.id", $this->ids)->get();        
+         ->whereIn("u.id", $this->ids)
+         ->get();        
     
         return view('reportes.usuariosExcel', [
             'users' => $users

@@ -34,7 +34,8 @@ class ReportesController extends Controller
                  "u.name", "u.mothers_surname", "u.username","u.email",
                  "u.fathers_surname", "u.curp", "u.rfc", "u.phone","u.status",
                 "r.description as role", "not.notary_number", "not.id as id_notary_offices"
-            );
+            )->where('r.description', 'not like', "%Ciudadano%")
+            ->where('r.description', 'not like', "%Compañia%");
             
 
             if($status!="null"){
