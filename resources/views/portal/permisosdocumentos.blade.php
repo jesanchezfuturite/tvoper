@@ -66,8 +66,8 @@
           		<table class="table table-hover" id="sample_2">
             		<thead>
               			<tr>
-              			<th>ID</th>
-              			<th>Titulo</th>
+              			<th>Folio Tramite</th>
+              			<th>FSE</th>
               			<th>Estatus</th>
               			<th>Fecha de Ingreso</th>
             			<th width="15%" align="center">Permiso descarga </th>
@@ -108,7 +108,7 @@
     <div class="modal-content" >
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-        <h4 class="modal-title">Detalle de la Solicitud </h4>        
+        <h4 class="modal-title">Detalles</h4>        
       </div>
       <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
@@ -116,7 +116,7 @@
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
-                <h4 class="form-section"><strong>Datos generales</strong></h4>
+                <h4 class="form-section"><strong>Enajenantes</strong></h4>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@
             </div>
           </div>    
         </div>
-        <div class="row">
+        <div class="row divSolicitante">
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
@@ -139,6 +139,21 @@
         <div class="row">
           <div class="col-md-12" id="solicitante">
             <div id="addSolicitante">
+            </div>
+          </div>    
+        </div>
+        <div class="row divNotaria">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos de la Notaria</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" id="notaria">
+            <div id="addnotaria">
             </div>
           </div>    
         </div>
@@ -173,24 +188,18 @@
     <div class="modal-dialog" style="width: 80%;">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="limpiar()"></button>
                 <h4 class="modal-title">Archivo Cargado</h4>
             </div>
             <div class="modal-body" >
               <div class="row" >          
                 <iframe src="" id="file_pdf" class="file_pdf" type="application/pdf" width="100%" height="500px" title="Archivo prelacion" download="archivos_SDa"></iframe>
               </div>
-              <span class="help-block">&nbsp;</span>
-              <div class="row">
-                <div class="col-md-8"> 
-                  <div class="form-group" id="addurlfile">
-                  
-                  </div>
-                </div>
-               <div class="col-md-2"> 
-
-                  <div class="form-group">
+              <hr>
+              <div class="row">               
+               <div class="col-md-6"> 
                     <div class="fileinput fileinput-new" data-provides="fileinput">
+                       
                         <span class="btn green btn-file">
                         <span class="fileinput-new">
                         <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
@@ -198,16 +207,16 @@
                         <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
                         <input type="file" name="file" accept="application/pdf" id="file" onchange="previewFile()">
                         </span>
-                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
-                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
-                        </a></div>
-                        
-                    </div>
+                        <button type="submit" class="btn blue fileinput-exists" onclick="saveFile()"><i class="fa fa-check"></i> Guardar</button>
+                        <span class="fileinput-filename" style="text-overflow: ellipsis;width: 240px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"id="delFile">
+                        </a>
+                
                   </div>
                 </div>
-                 <div class="col-md-2"> 
-                  <div class="form-group">
-                    <button type="submit" class="btn blue btn-save-Not" onclick="saveFile()"><i class="fa fa-check"></i> Guardar</button>
+                  <div class="col-md-6"> 
+                  <div class="form-group" id="addurlfile">
+                  
                   </div>
                 </div>
               </div>
@@ -227,6 +236,7 @@
 <input type="text" name="file_data" id="file_data"  hidden="true">
 <input type="text" name="file_extension" id="file_extension" hidden="true">
 <input type="text" name="file_name" id="file_name" hidden="true">
+<input type="text" name="file_save" id="file_save" hidden="true">
 @endsection
 
 @section('scripts')
@@ -235,6 +245,8 @@
 	<script>
 	jQuery(document).ready(function() {
     TableManaged2.init2();
+      $(".divSolicitante").css("display", "none");
+      $(".divNotaria").css("display", "none");
     });
 
   function updatePermisos(id,folio,status)
@@ -283,7 +295,7 @@
     { docs=1; }
       $.ajax({
            method: "POST", 
-           url: "{{ url('/solicitud-update-permisos') }}",
+           url: "{{ url()->route('solicitud-update-permisos') }}",
            data: {id:id_,required_docs:docs,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
             if(response.status=='400')
@@ -312,7 +324,7 @@
     	 
     	$.ajax({
            method: "POST", 
-           url: "{{ url('/solicitud-find-folio') }}",
+           url: "{{ url()->route('solicitud-find-folio') }}",
            data: {folio:folio_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
         	//console.log(response);
@@ -320,14 +332,19 @@
             if(response.status=='400')
             	{TableManaged2.init2();  return;}         
             $.each(response.Message, function(i, item) {
+              var verArchivo="<a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Ver Archivo' onclick='verArchivo(\""+item.file_data+"\",\""+item.file_name+"\",\""+item.file_extension+"\",\""+item.attach+"\",\""+item.id+"\",\""+item.id_mensaje+"\")'><i class='fa  fa-file'></i> </a>";
+              if(item.attach==null || item.attach=="null")
+              {
+                verArchivo="";
+              }
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
-                	+"<td>"+item.clave+"</td>"
+                	+"<td>"+item.id_transaccion+"</td>"
                   +"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.mensaje+"</td>"
                 	+"<td>"+item.created_at+"</td>"
                 	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+","+item.required_docs+")' id='check_"+item.id+"'></td>"
-                  +"<td><a class='btn btn-icon-only green' data-toggle='modal' data-original-title='' title='Ver Archivo' onclick='verArchivo(\""+item.file_data+"\",\""+item.file_name+"\",\""+item.file_extension+"\",\""+item.attach+"\",\""+item.id+"\",\""+item.id_mensaje+"\")'><i class='fa  fa-file'></i> </a></td>"
+                  +"<td>"+verArchivo+"</td>"
                   +"<td><a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
@@ -352,11 +369,13 @@
     var file_old=$("#file_old").val();
     var id_attch=$("#id_mensaje").val();
     var id_ticket=$("#id_ticket").val();
-    var fileV = $("#file")[0].files[0];    
+    var fileV = $("#file")[0].files[0];  
+    var fileSave    = document.querySelector('input[type=file]').files[0];  
     if(file.length==0){ 
       Command: toastr.warning("Archivo, Requerido!", "Notifications")
       return ;
-    }              
+    }      
+    document.getElementById('file_save').value = 1;        
     var formdata = new FormData();
     formdata.append("ticket_id", id_ticket);
     formdata.append("attch_old", file_old);
@@ -367,13 +386,19 @@
        method: "POST",
        contentType: false,
        processData: false, 
-       url: "{{ url('/solicitud-save-documento') }}",
+       url: "{{ url()->route('solicitud-save-documento') }}",
        data:formdata})
     .done(function (response) {
        if(response.Code =="200"){
           Command: toastr.success(response.Message, "Notifications")
-          
+          $("#addurlfile div").empty();
+          if(response.file_name_new!=''){
+            $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='{{ url()->route('listado-download', '') }}/"+response.file_name_new+"' title='Descargar Archivo'>"+response.file_name_new.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
+          }                  
+          document.getElementById('file_data').value = response.file_data;
           findTramiteSolicitud();
+          limpiar();  
+
         }else{
           Command: toastr.warning(response.Message, "Notifications")
         }
@@ -406,7 +431,7 @@
     
     $("#addurlfile div").empty();
     if(file_name!=''){
-      $("#addurlfile").append("<div><label>Descargar Directa:</label><br><a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name+"<i class='fa fa-download blue'></i></a></div>");
+      $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
     }
     
   }
@@ -416,9 +441,11 @@
       $("#detalles").append("<div id='addDetalles'></div>");
       $("#solicitante div").remove();
       $("#solicitante").append("<div id='addSolicitante'></div>");
+      $("#notaria div").remove();
+      $("#notaria").append("<div id='addnotaria'></div>");
       $.ajax({
            method: "GET", 
-           url: "{{ url('/solicitud-find-detalle') }}" + "/"+id,
+           url: "{{ url()->route('solicitud-find-detalle') }}" + "/"+id,
            data:{ _token:'{{ csrf_token() }}'} })
         .done(function (response) {
           //console.log(response);
@@ -427,22 +454,43 @@
           var soli=Resp.solicitante;
           var tipo="";
           var obj="";
-          for (n in soli) {  
-            obj=n;
-            tipo=soli[n];    
-            if(tipo=="pm")
-            {tipo="Moral";}
-            if(tipo=="pf")
-            {tipo="Fisica";}
-            if(obj=="tipoPersona"){
-              obj="Tipo Persona";
+          if(typeof(Resp.solicitante)==="object"){
+            $(".divNotaria").css("display", "block");
+            dataNot='';
+            for (n in Resp.solicitante) {   
+            if(n=='email' || n=='email'|| n=='nombreSolicitante' || n=='apPat' || n=='apMat' || n=='notary')
+              {               
+                if(n=='email'){dataNot='Correo Electrónico';} 
+                 if(n=='nombreSolicitante'){dataNot='Nombre';}
+                if(n=='apPat'){dataNot='Apellido Paterno';} 
+                if(n=='apMat'){dataNot='Apellido Materno';}  
+              var valE= Resp.solicitante[n];
+                if(n=="notary"){
+                  dataNot="Numero de Notaria";
+                  if(typeof(Resp.solicitante.notary)==="object"){  
+                  valE= Resp.solicitante.notary.notary_number;           
+                  }else{            
+                  valE= Resp.solicitante.notary;
+                  }
+                }         
+              $("#addnotaria").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dataNot+":</strong></label><br><label>"+valE+"</label></div></div>"); 
             }
-
-              $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
+            }
           }
-          for (n in Resp.campos) {            
-              $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");            
-          }
+           $.each(Resp.camposConfigurados, function(i, item) {
+              if (item.tipo=="enajenante") { 
+                
+                        
+                $.each(item.valor.enajenantes, function(i2, item2) { 
+                  var num=i2+1;
+                  $("#addDetalles").append("<div class='col-md-12'><strong>Enajenante "+ num +"</strong><hr></div>");
+                  for (e in item2.datosPersonales) {
+                    $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+e+":</strong></label><br><label>"+item2.datosPersonales[e]+"</label></div></div>"); 
+                  }
+                   
+                })           
+              }
+            })
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -450,14 +498,15 @@
   }
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>ID</th><th>Clave</th><th>Estatus</th><th>Descripcion</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>Folio Tramite</th><th>FSE</th><th>Estatus</th><th>Descripcion</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
-  {
-     document.getElementById('delFile').click();
+  {   
+    document.getElementById('delFile').click();
     
   }
   function previewFile() {
+    var file_save=$("#file_save").val();
     var file_data=$("#file_data").val();
     var file_extension=$("#file_extension").val();
     var file_name=$("#file_name").val();
@@ -467,7 +516,7 @@
     if(file2.length>0)
     {
      document.getElementById('file_pdf').src = URL.createObjectURL(file);
-    }else{
+    }else{     
       if(file_data.length>0){
         const blob = this.dataURItoBlob(file_data);
        document.getElementById('file_pdf').src = URL.createObjectURL(blob);

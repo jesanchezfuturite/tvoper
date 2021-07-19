@@ -952,10 +952,12 @@ class PortalSolicitudesController extends Controller
         $this->saveDocBitacora($request->ticket_id,$request->attch_old,"documento Anterior");
         $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
       }
-      
+       $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
       return response()->json([
         "Code" => "200",
-        "Message" => "Guardado correctamente"
+        "Message" => "Guardado correctamente",
+        "file_name_new"=>$name,
+        "file_data"=>$imageData
       ]);
     } catch (Exception $e) {
       log::info("PortalSolicitudesController@saveFile ").$e;
