@@ -256,8 +256,11 @@
     //$('#portlet-update').modal('show');    
      if($("#check_"+id).prop("checked") == true && status==1)
     {
-    }else if($("#check_"+id).prop("checked") == false && status==null || status==0)
+    }else if($("#check_"+id).prop("checked") == false && status==null)
     {       
+    }else if($("#check_"+id).prop("checked") == false && status==status==0)
+    {
+
     }else if($("#check_"+id).prop("checked") == true){
       labl.textContent="Habilitar";
       $('#portlet-update').modal('show');    
