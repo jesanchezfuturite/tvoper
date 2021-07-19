@@ -983,14 +983,29 @@ class PortalSolicitudesController extends Controller
       if(strlen($request->folio)<10)
       {
         $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
-        foreach ($findFolios as $f) {
-          $folios []= $f->id;
+        if($findFolios->count()>0){ 
+          foreach ($findFolios as $f) {
+            $folios []= $f->id;
+          }
+        }else{
+          return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>[]
+          ]);
         }
       }else{
         $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
-        $folios=json_decode($findFolios[0]->id_ticket);
+        if($findFolios->count()>0){
+          $folios=json_decode($findFolios[0]->id_ticket);
+        }else{
+          return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>[]
+          ]);
+        }
       }
-      //log::info($folios);
       $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
 
       foreach ($findTickets as $key => $value) {
