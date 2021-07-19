@@ -527,25 +527,30 @@ class PortalSolicitudesController extends Controller
     foreach($grupo as $i => $id){
       $datos=[];
       $campos_catalogo = [];
-      foreach ($solicitudes as $key => $value){     
-        // dd(!$value->bitacora->isEmpty());    
+      foreach ($solicitudes as $key => &$value){   
         if($value->grupo_clave== $id){   
-          if(isset($value->info)){    
-            $value->info = json_decode($value->info);
-            if(isset($value->info->campos)) $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
-            $campos_catalogo = array_unique($campos_catalogo);
-            $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
-            ->whereIn('id', $campos_catalogo)->get()->toArray();           
-   
-            $campos = [];
-            foreach($value->info->campos as $key2 => $val){
-                if(is_numeric($key2)){
-                  $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
-                  $campos[$key2] = $val;
-                } 
-                $value->info->campos = $campos;
-                
-            }    
+          if(isset($value->info)){ 
+            var_dump($value->info);
+            var_dump($value->id);
+            $info = json_decode($value->info);
+            $value->info = $info;
+            if(isset($value->info->campos)){
+              $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
+              $campos_catalogo = array_unique($campos_catalogo);
+              $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
+              ->whereIn('id', $campos_catalogo)->get()->toArray();           
+     
+              $campos = [];
+              foreach($value->info->campos as $key2 => $val){
+                  if(is_numeric($key2)){
+                    $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
+                    $campos[$key2] = $val;
+                  } 
+                  $value->info->campos = $campos;
+                  
+              }    
+            }
+          
           }
           if(!$value->bitacora->isEmpty()){
             foreach ($value->bitacora as $bit => &$bitacora) {             
@@ -562,8 +567,13 @@ class PortalSolicitudesController extends Controller
                   ELSE "0" 
                   END) AS permiso'))
                 ->first();
-                $bitacora->permiso=$res->permiso;
-                $bitacora->responsables = $res;
+                if($res!=null){
+                  $bitacora->permiso=$res->permiso;
+                  $bitacora->responsables = $res;
+                }else{
+                  $res=[];
+                }
+               
 
             }
           }
