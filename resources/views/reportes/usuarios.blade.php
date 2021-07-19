@@ -94,14 +94,14 @@
       <span class='help-block'>&nbsp; </span>
       <span class='help-block'>&nbsp; </span>
       <div class='form-group'>
-          <button class='btn green' id="usuarios"  >CSV Usuarios</button>
+          <button class='btn green' id="usuarios"  >Reporte Usuarios</button>
       </div>
     </div>
   <div class='col-md-2'>
       <span class='help-block'>&nbsp; </span>
       <span class='help-block'>&nbsp; </span>
       <div class='form-group'>
-        <button class='btn green' id='subnotaria'  >CSV Notaria</button>
+        <button class='btn green' id='subnotaria'  >Reporte Notaria</button>
       </div>
   </div>
 </div>
