@@ -521,13 +521,14 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('c.id',$ids_catalogos)->get();
-
+// dd($solicitudes->toArray());
     $newDato=[];
 
     foreach($grupo as $i => $id){
       $datos=[];
       $campos_catalogo = [];
-      foreach ($solicitudes as $key => $value){         
+      foreach ($solicitudes as $key => $value){     
+        // dd(!$value->bitacora->isEmpty());    
         if($value->grupo_clave== $id){   
           if(isset($value->info)){    
             $value->info = json_decode($value->info);
@@ -546,7 +547,7 @@ class PortalSolicitudesController extends Controller
                 
             }    
           }
-          if(!empty($value->bitacora)){
+          if(!$value->bitacora->isEmpty()){
             foreach ($value->bitacora as $bit => &$bitacora) {             
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
                 $bitacora->nombre = $estatus->descripcion;
