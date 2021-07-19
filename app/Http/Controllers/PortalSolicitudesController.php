@@ -80,7 +80,7 @@ class PortalSolicitudesController extends Controller
 
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -521,43 +521,50 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('c.id',$ids_catalogos)->get();
-
-   
+// dd($solicitudes->toArray());
     $newDato=[];
+
     foreach($grupo as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => &$value){         
+      $campos_catalogo = [];
+      foreach ($solicitudes as $key => $value){     
+        // dd(!$value->bitacora->isEmpty());    
         if($value->grupo_clave== $id){   
-          if(isset($value->info)){            
-            $info=$this->asignarClavesCatalogo($value->info);
-            $value->info=$info;
+          if(isset($value->info)){    
+            $value->info = json_decode($value->info);
+            if(isset($value->info->campos)) $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
+            $campos_catalogo = array_unique($campos_catalogo);
+            $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
+            ->whereIn('id', $campos_catalogo)->get()->toArray();           
+   
+            $campos = [];
+            foreach($value->info->campos as $key2 => $val){
+                if(is_numeric($key2)){
+                  $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
+                  $campos[$key2] = $val;
+                } 
+                $value->info->campos = $campos;
+                
+            }    
           }
-          if(!empty($value->bitacora)){
+          if(!$value->bitacora->isEmpty()){
             foreach ($value->bitacora as $bit => &$bitacora) {             
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
                 $bitacora->nombre = $estatus->descripcion;
                 $bitacora->catalogo = $value->catalogo;
-                foreach ($responsables as $r => $res) {
-                  if($res["catalogo_id"] ==$bitacora->catalogo){
-                    if($res["id_estatus_atencion"]==$bitacora->id_estatus_atencion){
-                      if( $res["user_id"]==null || $res["user_id"]==$user_id ){                       
-                        $bitacora->permiso=1;
-                        $bitacora->usuario_logueado=$user_id;
-                        $bitacora->user_id_responsable=$res["user_id"];
-                        $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];
-                        $bitacora->catalogo_id_responsable=$res["catalogo_id"];
-                      }else{     
-                        $bitacora->permiso=0;
-                        $bitacora->usuario_logueado=$user_id;
-                        $bitacora->user_id_responsable=$res["user_id"];
-                        $bitacora->id_estatus_atencion_responsable=$res["id_estatus_atencion"];   
-                        $bitacora->catalogo_id_responsable=$res["catalogo_id"];                               
-                        
-                      }
-                    }
-                    
-                  }
-                } 
+
+                $res = Portalsolicitudesresponsables::from("solicitudes_responsables as r")
+                ->where("r.catalogo_id", $bitacora->catalogo)
+                ->where("r.id_estatus_atencion", $bitacora->id_estatus_atencion)
+                ->select('r.*', DB::raw('(CASE 
+                  WHEN r.user_id = '."$user_id".' THEN "1" 
+                  WHEN r.user_id = "null" THEN "1" 
+                  ELSE "0" 
+                  END) AS permiso'))
+                ->first();
+                $bitacora->permiso=$res->permiso;
+                $bitacora->responsables = $res;
+
             }
           }
           array_push($datos, $value);
@@ -575,15 +582,34 @@ class PortalSolicitudesController extends Controller
     $tipoSolicitud=$this->findSol();
 
     $user_id = auth()->user()->id;
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
 
+    $atencion= $responsable!=null ? "true" : "false";
+        
     $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+    if($status==null){
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Este usuario no tiene asignado estatus." 
+        ]
+      );
+    }
 
     $status = json_decode($status->estatus);
 
     $status = $this->status->whereIn("id", $status)->get()->toArray();
 
     
-    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
+    return view('portal/listadosolicitud', [
+      "tipo_solicitud" => $tipoSolicitud , 
+      "status" => $status, 
+      "user_id"=>$user_id, 
+      "atencion"=>$atencion
+    ]);
 
   }
   public function findSol()
@@ -1501,6 +1527,36 @@ class PortalSolicitudesController extends Controller
       log::info("saveTicketBitacora: ".$e);
     }
       
+  }
+
+  public function revertirStatus(Request $request){
+    $user_id = auth()->user()->id;
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
+    try {
+      if($responsable!=null){
+        $ticket = TicketBitacora::where('id_ticket',$request->id_ticket)
+        ->update(["status"=>1, "user_id", $user_id]);
+      }else{
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "No tiene permisos de supervisor"
+          ]
+        );
+      }
+    } catch (\Exception $e) {
+      Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al revertir status" .$e->getMessage()
+        ]
+      );
+    }
+    
+    
   }
   
 }
