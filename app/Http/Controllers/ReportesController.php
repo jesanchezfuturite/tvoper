@@ -16,7 +16,11 @@ class ReportesController extends Controller
 {
     public function listadoUsuariosPortal(){
 
-        $roles=DB::table("portal.catalog_user_roles")->get();
+        $roles=DB::table("portal.catalog_user_roles as r")
+        ->where('r.description', 'not like', "%Ciudadano%")
+        ->where('r.description', 'not like', "%Compañia%")
+        ->where('r.description', 'not like', "%Funcionario%")
+        ->get();
         return view('reportes/usuarios', ["roles"=>$roles]);
     }
 
@@ -35,7 +39,8 @@ class ReportesController extends Controller
                  "u.fathers_surname", "u.curp", "u.rfc", "u.phone","u.status",
                 "r.description as role", "not.notary_number", "not.id as id_notary_offices"
             )->where('r.description', 'not like', "%Ciudadano%")
-            ->where('r.description', 'not like', "%Compañia%");
+            ->where('r.description', 'not like', "%Compañia%")
+            ->where('r.description', 'not like', "%Funcionario%");
             
 
             if($status!="null"){
