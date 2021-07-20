@@ -490,4 +490,5 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/find-usuarios', 'ReportesController@findUsuarios')->name('find-usuarios');
     Route::post('/descargar-excel', 'ReportesController@excelUsuarios')->name("export");
     Route::post('/descargar-excel-notaria', 'ReportesController@excelNotaria')->name("export-notaria");
+    Route::get('/file/{file?}' , 'ReportesController@downloadFile')->name('file');
 });

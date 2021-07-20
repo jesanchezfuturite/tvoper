@@ -11,6 +11,7 @@ use App\Exports\UsersExport;
 use App\Exports\NotaryExport;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
+
 class ReportesController extends Controller
 
 {
@@ -52,8 +53,7 @@ class ReportesController extends Controller
             if($role!=0){
                 $users->where("u.role_id", $role); 
             }
-            $users->orderBy("u.id", "DESC");
-            
+            $users->orderBy("u.id", "DESC");            
             $users= $users->get();
             return json_encode($users);
 
@@ -96,5 +96,20 @@ class ReportesController extends Controller
                  ]
              );
         }
-     }
+    }
+
+    public function downloadFile($file)
+    {
+      try{
+        $url = env("SESSION_HOSTNAME")."/storage/app/".$file;  
+        $filename = $file;
+        $temporal = tempnam(sys_get_temp_dir(), $filename);
+        copy($url, $temporal);
+
+        return response()->download($temporal, $filename)->deleteFileAfterSend(true);
+
+      }catch(\Exception $e){
+        log::info("error ReporteController@downloadFile");
+      }
+    }
 }
