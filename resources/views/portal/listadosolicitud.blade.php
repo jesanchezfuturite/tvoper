@@ -742,8 +742,7 @@ function configprelacion()
       }*/
        return botonAtender;
     }
-  function format ( d ,b_pr) { 
-      var input_check="";            
+  function format ( d ,b_pr) {                 
       var valid=0;            
       let html = ''; 
       let g_prelacion = 0; 
@@ -763,7 +762,6 @@ function configprelacion()
           var btn_revisar="<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora.id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
           var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
-          let checks='<input id="ch_'+solicitud.grupo_clave+'"style="cursor:pointer" name="check_'+solicitud.grupo_clave+'" type="checkbox" value="'+solicitud.id+'">';
           var dist='0';
           if(typeof(distrito)==='object'){
             dist=distrito.clave;            
@@ -771,12 +769,12 @@ function configprelacion()
           if(dist!='1')
           {
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>Distrito foráneo</span>";
-              checks='';btn_revisar='';
+             btn_revisar='';
           }
           if(solicitud.status!=1 && dist=='1')
           {
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
-              checks='';btn_revisar='';
+            btn_revisar='';
           }  
           if(solicitud.status=='1' && dist=='1'){
             exist+=1;  
@@ -784,12 +782,12 @@ function configprelacion()
           if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
           {
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
-            checks='';btn_revisar='';
+            btn_revisar='';
           } 
           if(bitacora.permiso==0 && index==bitacora_end)
           {
              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
-            checks='';btn_revisar='';
+            btn_revisar='';
           }else{
             valid=1;
           }
@@ -818,7 +816,7 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td><td style="text-align: center">'+checks+'</td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
             if(bitacora.id_estatus_atencion==2 && bitacora.user_id=='{{Auth::user()->id}}'){
                 g_prelacion=1;
             }
@@ -833,13 +831,12 @@ function configprelacion()
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+","+JSON.stringify(d)+","+status_proceso+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
-        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\","+status_proceso+")'>Rechazar</a>";
-        input_check= addChecks(d.grupo[0].grupo_clave);
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
+        
         if(d.grupo[0].url_prelacion!=null && g_prelacion==1)
         { btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
-          input_check="";
           btn_cerrarTicket="";
         }
         if(d.grupo[0].url_prelacion==null)
@@ -857,23 +854,21 @@ function configprelacion()
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
-          input_check="";
           btn_cerrarTicket='';
         }
         if( valid==0 ){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
-          input_check="";
          url_prelacion='';
          btn_cerrarTicket='';
         }
         if(g_prelacion==1){
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
         }
-        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th></th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th style='text-align:center;'>"+input_check+"</th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th></th></tr>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
@@ -1066,12 +1061,7 @@ function configprelacion()
         Command: toastr.warning("Error Rechazo", "Notifications") 
       })
     }
-    function addChecks(id_transaccion)
-    {
-      input_check="<label style='cursor:pointer;font-weight: bold;font-size: 13px;'><input id='check_todos_"+id_transaccion+"'style='cursor:pointer' class='custom-control-input' name='check_todos_"+id_transaccion+"' type='checkbox'onclick='select_allCheck(\""+id_transaccion+"\");' value='"+id_transaccion+"'>Marcar Todos</label>";
-      return input_check;
-    }
-    function rechazarArray(id_transaccion,tickets_id,id_estatus_atencion)
+    function rechazarArray(id_transaccion,tickets_id,id_estatus_atencion,data)
     {
       //console.log(tickets_id);
       var estatus_=$("#select_"+id_transaccion).val();
@@ -1080,12 +1070,29 @@ function configprelacion()
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
-      checks=[];
-      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
-          checks.push($(this).val());
-        });
-      if(checks.length>0){
-        document.getElementById("lbl_idsolicitudes").textContent=checks;
+      response=[data];
+      var tickets_id=[];
+      var ids=[];
+      var grupo_clave="";
+      if(typeof response=== 'object'){
+        for (n in response) { 
+          for(k in response[n].grupo)
+          {   
+            distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
+            if(typeof distrito==="object")
+            {
+              if(distrito.clave=="1" && response[n].grupo[k].status=="1")
+              {
+                 ids.push(response[n].grupo[k].id);
+              }
+            }                                                   
+          } 
+        }
+      }
+
+      if(ids.length>0){
+        document.getElementById("lbl_idsolicitudes").textContent=ids;
+        document.getElementById("ids").value=ids;
          $('#portlet-rechazar').modal('show');
          document.getElementById("idgrupo").value=id_transaccion;
          document.getElementById("tickets_id").value=tickets_id;
@@ -1097,6 +1104,7 @@ function configprelacion()
     {
       var id_transaccion=$("#idgrupo").val();
       var id_proceso=$("#id_proceso").val();
+      var ids=$("#ids").val();
       var tick_id=$.parseJSON($("#tickets_id").val());
       var estatus_=$("#select_"+id_transaccion).val();
       var mot=$("#select_"+id_transaccion+" option:selected").text();
@@ -1105,15 +1113,11 @@ function configprelacion()
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
-      checks=[];
-      $("input[name = check_"+id_transaccion+"]:checked").each(function(){
-          checks.push($(this).val());
-        });
       //console.log(tick_id);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
-      data: {id:checks,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,tickets_id:tick_id,id_estatus_atencion:id_proceso,_token:'{{ csrf_token() }}'}  })
+      data: {id:ids,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,tickets_id:tick_id,id_estatus_atencion:id_proceso,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
           if(response.Code=='200'){
              findSolicitudes();
@@ -1143,22 +1147,7 @@ function configprelacion()
         Command: toastr.warning("Error Select", "Notifications") 
       })
     }
-    function select_allCheck(id_transaccion)
-    {
-      var checkP=$("#check_todos_"+id_transaccion).prop("checked");
-      checks=[];
-        if(checkP)
-        {
-           $("input[name = check_"+id_transaccion+"]").prop("checked", true);
-        }else{
-          $("input[name = check_"+id_transaccion+"]").prop("checked", false);
-        } 
-        $("input[name = check_"+id_transaccion+"]:checked").each(function(){
-          checks.push($(this).val());
-        });
-  
-      //console.log(checks);
-    }
+    
     function conctenaM(municipio)
     {var coma='';var Mp='';
       if(typeof municipio.nombre !=='undefined')
