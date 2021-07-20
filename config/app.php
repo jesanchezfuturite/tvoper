@@ -162,7 +162,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
-        Maatwebsite\Excel\Facades\Excel::class,
         //Bnb\Laravel\Attachments\AttachmentsServiceProvider::class,
         //Sichikawa\LaravelSendgridDriver\SendgridTransportServiceProvider::class,
         /*
