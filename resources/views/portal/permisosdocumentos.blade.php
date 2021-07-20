@@ -67,6 +67,7 @@
             		<thead>
               			<tr>
               			<th>Folio Tramite</th>
+                    <th>Folio Pago</th>
               			<th>FSE</th>
               			<th>Estatus</th>
               			<th>Fecha de Ingreso</th>
@@ -268,23 +269,25 @@
        labl.textContent="Deshabilitar";
        $('#portlet-update').modal('show');    
     }
-    document.getElementById("id_registro").value=id;
+    document.getElementById("id_registro").value=folio;
+    document.getElementById("id_mensaje").value=id;
     document.getElementById("required_docs").value=status;
   }
   function cerrarModal()
   {
-    var id=$("#id_registro").val();
+    var id_registro=$("#id_registro").val();
+    var id=$("#id_mensaje").val();
     var required_docs=$("#required_docs").val();
     //console.log($("#check_"+id).prop("checked") )
     //console.log(required_docs);
     if(required_docs==1)
     {
       $("#row_"+id).empty(); 
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+","+required_docs+")' id='check_"+id+"'>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"'>");
       $('#check_'+id).prop('checked', true);
     }else{
       $("#row_"+id).empty();       
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id+","+required_docs+")' id='check_"+id+"' checked>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"' checked>");
        $('#check_'+id).prop('checked', false);
     }
      $("[name='check_permiso']").bootstrapSwitch();
@@ -292,14 +295,15 @@
   }
   function permisosUpdate()
   {
-    var id_=$("#id_registro").val();
+    var id_=$("#id_mensaje").val();
+    var id_registro=$("#id_registro").val();
     var docs=null;
     if($("#check_"+id_).prop("checked"))
     { docs=1; }
       $.ajax({
            method: "POST", 
            url: "{{ url()->route('solicitud-update-permisos') }}",
-           data: {id:id_,required_docs:docs,_token:'{{ csrf_token() }}'} })
+           data: {id:id_registro,required_docs:docs,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
             if(response.status=='400')
               {
@@ -342,20 +346,21 @@
               }
             	$('#sample_2 tbody').append("<tr>"
                 	+"<td>"+item.id+"</td>"
+                  +"<td>"+item.id_transaccion_motor+"</td>"
                 	+"<td>"+item.id_transaccion+"</td>"
                   +"<td>"+item.descripcion+"</td>"
                 	+"<td>"+item.mensaje+"</td>"
                 	+"<td>"+item.created_at+"</td>"
-                	+"<td id='row_"+item.id+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id+","+item.id+","+item.required_docs+")' id='check_"+item.id+"'></td>"
+                	+"<td id='row_"+item.id_mensaje+"'><input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+item.id_mensaje+","+item.id+","+item.required_docs+")' id='check_"+item.id_mensaje+"'></td>"
                   +"<td>"+verArchivo+"</td>"
                   +"<td><a class='btn btn-icon-only blue' href='#portlet-detalle' data-toggle='modal' data-original-title='' title='Detalles' onclick='findDetalles(\""+item.id+"\")'><i class='fa fa-list'></i> </a></td>"
                 	+"</tr>"
                 );
               if(item.required_docs==1)
                 {
-                  $('#check_'+item.id).prop('checked', true);
+                  $('#check_'+item.id_mensaje).prop('checked', true);
                 }else{
-                  $('#check_'+item.id).prop('checked', false);
+                  $('#check_'+item.id_mensaje).prop('checked', false);
                 }
             });
             
@@ -501,7 +506,7 @@
   }
   function addtable(){
     $("#addtables div").remove();
-    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>Folio Tramite</th><th>FSE</th><th>Estatus</th><th>Descripcion</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead> <tbody></tbody> </table></div>");
+    $("#addtables").append("<div id='removetable'><table class='table table-hover' id='sample_2'> <thead><tr><th>Folio Tramite</th><th>Folio Pago</th><th>FSE</th><th>Estatus</th><th>Descripcion</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead> <tbody></tbody> </table></div>");
   }
   function limpiar()
   {   

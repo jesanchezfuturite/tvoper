@@ -943,15 +943,12 @@ class PortalSolicitudesController extends Controller
       $attach = $this->url->to('/') . '/download/'.$name;
       $path=storage_path('app/'.$name);
       \Storage::disk('local')->put($name,  \File::get($file));
-      if($request->id_mensaje=='null')
+      if($request->id_mensaje!='null')
       {
-        $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"DOCUMENTO CARGADO DESDE EL ADMIN"]);
-        $this->saveDocBitacora($request->ticket_id,$attach,"nuevo documento");
-      }else{
-        $this->mensajes->update(["attach"=>$attach],$request->id_mensaje);
-        $this->saveDocBitacora($request->ticket_id,$request->attch_old,"documento Anterior");
-        $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+        $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
       }
+      $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
        $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
       return response()->json([
         "Code" => "200",

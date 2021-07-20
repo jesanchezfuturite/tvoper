@@ -53,8 +53,11 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
         $data = PortalSolicitudesTicket::whereIn('solicitudes_ticket.'.$campo,$var)
         ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')        
         ->leftjoin('solicitudes_mensajes','solicitudes_mensajes.ticket_id','=','solicitudes_ticket.id')   
+        ->leftjoin('operacion.oper_transacciones','operacion.oper_transacciones.id_transaccion','=','solicitudes_ticket.id_transaccion')   
+        ->leftjoin('solicitudes_tramite','solicitudes_tramite.id_transaccion_motor','=','operacion.oper_transacciones.id_transaccion_motor')   
         ->where('solicitudes_ticket.status','=','2')    
         ->where('solicitudes_ticket.doc_firmado','<>',null)    
+        ->where('solicitudes_mensajes.status','=','1')    
         ->select('solicitudes_ticket.id',
             'solicitudes_ticket.clave',
             'solicitudes_ticket.id_tramite',
@@ -78,7 +81,8 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
             'solicitudes_status.descripcion',
             'solicitudes_mensajes.id as id_mensaje',
             'solicitudes_mensajes.mensaje',
-            'solicitudes_mensajes.attach'
+            'solicitudes_mensajes.attach',
+            'solicitudes_tramite.id_transaccion_motor'
         )->get();
         return $data;
     }
