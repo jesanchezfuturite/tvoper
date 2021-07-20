@@ -343,6 +343,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/solicitud-update-permisos','PortalSolicitudesController@updatePermisoSolicitud')->name('solicitud-update-permisos');
     Route::get('/solicitud-find-detalle/{idticket?}','PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle');
 
+    Route::post('/solicitud-save-documento','PortalSolicitudesController@saveFile')->name('solicitud-save-documento');
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
 
