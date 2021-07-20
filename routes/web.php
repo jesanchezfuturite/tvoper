@@ -428,7 +428,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite')->name('solicitudes-get-tramite');
     Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites')->name('solicitudes-update-tramite');
     Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite')->name('solicitudes-get-tramite-pdf');
-    Route::get('/download/{file}' , 'PortalSolicitudesTicketController@downloadFile')->name('download');
+    Route::get('/download/{file?}' , 'PortalSolicitudesTicketController@downloadFile')->name('download');
     Route::post('/solicitudes-guardar-carrito' , 'PortalSolicitudesTicketController@enCarrito')->name('solicitudes-guardar-carrito');
     Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales');
 
@@ -486,4 +486,8 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
 
     Route::get('/campo-alias-update','PortalSolicitudesTicketController@updateAlias')->name('campo-alias-update');
+    Route::get('/reporte-usuarios', 'ReportesController@listadoUsuariosPortal')->name('reporte-usuarios');
+    Route::post('/find-usuarios', 'ReportesController@findUsuarios')->name('find-usuarios');
+    Route::post('/descargar-excel', 'ReportesController@excelUsuarios')->name("export");
+    Route::post('/descargar-excel-notaria', 'ReportesController@excelNotaria')->name("export-notaria");
 });
