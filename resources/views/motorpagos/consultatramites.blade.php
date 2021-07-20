@@ -371,7 +371,7 @@
                                                 <div class="form-group">
                                                     <label>Familia</label>
                                                     <select class="select2me form-control"  id="itemsFamilia2" >
-                                                        <option>------</option>
+                                                        <option value="0">------</option>
                                                     </select>
                                                 </div>
                                             </div>
