@@ -105,7 +105,6 @@ class ReportesController extends Controller
         $filename = $file;
         $temporal = tempnam(sys_get_temp_dir(), $filename);
         copy($url, $temporal);
-
         return response()->download($temporal, $filename)->deleteFileAfterSend(true);
 
       }catch(\Exception $e){

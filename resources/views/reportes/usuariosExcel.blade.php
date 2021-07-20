@@ -46,7 +46,7 @@
                @else
                     <td></td>
                @endif
-
+               
                @if($user->notary_constancy_file!=null)
                     <td>{{url()->route('file', $user->notary_constancy_file) }}</td>
                @else
