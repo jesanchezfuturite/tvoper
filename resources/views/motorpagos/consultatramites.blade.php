@@ -1146,7 +1146,63 @@
         json = JSON.parse(JSONData);
         var arr=[];
         $.each(json, function(i, item) { 
+            var obj = {};
 
+            obj.tramite=item.tiposervicio;
+            obj.ticket = item.id;
+            obj.fse=item.idTrans;
+            obj.folio = item.folio;
+            obj.estatus = item.status;
+            obj.banco = item.BancoSeleccion;
+            obj.fecha_tramite = item.fecha_creacion;
+            obj.fecha_pago = item.fecha_transaccion;
+            obj.tipo_tramite = "Null";
+            obj.no_notaria = item.notary_number;
+            if(item.configusers[0].notary[0].titular)
+            obj.apellido_paterno_titular = item.titular.apellido_paterno_titular;
+            obj.apellido_materno_titular =item.titular.apellido_materno_titular;
+            obj.nombre_titular = item.titular.nombre_titular;
+            obj.rfc_titular= item.titular.rfc_titular;
+
+            obj.escritura = "Null";
+            obj.fecha_escritura="Null";
+            obj.porcentaje_enajena = "Null";
+            obj.motivo="Null";
+            obj.documento = "Null";
+            obj.nombre_valuador = "Null";
+            obj.apellido_paterno_valuador = "Null";
+            obj.apellido_materno_valuador = "Null";
+            obj.rfc_valuador = "Null";
+            obj.folio_ae = "Null";
+            obj.monto_operacion_ae="Null";
+            obj.municipio_expediente="Null";
+            obj.no_expediente_catastral="Null";
+            obj.direccion="Null";                
+            obj.curp_enajenante = "Null";
+            obj.rfc_enajenante = "Null";
+            obj.nombre_enajenante = "Null";
+            obj.apellido_paterno_enajenante = "Null";
+            obj.apellido_materno_enajenante="Null";                   
+            obj.fecha_nacimiento_enajenante = "Null";
+            obj.clave_ine_enajenante = "Null"; 
+            obj.porcentaje_venta="Null";
+            obj.monto_operacion ="Null";
+            obj.fecha_actual = "Null";
+            obj.fecha_vencimiento="Null";
+            obj.factor_actualizacion = "Null";
+            obj.porcentaje_recargos = "Null";
+            obj.ganancia_obtenida ="Null";
+            obj.monto_obtenido_art_127="Null";
+            obj.pago_provisional_art_126 = "Null";
+            obj.imp_entidad_federativa="Null";
+            obj.parte_act_impuesto = "Null";
+            obj.recargos = "Null";
+            obj.multa_correcion_fiscal = "Null";
+            obj.importe_total ="Null";
+            obj.numero_folio_declaracion_normal = "Null";
+            obj.monto_pagado_anterioridad = "Null";
+            obj.cantidad_cargo = "Null";
+            obj.pago_exceso = "Null"; 
             if(item.info!=null){
                 var obj = {};
                 

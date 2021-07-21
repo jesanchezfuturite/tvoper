@@ -3406,11 +3406,25 @@ class MotorpagosController extends Controller
             $fecha_inicio=$fechaActual->format('Y-m-d').' 23:59:59';
           
         }
+
+
         $solicitudes = PortalSolicitudesTicket::with("mensajes")
-        ->leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')
-        ->leftjoin('portal.solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
-        ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
-        ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
+        ->with("configusers");
+
+       
+        $solicitudes->with(["configusers.notary"
+            =>function ($q){
+                if($notaria!=null){
+                    $q->where('notary_number',$notaria);
+                }         
+
+            }
+        ]);
+      
+        $solicitudes->with("configusers.notary.titular:id,name,fathers_surname,mothers_surname")        
+        ->leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')       
+        // ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
+        // ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
         ->leftjoin("operacion.oper_transacciones as operTrans", 'operTrans.id_transaccion_motor', '=', 'tramite.id_transaccion_motor')   
         ->leftjoin("operacion.oper_tramites as opertram", 'opertram.id_transaccion_motor', '=', 'operTrans.id_transaccion_motor')
         ->leftjoin('operacion.oper_entidad as opentidad','opentidad.id','=','operTrans.entidad')   
@@ -3418,7 +3432,6 @@ class MotorpagosController extends Controller
         ->leftjoin('operacion.oper_familiaentidad as opfamen','opfamen.entidad_id','=','opentidad.id')
         ->leftjoin('operacion.oper_familia as opf','opf.id','=','opfamen.familia_id')
         
-        ->leftjoin('operacion.oper_processedregisters as opprocess','opprocess.referencia','=','operTrans.referencia')
         ->leftjoin('egobierno.tipo_servicios as tiposer','tiposer.Tipo_Code','=','opertram.id_tipo_servicio')
         ->leftjoin('egobierno.tipopago as tipopag','tipopag.TipoPago','=','operTrans.tipo_pago')
         ->leftjoin('egobierno.status as status','.status.Status','=','operTrans.estatus') 
@@ -3442,26 +3455,24 @@ class MotorpagosController extends Controller
             'opf.nombre as familia',
             'operTrans.id_transaccion_motor as folio',            
             'solicitudes_ticket.id',
-            'notary_offices.titular_id',
-            'notary_offices.substitute_id',
+            // 'notary_offices.titular_id',
+            // 'notary_offices.substitute_id',
+            'solicitudes_ticket.user_id',
             'solicitudes_ticket.status as status_ticket',
             'tramite.id_transaccion_motor',
             'solicitudes_ticket.created_at as fecha_creacion',
             'solicitudes_ticket.info',
-            'notary_offices.notary_number',
+            // 'notary_offices.notary_number',
             'tramite.id_ticket as tickets_relacion',
+            'solicitudes_ticket.doc_firmado', 
+            'solicitudes_ticket.clave',
+            'solicitudes_ticket.grupo_clave'
     
             
         )    
         ->groupBy("solicitudes_ticket.id")
         ->whereBetween('operTrans.fecha_transaccion',[$fecha_inicio,$fecha_fin]);
    
-       
-        if($rfc!=""){
-            $solicitudes->where('oper_tramites.rfc','LIKE',"%$rfc%")
-            ->orWhere('oper_tramites.auxiliar_2','LIKE',"%$rfc%")
-            ->orWhere('oper_transacciones.id_transaccion_motor','LIKE',"%$rfc%");
-        }
         if($familia!='0'){
            $solicitudes->where('opf.id', $familia);
            
@@ -3471,45 +3482,34 @@ class MotorpagosController extends Controller
             $solicitudes->where('tiposer.Tipo_Code', $servicio);
             
         }
-        if($notaria!=null){
-            $solicitudes->where('notary_offices.notary_number', $notaria);  
-        }
+ 
         if($status!='null'){
             $solicitudes->where('operTrans.estatus', $status);            
         }
-        $solicitudes=$solicitudes->get()->toArray();
-
-        foreach ($solicitudes as $key => &$value) {         
-            if(empty($value["info"])){
-                $value["info"]=json_decode($value["info"]);
-            }else{
-                $value["info"] = $this->asignarClavesCatalogo($value["info"]);
+        $solicitudes=$solicitudes->get();
+        
+        $campos_catalogo = [];
+        foreach ($solicitudes as $key => &$value) {      
+            if(isset($value->info)){  
+                $value->info = json_decode($value->info);
+                if(isset($value->info->campos)){
+                    $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
+                    $campos_catalogo = array_unique($campos_catalogo);
+                    $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
+                    ->whereIn('id', $campos_catalogo)->get()->toArray();           
+            
+                    $campos = [];
+                    foreach($value->info->campos as $key2 => $val){
+                        if(is_numeric($key2)){
+                            $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
+                            $campos[$key2] = $val;
+                        } 
+                        $value->info->campos = $campos;
+                    }
+                    
+                }    
             }
-           
-            if(!is_null($value["titular_id"])){
-                $titular = DB::connection('mysql6')->table("portal.users")->where("id", $value["titular_id"])->first();
-                
-                $value["titular"] =array(
-                    'nombre_titular'=> $titular->name,
-                    'apellido_paterno_titular'=> $titular->fathers_surname,
-                    'apellido_materno_titular'=> $titular->mothers_surname ,
-                    'rfc_titular'=>$titular->rfc,             
-                    'curp_titular'=>$titular->curp,  
-                );
-            }else{
-                $value["titular"] =array(
-                    'nombre_titular'=> "",
-                    'apellido_paterno_titular'=>"",
-                    'apellido_materno_titular'=>"",
-                    'rfc_titular'=>"",             
-                    'curp_titular'=>"",
-                );
-            } 
-            
-            
-        }
-                
-
+        }    
         
         return json_encode($solicitudes);
 

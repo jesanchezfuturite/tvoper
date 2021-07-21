@@ -27,4 +27,8 @@ class PortalTramites extends Model implements Transformable
 
     protected $table = "solicitudes_tramite";
 
+    public function transacciones () {
+		return $this->hasMany("App\Entities\Transacciones", "id_transaccion_motor", "id_transaccion_motor");
+	}
+
 }
