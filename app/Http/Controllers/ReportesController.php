@@ -108,7 +108,7 @@ class ReportesController extends Controller
         return response()->download($temporal, $filename)->deleteFileAfterSend(true);
 
       }catch(\Exception $e){
-        log::info("error ReporteController@downloadFile");
+        log::info("error ReporteController@downloadFile ".$e->getMessage());
       }
     }
 }
