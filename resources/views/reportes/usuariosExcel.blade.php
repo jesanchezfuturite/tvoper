@@ -41,9 +41,19 @@
            @endif
 
            @if($user->role=="Notario Titular" && $user->status==1)
-                <td>{{url()->route('download', $user->sat_constancy_file) }}</td>
-                <td>{{url()->route('download', $user->notary_constancy_file) }}</td>
+               @if($user->sat_constancy_file!=null)
+                    <td>{{url()->route('file', $user->sat_constancy_file) }}</td>
+               @else
+                    <td></td>
+               @endif
+               
+               @if($user->notary_constancy_file!=null)
+                    <td>{{url()->route('file', $user->notary_constancy_file) }}</td>
+               @else
+                    <td></td>
+               @endif
            @else
+           <td></td>
            <td></td>
            @endif
         </tr>
