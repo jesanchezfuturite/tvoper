@@ -103,12 +103,13 @@ class ReportesController extends Controller
       try{
         $url = env("SESSION_HOSTNAME")."/storage/app/".$file;  
         $filename = $file;
-        $temporal = tempnam(sys_get_temp_dir(), $filename);
-        copy($url, $temporal);
-        return response()->download($temporal, $filename)->deleteFileAfterSend(true);
+        $archivo = file_get_contents($url);
+        $storage= \Storage::put($filename, $archivo);
+        $path = storage_path('app/'.$file);
+        return response()->download($path)->deleteFileAfterSend(true);
 
       }catch(\Exception $e){
-        log::info("error ReporteController@downloadFile");
+        log::info("error ReporteController@downloadFile ".$e->getMessage());
       }
     }
 }
