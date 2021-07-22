@@ -5,8 +5,9 @@ namespace App\Exports;
 use App\Entities\UsersPortal;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class UsersExport implements FromView
+class UsersExport implements FromView, ShouldAutoSize
 {
     // use Exportable;
 

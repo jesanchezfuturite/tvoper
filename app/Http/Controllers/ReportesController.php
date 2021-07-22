@@ -101,14 +101,12 @@ class ReportesController extends Controller
     public function downloadFile($file)
     {
       try{
-        $url = env("SESSION_HOSTNAME")."/storage/app/".$file;  
-        $filename = $file;
-        $temporal = tempnam(sys_get_temp_dir(), $filename);
-        copy($url, $temporal);
-        return response()->download($temporal, $filename)->deleteFileAfterSend(true);
+        $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$file;        
+        return redirect()->to($url);
+     
 
       }catch(\Exception $e){
-        log::info("error ReporteController@downloadFile");
+        log::info("error ReporteController@downloadFile ".$e->getMessage());
       }
     }
 }
