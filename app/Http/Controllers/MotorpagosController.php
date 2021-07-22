@@ -3421,7 +3421,7 @@ class MotorpagosController extends Controller
             }
         ]);
       
-        $solicitudes->with("configusers.notary.titular:id,name,fathers_surname,mothers_surname")        
+        $solicitudes->with("configusers.notary.titular:id,name,fathers_surname,mothers_surname,rfc")        
         ->leftjoin('portal.solicitudes_tramite as tramite', 'solicitudes_ticket.id_transaccion', '=', 'tramite.id')       
         // ->leftjoin('portal.config_user_notary_offices', 'solicitudes_ticket.user_id', '=', 'config_user_notary_offices.user_id')
         // ->leftjoin('portal.notary_offices', 'config_user_notary_offices.notary_office_id', '=', 'notary_offices.id')
@@ -3437,7 +3437,6 @@ class MotorpagosController extends Controller
         ->leftjoin('egobierno.status as status','.status.Status','=','operTrans.estatus') 
         ->select(
             'status.Descripcion as status',
-            
             'operTrans.id_transaccion as idTrans',
             'opentidad.nombre as entidad',
             'tiposer.Tipo_Descripcion as tiposervicio',
