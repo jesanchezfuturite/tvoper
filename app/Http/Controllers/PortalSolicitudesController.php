@@ -466,7 +466,7 @@ class PortalSolicitudesController extends Controller
     if($request->has('tipo_solicitud')){
         $filtro->where('c.id', $request->tipo_solicitud);
     }
-
+   
     if($request->has('estatus')){
       if($request->estatus ==0){
         $filtro->where('solicitudes_ticket.status', '<>', 2);
@@ -476,20 +476,21 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('id_solicitud')){
-      $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
-      ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
+      $filtro->where('solicitudes_ticket.id_transaccion','LIKE',"%$request->id_solicitud%")
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
       
     }
-    $ids_catalogos = $filtro->get()->pluck("id_catalogo")->toArray();  
+    $cat = $filtro->get()->pluck("id_catalogo")->toArray();  
+    $ids_catalogos= array_unique($cat);
 
      $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
     ->get()->toArray();
    
 
-    $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
+    $filter = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
-    // $catalogo = array_intersect($ids_catalogos, $responsables);
+    $grupo=array_filter($filter);
+      // $catalogo = array_intersect($ids_catalogos, $responsables);
    
   
     $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
@@ -521,19 +522,16 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'DESC')
     ->whereIn('c.id',$ids_catalogos)->get();
-// dd($solicitudes->toArray());
+
     $newDato=[];
 
     foreach($grupo as $i => $id){
       $datos=[];
       $campos_catalogo = [];
-      foreach ($solicitudes as $key => &$value){   
+      foreach ($solicitudes as $key => $value){   
         if($value->grupo_clave== $id){   
-          if(isset($value->info)){ 
-            var_dump($value->info);
-            var_dump($value->id);
-            $info = json_decode($value->info);
-            $value->info = $info;
+          if(isset($value->info)){  
+            $value->info = json_decode($value->info);
             if(isset($value->info->campos)){
               $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
               $campos_catalogo = array_unique($campos_catalogo);
@@ -571,12 +569,14 @@ class PortalSolicitudesController extends Controller
                   $bitacora->permiso=$res->permiso;
                   $bitacora->responsables = $res;
                 }else{
-                  $res=[];
+                  $bitacora->permiso=0;
+                  $bitacora->responsables =[];
                 }
                
 
             }
           }
+     
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
           $newDato[$i]["grupo"]=$datos;
