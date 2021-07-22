@@ -84,6 +84,7 @@
                     <th>Escritura</th>
                     <th>Fecha Escritura</th>
                     <th></th>
+                    <th></th>
               			</tr>
           			</thead>
         		</table>  
@@ -142,7 +143,7 @@
           <div class="col-md-12">
             <div class="portlet-body form">
               <div class="form-body">
-                <h4 class="form-section"><strong>Enajenantes</strong></h4>
+                <h4 class="form-section"><strong>Enajenante</strong></h4>
               </div>
             </div>
           </div>
@@ -269,7 +270,7 @@
     </div>
 </div>
 <input type="jsonCode" name="jsonCode" id="jsonCode" hidden="true">
-<input type="text" name="id_registro" id="id_registro" hidden="true">
+<input type="text" name="id_registro" id="id_registro" hidden="true" value="[]">
 <input type="text" name="required_docs" id="required_docs" hidden="true">
 <input type="text" name="id_mensaje" id="id_mensaje" hidden="true">
 <input type="text" name="id_ticket" id="id_ticket" hidden="true">
@@ -294,6 +295,7 @@
 
   function updatePermisos(id,folio,status)
   { 
+    console.log(folio);
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
     //$('#portlet-update').modal('show');    
@@ -311,7 +313,7 @@
        labl.textContent="Deshabilitar";
        $('#portlet-update').modal('show');    
     }
-    document.getElementById("id_registro").value=folio;
+    document.getElementById("id_registro").value=JSON.stringify(folio);
     document.getElementById("id_mensaje").value=id;
     document.getElementById("required_docs").value=status;
   }
@@ -325,11 +327,11 @@
     if(required_docs==1)
     {
       $("#row_"+id).empty(); 
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"'>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+JSON.stringify(id_registro)+","+required_docs+")' id='check_"+id+"'>");
       $('#check_'+id).prop('checked', true);
     }else{
       $("#row_"+id).empty();       
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"' checked>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+JSON.stringify(id_registro)+","+required_docs+")' id='check_"+id+"' checked>");
        $('#check_'+id).prop('checked', false);
     }
      $("[name='check_permiso']").bootstrapSwitch();
@@ -339,13 +341,14 @@
   {
     var id_=$("#id_mensaje").val();
     var id_registro=$("#id_registro").val();
+    console.log(id_registro);
     var docs=null;
     if($("#check_"+id_).prop("checked"))
     { docs=1; }
       $.ajax({
            method: "POST", 
            url: "{{ url()->route('solicitud-update-permisos') }}",
-           data: {id:id_registro,required_docs:docs,_token:'{{ csrf_token() }}'} })
+           data: {id:JSON.stringify(id_registro),required_docs:docs,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
             if(response.status=='400')
               {
@@ -440,7 +443,10 @@
                 { "data":"num_notaria"},
                 { "data":"notario"},
                 { "data":"escritura"},
-                { "data":"fecha_escritura"},
+                { "data":"fecha_escritura"},{
+                  "data": "clave",
+                  "render": getTemplatePermisos
+                },
                 {
                   "data": "clave",
                   "render": getTemplateAcciones
@@ -448,6 +454,7 @@
             ]
       });
     $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
+    $("[name='check_permiso']").bootstrapSwitch();
     await sleep(1000);
       if(dataS.length<6){
         dataS.forEach((grupo) =>{
@@ -455,25 +462,23 @@
         });
       }
   }
-function getTemplateAcciones( data, type, row, meta){
-    var  color_btn='red';
-    var  label_btn='Asignado';
-    var val=0;
-     row.grupo.forEach( (solicitud) =>{ 
-     // console.log(solicitud.attach);
-      if(solicitud.attach!=null){
-        val=1;
-      }
 
-     }); 
-    // console.log(val);
-      let botonAtender ='<a class="btn btn-icon-only green" data-toggle="modal" data-original-title="" title="Ver Archivo" onclick="verArchivo(\'\',\'\',\'\',\'\',\''+row.grupo[0].id+'\',null)"><i class="fa  fa-file"></i> </a>';
-      if(val==1)
-      {
-        botonAtender='';
-      }
-      return botonAtender;
+  function getTemplateAcciones( data, type, row, meta){
+    let botonAtender ='<td><a class="btn btn-icon-only green" data-toggle="modal" data-original-title="" title="Ver Archivo" onclick="verArchivo(\''+row.file_data+'\',\''+row.file_name+'\',\''+row.file_extension+'\',\''+row.grupo[0].id+'\',\''+row.id_mensaje+'\')"><i class="fa  fa-file"></i> </a></td>';
+
+    return botonAtender;
+  }
+  function getTemplatePermisos( data, type, row, meta){
+    if(row.grupo[0].required_docs==1){
+      checked="checked";
+    }else{
+      checked="";
     }
+    //console.log(row.tickets_id);
+    let botonAtender ='<div id="row_'+row.id_mensaje+'"><input type="checkbox"   data-toggle="modal" href="#portlet-update" class="make-switch" data-on-color="success" data-off-color="danger"name="check_permiso" onchange="updatePermisos('+row.id_mensaje+','+JSON.stringify(row.tickets_id)+','+row.grupo[0].required_docs+')" id="check_'+row.id_mensaje+'" '+checked+'></div>';
+
+    return botonAtender;
+  }
      function buildTemplateChild(){
       var table = $('#example').DataTable();
           var tr = $(this).parents('tr');
@@ -483,31 +488,27 @@ function getTemplateAcciones( data, type, row, meta){
             if ( row.child.isShown() ) {
                 row.child.hide();
                 tr.removeClass('shown');
-              $("#iconShow-" + row.data().id_mensaje).addClass("fa-plus").removeClass("fa-minus");
+              $("#iconShow-" + row.data().clave).addClass("fa-plus").removeClass("fa-minus");
             } else {
-                $("#iconShow-" + row.data().id_mensaje).removeClass("fa-plus").addClass("fa-minus");
+                $("#iconShow-" + row.data().clave).removeClass("fa-plus").addClass("fa-minus");
                 row.child( "<div style='margin-left:15px; margin-right:15px;'>"  + format(row.data()) + "</div>").show();
                 tr.addClass('shown');
             }
         }
-        $("[name='check_permiso']").bootstrapSwitch();
     }
 
      function format ( d) { 
       var input_check="";            
       var valid='0';            
-       html = "<table class='table table-hover'><thead><tr><th></th><th>Tramite ID</th><th>Folio Pago</th><th>FSE</th><th>Estatus</th><th>Descripción</th><th>Fecha Ingreso</th><th width='15%' align='center'>Permiso descarga </th><th></th><th></th></tr></thead>  "; 
+       html = "<table class='table table-hover'><thead><tr><th></th><th>Tramite ID</th><th>Folio Pago</th><th>FSE</th><th>Estatus</th><th>Enajenante</th><th>Fecha Ingreso</th><th align='center'></th><th></thead>  "; 
       var exist=0;    
       d.grupo.forEach( (solicitud) =>{ 
-         var verArchivo='<a class="btn btn-icon-only green" data-toggle="modal" data-original-title="" title="Ver Archivo" onclick="verArchivo(\''+solicitud.file_data+'\',\''+solicitud.file_name+'\',\''+solicitud.file_extension+'\',\''+solicitud.attach+'\',\''+solicitud.id+'\',\''+solicitud.id_mensaje+'\')"><i class="fa  fa-file"></i> </a>';
-          if(solicitud.attach==null || solicitud.attach=="null")
-          {
-            verArchivo="";
-          }
-          if(solicitud.required_docs==1){
-            checked="checked";
-          }else{
-            checked="";
+         var Respose=$.parseJSON(solicitud.info);
+         var enajenante='';
+         if ( typeof Respose.enajenante !=="undefined") {
+          if ( typeof Respose.enajenante.datosPersonales !=="undefined") {
+              enajenante= Respose.enajenante.datosPersonales["nombre"] +" "+Respose.enajenante.datosPersonales["apPat"] +" "+  Respose.enajenante.datosPersonales["apMat"];            
+            }
           }
          let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_mensaje  +"' class='fa fa-plus'></a>" : '';
         html += '<tr id="trchild-' + solicitud.id_mensaje +'" ><td style="width:3%;">' + tdShowHijas +'</td>'
@@ -515,10 +516,8 @@ function getTemplateAcciones( data, type, row, meta){
           +'<td>'+solicitud.id_transaccion_motor+'</td>'
           +'<td>'+solicitud.id_transaccion+'</td>'
           +'<td>'+solicitud.descripcion+'</td>'
-          +'<td>'+solicitud.mensaje+'</td>'
+          +'<td>'+enajenante+'</td>'
           +'<td>'+solicitud.created_at+'</td>'
-          +'<td id="row_'+solicitud.id_mensaje+'"><input type="checkbox"   data-toggle="modal" href="#portlet-update" class="make-switch" data-on-color="success" data-off-color="danger"name="check_permiso" onchange="updatePermisos('+solicitud.id_mensaje+','+solicitud.id+','+solicitud.required_docs+')" id="check_'+solicitud.id_mensaje+'" '+checked+'></td>'
-          +'<td>'+verArchivo+'</td>'
           +'<td><a class="btn btn-icon-only blue" href="#portlet-detalle" data-toggle="modal" data-original-title="" title="Detalles" onclick="findDetalles(\''+solicitud.id+'\')"><i class="fa fa-list"></i> </a></td></tr>';
       });      
       html +="</table>";
@@ -544,7 +543,6 @@ function getTemplateAcciones( data, type, row, meta){
   function saveFile()
   { 
      var file=$("#file").val();
-    var file_old=$("#file_old").val();
     var id_attch=$("#id_mensaje").val();
     var id_ticket=$("#id_ticket").val();
     var fileV = $("#file")[0].files[0];  
@@ -556,7 +554,6 @@ function getTemplateAcciones( data, type, row, meta){
     document.getElementById('file_save').value = 1;        
     var formdata = new FormData();
     formdata.append("ticket_id", id_ticket);
-    formdata.append("attch_old", file_old);
     formdata.append("id_mensaje", id_attch);
     formdata.append("file", fileV);
     formdata.append("_token",'{{ csrf_token() }}');
@@ -589,11 +586,10 @@ function getTemplateAcciones( data, type, row, meta){
   {
     $('#portlet-file-upload').modal('show');
   }
-  function verArchivo(file_data,file_name,file_extension,attach,id_ticket,id_mensaje_)
+  function verArchivo(file_data,file_name,file_extension,id_ticket,id_mensaje_)
   {
     document.getElementById("id_ticket").value=id_ticket;
     document.getElementById("id_mensaje").value=id_mensaje_;
-    document.getElementById("file_old").value=attach;
     document.getElementById("file_data").value=file_data;
     document.getElementById("file_extension").value=file_extension;
     document.getElementById("file_name").value=file_name;
@@ -660,12 +656,10 @@ function getTemplateAcciones( data, type, row, meta){
               }
             }
           }
-           $.each(Resp.camposConfigurados, function(i, item) {
-              if (item.tipo=="enajenante") {
-                $.each(item.valor.enajenantes, function(i2, item2) { 
-                  var num=i2+1;
-                  $("#addEnajenante").append("<div class='col-md-12'><strong>Enajenante "+ num +"</strong><hr></div>");
-                  for (e in item2.datosPersonales) {
+         
+              if (typeof (Resp.enajenante)!=="undefined") {
+                
+                  for (e in Resp.enajenante.datosPersonales) {
                     nCampo=e;
                     if(nCampo=="curp"){nCampo="CURP";}
                     if(nCampo=="rfc"){nCampo="RFC";}
@@ -674,28 +668,13 @@ function getTemplateAcciones( data, type, row, meta){
                     if(nCampo=="fechaNacimiento"){nCampo="Fecha de Nacimiento";}
                     if(nCampo=="apMat"){nCampo="Apellido Marteno";}
                     if(nCampo=="claveIne"){nCampo="Clave Ine";}
-                    $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+nCampo+":</strong></label><br><label>"+item2.datosPersonales[e]+"</label></div></div>"); 
+                    $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+nCampo+":</strong></label><br><label>"+Resp.enajenante.datosPersonales[e]+"</label></div></div>"); 
                   }
                    $("#addEnajenante").append("<div class='col-md-12'><hr></div>");
-                })      
+                      
               }
 
-            
-               if (item.tipo=="expedientes") {
-                $.each(item.valor.expedientes, function(i3, item3) { 
-                  for (exp in item3) {
-                   if(typeof (item3[exp]) !== 'object') {  
-                    $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+PrimeraLetra(exp)+":</strong></label><br><label>"+item3[exp]+"</label></div></div>"); 
-                    }else{
-                      if(typeof(item3[exp].nombre) !=="undefined")
-                      {
-                        $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+PrimeraLetra(exp)+":</strong></label><br><label>"+item3[exp].nombre +"</label></div></div>");
-                      }
-                    }
-                  }
-                })    
-              }
-            })
+             
            if ( typeof Resp.enajenante !=="undefined") {
               if ( typeof Resp.enajenante.datosParaDeterminarImpuesto !=="undefined") {
                 for (dat in Resp.enajenante.datosParaDeterminarImpuesto) {  
@@ -706,7 +685,7 @@ function getTemplateAcciones( data, type, row, meta){
                   if(dat_name=="pagoProvisional"){dat_name="Pago Provisional";}               
                   $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+dat_name+":</strong></label><br><label>"+Resp.enajenante.datosParaDeterminarImpuesto[dat]+"</label></div></div>"); 
                 }
-                 $("#addEnajenante").append("<div class='col-md-4'><div class='form-group'><label><strong>Fecha de Escritura:</strong></label><br><label>"+Resp.enajenante.detalle.Entradas.fecha_escritura+"</label></div></div>"); 
+                 $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>Fecha de Escritura:</strong></label><br><label>"+Resp.enajenante.detalle.Entradas.fecha_escritura+"</label></div></div>"); 
               }
             }
           for (n in Resp.campos) {  
@@ -714,6 +693,22 @@ function getTemplateAcciones( data, type, row, meta){
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
             }            
           }
+          $.each(Resp.enajenante, function(i, item) {
+               if (item.tipo=="expedientes") {
+                $.each(item.valor.expedientes, function(i3, item3) { 
+                  for (exp in item3) {
+                   if(typeof (item3[exp]) !== 'object') {  
+                    $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+PrimeraLetra(exp)+":</strong></label><br><label>"+item3[exp]+"</label></div></div>"); 
+                    }else{
+                      if(typeof(item3[exp].nombre) !=="undefined")
+                      {
+                        $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+PrimeraLetra(exp)+":</strong></label><br><label>"+item3[exp].nombre +"</label></div></div>");
+                      }
+                    }
+                  }
+                })    
+              }
+            })
           $.each(Resp.camposConfigurados, function(i, item) {
             if (item.tipo=="valuador") {
               if (item.valor.isValuable==true) { 

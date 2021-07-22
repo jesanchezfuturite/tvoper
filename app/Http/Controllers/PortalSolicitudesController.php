@@ -998,7 +998,7 @@ class PortalSolicitudesController extends Controller
       }else{
         $findFolios=$this->ticket->findWhere(["id"=>$request->folio]);       
         if($findFolios->count()>0){
-           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion]);
+           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion,"clave"=>$findFolios[0]->clave]);
           if($findFolios->count()>0){
             foreach ($findFolios as $f) {
               $folios []= $f->id;
@@ -1008,27 +1008,12 @@ class PortalSolicitudesController extends Controller
           }
         }
       }
-      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
       $clave_unique=array();
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
       foreach ($findTickets as $key => $value) {
-        $imageData='';
-        $attach=$value["attach"];
-        $file_name=explode("/",$attach);        
-        $name=$file_name[count($file_name)-1];
-        if($attach<>null)
-        {          
-          $extension=explode(".",$name); 
-          $extension=$extension[count($extension)-1];
-          if (File::exists(storage_path('app/'.$name))){
-            $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
-          }
-          $value=array_merge($value,array('file_data' =>$imageData ));
-          $value=array_merge($value,array('file_extension' =>$extension ));
-        }
-        $value=array_merge($value,array('file_name' =>$name ));
-        $resp []=$value;
-        $clave_unique []=$value["clave"];
+            $clave_unique []=$value["clave"];
       }
+      
       $clave_unique=array_unique($clave_unique);
       foreach ($clave_unique as $k) {
         $id_transaccion_motor="";
@@ -1039,7 +1024,8 @@ class PortalSolicitudesController extends Controller
         $Escritura="";
         $info=array();
         $grupo=array();
-        foreach ($resp as $e => $v) {
+        $tickets_id=array();
+        foreach ($findTickets as $e => $v) {
           if($k==$v["clave"])
           {
             $id_transaccion_motor=$v["id_transaccion_motor"];
@@ -1058,8 +1044,32 @@ class PortalSolicitudesController extends Controller
               }
              } 
             $grupo []=$v;
+            $tickets_id []=$v["id"];
           }           
         }
+        $file_data="";
+        $file_extension="";
+        $file_name="";
+        $id_mensaje="";
+        $findAttach=$this->mensajes->WhereIn('ticket_id',$tickets_id)->where('attach','<>',null)->where('status',"1")->get();
+        foreach ($findAttach as $key => $value) {
+          $imageData='';
+          
+          $attach=$value["attach"];
+          $file_name=explode("/",$attach);        
+          $file_name=$file_name[count($file_name)-1];
+          if($attach<>null)
+          { 
+            $id_mensaje=$value["id"];         
+            $extension=explode(".",$file_name); 
+            $file_extension=$extension[count($extension)-1];
+            if (File::exists(storage_path('app/'.$file_name))){
+              $imageData = base64_encode(file_get_contents(storage_path('app/'.$file_name)));
+            }
+            $file_data=$imageData;
+          }
+        }
+
         $response []=array(
           "clave"=> $k,
           "id_transaccion_motor"=> $id_transaccion_motor,
@@ -1068,6 +1078,11 @@ class PortalSolicitudesController extends Controller
           "notario"=> $notario,         
           "fecha_escritura"=> $FechaEscritura,         
           "escritura"=> $Escritura,         
+          "tickets_id"=> $tickets_id,
+          "id_mensaje"=> $id_mensaje,
+          "file_data"=>$file_data,
+          "file_extension"=>$file_extension,
+          "file_name"=>$file_name,       
           "grupo"=>$grupo
         );
       }
@@ -1083,17 +1098,21 @@ class PortalSolicitudesController extends Controller
   }
   public function updatePermisoSolicitud(Request $request)
   {
+    log::info($request->all());
     try {
-      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
-      $this->saveDocBitacora($request->id,"","Permiso ".(string)$request->required_docs);
-         return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>"Actualizado correctamente"
-        ]);  
+      $folios=json_decode(json_decode($request->id ));
+      log::info($folios);
+      foreach ($folios as $k) {
+        $this->saveDocBitacora($k,"","Permiso ".(string)$request->required_docs);
+      $response=$this->ticket->where("id",$k)->update(['required_docs'=>$request->required_docs]);
+
+      }
+      
+
+      return response()->json(["Code" => "200", "Message" =>"Actualizado correctamente" ]); 
+
     } catch (Exception $e) {
-     return response()->json(
-          [
+     return response()->json([
             "Code" => "400",
             "Message" =>"Error al actualizar permisos"
         ]);   
