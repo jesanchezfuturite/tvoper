@@ -331,12 +331,12 @@ class Conciliacion extends Command
                                 ];
 
                 
-                            try{
-                                 $this->anomaliasProceseed($data);                               
+                            try{ 
                                 $this->ps->create( $data );
+                                $this->anomaliasProceseed($data); 
                                 $this->anomaliasMontoDif($data);
                             }catch( \Exception $e ){
-                                Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters');    
+                                Log::info('[Conciliacion:ProcessFiles] - Error(1) al guardar registros en oper_processedregisters'.$e);    
                             }
                         } 
                     }
@@ -402,8 +402,8 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
-                                $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasProceseed($data); 
                                 $this->anomaliasMontoDif($data);
                                 
                             }
@@ -492,8 +492,8 @@ class Conciliacion extends Command
 
                         if((int)$data["transaccion_id"] > 0)
                         {
-                            $this->anomaliasProceseed($data);                               
                             $this->ps->create( $data );
+                            $this->anomaliasProceseed($data); 
                             $this->anomaliasMontoDif($data);
                         }
 
@@ -586,8 +586,8 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
-                                $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasProceseed($data); 
                                 $this->anomaliasMontoDif($data);
                             }
 
@@ -681,8 +681,8 @@ class Conciliacion extends Command
 
                             if((int)$data["transaccion_id"] > 0)
                             {
-                                 $this->anomaliasProceseed($data);                               
                                 $this->ps->create( $data );
+                                $this->anomaliasProceseed($data); 
                                 $this->anomaliasMontoDif($data);
                             }
 
@@ -873,13 +873,14 @@ class Conciliacion extends Command
 
     private function anomaliasProceseed($data)
     {
-        if($data["origen"]=="11"){
+        if($data["origen"]>1){
             $findExist=$this->ps->findWhere(["referencia"=>$data["referencia"]]);
-            if($findExist->count()>0)
+            if($findExist->count()>1)
             {
                 //log::info("1");
                 $result= $this->anomaliasbd->create([
                     "origen"=>$data["origen"],
+                    "id_processed"=>$findExist[$findExist->count()-1]->id,
                     "referencia"=>$data["referencia"],
                     "transaccion_id"=>$data["transaccion_id"],
                     "monto"=>$data["monto"],
@@ -892,7 +893,7 @@ class Conciliacion extends Command
                 ]);
             }
         }else{
-            $findExist=$this->ps->findWhere([ "transaccion_id"=>$data["transaccion_id"] ]);
+            /*$findExist=$this->ps->findWhere([ "transaccion_id"=>$data["transaccion_id"] ]);
             if($findExist->count()>0)
             {
                 $this->anomaliasbd->create([
@@ -906,8 +907,8 @@ class Conciliacion extends Command
                 "fecha_ejecucion"=>$data["fecha_ejecucion"],
                 "fecha_pago"=>$data["year"] . "-" . $data["month"] . "-" . $data["day"],
                 "estatus_anomalia"=>"1"
-                ]);                
-            }
+                ]);              
+            }*/  
         }
     }
     private function anomaliasMontoDif($data)
