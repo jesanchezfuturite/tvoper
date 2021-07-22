@@ -22,6 +22,9 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
+use App\Repositories\PortalDocumentosBitacoraRepositoryEloquent;
+use Illuminate\Routing\UrlGenerator;
+use App\Repositories\PortalTramitesRepositoryEloquent;
 
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
@@ -50,7 +53,9 @@ class PortalSolicitudesController extends Controller
   protected $msjprelaciondb;
   protected $solicitudesMotivos;
   protected $motivos;
-
+  protected $docbitacoradb;
+  protected $url;
+  protected$tramitesdb;
 
 
   public function __construct(
@@ -68,8 +73,10 @@ class PortalSolicitudesController extends Controller
      PortalsolicitudesresponsablesRepositoryEloquent $solicitudrespdb,
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
-     MotivosRepositoryEloquent $motivos
-
+     MotivosRepositoryEloquent $motivos,
+     PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
+     UrlGenerator $url,
+     PortalTramitesRepositoryEloquent $tramitesdb
     )
     {
       // $this->middleware('auth');
@@ -88,7 +95,9 @@ class PortalSolicitudesController extends Controller
       $this->msjprelaciondb = $msjprelaciondb;
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
-
+      $this->docbitacoradb = $docbitacoradb;
+      $this->url = $url;
+      $this->tramitesdb = $tramitesdb;
 
     }
 
@@ -921,17 +930,104 @@ class PortalSolicitudesController extends Controller
     return view('portal/permisosdocumentos');
   }
 
-
+  public function saveFile(Request $request)
+  {
+    
+    try {
+      $fech=Carbon::now();
+      $fech=$fech->format("Hms");
+      $file = $request['file'];
+      $extension = $file->getClientOriginalExtension();
+      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $name = $nombre . "-" . $request->ticket_id . $fech . "." . $extension;
+      $attach = $this->url->to('/') . '/download/'.$name;
+      $path=storage_path('app/'.$name);
+      \Storage::disk('local')->put($name,  \File::get($file));
+      if($request->id_mensaje=='null')
+      {
+        $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"DOCUMENTO CARGADO DESDE EL ADMIN"]);
+        $this->saveDocBitacora($request->ticket_id,$attach,"nuevo documento");
+      }else{
+        $this->mensajes->update(["attach"=>$attach],$request->id_mensaje);
+        $this->saveDocBitacora($request->ticket_id,$request->attch_old,"documento Anterior");
+        $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      }
+       $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+      return response()->json([
+        "Code" => "200",
+        "Message" => "Guardado correctamente",
+        "file_name_new"=>$name,
+        "file_data"=>$imageData
+      ]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveFile ").$e;
+      return response()->json([
+        "Code" => "400",
+        "Message" => "Error al guardar"
+      ]);
+    }
+  }
+  public function saveDocBitacora($ticket_id,$attch,$descripcion)
+  {
+    try {
+      $this->docbitacoradb->create(["ticket_id"=>$ticket_id,"attach"=>$attch,"descripcion"=>$descripcion,"user_id"=>auth()->user()->id]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveDocBitacora ").$e;
+    }
+  }
   public  function findTicketidFolio(Request $request)
   {
     try {
+      $folios=array();
       $response=array();
-      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
-      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+      if(strlen($request->folio)<10)
+      {
+        $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
+        if($findFolios->count()>0){ 
+          foreach ($findFolios as $f) {
+            $folios []= $f->id;
+          }
+        }else{
+          return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>[]
+          ]);
+        }
+      }else{
+        $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
+        if($findFolios->count()>0){
+          $folios=json_decode($findFolios[0]->id_ticket);
+        }else{
+          return response()->json(
+          [
+            "Code" => "200",
+            "Message" =>[]
+          ]);
+        }
+      }
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
 
-      $response=array_merge($response,$findClav);
-      $response=array_merge($response,$findid);
-     
+      foreach ($findTickets as $key => $value) {
+        $imageData='';
+        $attach=$value["attach"];
+        $file_name=explode("/",$attach);        
+        $name=$file_name[count($file_name)-1];
+        if($attach<>null)
+        {
+          
+          $extension=explode(".",$name); 
+          $extension=$extension[count($extension)-1];
+          if (File::exists(storage_path('app/'.$name))){
+            $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+          }
+          $value=array_merge($value,array('file_data' =>$imageData ));
+          $value=array_merge($value,array('file_extension' =>$extension ));
+
+        }
+        $value=array_merge($value,array('file_name' =>$name ));
+        $response []=$value;
+      }
         return response()->json(
           [
             "Code" => "200",
@@ -949,6 +1045,7 @@ class PortalSolicitudesController extends Controller
   {
     try {
       $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
+      $this->saveDocBitacora($request->id,"","Permiso ".(string)$request->required_docs);
          return response()->json(
           [
             "Code" => "200",

@@ -46,4 +46,8 @@ class PortalSolicitudesTicket extends Model implements Transformable
     }
 
 
+    public function archivos(){
+        return $this->mensajes();
+    }
+
 }
