@@ -1188,7 +1188,8 @@
             obj.monto_operacion_ae="null";
             obj.municipio_expediente="null";
             obj.no_expediente_catastral="null";
-            obj.direccion="null";                
+            obj.direccion="null";   
+            obj.valor_catastral="null";             
             obj.curp_enajenante = "null";
             obj.rfc_enajenante = "null";
             obj.nombre_enajenante = "null";
@@ -1309,20 +1310,28 @@
 
                         var direcciones= item.info.campos["Expedientes"].expedientes;
                         if(direcciones){ 
-                            let direccionaRR = []
+                            let direccionaRR = [];
+                            let valorCatastral = [];
                             $.each(direcciones, function( key, value ) {
                                 if("datos_direccion" in value.direccion){
                                     var dir = value.direccion.datos_direccion[0];                           
                                     var mun = value.direccion;
                                     var direccion = dir.calle+" "+dir.colonia+" "+ dir.manzana+" "+dir.lote+" "+dir.cp+" "+mun.nombre_municipio+" "+mun.nombre_EntFed;
                                     direccionaRR.push(direccion);   
-                                }                         
+                                }   
+
+                                if("datos_catastrales" in value.direccion){
+                                    var catastral = value.direccion.datos_catastrales[0];
+                                    valorCatastral.push(catastral.valor_catastral);   
+                                }              
                                                         
                             
                             });
-                            obj.direccion= direccionaRR.join(", ")
+                            obj.direccion= direccionaRR.join(", ");
+                            obj.valor_catastral= valorCatastral.join(", ");
                             
                         }
+
                         
                     }
                 }
