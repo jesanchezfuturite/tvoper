@@ -1098,7 +1098,7 @@ class PortalSolicitudesController extends Controller
   }
   public function updatePermisoSolicitud(Request $request)
   {
-    log::info($request->all());
+    //log::info($request->all());
     try {
       $folios=json_decode(json_decode($request->id ));
       log::info($folios);
