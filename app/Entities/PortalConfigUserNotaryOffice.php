@@ -29,6 +29,10 @@ class PortalConfigUserNotaryOffice extends Model implements Transformable
     ];
     
     protected $table = "config_user_notary_offices";
+
+    public function notary(){
+        return $this->hasMany('App\Entities\PortalNotaryOffices', 'id', 'notary_office_id')->select(['id','notary_number','titular_id']);
+    }
 	
 
 }
