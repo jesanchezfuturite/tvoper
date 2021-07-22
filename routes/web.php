@@ -492,4 +492,5 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/descargar-excel-notaria', 'ReportesController@excelNotaria')->name("export-notaria");
     Route::get('/file/{file?}' , 'ReportesController@downloadFile')->name('file');
     
+    Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
 });
