@@ -1322,7 +1322,9 @@
 
                                 if("datos_catastrales" in value.direccion){
                                     var catastral = value.direccion.datos_catastrales[0];
-                                    valorCatastral.push(catastral.valor_catastral);   
+                                    var valor = catastral.valor_catastral;
+                                    var newValor = Number((valor).replace(/[^0-9.-]+/g,""));
+                                    valorCatastral.push(newValor);   
                                 }              
                                                         
                             
