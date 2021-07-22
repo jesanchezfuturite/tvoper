@@ -5,8 +5,9 @@ use DB;
 use App\Entities\PortalNotaryOffices;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class NotaryExport implements FromView
+class NotaryExport implements FromView, ShouldAutoSize
 {
     // use Exportable;
 
