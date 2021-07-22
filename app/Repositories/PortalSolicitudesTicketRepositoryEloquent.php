@@ -54,7 +54,10 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
         ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')        
         ->leftjoin('solicitudes_mensajes','solicitudes_mensajes.ticket_id','=','solicitudes_ticket.id')   
         ->leftjoin('operacion.oper_transacciones','operacion.oper_transacciones.id_transaccion','=','solicitudes_ticket.id_transaccion')   
-        ->leftjoin('solicitudes_tramite','solicitudes_tramite.id_transaccion_motor','=','operacion.oper_transacciones.id_transaccion_motor')   
+        ->leftjoin('solicitudes_tramite','solicitudes_tramite.id_transaccion_motor','=','operacion.oper_transacciones.id_transaccion_motor')
+        ->leftJoin('users', 'users.id', 'solicitudes_ticket.user_id')
+        ->leftJoin('config_user_notary_offices', 'config_user_notary_offices.user_id', 'solicitudes_ticket.user_id')
+        ->leftJoin('notary_offices', 'notary_offices.id', 'config_user_notary_offices.notary_office_id')  
         ->where('solicitudes_ticket.status','=','2')    
         ->where('solicitudes_ticket.doc_firmado','<>',null)    
         ->where('solicitudes_mensajes.status','=','1')    
@@ -82,7 +85,11 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
             'solicitudes_mensajes.id as id_mensaje',
             'solicitudes_mensajes.mensaje',
             'solicitudes_mensajes.attach',
-            'solicitudes_tramite.id_transaccion_motor'
+            'solicitudes_tramite.id_transaccion_motor',
+            'users.name as name_notary',
+            'users.mothers_surname as ap_mat_notary',
+            'users.fathers_surname as ap_pat_notary',
+            'notary_offices.notary_number'
         )->get();
         return $data;
     }

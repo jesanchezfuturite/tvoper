@@ -943,7 +943,7 @@ class PortalSolicitudesController extends Controller
       $attach = $this->url->to('/') . '/download/'.$name;
       $path=storage_path('app/'.$name);
       \Storage::disk('local')->put($name,  \File::get($file));
-      if($request->id_mensaje!='null')
+      if($request->id_mensaje!=null)
       {
         $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
       }
@@ -976,8 +976,9 @@ class PortalSolicitudesController extends Controller
   {
     try {
       $folios=array();
+      $resp=array();
       $response=array();
-      if(strlen($request->folio)<10)
+      if($request->tipo=="fse")
       {
         $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
         if($findFolios->count()>0){ 
@@ -985,34 +986,37 @@ class PortalSolicitudesController extends Controller
             $folios []= $f->id;
           }
         }else{
-          return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>[]
-          ]);
+          return response()->json(["Code" => "200","Message" =>[]]);
         }
-      }else{
+      }else if($request->tipo=="folio_pago"){
         $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
         if($findFolios->count()>0){
           $folios=json_decode($findFolios[0]->id_ticket);
         }else{
-          return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>[]
-          ]);
+           return response()->json(["Code" => "200","Message" =>[]]);
+        }
+      }else{
+        $findFolios=$this->ticket->findWhere(["id"=>$request->folio]);       
+        if($findFolios->count()>0){
+           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion]);
+          if($findFolios->count()>0){
+            foreach ($findFolios as $f) {
+              $folios []= $f->id;
+            }
+          }else{
+             return response()->json(["Code" => "200","Message" =>[]]);
+          }
         }
       }
       $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
-
+      $clave_unique=array();
       foreach ($findTickets as $key => $value) {
         $imageData='';
         $attach=$value["attach"];
         $file_name=explode("/",$attach);        
         $name=$file_name[count($file_name)-1];
         if($attach<>null)
-        {
-          
+        {          
           $extension=explode(".",$name); 
           $extension=$extension[count($extension)-1];
           if (File::exists(storage_path('app/'.$name))){
@@ -1020,16 +1024,55 @@ class PortalSolicitudesController extends Controller
           }
           $value=array_merge($value,array('file_data' =>$imageData ));
           $value=array_merge($value,array('file_extension' =>$extension ));
-
         }
         $value=array_merge($value,array('file_name' =>$name ));
-        $response []=$value;
+        $resp []=$value;
+        $clave_unique []=$value["clave"];
       }
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>$response
-        ]);  
+      $clave_unique=array_unique($clave_unique);
+      foreach ($clave_unique as $k) {
+        $id_transaccion_motor="";
+        $id_transaccion="";
+        $num_notaria="";
+        $notario="";
+        $FechaEscritura="";
+        $Escritura="";
+        $info=array();
+        $grupo=array();
+        foreach ($resp as $e => $v) {
+          if($k==$v["clave"])
+          {
+            $id_transaccion_motor=$v["id_transaccion_motor"];
+            $id_transaccion=$v["id_transaccion"];
+            $num_notaria=$v["notary_number"];
+            $notario=$v["name_notary"] ." ". $v["ap_pat_notary"] ." ". $v["ap_mat_notary"];
+            $info=json_decode($v["info"]);
+            foreach ($info->camposConfigurados as $i) {
+              if($i->tipo=="enajenante")
+              {
+                $FechaEscritura=$i->valor->enajenantes[0]->detalle->Entradas->fecha_escritura;
+              }
+              if($i->nombre=="Escritura")
+              {
+                $Escritura= $i->valor;
+              }
+             } 
+            $grupo []=$v;
+          }           
+        }
+        $response []=array(
+          "clave"=> $k,
+          "id_transaccion_motor"=> $id_transaccion_motor,
+          "id_transaccion"=> $id_transaccion,         
+          "num_notaria"=> $num_notaria,         
+          "notario"=> $notario,         
+          "fecha_escritura"=> $FechaEscritura,         
+          "escritura"=> $Escritura,         
+          "grupo"=>$grupo
+        );
+      }
+      return $response;
+
     } catch (Exception $e) {
      return response()->json(
           [
