@@ -784,13 +784,16 @@ function configprelacion()
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
             btn_revisar='';
           } 
-          if(bitacora.permiso==0 && index==bitacora_end)
+          if(bitacora.responsables.permiso==0 && index==bitacora_end)
           {
              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
             btn_revisar='';
-          }else{
+          }
+          if(bitacora.responsables.permiso==1 && index==bitacora_end)
+          {
             valid=1;
           }
+          console.log(valid);
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
