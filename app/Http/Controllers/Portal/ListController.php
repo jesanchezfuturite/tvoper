@@ -147,6 +147,28 @@ class ListController extends Controller {
 										""
 									)
 								),
+								(
+									IF(
+										JSON_EXTRACT(ticket.info,"$.detalle") IS NOT NULL,
+										CONCAT(
+											",",
+											"\"detalle\":",
+											JSON_EXTRACT(ticket.info,"$.detalle")
+										),
+										""
+									)
+								),
+								(
+									IF(
+										JSON_EXTRACT(ticket.info,"$.detalleAnterior") IS NOT NULL,
+										CONCAT(
+											",",
+											"\"detalleAnterior\":",
+											JSON_EXTRACT(ticket.info,"$.detalleAnterior")
+										),
+										""
+									)
+								),
 								",\"doc_firmado\":",
 								(
 									IF(
