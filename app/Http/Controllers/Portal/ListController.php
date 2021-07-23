@@ -46,8 +46,8 @@ class ListController extends Controller {
 		$skip = $currentPage == 1 ? 0 : $limit*($currentPage-1);
 
 		$currentDate = date('Y-m-d');
-		$startDate = $request->start_date ?? date('Y-m-d H:i:s', strtotime('-30 days '.$currentDate." 00:00:00"));
-		$endDate = $request->end_date ?? date('Y-m-d H:i:s', strtotime($currentDate." 23:59:59"));
+		$startDate = $request->start_date ? date('Y-m-d H:i:s', strtotime($request->start_date.' 00:00:00')) : date('Y-m-d H:i:s', strtotime('-30 days '.$currentDate." 00:00:00"));
+		$endDate = $request->end_date ? date('Y-m-d H:i:s', strtotime($request->end_date.' 23:59:59')) : date('Y-m-d H:i:s', strtotime($currentDate." 23:59:59"));
 		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 404);;
 
 		$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
