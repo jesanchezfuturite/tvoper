@@ -1101,7 +1101,7 @@ class PortalSolicitudesController extends Controller
     //log::info($request->all());
     try {
       $folios=json_decode(json_decode($request->id ));
-      log::info($folios);
+      //log::info($folios);
       foreach ($folios as $k) {
         $this->saveDocBitacora($k,"","Permiso ".(string)$request->required_docs);
       $response=$this->ticket->where("id",$k)->update(['required_docs'=>$request->required_docs]);

@@ -286,7 +286,7 @@
 
   function updatePermisos(id,folio,status)
   { 
-    console.log(folio);
+    //console.log(folio);
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
     //$('#portlet-update').modal('show');    
@@ -304,7 +304,7 @@
        labl.textContent="Deshabilitar";
        $('#portlet-update').modal('show');    
     }
-    document.getElementById("id_registro").value=folio;
+    document.getElementById("id_registro").value=JSON.stringify(folio);
     document.getElementById("id_mensaje").value=id;
     document.getElementById("required_docs").value=status;
   }
@@ -318,11 +318,11 @@
     if(required_docs==1)
     {
       $("#row_"+id).empty(); 
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+JSON.stringify(id_registro)+","+required_docs+")' id='check_"+id+"'>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"'>");
       $('#check_'+id).prop('checked', true);
     }else{
       $("#row_"+id).empty();       
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+JSON.stringify(id_registro)+","+required_docs+")' id='check_"+id+"' checked>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"' checked>");
        $('#check_'+id).prop('checked', false);
     }
      $("[name='check_permiso']").bootstrapSwitch();
@@ -332,7 +332,7 @@
   {
     var id_=$("#id_mensaje").val();
     var id_registro=$("#id_registro").val();
-    console.log(id_registro);
+    //console.log(id_registro);
     var docs=null;
     if($("#check_"+id_).prop("checked"))
     { docs=1; }
