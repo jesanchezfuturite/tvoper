@@ -79,6 +79,7 @@ class ListController extends Controller {
 				DB::raw('IF(ticket.por_firmar = 1, 1, 0) as por_firmar'),
 				DB::raw('IF(ticket.firmado = 1, 1, 0) as firmado'),
 				'servicio.Tipo_Descripcion as servicio',
+				'servicio.Tipo_Code as servicio_id',
 				'catalogo.titulo as catalogo_titulo',
 				DB::raw('
 					CONCAT(
