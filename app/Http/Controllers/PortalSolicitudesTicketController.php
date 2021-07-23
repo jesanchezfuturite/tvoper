@@ -1621,12 +1621,27 @@ class PortalSolicitudesTicketController extends Controller
 
     public function getNormales($folio, $idTicket){
       try {
+        //Agregar validación para no agregar una complementaria sobre una normal si ya existe complementaria previa
+        $check = $this->ticket->where("ticket_padre", $idTicket)->get();
+        if($check->count()>0){
+          foreach ($check as $c) {
+            $info = $c->info;
+          }
+          $infoD = json_decode($info);
+          $complemento = $infoD->detalle->Complementaria->{'Folio de la declaracion inmediata anterior'};
+          if($complemento == $folio){
+            $response = "Ya existe una declaración con este Folio ".$folio." y Ticket ".$idTicket;
+            return $response;
+          }
+        }
+
 
         $id_tramite = env("TRAMITE_5_ISR");
         $solicitud = $this->solTramites->where("id_transaccion_motor", $folio)->get();
         foreach ($solicitud as $s) {
           $id_transaccion = $s->id;
           $catalogo_id = $s->catalogo_id;
+
         }
         //Validar catalogo_id
         //Con el id_transaccion se buscan los registros existentes dentro de solicitudes_ticket
