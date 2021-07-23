@@ -83,7 +83,7 @@
                     <th>Notario</th>
                     <th>Escritura</th>
                     <th>Fecha Escritura</th>
-                    <th></th>
+                    <th>Permisos</th>
                     <th></th>
               			</tr>
           			</thead>
