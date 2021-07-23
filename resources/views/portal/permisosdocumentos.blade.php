@@ -126,78 +126,69 @@
         <input type="text" name="idTicket" id="idTicket" hidden="true">
         <div class="row">
           <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Detalles</strong></h4>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                 <h4><strong>Detalles</strong></h4>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="detalles">
-            <div id="addDetalles">
-            </div>
+              <div class="panel-body" id="detalles" >
+                <div id="addDetalles">
+                </div>
+              </div>
+            </div>             
           </div>    
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Enajenante</strong></h4>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                 <h4><strong>Enajenante</strong></h4>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="enajenante">
-            <div id="addEnajenante">
-            </div>
+              <div class="panel-body" id="enajenante">
+                <div id="addEnajenante">
+                </div>
+              </div>
+            </div>            
           </div>    
         </div>
         <div class="row divSolicitante">
-          <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos del solicitante</strong></h4>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="solicitante">
-            <div id="addSolicitante">
-            </div>
+          <div class="col-md-12" >
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="form-section"><strong>Datos del solicitante</strong></h4>
+                </div>
+                <div class="panel-body"id="solicitante">
+                   <div id="addSolicitante">
+                  </div>
+                </div>
+              </div>            
           </div>    
         </div>
         <div class="row divNotaria">
-          <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos del Notario</strong></h4>
-              </div>
-            </div>
+          <div class="col-md-12">           
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="form-section"><strong>Datos del Notario</strong></h4>
+                </div>
+                <div class="panel-body"id="notaria">
+                   <div id="addnotaria">
+                  </div>
+                </div>
+            </div> 
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="notaria">
-            <div id="addnotaria">
-            </div>
-          </div>    
         </div>
         <div class="row divValuador">
           <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos del Valuador</strong></h4>
-              </div>
-            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="form-section"><strong>Datos del Valuador</strong></h4>
+                </div>
+                <div class="panel-body"id="valuador">
+                   <div id="addValuador">
+                  </div>
+                </div>
+            </div> 
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="valuador">
-            <div id="addValuador">
-            </div>
-          </div>    
         </div>
       </div>
       <div class="modal-footer">
@@ -313,7 +304,7 @@
        labl.textContent="Deshabilitar";
        $('#portlet-update').modal('show');    
     }
-    document.getElementById("id_registro").value=JSON.stringify(folio);
+    document.getElementById("id_registro").value=folio;
     document.getElementById("id_mensaje").value=id;
     document.getElementById("required_docs").value=status;
   }
@@ -693,7 +684,7 @@
               $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+Resp.campos[n]+"</label></div></div>");  
             }            
           }
-          $.each(Resp.enajenante, function(i, item) {
+          $.each(Resp.camposConfigurados, function(i, item) {
                if (item.tipo=="expedientes") {
                 $.each(item.valor.expedientes, function(i3, item3) { 
                   for (exp in item3) {
