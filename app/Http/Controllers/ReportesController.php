@@ -101,7 +101,8 @@ class ReportesController extends Controller
     public function downloadFile($file)
     {
       try{
-        $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$file;        
+        $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+        $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$filename;        
         return redirect()->to($url);
      
 
