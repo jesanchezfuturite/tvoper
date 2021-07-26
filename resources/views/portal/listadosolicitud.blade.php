@@ -350,6 +350,28 @@
         </div>
     </div>
 </div>
+<div id="portlet-revertTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Revertir Solicitudes: <label id="lbl_revert_tickets" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="revertirTicket()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="portlet-prelacion" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -400,10 +422,11 @@
       configprelacion();
     }); 
   $("#noSolicitud").keypress(function(event) {
-            if (event.keyCode === 13) {
-               findSolicitudes();
-            }
-        });
+    if (event.keyCode === 13) {
+       findSolicitudes();
+    }
+  });
+  console.log("{{$atencion}}");
 function configprelacion()
 {
   $.ajax({
@@ -553,7 +576,9 @@ function configprelacion()
                 for(k in response[n].grupo)
                 {
                   tickets_id.push(response[n].grupo[k].id);
-                  catalogos_id.push(response[n].grupo[k].catalogo);
+                  var legt=response[n].grupo[k].bitacora.length-1;
+
+                  catalogos_id.push(response[n].grupo[k].bitacora[legt].catalogo);
                   if(response[n].grupo[k].status!="11"){
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }                  
@@ -590,7 +615,8 @@ function configprelacion()
             }
            response=objectResponse;
 
-          }       
+          }
+          console.log(response);     
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -717,8 +743,13 @@ function configprelacion()
                 
             }
         }
-        $("#select_"+row.data().grupo[0].grupo_clave).select2();
-       addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id)
+        
+        if(!{{$atencion}})
+        {
+          $("#select_"+row.data().grupo[0].grupo_clave).select2();
+          addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id);
+        }
+       
 
     }
   function getTemplateAcciones( data, type, row, meta){
@@ -776,7 +807,7 @@ function configprelacion()
               Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
             btn_revisar='';
           }  
-          if(solicitud.status=='1' && dist=='1'){
+          if(solicitud.status=='2' || solicitud.status=='3' && dist=='1'){
             exist+=1;  
           }
           if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
@@ -789,11 +820,15 @@ function configprelacion()
              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
             btn_revisar='';
           }
+          if(bitacora.id_estatus_atencion!="2")
+          {
+            btn_revisar='';
+          }
           if(bitacora.responsables.permiso==1 && index==bitacora_end)
           {
             valid=1;
           }
-          console.log(valid);
+          //console.log(valid);
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
@@ -830,21 +865,18 @@ function configprelacion()
         {
                   }*/
       });
+      console.log(exist);
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+","+JSON.stringify(d)+","+status_proceso+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
-        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\",\""+JSON.stringify(d.tickets_id)+"\","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
+        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d.tickets_id)+","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
         
         if(d.grupo[0].url_prelacion!=null && g_prelacion==1)
         { btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
           btn_cerrarTicket="";
-        }
-        if(d.grupo[0].url_prelacion==null)
-        {
-          url_prelacion='';
         }
         if(status_proceso!=2)
         {
@@ -866,8 +898,17 @@ function configprelacion()
          url_prelacion='';
          btn_cerrarTicket='';
         }
+        if({{$atencion}} && exist>0)
+        {
+          select_rechazos="";
+          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+")'>Revertir Estatus</a>";
+        }
         if(g_prelacion==1){
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+        }        
+        if(d.grupo[0].url_prelacion==null)
+        {
+          url_prelacion='';
         }
         html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th>"+btn_rechazo+"</th></tr>";
 
@@ -891,6 +932,54 @@ function configprelacion()
       .fail(function( msg ) {
         Command: toastr.warning("Error Rechazo", "Notifications") 
       })
+    }
+    function revertirStatus(tickets_id,data)
+    {     
+      response=[data];
+      var ids=[];
+      if(typeof response=== 'object'){
+        for (n in response) { 
+          for(k in response[n].grupo)
+          {   
+            distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
+            if(typeof distrito==="object")
+            {
+              if(distrito.clave=="1" && response[n].grupo[k].status=="2")
+              {
+                 ids.push(response[n].grupo[k].id);
+              }
+            }                                                   
+          } 
+        }
+      }
+      if(ids.length>0){
+        document.getElementById("lbl_revert_tickets").textContent=ids;
+        document.getElementById("ids").value=JSON.stringify(ids);
+         $('#portlet-revertTickets').modal('show');
+      }
+    }
+    function revertirTicket()
+    {
+      var ids=$("#ids").val();
+      $.ajax({
+      method: "post",            
+      url: "{{ url()->route('revertir-status') }}",
+      data: {id_ticket:ids,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+         if(response.Code=="200")
+            {
+              Command: toastr.success(response.Message, "Notifications")
+              findSolicitudes();
+              return;
+            }
+            else{
+              Command: toastr.warning("Ocurrio un Error", "Notifications")
+            } 
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+
     }
     function relacion_mult(grupo_clave,data,id_proceso)
     {
@@ -1074,7 +1163,7 @@ function configprelacion()
         return;
       }
       response=[data];
-      var tickets_id=[];
+      //var tickets_id=[];
       var ids=[];
       var grupo_clave="";
       if(typeof response=== 'object'){
@@ -1095,10 +1184,10 @@ function configprelacion()
 
       if(ids.length>0){
         document.getElementById("lbl_idsolicitudes").textContent=ids;
-        document.getElementById("ids").value=ids;
+        document.getElementById("ids").value=JSON.stringify(ids);
          $('#portlet-rechazar').modal('show');
          document.getElementById("idgrupo").value=id_transaccion;
-         document.getElementById("tickets_id").value=tickets_id;
+         document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
          document.getElementById("id_proceso").value=id_estatus_atencion;
       }
 
@@ -1107,7 +1196,7 @@ function configprelacion()
     {
       var id_transaccion=$("#idgrupo").val();
       var id_proceso=$("#id_proceso").val();
-      var ids=$("#ids").val();
+      var ids=$.parseJSON($("#ids").val());
       var tick_id=$.parseJSON($("#tickets_id").val());
       var estatus_=$("#select_"+id_transaccion).val();
       var mot=$("#select_"+id_transaccion+" option:selected").text();
@@ -1116,7 +1205,7 @@ function configprelacion()
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
-      //console.log(tick_id);
+      console.log(ids);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
@@ -1149,10 +1238,10 @@ function configprelacion()
       .fail(function( msg ) {
         Command: toastr.warning("Error Select", "Notifications") 
       })
-    }
-    
+    }    
     function conctenaM(municipio)
-    {var coma='';var Mp='';
+    {
+      var coma='';var Mp='';
       if(typeof municipio.nombre !=='undefined')
        {
         Mp=municipio.nombre;
