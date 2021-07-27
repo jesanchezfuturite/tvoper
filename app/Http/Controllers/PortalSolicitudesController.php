@@ -1542,17 +1542,31 @@ class PortalSolicitudesController extends Controller
   public function revertirStatus(Request $request){
     $user_id = auth()->user()->id;
     $tickets = $request->id_ticket;
+    $status = $request->status;
+    $estatus_mensaje = $status==1 ? "Abierto" : "EAC";
+    $mensaje = "Revertir estatus a ".$estatus_mensaje;
     $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
     ->where("id_estatus_atencion", 5)
     ->first();
     try {
       if($responsable!=null){
-        $ticket = TicketBitacora::whereIn('id_ticket',$tickets)
-        ->update(["status"=>1, "user_id", $user_id]);
+        foreach ($tickets as $i => $id) {
+          $ticket = PortalSolicitudesTicket::where('id',$id)->first();
+          $ticket->update(["status"=> $request->status]);
+          $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,2, $user_id,$mensaje, $status);
+
+        }
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Se actualizo estatus"
+          ]
+        );
+
       }else{
         return response()->json(
           [
-            "Code" => "400",
+            "Code" => "409",
             "Message" => "No tiene permisos de supervisor"
           ]
         );
