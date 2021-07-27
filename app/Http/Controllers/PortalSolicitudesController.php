@@ -1541,12 +1541,13 @@ class PortalSolicitudesController extends Controller
 
   public function revertirStatus(Request $request){
     $user_id = auth()->user()->id;
+    $tickets = $rquest->id_ticket;
     $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
     ->where("id_estatus_atencion", 5)
     ->first();
     try {
       if($responsable!=null){
-        $ticket = TicketBitacora::where('id_ticket',$request->id_ticket)
+        $ticket = TicketBitacora::whereIn('id_ticket',$tickets)
         ->update(["status"=>1, "user_id", $user_id]);
       }else{
         return response()->json(
