@@ -366,7 +366,7 @@
             <div class="modal-footer">
                 <div id="AddbuttonDeleted">
          <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="revertirTicket()">Confirmar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="revert()">Confirmar</button>
         </div>
             </div>
         </div>
@@ -749,6 +749,11 @@ function configprelacion()
         {
           $("#select_"+row.data().grupo[0].grupo_clave).select2();
           addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id);
+        }else{
+          $("#select_status_"+row.data().grupo[0].grupo_clave).select2();
+          $("#select_atencion_"+row.data().grupo[0].grupo_clave).select2();
+          addSelectAtencion(row.data().grupo[0].grupo_clave);
+          addSelectStatus(row.data().grupo[0].grupo_clave);
         }
        
 
@@ -904,8 +909,9 @@ function configprelacion()
         }
         if({{$atencion}} && exist>0)
         {
-          select_rechazos="";
-          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Estatus</a>";
+          select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'" onchange="changeSelectAtencion(\''+d.grupo[0].grupo_clave+'\')"><option value="0">---Estatus Proceso---</option></select>';
+          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Ticket</a>";
+          btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'" onchange="changeSelectStatus(\''+d.grupo[0].grupo_clave+'\')"><option value="0">---Estatus Ticket----</option></select>';
         }
         if(g_prelacion==1){
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -914,7 +920,7 @@ function configprelacion()
         {
           url_prelacion='';
         }
-        html += "<tr><th></th><th></th><th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th></th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr><th></th><th></th><th colspan='4'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
         tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th></th></tr>"+html;
         return tbl_head;
@@ -938,8 +944,15 @@ function configprelacion()
       })
     }
     function revertirStatus(tickets_id,data,status)
-    {     
-      response=[data];
+    { 
+      response=[data];      
+      var select_atencion=$("#select_atencion_"+response[0].grupo_clave).val();
+      var select_status=$("#select_status_"+response[0].grupo_clave).val();
+      if(select_status==0 && select_atencion==0)
+      {
+         Command: toastr.warning("Seleccione una Opcion", "Notifications") 
+         return;
+      }
       var ids=[];
       if(typeof response=== 'object'){
         for (n in response) { 
@@ -959,14 +972,49 @@ function configprelacion()
       if(ids.length>0){
         document.getElementById("lbl_revert_tickets").textContent=ids;
         document.getElementById("ticket_status").value=status;
+        document.getElementById("grp_clave").value=response[0].grupo_clave;
         document.getElementById("ids").value=JSON.stringify(ids);
          $('#portlet-revertTickets').modal('show');
       }
     }
-    function revertirTicket()
+    function revert()
+    {
+      var grp_clave=$("#grp_clave").val();
+      var select_atencion=$("#select_atencion_"+response[0].grupo_clave).val();
+      var select_status=$("#select_status_"+response[0].grupo_clave).val();
+      if(select_atencion!=0)
+        {
+          revertirAtencion(select_atencion);
+        }else{
+          revertirTicket(select_status);
+        }
+
+    }
+    function revertirAtencion(status_)
     {
       var ids=$.parseJSON($("#ids").val());
-      var status_=$("#ticket_status").val();
+      $.ajax({
+      method: "post",            
+      url: "{{ url()->route('cambiar-status') }}",
+      data: {id_ticket:ids,estatus_atencion:status_,_token:'{{ csrf_token() }}'}  })
+      .done(function (response) { 
+         if(response.Code=="200")
+            {
+              Command: toastr.success(response.Message, "Notifications")
+              findSolicitudes();
+              return;
+            }
+            else{
+              Command: toastr.warning("Ocurrio un Error", "Notifications")
+            } 
+        })
+      .fail(function( msg ) {
+        Command: toastr.warning("Error Rechazo", "Notifications") 
+      })
+    }
+    function revertirTicket(status_)
+    {
+      var ids=$.parseJSON($("#ids").val());
       $.ajax({
       method: "post",            
       url: "{{ url()->route('revertir-status') }}",
@@ -1244,7 +1292,41 @@ function configprelacion()
       .fail(function( msg ) {
         Command: toastr.warning("Error Select", "Notifications") 
       })
-    }    
+    }   
+    function addSelectAtencion(grupo_clave){
+      
+      $("#select_atencion_"+grupo_clave+" option").remove();
+      $("#select_atencion_"+grupo_clave).append("<option value='0'>---Estatus Proceso---</option>");
+      $("#select_atencion_"+grupo_clave).append("<option value='2'>Recepcion de documentos</option>");
+      $("#select_atencion_"+grupo_clave).append("<option value='3'>Validador</option>");
+      $("#select_atencion_"+grupo_clave).append("<option value='4'>Finalizado</option>");
+          
+    } 
+    function addSelectStatus(grupo_clave){
+      
+      $("#select_status_"+grupo_clave+" option").remove();
+      $("#select_status_"+grupo_clave).append("<option value='0'>---Estatus Ticket----</option>");
+      $("#select_status_"+grupo_clave).append("<option value='1'>Abierto</option>");
+      $("#select_status_"+grupo_clave).append("<option value='2'>Cerrado</option>");
+          
+    }
+    function changeSelectStatus(grupo_clave)
+    {
+           
+      var select= $("#select_status_"+grupo_clave).val(); 
+      console.log(select);
+      if(select!=0){
+         $("#select_atencion_"+grupo_clave).val(0).trigger('change');
+      }
+    } 
+    function changeSelectAtencion(grupo_clave)
+    {
+     var select= $("#select_atencion_"+grupo_clave).val();
+     console.log(select);
+      if(select!=0){
+        $("#select_status_"+grupo_clave).val(0).trigger('change');
+      }
+    } 
     function conctenaM(municipio)
     {
       var coma='';var Mp='';
