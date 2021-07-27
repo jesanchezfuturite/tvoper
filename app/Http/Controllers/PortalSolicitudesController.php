@@ -1540,8 +1540,7 @@ class PortalSolicitudesController extends Controller
   }
 
   public function revertirStatus(Request $request){
-    // $user_id = auth()->user()->id;
-    $user_id=2;
+    $user_id = auth()->user()->id;
     $tickets = $request->id_ticket;
     $status = $request->status;
     $estatus_mensaje = $status==1 ? "Abierto" : "EAC";
