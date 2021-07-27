@@ -353,7 +353,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/get-all-procesos/{id}', 'PortalSolicitudesController@getAllProcesos')->name('get-all-procesos');
     Route::post('/registro-bitacora', 'PortalSolicitudesController@agregarTicketBitacora')->name('registro-bitacora');
     Route::post('/revertir-status', 'PortalSolicitudesController@revertirStatus')->name('revertir-status');
-
+    Route::post('/cambiar-status', 'PortalSolicitudesController@cambiarEstatusAtencion')->name('cambiar-status');
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');
     Route::get('/traux-get-tramites', 'PortaltramitesauxController@findTramites')->name('traux-get-tramites');
