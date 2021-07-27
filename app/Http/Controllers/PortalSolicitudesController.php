@@ -1541,7 +1541,7 @@ class PortalSolicitudesController extends Controller
 
   public function revertirStatus(Request $request){
     $user_id = auth()->user()->id;
-    $tickets = $rquest->id_ticket;
+    $tickets = $request->id_ticket;
     $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
     ->where("id_estatus_atencion", 5)
     ->first();
