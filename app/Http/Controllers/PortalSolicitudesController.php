@@ -1585,7 +1585,7 @@ class PortalSolicitudesController extends Controller
       Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
       return response()->json(
         [
-          "Code" => "400",
+          "Code" => "409",
           "Message" => "Error al revertir status" .$e->getMessage()
         ]
       );
@@ -1606,7 +1606,7 @@ class PortalSolicitudesController extends Controller
       if($responsable!=null){       
         foreach ($tickets as $i => $id) {
             $ticket = PortalSolicitudesTicket::where('id',$id)->first();
-            $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,$estatus, $user_id,$mensaje="", $ticket->status);
+            $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,$estatus_atencion, $user_id,$mensaje="", $ticket->status);
          
 
         }
@@ -1629,8 +1629,8 @@ class PortalSolicitudesController extends Controller
       Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
       return response()->json(
         [
-          "Code" => "400",
-          "Message" => "Error al revertir status" .$e->getMessage()
+          "Code" => "409",
+          "Message" => "Error al cambiar  status" .$e->getMessage()
         ]
       );
     }
