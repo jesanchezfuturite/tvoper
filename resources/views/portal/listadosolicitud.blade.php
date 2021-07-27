@@ -407,6 +407,7 @@
 <input type="text" name="ids" id="ids" hidden="true">
 <input type="text" name="data" id="data" hidden="true">
 <input type="text" name="id_proceso" id="id_proceso" hidden="true">
+<input type="text" name="ticket_status" id="ticket_status" hidden="true">
 @endsection
 
 @section('scripts')
@@ -778,6 +779,7 @@ function configprelacion()
       let html = ''; 
       let g_prelacion = 0; 
       var exist=0;     
+      var ticket_status="";     
       var status_proceso=0;     
       d.grupo.forEach( (solicitud) =>{     
       //console.log(solicitud.permiso);    
@@ -808,7 +810,9 @@ function configprelacion()
             btn_revisar='';
           }  
           if(solicitud.status=='2' || solicitud.status=='3' && dist=='1'){
-            exist+=1;  
+            exist+=1;
+            ticket_status=solicitud.status;
+
           }
           if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
           {
@@ -901,7 +905,7 @@ function configprelacion()
         if({{$atencion}} && exist>0)
         {
           select_rechazos="";
-          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+")'>Revertir Estatus</a>";
+          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Estatus</a>";
         }
         if(g_prelacion==1){
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -933,7 +937,7 @@ function configprelacion()
         Command: toastr.warning("Error Rechazo", "Notifications") 
       })
     }
-    function revertirStatus(tickets_id,data)
+    function revertirStatus(tickets_id,data,status)
     {     
       response=[data];
       var ids=[];
@@ -954,17 +958,19 @@ function configprelacion()
       }
       if(ids.length>0){
         document.getElementById("lbl_revert_tickets").textContent=ids;
+        document.getElementById("ticket_status").value=status;
         document.getElementById("ids").value=JSON.stringify(ids);
          $('#portlet-revertTickets').modal('show');
       }
     }
     function revertirTicket()
     {
-      var ids=$("#ids").val();
+      var ids=$.parseJSON($("#ids").val());
+      var status_=$("#ticket_status").val();
       $.ajax({
       method: "post",            
       url: "{{ url()->route('revertir-status') }}",
-      data: {id_ticket:ids,_token:'{{ csrf_token() }}'}  })
+      data: {id_ticket:ids,status:status_,_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
          if(response.Code=="200")
             {
