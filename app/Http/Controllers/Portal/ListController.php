@@ -202,7 +202,8 @@ class ListController extends Controller {
 		if($search) $tickets = $tickets->where($searchBy, "like", "%{$search}%");
 		if($status) $tickets = $tickets->whereIn('ticket.status', $status);
 		if(array_search(98, $status) !== false) $tickets = $tickets->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
-		if(array_search(98, $status) === false && array_search(2, $status) !== false) $tickets->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
+		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
+		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $tickets->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		if($groupBy) $tickets = $tickets->groupBy($groupBy);
 		$tickets = $tickets->skip($skip)->take($limit);
 		$tickets = $tickets->get();
@@ -211,15 +212,18 @@ class ListController extends Controller {
 			->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id');
 		if(array_search(98, $status) !== false) $ticketsTotal = $ticketsTotal->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
-		if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotal->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
+		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
+		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotal->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		$ticketsTotal = $ticketsTotal->count();
 
 		$ticketsFiltered = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()));
+		if($search) $ticketsFiltered = $ticketsFiltered->where($searchBy, "like", "%{$search}%");
 		if(!$search) $ticketsFiltered = $ticketsFiltered->whereBetween('ticket.created_at', [$startDate, $endDate]);
 		$ticketsFiltered = $ticketsFiltered->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id');
 		if(array_search(98, $status) !== false) $ticketsFiltered = $ticketsFiltered->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
-		if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsFiltered->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
+		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
+		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsFiltered->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		$ticketsFiltered = $ticketsFiltered->count();
 
 		$ticketsTotalGroupBy = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()));
@@ -228,13 +232,10 @@ class ListController extends Controller {
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
 			->select(DB::raw('COUNT(DISTINCT '.$groupBy.') AS count'));
 		if(array_search(98, $status) !== false) $ticketsTotalGroupBy = $ticketsTotalGroupBy->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
-		if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotalGroupBy->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
+		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
+		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotalGroupBy->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		$ticketsTotalGroupBy = $ticketsTotalGroupBy->first()->count;
-
-
 		$pages = $ticketsTotalGroupBy / $limit;
-
-		// if(ceil($pages) < $currentPage) return response()->json(["code" => 404, "message" => "error", "description" => "No tenemos resultados para esta página"], 404);
 
 		return [
 			"totals" => [
