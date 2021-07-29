@@ -213,7 +213,7 @@ class ListController extends Controller {
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
 			->leftjoin('egobierno.tipo_servicios as servicio', 'catalogo.tramite_id', 'servicio.Tipo_Code')
 			->leftjoin('solicitudes_status as status', 'status.id', 'ticket.status')
-			->leftjoin('solicitudes_tramite as tramite', 'tramite.id', 'ticket.id_transaccion')
+			->leftjoin('solicitudes_tramite as tramite', 'tramite.id', 'ticket.id_transaccion');
 		if(array_search(98, $status) !== false) $ticketsTotal = $ticketsTotal->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
 		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
 		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotal->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
