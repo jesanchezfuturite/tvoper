@@ -227,6 +227,7 @@ class ListController extends Controller {
 		$ticketsFiltered = $ticketsFiltered->count();
 
 		$ticketsTotalGroupBy = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()));
+		if($search) $ticketsTotalGroupBy = $ticketsTotalGroupBy->where($searchBy, "like", "%{$search}%");
 		if(!$search) $ticketsTotalGroupBy = $ticketsTotalGroupBy->whereBetween('ticket.created_at', [$startDate, $endDate]);
 		$ticketsTotalGroupBy = $ticketsTotalGroupBy->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
