@@ -1149,7 +1149,7 @@
             console.log(item.configusers[0].notary[0].titular);
             var obj = {};
             obj.tramite=item.tiposervicio;
-            obj.grupo_clave=item.grupo_clave;
+            obj.clave=item.clave;
             obj.ticket = item.id;
             obj.fse=item.idTrans;
             obj.folio = item.folio;
@@ -1234,18 +1234,33 @@
                     if('Listado de enajenantes' in  item.info.campos){
                         obj.porcentaje_enajena = item.info.campos['Listado de enajenantes'].porcentajeVenta;
                     
-                    }
-               
-                    //motivo
-                    if('Listado de enajenantes' in  item.info.campos){
-                        if("motivo" in item.info.campos['Listado de enajenantes']){
-                            let motivo=item.info.campos['Listado de enajenantes'].motivo;
-                            obj.motivo  = motivo.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
-                        }
-                        
-                    }
+                    } 
               
+                }     
+              
+                if('camposConfigurados' in  item.info){
+                    var motivo = item.info.camposConfigurados.find(campo => campo.nombre == "Motivo y Fundamento Legal");
+                    if(motivo && item.info.tipoTramite=="declaracionEn0"){
+                        if(motivo.valor.clave!=="Otro"){
+                            obj.motivo = motivo.valor.nombre;
+                        }else{
+                            var textmotivo = item.info.camposConfigurados.find(campo => campo.nombre == "Otro (especificar):");   
+                            obj.motivo = textmotivo.valor;
+                        }
+                    }else{
+                        if(item.info.campos && 'Listado de enajenantes' in  item.info.campos){
+                            if("motivo" in item.info.campos['Listado de enajenantes']){
+                                let motivo=item.info.campos['Listado de enajenantes'].motivo;
+                                obj.motivo  = motivo.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+                            }
+                        }
+                    }
+                    
+                            
                 }
+                
+               
+                   
                 if(item.mensajes!=[]){
                     var documentos = item.mensajes;
 
