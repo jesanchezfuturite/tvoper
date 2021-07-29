@@ -585,7 +585,7 @@ function configprelacion()
                   }                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
-                  Object.assign(response[n],{"costo_final":formatter.format(total)});
+                  Object.assign(response[n],{"costo_final":formatter.format(total) + " MXN"});
                    for(h in response[n].grupo)
                    {
                     Object.assign(response[n].grupo[h],{"tickets_id":tickets_id});
@@ -617,7 +617,7 @@ function configprelacion()
            response=objectResponse;
 
           }
-          console.log(response);     
+          //console.log(response);     
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -863,7 +863,7 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ valorCatas + '</td> <td >'+valorOperacion+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
             if(bitacora.id_estatus_atencion==2 && bitacora.user_id=='{{Auth::user()->id}}'){
                 g_prelacion=1;
             }
@@ -907,11 +907,12 @@ function configprelacion()
          url_prelacion='';
          btn_cerrarTicket='';
         }
-        if({{$atencion}} && exist>0)
+        if({{$atencion}})
         {
+          btn_cerrarTicket='';
           select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'" onchange="changeSelectAtencion(\''+d.grupo[0].grupo_clave+'\')"><option value="0">---Estatus Proceso---</option></select>';
-          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Ticket</a>";
-          btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'" onchange="changeSelectStatus(\''+d.grupo[0].grupo_clave+'\')"><option value="0">---Estatus Ticket----</option></select>';
+          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Solicitud</a>";
+          btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'" onchange="changeSelectStatus(\''+d.grupo[0].grupo_clave+'\')"><option value="0">---Estatus Solicitud----</option></select>';
         }
         if(g_prelacion==1){
           url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
@@ -961,7 +962,7 @@ function configprelacion()
             distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
             if(typeof distrito==="object")
             {
-              if(distrito.clave=="1" && response[n].grupo[k].status=="2")
+              if(response[n].grupo[k].status=="1"  || response[n].grupo[k].status=="2" && distrito.clave=="1" )
               {
                  ids.push(response[n].grupo[k].id);
               }
@@ -1069,6 +1070,7 @@ function configprelacion()
           for (n in response_grp) {              
             for(g in response_grp[n].grupo)
             { var pagos=[]; 
+              var partida="";
               total=0;
               total=total+parseFloat(response_grp[n].grupo[g].info.costo_final);
               if(typeof response_grp[n].grupo[g].total!=="undefined")
@@ -1076,7 +1078,25 @@ function configprelacion()
                 total=total+parseFloat(response_grp[n].grupo[g].total);
                 pagos=response_grp[n].grupo[g].pagos;
               }
-              pagos.push(parseFloat(response_grp[n].grupo[g].info.costo_final));
+              if(typeof(response_grp[n].grupo[g].info.detalle.descuentos)!=="undefined")
+              {
+                for( desc in response_grp[n].grupo[g].info.detalle.descuentos )
+                {
+                  if(typeof(response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento)!=="undefined")
+                  {
+                    pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                    pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[g].id_transaccion_motor});
+                    partida=partida + " "+response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento;
+                  }else{
+                   pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                    partida=partida;
+                  }
+                }
+              }else{
+                 pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                  partida=partida;
+              }
+              
               Object.assign(response_grp[n].grupo[g],{"pagos":pagos});
               id_=response_grp[n].grupo[g].id; 
                formdata.append("tickets_id[]", id_);   
@@ -1086,8 +1106,28 @@ function configprelacion()
                 if(response_grp[n].grupo[g].id==response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[h].info.complementoDe != null && response_grp[n].grupo[h].id!=response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[g].status!="11"){ 
                     total=total+parseFloat(response_grp[n].grupo[h].info.costo_final);
                     Object.assign(response_grp[n].grupo[h],{"total":total});
-                     pagos.push(parseFloat(response_grp[n].grupo[h].info.costo_final));
-                     Object.assign(response_grp[n].grupo[h],{"pagos":pagos});
+                    // pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                     
+                     if(typeof(response_grp[n].grupo[h].info.detalle.descuentos)!=="undefined")
+                      {
+                        for( descc in response_grp[n].grupo[h].info.detalle.descuentos )
+                        {
+                          if(typeof(response_grp[n].grupo[h].info.detalle.descuentos[descc].partida_descuento)!=="undefined")
+                          {
+                            pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.detalle.descuentos[descc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
+                            pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[h].info.detalle.descuentos[descc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[h].id_transaccion_motor});
+                            partida=partida + " "+response_grp[n].grupo[h].info.detalle.descuentos[desc].partida_descuento;
+                          }else{
+                           pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
+                            partida=partida;
+                          }
+                        }
+                      }else{
+                         pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
+                          partida=partida;
+                      }
+                  Object.assign(response_grp[n].grupo[h],{"pagos":pagos});
+                  Object.assign(response_grp[n].grupo[h],{"partida":partida});
                 }
               }
 
@@ -1122,7 +1162,7 @@ function configprelacion()
             Command: toastr.warning("Sin Registros", "Notifications")
            return;
           } 
-                  
+          console.log(response_grp);        
           savePrelacion(1,formdata,grupo_clave,resp);
         }
        
@@ -1305,7 +1345,7 @@ function configprelacion()
     function addSelectStatus(grupo_clave){
       
       $("#select_status_"+grupo_clave+" option").remove();
-      $("#select_status_"+grupo_clave).append("<option value='0'>---Estatus Ticket----</option>");
+      $("#select_status_"+grupo_clave).append("<option value='0'>---Estatus Solicitud----</option>");
       $("#select_status_"+grupo_clave).append("<option value='1'>Abierto</option>");
       $("#select_status_"+grupo_clave).append("<option value='2'>Cerrado</option>");
           
@@ -1314,7 +1354,7 @@ function configprelacion()
     {
            
       var select= $("#select_status_"+grupo_clave).val(); 
-      console.log(select);
+      //console.log(select);
       if(select!=0){
          $("#select_atencion_"+grupo_clave).val(0).trigger('change');
       }
@@ -1322,7 +1362,7 @@ function configprelacion()
     function changeSelectAtencion(grupo_clave)
     {
      var select= $("#select_atencion_"+grupo_clave).val();
-     console.log(select);
+     //console.log(select);
       if(select!=0){
         $("#select_status_"+grupo_clave).val(0).trigger('change');
       }
@@ -1645,6 +1685,7 @@ function configprelacion()
     Object.assign(data,{lote:searchIndex('lote',Resp.info.campos)});    
     Object.assign(data,{hoja:hoja_});    
     Object.assign(data,{pagos:Resp.pagos});    
+    Object.assign(data,{partida:Resp.partida});    
     if(typeof (subsidio_) !== 'object')
     {
       Object.assign(data,{subsidio:null});

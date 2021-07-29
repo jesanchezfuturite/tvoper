@@ -394,12 +394,12 @@
                 <br>
                 <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                   <tr>
-                    <td style="width:70%;">
+                    <td style="width:60%;">
                       <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                         <tr>
                           <td>
                               <label><strong>No. partida</strong></label>
-                              <label>{{$dat->subsidio}}</label>
+                              <label>{{$dat->partida}}</label>
                           </td>
                         </tr>
                         <tr>
@@ -423,7 +423,7 @@
                         <tr>
                           <td>
                             <label><strong>Oficio o decreto:</strong></label>
-                            <label>{{$dat->escrituraActaOficio}}</label>
+                            <label>{{$dat->subsidio}}</label>
                           </td>
                         </tr>                  
                         <tr>
@@ -447,15 +447,15 @@
                         </tr>
                       </table>
                     </td>
-                    <td style="width:30%; vertical-align:bottom;">
+                    <td style="width:40%; vertical-align:bottom;">
                       <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
                         @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
                         <tr> 
                           <td>
-                            <label><strong>Derecho-15215900:</strong></label>
+                            <label><strong>{{$pag["descripcion"]}}:</strong></label>
                           </td>
                           <td>
-                            <label>$ {{number_format($pag,2)}}</label>
+                            <label>$ {{number_format($pag["pagos"],2)}}</label>
                           </td>
                         </tr>
                         @endforeach
@@ -554,12 +554,12 @@
                             <br>
                               <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                 <tr>
-                                  <td style="width:70%;">
+                                  <td style="width:60%;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>No. partida</strong></label>
-                                            <label>{{$dat->subsidio}}</label>
+                                            <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
                                       <tr>
@@ -583,7 +583,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label>{{$dat->escrituraActaOficio}}</label>
+                                          <label>{{$dat->subsidio}}</label>
                                         </td>
                                       </tr>                  
                                       <tr>
@@ -607,15 +607,15 @@
                                       </tr>
                                     </table>
                                   </td>
-                                  <td style="width:30%; vertical-align:bottom;">
+                                  <td style="width:40%; vertical-align:bottom;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
                                       @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
                                       <tr> 
                                         <td class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
+                                          <label><strong>{{$pag["descripcion"]}}:</strong></label>
                                         </td>
                                         <td class="tbl-label">
-                                          <label>$ {{number_format($pag,2)}}</label>
+                                          <label>$ {{number_format($pag["pagos"],2)}}</label>
                                         </td>
                                       </tr>
                                       @endforeach
@@ -716,12 +716,12 @@
                             <br>
                               <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                 <tr>
-                                  <td style="width:70%;">
+                                  <td style="width:60%;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>No. partida</strong></label>
-                                            <label>{{$dat->subsidio}}</label>
+                                            <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
                                       <tr>
@@ -745,7 +745,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label>{{$dat->escrituraActaOficio}}</label>
+                                          <label>{{$dat->subsidio}}</label>
                                         </td>
                                       </tr>                  
                                       <tr>
@@ -769,15 +769,15 @@
                                       </tr>
                                     </table>
                                   </td>
-                                  <td style="width:30%; vertical-align:bottom;">
+                                  <td style="width:40%; vertical-align:bottom;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
                                       @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
                                       <tr> 
                                         <td class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
+                                          <label><strong>{{$pag["descripcion"]}}:</strong></label>
                                         </td>
                                         <td class="tbl-label">
-                                          <label>$ {{number_format($pag,2)}}</label>
+                                          <label>$ {{number_format($pag["pagos"],2)}}</label>
                                         </td>
                                       </tr>
                                       @endforeach
@@ -886,12 +886,12 @@
                               <br>
                                 <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                 <tr>
-                                  <td style="width:70%;">
+                                  <td style="width:62%;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>No. partida</strong></label>
-                                            <label>{{$dat->subsidio}}</label>
+                                            <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
                                       <tr>
@@ -915,7 +915,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                           <label><strong>Oficio o decreto:</strong></label>
-                                          <label>{{$dat->escrituraActaOficio}}</label>
+                                          <label>{{$dat->subsidio}}</label>
                                         </td>
                                       </tr>                  
                                       <tr>
@@ -939,15 +939,15 @@
                                       </tr>
                                     </table>
                                   </td>
-                                  <td style="width:30%; vertical-align:bottom;">
+                                  <td style="width:40%; vertical-align:bottom;">
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2"style="posi;">                
                                       @foreach(json_decode(json_encode($dat->pagos),true) as $pag)
                                       <tr> 
                                         <td class="tbl-label">
-                                          <label><strong>Derecho-15215900:</strong></label>
+                                          <label><strong>{{$pag["descripcion"]}}:</strong></label>
                                         </td>
                                         <td class="tbl-label">
-                                          <label>$ {{number_format($pag,2)}}</label>
+                                          <label>$ {{number_format($pag["pagos"],2)}}</label>
                                         </td>
                                       </tr>
                                       @endforeach
