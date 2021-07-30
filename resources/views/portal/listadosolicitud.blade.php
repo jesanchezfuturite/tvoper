@@ -1067,10 +1067,12 @@ function configprelacion()
       .done(function (response) {
       resp=JSON.stringify(response); 
        if(typeof response_grp=== 'object'){
-          for (n in response_grp) {              
+          for (n in response_grp) {
+            var partida="";              
             for(g in response_grp[n].grupo)
-            { var pagos=[]; 
-              var partida="";
+            {
+             var pagos=[]; 
+              
               total=0;
               total=total+parseFloat(response_grp[n].grupo[g].info.costo_final);
               if(typeof response_grp[n].grupo[g].total!=="undefined")
@@ -1080,17 +1082,22 @@ function configprelacion()
               }
               if(typeof(response_grp[n].grupo[g].info.detalle.descuentos)!=="undefined")
               {
-                for( desc in response_grp[n].grupo[g].info.detalle.descuentos )
-                {
-                  if(typeof(response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento)!=="undefined")
+                if(response_grp[n].grupo[g].info.detalle.descuentos.length>0){
+                  for( desc in response_grp[n].grupo[g].info.detalle.descuentos )
                   {
-                    pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                    pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[g].id_transaccion_motor});
-                    partida=partida + " "+response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento;
-                  }else{
-                   pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                    partida=partida;
+                    if(typeof(response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento)!=="undefined")
+                    {
+                      pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                      pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[g].id_transaccion_motor});
+                      partida=partida + " "+response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento;
+                    }else{
+                     pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                      partida=partida;
+                    }
                   }
+                }else{
+                  pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
+                      partida=partida;
                 }
               }else{
                  pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
@@ -1098,6 +1105,7 @@ function configprelacion()
               }
               
               Object.assign(response_grp[n].grupo[g],{"pagos":pagos});
+              Object.assign(response_grp[n].grupo[g],{"partida":partida});
               id_=response_grp[n].grupo[g].id; 
                formdata.append("tickets_id[]", id_);   
               grupo_clave=response_grp[n].grupo[g].grupo_clave;
@@ -1660,6 +1668,7 @@ function configprelacion()
     var nombre_=searchIndex('nombre',Resp.info.campos);
     var apellidoMat_=searchIndex('apellidoMat',Resp.info.campos);
     var apellidoPat_=searchIndex('apellidoPat',Resp.info.campos);
+    var divisas=searchIndex('divisas',Resp.info.campos);
     var escrituraActaOficio_=searchIndex('escrituraActaOficio',Resp.info.campos);
     var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
     if(typeof (municipio_) !== 'object')

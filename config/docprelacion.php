@@ -97,7 +97,10 @@ return array(
 				"*Instituciones",
 				"*Institución",
 				"Institución"
-			 )
+			 ),
+			"divisas"=>array(
+				"Cambio de divisas"
+			)
 			
 		)
 
