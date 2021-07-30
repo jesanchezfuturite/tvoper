@@ -286,7 +286,7 @@
 
   function updatePermisos(id,folio,status)
   { 
-    //console.log(folio);
+    console.log($("#check_"+id).prop("checked"));
     var labl=document.getElementById("lbl_habilitar");    
     document.getElementById("lbl_folio").textContent=folio;
     //$('#portlet-update').modal('show');    
@@ -294,7 +294,7 @@
     {
     }else if($("#check_"+id).prop("checked") == false && status==null)
     {       
-    }else if($("#check_"+id).prop("checked") == false && status==status==0)
+    }else if($("#check_"+id).prop("checked") == false && status==0)
     {
 
     }else if($("#check_"+id).prop("checked") == true){
@@ -318,11 +318,11 @@
     if(required_docs==1)
     {
       $("#row_"+id).empty(); 
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"'>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos(\""+id+"\","+id_registro+","+required_docs+")' id='check_"+id+"'>");
       $('#check_'+id).prop('checked', true);
     }else{
       $("#row_"+id).empty();       
-       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos("+id+","+id_registro+","+required_docs+")' id='check_"+id+"' checked>");
+       $("#row_"+id).append("<input type='checkbox'   data-toggle='modal' href='#portlet-update' class='make-switch' data-on-color='success' data-off-color='danger'name='check_permiso' onchange='updatePermisos(\""+id+"\","+id_registro+","+required_docs+")' id='check_"+id+"' checked>");
        $('#check_'+id).prop('checked', false);
     }
      $("[name='check_permiso']").bootstrapSwitch();
@@ -466,7 +466,7 @@
       checked="";
     }
     //console.log(row.tickets_id);
-    let botonAtender ='<div id="row_'+row.id_mensaje+'"><input type="checkbox"   data-toggle="modal" href="#portlet-update" class="make-switch" data-on-color="success" data-off-color="danger"name="check_permiso" onchange="updatePermisos('+row.id_mensaje+','+JSON.stringify(row.tickets_id)+','+row.grupo[0].required_docs+')" id="check_'+row.id_mensaje+'" '+checked+'></div>';
+    let botonAtender ='<div id="row_'+row.clave+'"><input type="checkbox"   data-toggle="modal" href="#portlet-update" class="make-switch" data-on-color="success" data-off-color="danger"name="check_permiso" onchange=updatePermisos("'+row.clave+'",'+JSON.stringify(row.tickets_id)+','+row.grupo[0].required_docs+') id="check_'+row.clave+'" '+checked+'></div>';
 
     return botonAtender;
   }
