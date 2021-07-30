@@ -349,7 +349,7 @@
                       <td><label><strong>Fecha</strong></label>
                         <br><label>{{$dat->fecha}}</label>
                       </td>
-                      <td><label><strong>Folio trámite</strong></label>
+                      <td style="text-align: center;"><label><strong>Folio trámite</strong></label>
                         <br><label>{{$dat->folioTramite}}</label>
                       </td>
                       <td><label><strong>No. Control</strong></label>
@@ -398,7 +398,7 @@
                       <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                         <tr>
                           <td>
-                              <label><strong>No. partida</strong></label>
+                              <label><strong>No. partida:</strong></label>
                               <label>{{$dat->partida}}</label>
                           </td>
                         </tr>
@@ -411,7 +411,7 @@
                         <tr>
                           <td>
                               <label><strong>Unidad de calculo:</strong></label>
-                              <label></label>
+                              <label>{{$dat->divisa}}</label>
                           </td>
                         </tr>
                         <tr>
@@ -558,7 +558,7 @@
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
-                                            <label><strong>No. partida</strong></label>
+                                            <label><strong>No. partida:</strong></label>
                                             <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
@@ -571,7 +571,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>Unidad de calculo:</strong></label>
-                                            <label></label>
+                                            <label>{{$dat->divisa}}</label>
                                         </td>
                                       </tr>
                                       <tr>
@@ -720,7 +720,7 @@
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
-                                            <label><strong>No. partida</strong></label>
+                                            <label><strong>No. partida:</strong></label>
                                             <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
@@ -733,7 +733,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>Unidad de calculo:</strong></label>
-                                            <label></label>
+                                            <label>{{$dat->divisa}}</label>
                                         </td>
                                       </tr>
                                       <tr>
@@ -890,7 +890,7 @@
                                     <table role="presentation" border="0" cellpadding="0" cellspacing="2">
                                       <tr>
                                         <td class="tbl-label">
-                                            <label><strong>No. partida</strong></label>
+                                            <label><strong>No. partida:</strong></label>
                                             <label>{{$dat->partida}}</label>
                                         </td>
                                       </tr>
@@ -903,7 +903,7 @@
                                       <tr>
                                         <td class="tbl-label">
                                             <label><strong>Unidad de calculo:</strong></label>
-                                            <label></label>
+                                            <label>{{$dat->divisa}}</label>
                                         </td>
                                       </tr>
                                       <tr>

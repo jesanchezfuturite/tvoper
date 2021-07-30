@@ -102,6 +102,16 @@ return array(
 				"Cambio de divisas"
 			)
 			
+		),
+	"divisas"=>array(
+		"Pesos por Dólar. FIX."=>"MXN",
+		"Pesos por Dólar. Fecha de liquidación."=>"MXN",
+		"Euro."=>"EUR",
+		"Yen japónes."=>"JPY",
+		"Libra esterlina."=>"GBP",
+		"Dólar Canadiense."=>"CAD",
+		"Valor de UDIS."=>"UDI",
+		"Pesos"=>"MXN"
 		)
 
 	);

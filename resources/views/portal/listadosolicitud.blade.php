@@ -577,9 +577,14 @@ function configprelacion()
                 for(k in response[n].grupo)
                 {
                   tickets_id.push(response[n].grupo[k].id);
+                  
                   var legt=response[n].grupo[k].bitacora.length-1;
-
-                  catalogos_id.push(response[n].grupo[k].bitacora[legt].catalogo);
+                  if(legt>0){
+                    catalogos_id.push(response[n].grupo[k].bitacora[legt].catalogo);
+                  }else{
+                    catalogos_id.push(response[n].grupo[k].catalogo);
+                  }
+                  
                   if(response[n].grupo[k].status!="11"){
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }                  
@@ -790,7 +795,7 @@ function configprelacion()
       //console.log(solicitud.permiso);    
         if(solicitud.bitacora.length==0)
         {
-          solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1});
+          solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1,responsables:{permiso:0}});
         }
         var bitacora_end=solicitud.bitacora.length-1;
         status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
@@ -1668,9 +1673,10 @@ function configprelacion()
     var nombre_=searchIndex('nombre',Resp.info.campos);
     var apellidoMat_=searchIndex('apellidoMat',Resp.info.campos);
     var apellidoPat_=searchIndex('apellidoPat',Resp.info.campos);
-    var divisas=searchIndex('divisas',Resp.info.campos);
+    var sdivisas=searchIndex('divisas',Resp.info.campos);
     var escrituraActaOficio_=searchIndex('escrituraActaOficio',Resp.info.campos);
     var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
+    var divisas=searchDivisa(sdivisas);
     if(typeof (municipio_) !== 'object')
     {
         municipio_=[{nombre:municipio_}];
@@ -1695,6 +1701,7 @@ function configprelacion()
     Object.assign(data,{hoja:hoja_});    
     Object.assign(data,{pagos:Resp.pagos});    
     Object.assign(data,{partida:Resp.partida});    
+    Object.assign(data,{divisa:divisas});    
     if(typeof (subsidio_) !== 'object')
     {
       Object.assign(data,{subsidio:null});
@@ -1771,7 +1778,16 @@ function configprelacion()
     }
     return response;
   }
-
+  function searchDivisa(key)
+  {
+    var config=$.parseJSON($("#configP").val());
+    var response='MXN';
+    if(typeof config.solicitudes[key] !=='undefined')
+    {
+      response=config.solicitudes[key];
+    }
+    return response;
+  }
    const formatter = new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',
