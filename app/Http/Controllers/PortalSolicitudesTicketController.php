@@ -84,7 +84,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){   
+    public function registrarSolicitud(Request $request){
       $name= \Request::route()->getName();
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
@@ -114,7 +114,7 @@ class PortalSolicitudesTicketController extends Controller
 
       $ids = [];
       try {
-        if($status==80){   
+        if($status==80){
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
               "catalogo_id" => $catalogo_id,
@@ -131,13 +131,13 @@ class PortalSolicitudesTicketController extends Controller
               if($request->has("id")){
                 $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
                 $attach =$consultar->attach;
-                $archivo = explode("/download/", $attach);                   
-                $nombre = $file->getClientOriginalName();             
-                $verificar=strcmp($archivo[1], $nombre); 
-                 
+                $archivo = explode("/download/", $attach);
+                $nombre = $file->getClientOriginalName();
+                $verificar=strcmp($archivo[1], $nombre);
+
                   if ($verificar!== 0) {
                     //se hace un borrado logico al registo anterior
-            
+
                     $consultar->update(["status"=>0]);
 
                     //se guarda un archivo nuevo
@@ -157,7 +157,7 @@ class PortalSolicitudesTicketController extends Controller
                   'file'    => $request->file[0]
                   ];
                   $this->saveFile($data);
-              }    
+              }
             }
         }else{
           if($request->has("id")){
@@ -165,9 +165,9 @@ class PortalSolicitudesTicketController extends Controller
             $eliminar_ticket = $this->ticket->where('id', $request->id)
             ->update(['status' => 9]);
           }
-           
+
           if(!empty($datosrecorrer)){
-            $datosrecorrer = json_decode($datosrecorrer);           
+            $datosrecorrer = json_decode($datosrecorrer);
             foreach($datosrecorrer as $key => $value){
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->create([
@@ -181,18 +181,18 @@ class PortalSolicitudesTicketController extends Controller
 
               ]);
 
-               array_push($ids, $ticket->id);              
+               array_push($ids, $ticket->id);
             }
             $first_id = reset($ids);
-            if($request->has("file")){ 
+            if($request->has("file")){
               $file=$request->file[0];
               //si tiene id es porque el registo viene de borrador
               if($request->has("id")){
-                  //consulta el nombre del archivo guardado en mensajes    
+                  //consulta el nombre del archivo guardado en mensajes
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                  $archivo = explode("/download/",$consultar->attach);                   
-                  $nombre = $file->getClientOriginalName();             
-                  $verificar=strcmp($archivo[1], $nombre);   
+                  $archivo = explode("/download/",$consultar->attach);
+                  $nombre = $file->getClientOriginalName();
+                  $verificar=strcmp($archivo[1], $nombre);
                   //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
                   if ($verificar!== 0) {
                       $data =[
@@ -212,7 +212,7 @@ class PortalSolicitudesTicketController extends Controller
                       'attach'=>$consultar->attach
                     ]);
                   }
-                  
+
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
                 $data =[
@@ -223,7 +223,7 @@ class PortalSolicitudesTicketController extends Controller
                 ];
 
                 $this->saveFile($data);
-              }   
+              }
             }
           }else{
             $ticket = $this->ticket->create([
@@ -236,16 +236,16 @@ class PortalSolicitudesTicketController extends Controller
               "required_docs"=>$request->required_docs
             ]);
 
-            if($request->has("file")){ 
+            if($request->has("file")){
               $file=$request->file[0];
               //si tiene id es porque el registo viene de borrador
               if($request->has("id")){
-                  //consulta el nombre del archivo guardado en mensajes    
+                  //consulta el nombre del archivo guardado en mensajes
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                  $archivo = explode("/download/",$consultar->attach);                   
-                  $nombre = $file->getClientOriginalName();             
-                  $verificar=strcmp($archivo[1], $nombre);    
-                
+                  $archivo = explode("/download/",$consultar->attach);
+                  $nombre = $file->getClientOriginalName();
+                  $verificar=strcmp($archivo[1], $nombre);
+
                   //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
                   if ($verificar!== 0) {
                       $data =[
@@ -276,8 +276,8 @@ class PortalSolicitudesTicketController extends Controller
                 ];
 
                 $this->saveFile($data);
-              }    
-    
+              }
+
           }
         }
 
@@ -687,7 +687,7 @@ class PortalSolicitudesTicketController extends Controller
 
         ]);
 
-        $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
+        $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])
         ->get(["id", "status"]);
 
         foreach ($ids as $key => $value) {
@@ -1235,9 +1235,9 @@ class PortalSolicitudesTicketController extends Controller
                 $campos = $expedientes->campos;
                 $camposConfigurados = $expedientes->camposConfigurados;
                 $value->info->campos=$campos;
-                $value->info->camposConfigurados=$camposConfigurados;                 
+                $value->info->camposConfigurados=$camposConfigurados;
                 if(isset($value->info->camposConfigurados)){
-                
+
                   foreach($value->info->camposConfigurados as $k => $val){
                     $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
                     $alias = array('alias'=>$al);
@@ -1434,9 +1434,24 @@ class PortalSolicitudesTicketController extends Controller
     }
   }
 
-  public function getNormales($folio){
+  public function getNormales($folio, $id){
     try {
-
+      $check = $this->ticket->where("ticket_padre", $idTicket)->get();
+      if($check->count()>0){
+        foreach ($check as $c) {
+          $info = $c->info;
+        }
+        $infoD = json_decode($info);
+        $complemento = $infoD->detalle->Complementaria->{'Folio de la declaracion inmediata anterior'};
+        if($complemento == $folio){
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => "Ya existe una declaración con este Folio ".$folio." y Ticket ".$idTicket,
+            ]
+          );
+        }
+      }
       $id_tramite = env("TRAMITE_5_ISR");
       $solicitud = $this->solTramites->where("id_transaccion_motor", $folio)->get();
       foreach ($solicitud as $s) {
