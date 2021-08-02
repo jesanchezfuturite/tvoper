@@ -119,148 +119,141 @@
         <div class="content-detalle">
         <div class="row divDetalles">
           <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos generales</strong></h4>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="detalles">
-            <div id="addDetalles">
-            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4><strong>Datos generales</strong></h4>
+                </div>
+                <div class="panel-body" id="detalles">
+                   <div id="addDetalles">
+                    </div>
+                </div>
+              </div>           
           </div>    
         </div>
         <div class="row divSolicitante">
-          <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos del solicitante</strong></h4>
+          <div class="col-md-12" >            
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                   <h4><strong>Datos del solicitante</strong></h4>
+                </div>
+                <div class="panel-body"id="solicitante">
+                   <div id="addSolicitante">
+                    </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="solicitante">
-            <div id="addSolicitante">
-            </div>
           </div>    
         </div>
         <div class="row divNotaria">
-          <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Datos de la Notaria</strong></h4>
+          <div class="col-md-12" >
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4><strong>Datos de la Notaria</strong></h4> 
+                </div>
+                <div class="panel-body"id="notaria">
+                  <div id="addnotaria">
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12" id="notaria">
-            <div id="addnotaria">
-            </div>
+            
           </div>    
         </div>
       </div>
       <div class="content-mensajes">
         <div class="row">
           <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Nuevo mensaje</strong></h4>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4><strong>Nuevo Mensaje</strong></h4> 
+                </div>
+                <div class="panel-body"id="notaria">
+                  <div class="col-md-12">
+                    <div class="col-md-9">             
+                      <div class="form-group">
+                        <label>Mensaje</label>
+                        <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
+                        <span class="help-block">&nbsp;</span>
+                        <div class="form-group form-md-checkboxes">
+                          <div class="md-checkbox-inline">
+                            <div class='md-checkbox'>
+                              <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
+                                <label for='checkbox1'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                                </span> Rechazo. </label>
+                            </div>
+                          
+                            <div class='md-checkbox'>
+                              <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
+                                <label for='checkbox30'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                                </span>  Mensaje Publico. </label>
+                            </div>
+                          </div>
+                        </div>
+                          <div class="row selectMotivos">
+                            <div class="col-md-12">
+                            <span class="help-block">&nbsp;</span> 
+                            <label class="col-md-2">Motivos de Rechazo</label>
+                              <div class="col-md-7">
+                              <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
+                                <option value="0">------</option>  
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">             
+                      <div class="form-group">
+                        <span class="help-block">&nbsp;</span>                
+                        <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
+                        <span class="help-block">&nbsp;</span>
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                                <span class="btn green btn-file">
+                                <span class="fileinput-new">
+                                <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
+                                <span class="fileinput-exists">
+                                <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
+                                <input type="file" name="file" accept="application/pdf" id="file" >
+                                </span>
+                                <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
+                                </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
+                                </a></div>
+                                
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                </div>
               </div>
-            </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div class="col-md-9">             
-              <div class="form-group">
-                <label>Mensaje</label>
-                <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
-                <span class="help-block">&nbsp;</span>
-                <div class="form-group form-md-checkboxes">
-                  <div class="md-checkbox-inline">
-                    <div class='md-checkbox'>
-                      <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
-                        <label for='checkbox1'>
-                        <span></span>
-                        <span class='check'></span> <span class='box'>
-                        </span> Rechazo. </label>
-                    </div>
-                  
-                    <div class='md-checkbox'>
-                      <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
-                        <label for='checkbox30'>
-                        <span></span>
-                        <span class='check'></span> <span class='box'>
-                        </span>  Mensaje Publico. </label>
+            <div class="panel panel-default">
+              <div class="panel-heading">                
+                  <h4><strong>Mensajes registrados</strong></h4>
+                </div>
+                <div class="panel-body"> 
+                  <div class="col-md-12">
+                  <div id="addtableMsg">
+                    <div class="removeMsg"> 
+                      <table class="table table-hover" id="sample_7">
+                       <thead>
+                        <tr>
+                          <th></th>
+                          <th>Titulo</th>
+                          <th></th>
+                        </tr>
+                        </thead>
+                      </table>
                     </div>
                   </div>
                 </div>
-                  <div class="row selectMotivos">
-                    <div class="col-md-12">
-                    <span class="help-block">&nbsp;</span> 
-                    <label class="col-md-2">Motivos de Rechazo</label>
-                      <div class="col-md-7">
-                      <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
-                        <option value="0">------</option>  
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3">             
-              <div class="form-group">
-                <span class="help-block">&nbsp;</span>                
-                <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
-                <span class="help-block">&nbsp;</span>
-                <div class="fileinput fileinput-new" data-provides="fileinput">
-                        <span class="btn green btn-file">
-                        <span class="fileinput-new">
-                        <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
-                        <span class="fileinput-exists">
-                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                        <input type="file" name="file" accept="application/pdf" id="file" >
-                        </span>
-                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
-                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
-                        </a></div>
-                        
-                </div>
-              </div>
-            </div>
-          </div>        
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="portlet-body form">
-              <div class="form-body">
-                <h4 class="form-section"><strong>Mensajes registrados</strong></h4>
               </div>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-12">
-              <div id="addtableMsg">
-                <div class="removeMsg"> 
-                  <table class="table table-hover" id="sample_7">
-                   <thead>
-                <tr>
-                    <th></th>
-                    <th>Titulo</th>
-                    <th></th>
-                </tr>
-            </thead>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>          
         </div>
       </div>
     </div>
