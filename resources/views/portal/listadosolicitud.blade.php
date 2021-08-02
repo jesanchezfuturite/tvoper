@@ -421,7 +421,7 @@
        findSolicitudes();
     }
   });
-  console.log("{{$atencion}}");
+  //console.log("{{$atencion}}");
 function configprelacion()
 {
   $.ajax({
@@ -989,7 +989,7 @@ function configprelacion()
 
       var ids=$.parseJSON($("#ids").val());
       var ids_abiertos=$.parseJSON($("#ids_abiertos").val());
-      console.log(ids_abiertos);
+      //console.log(ids_abiertos);
       if(select_status==0 && ids_abiertos.length==0){
           Command: toastr.warning("Seleccione el Estatus", "Notifications") 
       }else if(select_atencion!=0 && select_status==0){
@@ -1154,7 +1154,7 @@ function configprelacion()
             Command: toastr.warning("Sin Registros", "Notifications")
            return;
           } 
-          console.log(response_grp);        
+          //console.log(response_grp);        
           savePrelacion(1,formdata,grupo_clave,resp);
         }
        
@@ -1291,7 +1291,7 @@ function configprelacion()
         Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
         return;
       }
-      console.log(ids);
+      //console.log(ids);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
@@ -1567,11 +1567,12 @@ function configprelacion()
         } 
         mensaje="Motivo de rechazo: "+mot +mensaje;
         formdata.append("rechazo_id",select);
-        for(r in ticks_id)
+        
+      }
+      for(r in ticks_id)
         {
           formdata.append("tickets_id[]", ticks_id[r]);  
         }
-      }
       if(mensaje.length==0){
         Command: toastr.warning("Mensaje, Requerido!", "Notifications")
         return;

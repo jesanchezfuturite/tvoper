@@ -796,6 +796,16 @@ class PortalSolicitudesController extends Controller
           'attach'    =>  $attach
           ]);
         }
+      }else{
+        foreach($request->id as $i)
+        {
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
+        }
       }
 
       return response()->json(
