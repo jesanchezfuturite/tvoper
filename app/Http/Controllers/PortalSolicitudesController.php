@@ -1543,16 +1543,8 @@ class PortalSolicitudesController extends Controller
     $user_id = auth()->user()->id;
     $tickets = $request->id_ticket;
     $status = $request->status;
+    $estatus_atencion=$request->estatus_atencion;
     $mensaje = $request->has("mensaje") ? $request->mensaje : "";
-
-    switch ($status) {
-      case "1":
-        $estatus_atencion = 2;
-        break;
-      case "2":    
-        $estatus_atencion = 4;
-        break;
-    }
 
     $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
     ->where("id_estatus_atencion", 5)
@@ -1561,7 +1553,7 @@ class PortalSolicitudesController extends Controller
       if($responsable!=null){       
         foreach ($tickets as $i => $id) {
             $ticket = PortalSolicitudesTicket::where('id',$id)->first();         
-            $ticket->update(["status"=> $request->status]);
+            $update = $ticket->update(["status"=> $status]);
             $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,$estatus_atencion, $user_id,$mensaje="", $status);
          
 
@@ -1591,54 +1583,7 @@ class PortalSolicitudesController extends Controller
       );
     }
     
-    
   }
-  public function cambiarEstatusAtencion(Request $request){
-    $user_id = auth()->user()->id;
-    $tickets = $request->id_ticket;
-    $estatus_atencion = $request->estatus_atencion;
-    $mensaje = $request->has("mensaje") ? $request->mensaje : "";
-
-    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
-    ->where("id_estatus_atencion", 5)
-    ->first();
-    try {
-      if($responsable!=null){       
-        foreach ($tickets as $i => $id) {
-            $ticket = PortalSolicitudesTicket::where('id',$id)->first();
-            $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,$estatus_atencion, $user_id,$mensaje="", $ticket->status);
-         
-
-        }
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Se actualizo estatus"
-          ]
-        );
-
-      }else{
-        return response()->json(
-          [
-            "Code" => "409",
-            "Message" => "No tiene permisos de supervisor"
-          ]
-        );
-      }
-    } catch (\Exception $e) {
-      Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
-      return response()->json(
-        [
-          "Code" => "409",
-          "Message" => "Error al cambiar  status" .$e->getMessage()
-        ]
-      );
-    }
-    
-    
-  }
-
-
   
   
 }
