@@ -1334,6 +1334,7 @@ class PortalSolicitudesTicketController extends Controller
           ]);
 
           $ticket = $this->ticket->where("id", $ticket_id)->first();
+          $clave = $ticket->clave;
           $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
           $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
 
@@ -1358,6 +1359,7 @@ class PortalSolicitudesTicketController extends Controller
 
           $guardar =$this->mensajes->where("id", $mensajes->id)->update([
             'attach' => $attach,
+            'clave' => $clave
           ]);
         }
 
