@@ -161,7 +161,17 @@ class PortalSolicitudesTicketController extends Controller
             }
         }else{
           if($request->has("id")){
-            //se hace un borrado logico del ticket anterior borrador
+            //se verifica si el borrador anteriormente paso a status 9
+            $findBorrador = PortalSolicitudesTicket::where("id", $request->id)->where("status", 9)->first();
+            if(!$findBorrador->isEmpty()){
+              return response()->json(
+                [
+                  "Code" => "409",
+                  "Message" => "Este tramite ya se guardo anteriormente",
+                ]
+              );
+            }
+             //se hace un borrado logico del ticket anterior borrador
             $eliminar_ticket = $this->ticket->where('id', $request->id)
             ->update(['status' => 9]);
           }
