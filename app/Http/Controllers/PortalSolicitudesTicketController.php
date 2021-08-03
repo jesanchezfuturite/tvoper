@@ -1345,15 +1345,27 @@ class PortalSolicitudesTicketController extends Controller
             'mensaje'=>$mensaje
           ]);
 
+          $ticket = $this->ticket->where("id", $ticket_id)->first();
+          $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
+          $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
+
+          $solicitudes=PortalSolicitudesTicket::where("id", $ticket_id)->first();
+          $solicitudes->update(['required_docs'=>1]);
+
           $new_file = str_replace('data:application/pdf;base64,', '', $file);
           $new_file = str_replace(' ', '+', $new_file);
           $new_file = base64_decode($new_file);
 
-          $name = "archivo_solicitud_".$mensajes->id.".pdf";
+         
+          $extension = explode('/', mime_content_type($file))[1];
+
+          $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;
 
           \Storage::disk('local')->put($name,  $new_file);
+          
+          $attach = url()->route('download', $name);
 
-          $attach = $this->url->to('/') . '/download/'.$name;
+          // $attach = $this->url->to('/') . '/download/'.$name;
 
 
           $guardar =$this->mensajes->where("id", $mensajes->id)->update([
