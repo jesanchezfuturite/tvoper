@@ -1333,6 +1333,10 @@ class PortalSolicitudesTicketController extends Controller
             'mensaje'=>$mensaje
           ]);
 
+          $ticket = $this->ticket->where("id", $ticket_id)->first();
+          $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
+          $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
+
           $solicitudes=PortalSolicitudesTicket::where("id", $ticket_id)->first();
           $solicitudes->update(['required_docs'=>1]);
 
