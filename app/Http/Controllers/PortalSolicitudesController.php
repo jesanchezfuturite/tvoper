@@ -934,6 +934,7 @@ class PortalSolicitudesController extends Controller
   {
     
     try {
+      //log::info($request->all());
       $fech=Carbon::now();
       $fech=$fech->format("Hms");
       $file = $request['file'];
@@ -943,20 +944,18 @@ class PortalSolicitudesController extends Controller
       $attach = $this->url->to('/') . '/download/'.$name;
       $path=storage_path('app/'.$name);
       \Storage::disk('local')->put($name,  \File::get($file));
-      if($request->id_mensaje=='null')
+      if($request->id_mensaje!=null)
       {
-        $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"DOCUMENTO CARGADO DESDE EL ADMIN"]);
-        $this->saveDocBitacora($request->ticket_id,$attach,"nuevo documento");
-      }else{
-        $this->mensajes->update(["attach"=>$attach],$request->id_mensaje);
-        $this->saveDocBitacora($request->ticket_id,$request->attch_old,"documento Anterior");
-        $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+        $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
       }
-       $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+      $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
+       $imageData = base64_encode(file_get_contents($attach));
       return response()->json([
         "Code" => "200",
         "Message" => "Guardado correctamente",
         "file_name_new"=>$name,
+        "file_attach"=>$attach,
         "file_data"=>$imageData
       ]);
     } catch (Exception $e) {
@@ -979,8 +978,9 @@ class PortalSolicitudesController extends Controller
   {
     try {
       $folios=array();
+      $resp=array();
       $response=array();
-      if(strlen($request->folio)<10)
+      if($request->tipo=="fse")
       {
         $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
         if($findFolios->count()>0){ 
@@ -988,51 +988,109 @@ class PortalSolicitudesController extends Controller
             $folios []= $f->id;
           }
         }else{
-          return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>[]
-          ]);
+          return response()->json(["Code" => "200","Message" =>[]]);
         }
-      }else{
+      }else if($request->tipo=="folio_pago"){
         $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
         if($findFolios->count()>0){
           $folios=json_decode($findFolios[0]->id_ticket);
         }else{
-          return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>[]
-          ]);
+           return response()->json(["Code" => "200","Message" =>[]]);
         }
-      }
-      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
-
-      foreach ($findTickets as $key => $value) {
-        $imageData='';
-        $attach=$value["attach"];
-        $file_name=explode("/",$attach);        
-        $name=$file_name[count($file_name)-1];
-        if($attach<>null)
-        {
-          
-          $extension=explode(".",$name); 
-          $extension=$extension[count($extension)-1];
-          if (File::exists(storage_path('app/'.$name))){
-            $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+      }else{
+        $findFolios=$this->ticket->findWhere(["id"=>$request->folio]);       
+        if($findFolios->count()>0){
+           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion,"clave"=>$findFolios[0]->clave]);
+          if($findFolios->count()>0){
+            foreach ($findFolios as $f) {
+              $folios []= $f->id;
+            }
+          }else{
+             return response()->json(["Code" => "200","Message" =>[]]);
           }
-          $value=array_merge($value,array('file_data' =>$imageData ));
-          $value=array_merge($value,array('file_extension' =>$extension ));
-
         }
-        $value=array_merge($value,array('file_name' =>$name ));
-        $response []=$value;
       }
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>$response
-        ]);  
+      $clave_unique=array();
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
+      foreach ($findTickets as $key => $value) {
+            $clave_unique []=$value["clave"];
+      }
+      
+      $clave_unique=array_unique($clave_unique);
+      foreach ($clave_unique as $k) {
+        $id_transaccion_motor="";
+        $id_transaccion="";
+        $num_notaria="";
+        $notario="";
+        $FechaEscritura="";
+        $Escritura="";
+        $info=array();
+        $grupo=array();
+        $tickets_id=array();
+        foreach ($findTickets as $e => $v) {
+          if($k==$v["clave"])
+          {
+            $id_transaccion_motor=$v["id_transaccion_motor"];
+            $id_transaccion=$v["id_transaccion"];
+            $num_notaria=$v["notary_number"];
+            $notario=$v["name_notary"] ." ". $v["ap_pat_notary"] ." ". $v["ap_mat_notary"];
+            $info=json_decode($v["info"]);
+            foreach ($info->camposConfigurados as $i) {
+              if($i->tipo=="enajenante")
+              {
+                $FechaEscritura=$i->valor->enajenantes[0]->detalle->Entradas->fecha_escritura;
+              }
+              if($i->nombre=="Escritura")
+              {
+                $Escritura= $i->valor;
+              }
+             } 
+            $grupo []=$v;
+            $tickets_id []=$v["id"];
+          }           
+        }
+        $file_data="";
+        $file_extension="";
+        $file_name="";
+        $id_mensaje="";
+        $attach="";
+        $findAttach=$this->mensajes->WhereIn('ticket_id',$tickets_id)->where('attach','<>',null)->where('status',"1")->get();
+        foreach ($findAttach as $key => $value) {
+          $imageData='';
+          
+          $attach=$value["attach"];
+          $file_name=explode("/",$attach);        
+          $file_name=$file_name[count($file_name)-1];
+          if($attach<>null)
+          { 
+            $id_mensaje=$value["id"];         
+            $extension=explode(".",$file_name); 
+            $file_extension=$extension[count($extension)-1];
+            //log::info($attach);        
+            $imageData = base64_encode(file_get_contents($attach));            
+            $file_data=$imageData;
+          }
+        }
+
+        $response []=array(
+          "clave"=> $k,
+          "id_transaccion_motor"=> $id_transaccion_motor,
+          "id_transaccion"=> $id_transaccion,         
+          "num_notaria"=> $num_notaria,         
+          "notario"=> $notario,         
+          "fecha_escritura"=> $FechaEscritura,         
+          "escritura"=> $Escritura,         
+          "tickets_id"=> $tickets_id,
+          "id_mensaje"=> $id_mensaje,
+          "file_data"=>$file_data,
+          "file_extension"=>$file_extension,
+          "file_name"=>$file_name,       
+          "file_attach"=>$attach,       
+          "grupo"=>$grupo
+        );
+      }
+      return $response;
+
     } catch (Exception $e) {
      return response()->json(
           [
@@ -1043,17 +1101,21 @@ class PortalSolicitudesController extends Controller
   }
   public function updatePermisoSolicitud(Request $request)
   {
+    //log::info($request->all());
     try {
-      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
-      $this->saveDocBitacora($request->id,"","Permiso ".(string)$request->required_docs);
-         return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>"Actualizado correctamente"
-        ]);  
+      $folios=json_decode(json_decode($request->id ));
+      //log::info($folios);
+      foreach ($folios as $k) {
+        $this->saveDocBitacora($k,"","Permiso ".(string)$request->required_docs);
+      $response=$this->ticket->where("id",$k)->update(['required_docs'=>$request->required_docs]);
+
+      }
+      
+
+      return response()->json(["Code" => "200", "Message" =>"Actualizado correctamente" ]); 
+
     } catch (Exception $e) {
-     return response()->json(
-          [
+     return response()->json([
             "Code" => "400",
             "Message" =>"Error al actualizar permisos"
         ]);   
