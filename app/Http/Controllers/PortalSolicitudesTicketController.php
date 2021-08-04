@@ -1343,16 +1343,22 @@ class PortalSolicitudesTicketController extends Controller
           $mensaje = $value["mensaje"];
           $ticket_id = $value["ticket_id"];
           $file = $value['file'];
+          $filename = $value['filename'];
 
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
             'mensaje'=>$mensaje
           ]);
 
-          $ticket = $this->ticket->where("id", $ticket_id)->first();
-          $clave = $ticket->clave;
-          $notary = $this->configUserNotary->where('user_id', $ticket->user_id)->first();
-          $notary_number =$this->notary->where("id", $notary->notary_office_id)->first();
+          $ticket = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
+          ->select("notary.notary_number", "tk.clave")
+          ->leftjoin("config_user_notary_offices as config", "tk.user_id", "=", "config.user_id")
+          ->leftjoin("notary_offices as notary", "config.notary_office_id", "=", "notary.id")
+          ->where("tk.id", $ticket_id)
+          ->first();
+
+          $clave=$ticket->clave;
+    
 
           $solicitudes=PortalSolicitudesTicket::where("id", $ticket_id)->first();
           $solicitudes->update(['required_docs'=>1]);
@@ -1364,7 +1370,7 @@ class PortalSolicitudesTicketController extends Controller
          
           $extension = explode('/', mime_content_type($file))[1];
 
-          $name = "archivo_solicitud_".$mensajes->id."_".$notary_number->notary_number."_".$ticket_id.".".$extension;
+          $name = $filename."-".$ticket_id.$ticket->notary_number.date("U").".".$extension;
 
           \Storage::disk('local')->put($name,  $new_file);
           
