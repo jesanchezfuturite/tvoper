@@ -94,7 +94,7 @@ class PortalSolicitudesTicketController extends Controller
       }
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
-      if($request->has("ticket_padre")){$ticket_padre = $request->ticket_padre;}else{$ticket_padre=NULL;}
+      if($request->has("ticket_padre")){$ticket_padre = $request->ticket_padre;}else{$ticket_padre=null;}
 
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;
