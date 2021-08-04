@@ -1352,6 +1352,8 @@ class PortalSolicitudesTicketController extends Controller
           ->leftjoin("notary_offices as notary", "config.notary_office_id", "=", "notary.id")
           ->where("tk.id", $ticket_id)
           ->first();
+
+          $clave=$ticket->clave;
     
 
           $solicitudes=PortalSolicitudesTicket::where("id", $ticket_id)->first();
