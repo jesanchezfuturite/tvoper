@@ -163,7 +163,7 @@ class PortalSolicitudesTicketController extends Controller
           if($request->has("id")){
             //se verifica si el borrador anteriormente paso a status 9
             $findBorrador = PortalSolicitudesTicket::where("id", $request->id)->where("status", 9)->first();
-            if(!$findBorrador->isEmpty()){
+            if($findBorrador!=null){
               return response()->json(
                 [
                   "Code" => "409",
