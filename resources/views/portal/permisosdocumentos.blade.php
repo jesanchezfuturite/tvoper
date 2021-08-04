@@ -270,6 +270,8 @@
 <input type="text" name="file_extension" id="file_extension" hidden="true">
 <input type="text" name="file_name" id="file_name" hidden="true">
 <input type="text" name="file_save" id="file_save" hidden="true">
+<input type="text" name="clave" id="clave" hidden="true">
+<input type="text" name="file_attach" id="file_attach" hidden="true">
 @endsection
 
 @section('scripts')
@@ -455,7 +457,7 @@
   }
 
   function getTemplateAcciones( data, type, row, meta){
-    let botonAtender ='<td><a class="btn btn-icon-only green" data-toggle="modal" data-original-title="" title="Ver Archivo" onclick="verArchivo(\''+row.file_data+'\',\''+row.file_name+'\',\''+row.file_extension+'\',\''+row.grupo[0].id+'\',\''+row.id_mensaje+'\')"><i class="fa  fa-file"></i> </a></td>';
+    let botonAtender ='<td><a class="btn btn-icon-only green" data-toggle="modal" data-original-title="" title="Ver Archivo" onclick="verArchivo(\''+row.file_data+'\',\''+row.file_name+'\',\''+row.file_extension+'\',\''+row.grupo[0].id+'\',\''+row.id_mensaje+'\',\''+row.clave+'\',\''+row.file_attach+'\')"><i class="fa  fa-file"></i> </a></td>';
 
     return botonAtender;
   }
@@ -536,6 +538,7 @@
      var file=$("#file").val();
     var id_attch=$("#id_mensaje").val();
     var id_ticket=$("#id_ticket").val();
+    var clave_=$("#clave").val();
     var fileV = $("#file")[0].files[0];  
     var fileSave    = document.querySelector('input[type=file]').files[0];  
     if(file.length==0){ 
@@ -546,6 +549,7 @@
     var formdata = new FormData();
     formdata.append("ticket_id", id_ticket);
     formdata.append("id_mensaje", id_attch);
+    formdata.append("clave", clave_);
     formdata.append("file", fileV);
     formdata.append("_token",'{{ csrf_token() }}');
     $.ajax({
@@ -559,7 +563,7 @@
           Command: toastr.success(response.Message, "Notifications")
           $("#addurlfile div").empty();
           if(response.file_name_new!=''){
-            $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='{{ url()->route('listado-download', '') }}/"+response.file_name_new+"' title='Descargar Archivo'>"+response.file_name_new.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
+            $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='"+response.file_attach+"' title='Descargar Archivo'>"+response.file_name_new.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
           }                  
           document.getElementById('file_data').value = response.file_data;
           findTramiteSolicitud();
@@ -577,13 +581,15 @@
   {
     $('#portlet-file-upload').modal('show');
   }
-  function verArchivo(file_data,file_name,file_extension,id_ticket,id_mensaje_)
+  function verArchivo(file_data,file_name,file_extension,id_ticket,id_mensaje_,clave_,file_attach)
   {
     document.getElementById("id_ticket").value=id_ticket;
     document.getElementById("id_mensaje").value=id_mensaje_;
     document.getElementById("file_data").value=file_data;
     document.getElementById("file_extension").value=file_extension;
     document.getElementById("file_name").value=file_name;
+    document.getElementById("clave").value=clave_;
+    document.getElementById("file_attach").value=file_attach;
     $(".file_pdf").css("display", "block");
     $('#portlet-file').modal('show');
     if(file_extension=='pdf' && file_data.length>0){
@@ -596,7 +602,7 @@
     
     $("#addurlfile div").empty();
     if(file_name!=''){
-      $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='{{ url()->route('listado-download', '') }}/"+file_name+"' title='Descargar Archivo'>"+file_name.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
+      $("#addurlfile").append("<div><label style='color: #cb5a5e;'>Descargar Directa:</label> <a href='"+file_attach+"' title='Descargar Archivo'>"+file_name.substr(0,50)+"...<i class='fa fa-download blue'></i></a></div>");
     }
     
   }

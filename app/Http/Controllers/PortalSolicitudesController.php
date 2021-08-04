@@ -934,6 +934,7 @@ class PortalSolicitudesController extends Controller
   {
     
     try {
+      log::info($request->all());
       $fech=Carbon::now();
       $fech=$fech->format("Hms");
       $file = $request['file'];
@@ -948,12 +949,13 @@ class PortalSolicitudesController extends Controller
         $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
       }
       $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
-      $this->mensajes->create(["attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
-       $imageData = base64_encode(file_get_contents(storage_path('app/'.$name)));
+      $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
+       $imageData = base64_encode(file_get_contents($attach, 0, stream_context_create(["http"=>["timeout"=>1]])));
       return response()->json([
         "Code" => "200",
         "Message" => "Guardado correctamente",
         "file_name_new"=>$name,
+        "file_attach"=>$attach,
         "file_data"=>$imageData
       ]);
     } catch (Exception $e) {
@@ -1051,6 +1053,7 @@ class PortalSolicitudesController extends Controller
         $file_extension="";
         $file_name="";
         $id_mensaje="";
+        $attach="";
         $findAttach=$this->mensajes->WhereIn('ticket_id',$tickets_id)->where('attach','<>',null)->where('status',"1")->get();
         foreach ($findAttach as $key => $value) {
           $imageData='';
@@ -1063,9 +1066,8 @@ class PortalSolicitudesController extends Controller
             $id_mensaje=$value["id"];         
             $extension=explode(".",$file_name); 
             $file_extension=$extension[count($extension)-1];
-            if (File::exists(storage_path('app/'.$file_name))){
-              $imageData = base64_encode(file_get_contents(storage_path('app/'.$file_name)));
-            }
+            //log::info($attach);        
+            $imageData = base64_encode(file_get_contents($attach, 0, stream_context_create(["http"=>["timeout"=>1]])));            
             $file_data=$imageData;
           }
         }
@@ -1083,6 +1085,7 @@ class PortalSolicitudesController extends Controller
           "file_data"=>$file_data,
           "file_extension"=>$file_extension,
           "file_name"=>$file_name,       
+          "file_attach"=>$attach,       
           "grupo"=>$grupo
         );
       }
