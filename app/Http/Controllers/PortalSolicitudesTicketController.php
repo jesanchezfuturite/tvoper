@@ -592,7 +592,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "400",
             "Message" => "El id_transaccion es null"
-          ]);
+          ], 400);
       }
       $existe = PortalSolicitudesTicket::where("id_transaccion", $request->id_transaccion)->first();
       if($existe==null){
@@ -600,7 +600,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "400",
             "Message" => "El id_transaccion no existe"
-          ]);
+          ],400);
       }
 
       $error=null;
@@ -678,7 +678,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "400",
             "Message" => "El id_transaccion es null"
-          ]);
+          ], 400);
       }
       $existe = PortalSolicitudesTicket::where("id_transaccion", $request->id_transaccion)->first();
       if($existe==null){
@@ -686,7 +686,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "400",
             "Message" => "El id_transaccion no existe"
-          ]);
+          ],400);
       }
       $error=null;
       switch ($request->status) {
