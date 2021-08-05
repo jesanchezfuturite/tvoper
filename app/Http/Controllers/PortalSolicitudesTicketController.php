@@ -130,25 +130,36 @@ class PortalSolicitudesTicketController extends Controller
               //si tiene id es porque se esta volviendo a editar
               if($request->has("id")){
                 $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                $attach =$consultar->attach;
-                $archivo = explode("/download/", $attach);                   
-                $nombre = $file->getClientOriginalName();             
-                $verificar=strcmp($archivo[1], $nombre); 
-                 
-                  if ($verificar!== 0) {
-                    //se hace un borrado logico al registo anterior
-            
-                    $consultar->update(["status"=>0]);
-
-                    //se guarda un archivo nuevo
-                      $data =[
-                        'ticket_id'=>$ticket->id,
-                        'clave'=>$clave,
-                        'mensaje' => $request->descripcion[0],
-                        'file'    => $request->file[0]
-                        ];
-                      $this->saveFile($data);
-                  }
+                if($consultar!=null){
+                  $attach =$consultar->attach;
+                  $archivo = explode("/download/", $attach);                   
+                  $nombre = $file->getClientOriginalName();             
+                  $verificar=strcmp($archivo[1], $nombre); 
+                   
+                    if ($verificar!== 0) {
+                      //se hace un borrado logico al registo anterior
+              
+                      $consultar->update(["status"=>0]);
+  
+                      //se guarda un archivo nuevo
+                        $data =[
+                          'ticket_id'=>$ticket->id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $request->file[0]
+                          ];
+                        $this->saveFile($data);
+                    }
+                }else{
+                  $data =[
+                    'ticket_id'=>$ticket->id,
+                    'clave'=>$clave,
+                    'mensaje' => $request->descripcion[0],
+                    'file'    => $request->file[0]
+                    ];
+                  $this->saveFile($data);
+                }
+               
               }else{
                 $data =[
                   'ticket_id'=>$ticket->id,
@@ -190,6 +201,7 @@ class PortalSolicitudesTicketController extends Controller
               if($request->has("id")){
                   //consulta el nombre del archivo guardado en mensajes    
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
+                  if($consultar!=null)
                   $archivo = explode("/download/",$consultar->attach);                   
                   $nombre = $file->getClientOriginalName();             
                   $verificar=strcmp($archivo[1], $nombre);   
