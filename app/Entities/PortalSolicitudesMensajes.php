@@ -22,7 +22,9 @@ class PortalSolicitudesMensajes extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['id','ticket_id','clave','mensaje','attach','mensaje_para'];
+
+    protected $fillable = ['id','ticket_id','mensaje','attach','mensaje_para','status','clave'];
+
 
     protected $table = "solicitudes_mensajes";
 
