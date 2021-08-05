@@ -1066,7 +1066,8 @@ class PortalSolicitudesController extends Controller
             $id_mensaje=$value["id"];         
             $extension=explode(".",$file_name); 
             $file_extension=$extension[count($extension)-1];
-            //log::info($attach);        
+            //log::info($attach);
+            if(preg_match("/https:/", $attach)) str_replace("/https/", "http", $attach);
             $imageData = base64_encode(file_get_contents($attach));            
             $file_data=$imageData;
           }
