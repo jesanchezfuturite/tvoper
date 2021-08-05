@@ -201,29 +201,40 @@ class PortalSolicitudesTicketController extends Controller
               if($request->has("id")){
                   //consulta el nombre del archivo guardado en mensajes    
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                  if($consultar!=null)
-                  $archivo = explode("/download/",$consultar->attach);                   
-                  $nombre = $file->getClientOriginalName();             
-                  $verificar=strcmp($archivo[1], $nombre);   
-                  //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
-                  if ($verificar!== 0) {
-                      $data =[
-                        'ticket_id'=> $first_id,
-                        'clave'=>$clave,
-                        'mensaje' => $request->descripcion[0],
-                        'file'    => $file
-                      ];
+                  if($consultar!=null){
+                    $archivo = explode("/download/",$consultar->attach);                   
+                    $nombre = $file->getClientOriginalName();             
+                    $verificar=strcmp($archivo[1], $nombre);   
+                    //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
+                    if ($verificar!== 0) {
+                        $data =[
+                          'ticket_id'=> $first_id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $file
+                        ];
 
-                      $this->saveFile($data);
+                        $this->saveFile($data);
+                    }else{
+                      //si es igual a 0 ya no se guarda el archivo y solo se duplica el registo de mensajes relacionado al nuevo ticket
+                      PortalSolicitudesMensajes::create([
+                        'ticket_id'=> $first_id,
+                        'mensaje' => $request->descripcion[0],
+                        'clave' => $clave,
+                        'attach'=>$consultar->attach
+                      ]);
+                    }
                   }else{
-                    //si es igual a 0 ya no se guarda el archivo y solo se duplica el registo de mensajes relacionado al nuevo ticket
-                    PortalSolicitudesMensajes::create([
-                      'ticket_id'=> $first_id,
-                      'mensaje' => $request->descripcion[0],
-                      'clave' => $clave,
-                      'attach'=>$consultar->attach
-                    ]);
+                    $data =[
+                          'ticket_id'=> $first_id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $file
+                        ];
+
+                        $this->saveFile($data);
                   }
+                  
                   
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
