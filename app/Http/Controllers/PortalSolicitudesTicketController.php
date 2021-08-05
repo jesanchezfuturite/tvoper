@@ -1347,7 +1347,7 @@ class PortalSolicitudesTicketController extends Controller
 
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
-            'mensaje'=>$mensaje
+            'mensaje'=>$mensaje ?? ''
           ]);
 
           $ticket = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
