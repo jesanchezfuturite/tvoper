@@ -51,8 +51,10 @@ class ListController extends Controller {
 		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 404);;
 
 		$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
+		$users = $this->array_value_recursive('id', $user->notary->users->toArray());
+		if(gettype($users) != 'array') $users = [$users];
 		$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
-		$tickets = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()))
+		$tickets = Tickets::whereIn('user_id', $users)
 			->with('files')
 			->select(
 				DB::raw('if(count(*) != 1, 1, 0) as is_group'),
@@ -208,7 +210,7 @@ class ListController extends Controller {
 		$tickets = $tickets->skip($skip)->take($limit);
 		$tickets = $tickets->get();
 		
-		$ticketsTotal = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()))
+		$ticketsTotal = Tickets::whereIn('user_id', $users)
 			->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
 			->leftjoin('egobierno.tipo_servicios as servicio', 'catalogo.tramite_id', 'servicio.Tipo_Code')
@@ -219,7 +221,7 @@ class ListController extends Controller {
 		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsTotal->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		$ticketsTotal = $ticketsTotal->count();
 
-		$ticketsFiltered = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()));
+		$ticketsFiltered = Tickets::whereIn('user_id', $users);
 		if($search) $ticketsFiltered = $ticketsFiltered->where($searchBy, "like", "%{$search}%");
 		if(!$search) $ticketsFiltered = $ticketsFiltered->whereBetween('ticket.created_at', [$startDate, $endDate]);
 		$ticketsFiltered = $ticketsFiltered->whereIn('ticket.status', $status)
@@ -232,7 +234,7 @@ class ListController extends Controller {
 		// if(array_search(98, $status) === false && array_search(2, $status) !== false) $ticketsFiltered->whereRaw('((catalogo.firma = 1 AND ticket.firmado IS NOT NULL) OR catalogo.firma = 0)');
 		$ticketsFiltered = $ticketsFiltered->count();
 
-		$ticketsTotalGroupBy = Tickets::whereIn('user_id', $this->array_value_recursive('id', $user->notary->users->toArray()));
+		$ticketsTotalGroupBy = Tickets::whereIn('user_id', $users);
 		if($search) $ticketsTotalGroupBy = $ticketsTotalGroupBy->where($searchBy, "like", "%{$search}%");
 		if(!$search) $ticketsTotalGroupBy = $ticketsTotalGroupBy->whereBetween('ticket.created_at', [$startDate, $endDate]);
 		$ticketsTotalGroupBy = $ticketsTotalGroupBy->whereIn('ticket.status', $status)
