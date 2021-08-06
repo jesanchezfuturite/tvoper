@@ -153,14 +153,24 @@
         
     $(".dataTables_empty").text("");
 
-      $('#usuarios').click(function() {
-        event.preventDefault();     
+      $('#usuarios').click(function() {   
+        event.preventDefault();        
+        var ids =$("#ids_array").val();
+        if(ids==""){
+          Command: toastr.warning("Se necesita hacer una busqueda", "Notifications");
+          return false;
+        }
         $("#form_users").submit();
-    
+        
       }); 
 
       $('#subnotaria').click(function() {   
-        event.preventDefault();     
+        event.preventDefault();
+        var ids_not =$("#ids_notaria").val();   
+        if(ids_not==""){
+          Command: toastr.warning("Se necesita hacer una busqueda", "Notifications");
+          return false;
+        }  
         $("#form_notaria").submit();    
       }); 
        $(document).ajaxStart(function () {        

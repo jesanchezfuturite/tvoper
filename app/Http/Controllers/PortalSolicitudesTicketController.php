@@ -610,6 +610,22 @@ class PortalSolicitudesTicketController extends Controller
 
     }
     public function saveTransaccionMotor(Request $request){
+      if($request->id_transaccion==null){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "El id_transaccion es null"
+          ], 400);
+      }
+      $existe = PortalSolicitudesTicket::where("id_transaccion", $request->id_transaccion)->first();
+      if($existe==null){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "El id_transaccion no existe"
+          ],400);
+      }
+
       $error=null;
       switch ($request->status) {
         case "60":
@@ -661,6 +677,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
       } catch (\Exception $e) {
+        Log::info('Error Portal - Error al guardar transaccion motor '.$e->getMessage());
         $error = $e;
       }
       if($error){
@@ -679,6 +696,21 @@ class PortalSolicitudesTicketController extends Controller
 
     }
     public function updateStatusTramite(Request $request){
+      if($request->id_transaccion==null){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "El id_transaccion es null"
+          ], 400);
+      }
+      $existe = PortalSolicitudesTicket::where("id_transaccion", $request->id_transaccion)->first();
+      if($existe==null){
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "El id_transaccion no existe"
+          ],400);
+      }
       $error=null;
       switch ($request->status) {
         case "60":
