@@ -673,21 +673,15 @@ class PortalSolicitudesTicketController extends Controller
 
     }
     public function updateStatusTramite(Request $request){
-      if($request->id_transaccion==null){
+      if($request->has("id_transaccion") && $request->id_transaccion==null){
+        Log::info('Error Portal - Error id_transaccion null en update-status-tramite');
         return response()->json(
           [
             "Code" => "400",
             "Message" => "El id_transaccion es null"
           ], 400);
       }
-      $existe = PortalSolicitudesTicket::where("id_transaccion", $request->id_transaccion)->first();
-      if($existe==null){
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "El id_transaccion no existe"
-          ],400);
-      }
+    
       $error=null;
       switch ($request->status) {
         case "60":
@@ -705,7 +699,7 @@ class PortalSolicitudesTicketController extends Controller
       $recibo_referencia = $request->has("recibo_referencia") ? $request->recibo_referencia :  "";
 
       try {
-        if($request->id_transaccion){
+        if($request->id_transaccion && $request->id_transaccion!=null){
           $solTramites= $this->solTramites->updateOrCreate(['id' => $request->id_transaccion], [
             "estatus"=> $request->status,
             "url_recibo"=> $request->url_recibo
