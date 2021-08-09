@@ -166,9 +166,9 @@ class PortalSolicitudesTicketController extends Controller
             if($findBorrador!=null){
               return response()->json(
                 [
-                  "Code" => "409",
+                  "Code" => "400",
                   "Message" => "Este tramite ya se guardo anteriormente",
-                ]
+                ], 400
               );
             }
              //se hace un borrado logico del ticket anterior borrador
