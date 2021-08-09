@@ -1548,4 +1548,13 @@ class PortalSolicitudesTicketController extends Controller
       );
     }
   }
+
+  public function validarTickets($id){
+    try {
+      $val_transaccion = PortalSolicitudesTicket::where("id", $id)->first();
+      
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
+  }
 }
