@@ -1401,7 +1401,8 @@ class PortalSolicitudesTicketController extends Controller
           $mensaje = $value["mensaje"];
           $ticket_id = $value["ticket_id"];
           $file = $value['file'];
-          $filename = $value['filename'];
+          $nomArchivo = $value['filename'];
+          $filename = preg_replace('([^A-Za-z0-9 ])', ' ', $nomArchivo);
 
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
