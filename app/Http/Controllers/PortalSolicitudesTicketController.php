@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Routing\UrlGenerator;
 use DB;
 use Illuminate\Support\Facades\Log;
+use App\Entities\PortalTramites;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -551,11 +552,13 @@ class PortalSolicitudesTicketController extends Controller
       $solTramites = $this->solTramites->create([
         "estatus" => $request->status
       ]);
-      $id_transaccion=$solTramites->id;
-      try {
+      $id_transaccion=$solTramites->id;   
+  
+      try {      
+        $validar = $this->validarTickets($ids_tramites); 
         $array_tramites=[];
         if($solTramites){
-          foreach ($ids_tramites as $key => $value) {
+          foreach ($ids_tramites as $key => $value) {             
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
               array_push($array_tramites, $value->id);
@@ -1549,12 +1552,32 @@ class PortalSolicitudesTicketController extends Controller
     }
   }
 
-  public function validarTickets($id){
+  public function validarTickets($array){
     try {
-      $val_transaccion = PortalSolicitudesTicket::where("id", $id)->first();
+      $ids=[];
+      foreach ($array as $key => $value) {
+        $val_transaccion = PortalSolicitudesTicket::find($value->id);
+        if($val_transaccion->id_transaccion!=null){
+            $tramite = PortalTramites::find($val_transaccion->id_transaccion);
+            $estatus = $tramite->estatus;
+            if($estatus==60 || $estatus==70 || $estatus == 0){
+              return 0;
+            }else{
+              return 1;
+            }
+        }else{
+          return 1;
+        }
+      }      
       
-    } catch (\Throwable $th) {
-      //throw $th;
+    } catch (\Exception $e) {
+      Log::info('Validar Tickets :'.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error en validacion",
+        ], 400
+      );
     }
   }
 }
