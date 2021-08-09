@@ -240,6 +240,7 @@ class ListController extends Controller {
 		$ticketsTotalGroupBy = $ticketsTotalGroupBy->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
 			->leftjoin('egobierno.tipo_servicios as servicio', 'catalogo.tramite_id', 'servicio.Tipo_Code')
+			->leftjoin('solicitudes_tramite as tramite', 'tramite.id', 'ticket.id_transaccion');
 			->select(DB::raw('COUNT(DISTINCT '.$groupBy.') AS count'));
 		if(array_search(98, $status) !== false) $ticketsTotalGroupBy = $ticketsTotalGroupBy->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
 		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
