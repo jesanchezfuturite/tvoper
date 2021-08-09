@@ -166,8 +166,8 @@ class PortalSolicitudesTicketController extends Controller
             if($findBorrador!=null){
               return response()->json(
                 [
-                  "Code" => "400",
-                  "Message" => "Este tramite ya se guardo anteriormente",
+                  "code" => "400",
+                  "message" => "Este tramite ya se guardo anteriormente",
                 ], 400
               );
             }
