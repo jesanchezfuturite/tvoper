@@ -133,7 +133,8 @@ class PortalSolicitudesTicketController extends Controller
                 if($consultar!=null){
                   $attach =$consultar->attach;
                   $archivo = explode("/download/", $attach);                   
-                  $nombre = $file->getClientOriginalName();             
+                  $nom = $file->getClientOriginalName(); 
+                  $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);            
                   $verificar=strcmp($archivo[1], $nombre); 
                    
                     if ($verificar!== 0) {
@@ -203,7 +204,8 @@ class PortalSolicitudesTicketController extends Controller
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
                   if($consultar!=null){
                     $archivo = explode("/download/",$consultar->attach);                   
-                    $nombre = $file->getClientOriginalName();             
+                    $nom = $file->getClientOriginalName();    
+                    $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);              
                     $verificar=strcmp($archivo[1], $nombre);   
                     //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
                     if ($verificar!== 0) {
@@ -525,7 +527,8 @@ class PortalSolicitudesTicketController extends Controller
       $file = $data['file'];
       $clave = $data['clave'];
       $extension = $file->getClientOriginalExtension();
-      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $filename);     
 
       $number = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
       ->select("notary.notary_number")
