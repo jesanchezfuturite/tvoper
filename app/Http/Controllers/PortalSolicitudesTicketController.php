@@ -549,14 +549,14 @@ class PortalSolicitudesTicketController extends Controller
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
       $error=null;     
-  
       try {      
-        $validar = $this->validarTickets($ids_tramites); 
-        if($validar!=[]){
+        $validar = $this->validarTickets($request->ids_tramites);         
+        if($validar!=[] && is_array($validar)){
+          $ids_exist = implode(', ', $validar);
           return response()->json(
             [
               "Code" => "400",
-              "Message" => "Los tickets ".$validar. " ya tienen una transacción"
+              "Message" => "Los tickets  ".$ids_exist. "  ya tienen una transacción"
             ], 400);
         }
 
@@ -1565,12 +1565,12 @@ class PortalSolicitudesTicketController extends Controller
     try {
       $ids=[];
       foreach ($array as $key => $value) {
-        $val_transaccion = PortalSolicitudesTicket::find($value->id);
+        $val_transaccion = PortalSolicitudesTicket::find($value["id"]);
         if($val_transaccion->id_transaccion!=null){
             $tramite = PortalTramites::find($val_transaccion->id_transaccion);
             $estatus = $tramite->estatus;
             if($estatus==60 || $estatus==70 || $estatus == 0){
-              array_push($ids, $value->id);     
+              array_push($ids, $value["id"]);     
             }      
         }
       }    
@@ -1581,7 +1581,7 @@ class PortalSolicitudesTicketController extends Controller
         [
           "Code" => "400",
           "Message" => "Error en validacion",
-        ], 400
+        ],400
       );
     }
   }
