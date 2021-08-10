@@ -587,7 +587,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "400",
             "Message" => "Error al actualizar transacción"
-          ]);
+          ], 400);
       }else {
         return response()->json(
           [
