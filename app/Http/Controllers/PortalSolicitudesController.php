@@ -480,6 +480,7 @@ class PortalSolicitudesController extends Controller
       ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
       
     }
+    
     $cat = $filtro->get()->pluck("id_catalogo")->toArray();  
     $ids_catalogos= array_unique($cat);
 
@@ -592,9 +593,18 @@ class PortalSolicitudesController extends Controller
     $tipoSolicitud=$this->findSol();
 
     $user_id = auth()->user()->id;
+  
     $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
     ->where("id_estatus_atencion", 5)
     ->first();
+
+    $usuarios_atencion = Portalsolicitudesresponsables::from("portal.solicitudes_responsables as res")
+    ->select("u.name", "u.email", "u.id as id_usuario")
+    ->leftjoin("operacion.users as u", "u.id", "=", "res.user_id")
+    ->whereNotNull("res.id_estatus_atencion")
+    ->groupBy("res.user_id")
+    ->get()->toArray();
+
 
     $atencion= $responsable!=null ? "true" : "false";
         
@@ -612,13 +622,13 @@ class PortalSolicitudesController extends Controller
     $status = json_decode($status->estatus);
 
     $status = $this->status->whereIn("id", $status)->get()->toArray();
-
     
     return view('portal/listadosolicitud', [
       "tipo_solicitud" => $tipoSolicitud , 
       "status" => $status, 
       "user_id"=>$user_id, 
-      "atencion"=>$atencion
+      "atencion"=>$atencion,
+      "usuarios_atencion"=>$usuarios_atencion
     ]);
 
   }
