@@ -21,29 +21,32 @@
     </ul>
 </div>
 <div class="row">
-    <div class="portlet box blue">
-        <div class="portlet-title">
-            <div class="caption">
-                <i class="fa fa-bank"></i>Filtros
-            </div>
-        </div>
-        <div class="portlet-body">
-          <div class="form-body">
-            <div class="row">             
-                <div class="col-md-4 col-ms-12">
-                    <div class="form-group">
-                      <label >Tipo de Solicitud</label>           
+  <div class="portlet box blue">
+    <div class="portlet-title">
+      <div class="caption">
+          <i class="fa fa-bank"></i>Filtros
+      </div>
+    </div>
+    <div class="portlet-body">
+      <div class="form-body">
+        
+        <div class="filtros-funcionarios">
+          <div class="row">             
+            <div class="col-md-4 col-ms-12">
+              <div class="form-group">
+                <label >Tipo de Solicitud</label>           
                 <select class="select2me form-control" name="opTipoSolicitud" id="opTipoSolicitud" onchange="">
                    <option value="0">------</option>
                     @foreach($tipo_solicitud as $tr)
-                             <option value="{{$tr['id']}}">{{$tr["titulo"]}}</option>
-                            @endforeach     
+                      <option value="{{$tr['id']}}">{{$tr["titulo"]}}</option>
+                    @endforeach     
                 </select>   
-                    </div>
-                </div>
-                <div class="col-md-3 col-ms-12">
-                    <div class="form-group"> 
-                      <label >Estatus</label>          
+              </div>
+            </div>
+            @if($atencion=="false")
+            <div class="col-md-3 col-ms-12">
+              <div class="form-group"> 
+                <label >Estatus</label>          
                 <select class="select2me form-control" name="opEstatus" id="opEstatus" onchange="">         
                    <option value="">------</option>
                    <option value="0">Todos menos cerrado</option>
@@ -51,25 +54,41 @@
                              <option value="{{$sd['id']}}">{{$sd["descripcion"]}}</option>
                             @endforeach     
                 </select>  
-                    </div>
-                </div>
-                <div class="col-md-2 col-ms-12">
-                    <div class="form-group"> 
-                      <label >FSE/Folio Pago</label>          
-                <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
-                    </div>
-                </div>
-                <div class="col-md-1 col-ms-12">
-                      <div class="form-group">
-                        <span class="help-block">&nbsp;</span>
-                        <button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
-                      </div>
-                </div>
-                
-              </div> 
+              </div>
             </div>
-        </div>
+            <div class="col-md-2 col-ms-12">
+              <div class="form-group"> 
+                <label >FSE/Folio Pago</label>          
+                <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
+              </div>
+            </div>
+            <div class="col-md-1 col-ms-12">
+              <div class="form-group">
+                  <span class="help-block">&nbsp;</span>
+                  <button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
+              </div>
+            </div> 
+             @else  
+            <div class="col-md-3 col-ms-12">
+              <div class="form-group"> 
+                <label >Usuario</label> 
+                <select class="select2me form-control" name="opUser" id="opUser" onchange="">         
+                   <option value="">------</option>
+                </select>    
+              </div>
+            </div>
+            <div class="col-md-1 col-ms-12">
+              <div class="form-group">
+                  <span class="help-block">&nbsp;</span>
+                  <button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
+              </div>
+            </div>
+            @endif               
+          </div> 
+        </div>        
+      </div>
     </div>
+  </div>
 </div>
 <div class="row">
     <div class="portlet box blue">
@@ -94,6 +113,7 @@
                     <th>Grupo</th>
                     <th>Total</th>
                     <th>Solicitudes</th>
+                    <th>grupo</th>
                     <th></th>
                 </tr>
             </thead>
@@ -413,9 +433,9 @@
   jQuery(document).ready(function() {
    // TableManaged2.init2();
     $(".btnPrelacion").css("display", "none");
-      $(".selectMotivos").css("display", "none")
-      configprelacion();
-    }); 
+    $(".selectMotivos").css("display", "none");
+    configprelacion();
+  }); 
   $("#noSolicitud").keypress(function(event) {
     if (event.keyCode === 13) {
        findSolicitudes();
@@ -713,6 +733,9 @@ function configprelacion()
                   { "defaultContent":"Ver Detalles del Tramite"},
                   { "data":"costo_final"},
                   { "data":"grupo.length"},
+                  { "data": function ( grupo ) {
+                  return JSON.stringify( grupo );
+                      },"visible":false},
                   {
                     "data": "grupo_clave",
                     "render": getTemplateAcciones
@@ -922,7 +945,7 @@ function configprelacion()
         }
         html += "<tr><th></th><th></th><th colspan='4'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 
-        tbl_head = "<table class='table table-hover'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover' class='example'><tr><th></th><th>Solicitud</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th>No. Escritura/ Acta/ Oficio</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>ISAI</th><th>Estatus</th><th>Proceso</th><th></th><th></th></tr>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
