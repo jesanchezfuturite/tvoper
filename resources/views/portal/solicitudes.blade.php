@@ -411,9 +411,9 @@
 		function getTemplateAcciones( data, type, row, meta  ){
 			let botonEditar = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(row) + ")'><i class='fa fa-pencil'></i></a>";
 			let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + data + " )'><i class='fa fa-minus'></i></a>";
-			let botonMotivo = "<a class='btn btn-icon-only green'href='#portlet-motivos' data-toggle='modal' title='Motivos de Rechazo' onclick='openModalMotivo( "  + data + " )'><i class='fa fa-list'></i></a>";
+			//let botonMotivo = "<a class='btn btn-icon-only green'href='#portlet-motivos' data-toggle='modal' title='Motivos de Rechazo' onclick='openModalMotivo( "  + data + " )'><i class='fa fa-list'></i></a>";
 			let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(row) +", true)'><i class='fa fa-code-fork'></i></a>";
-			return botonEditar + botonAddSolicitudDependiente + botonEliminar+botonMotivo;	
+			return botonEditar + botonAddSolicitudDependiente + botonEliminar;	
 		}
 
 		function createTable( url){
@@ -553,12 +553,12 @@
 		    d.hijas.forEach( (solicitud) =>{
 		    	let botonEditar = " <a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Editar' onclick='openModalUpdate("+  JSON.stringify(solicitud) +"  )'><i class='fa fa-pencil'></i></a>";
 		    	let botonEliminar = "<a class='btn btn-icon-only red' data-toggle='modal' title='Eliminar' onclick='openModalDelete( "  + solicitud.id_solcitud + " )'><i class='fa fa-minus'></i></a>";
-		    	let botonMotivo = "<a href='#portlet-motivos' class='btn btn-icon-only green' data-toggle='modal' tittle='Motivos de Rechazo' onclick='openModalMotivo( "  + solicitud.id_solcitud + " )'><i class='fa fa-list'></i></a>";
+		    	//let botonMotivo = "<a href='#portlet-motivos' class='btn btn-icon-only green' data-toggle='modal' tittle='Motivos de Rechazo' onclick='openModalMotivo( "  + solicitud.id_solcitud + " )'><i class='fa fa-list'></i></a>";
 		    	let botonAddSolicitudDependiente = "<a class='btn btn-icon-only blue' data-toggle='modal' data-original-title='' title='Agregar solicitud dependiente' onclick='openModalUpdate("+  JSON.stringify(solicitud) +", true)'><i class='fa fa-code-fork'></i></a>";
 		   
 				let tdShowHijas = solicitud.hijas && solicitud.hijas.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id_solcitud  +"' class='fa fa-plus'></a>" : '';
 				
-		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + botonMotivo + '</td></tr>'
+		        html += '<tr id="trchild-' + solicitud.id_solcitud +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+ solicitud.titulo  + '</td><td>'+ botonEditar +  botonAddSolicitudDependiente +botonEliminar + '</td></tr>'
 		    
 		    });
 		    html+='</table>';
@@ -742,7 +742,7 @@
 			        { users=[]; }                
 		            $("#sample_2").append("<tr>"
 		              +"<td>"+item.descripcion+"</td>"
-		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(users) + ","+item.id+")'><i class='fa fa-plus'></i></a></td>"
+		              +"<td><a href='#add-users' class='btn btn-icon-only blue' data-toggle='modal' title='Agregar Usuarios' title='Editar' onclick='editarUsers("+  JSON.stringify(users) + ","+ item.id +")'><i class='fa fa-plus'></i></a><a class='btn btn-icon-only green'href='#portlet-motivos' data-toggle='modal' title='Motivos de Rechazo' onclick='openModalMotivo( "  + item.id + " )'><i class='fa fa-list'></i></a></td>"
 		              +"</tr>"
 		            );
 		        });
