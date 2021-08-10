@@ -548,14 +548,23 @@ class PortalSolicitudesTicketController extends Controller
     public function saveTransaccion(Request $request){
       $ids_tramites = json_decode(json_encode($request->ids_tramites));
       $id_transaccion=null;
-      $error=null;
-      $solTramites = $this->solTramites->create([
-        "estatus" => $request->status
-      ]);
-      $id_transaccion=$solTramites->id;   
+      $error=null;     
   
       try {      
         $validar = $this->validarTickets($ids_tramites); 
+        if($validar!=[]){
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => "Los tickets ".$validar. " ya tienen una transacción"
+            ], 400);
+        }
+
+        $solTramites = $this->solTramites->create([
+          "estatus" => $request->status
+        ]);
+        $id_transaccion=$solTramites->id;   
+
         $array_tramites=[];
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {             
@@ -1561,15 +1570,11 @@ class PortalSolicitudesTicketController extends Controller
             $tramite = PortalTramites::find($val_transaccion->id_transaccion);
             $estatus = $tramite->estatus;
             if($estatus==60 || $estatus==70 || $estatus == 0){
-              return 0;
-            }else{
-              return 1;
-            }
-        }else{
-          return 1;
+              array_push($ids, $value->id);     
+            }      
         }
-      }      
-      
+      }    
+      return $ids;
     } catch (\Exception $e) {
       Log::info('Validar Tickets :'.$e->getMessage());
       return response()->json(
