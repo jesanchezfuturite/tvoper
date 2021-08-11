@@ -162,10 +162,20 @@ class PortalSolicitudesTicketController extends Controller
         }else{
           if($request->has("id")){
             //se hace un borrado logico del ticket anterior borrador
-            $eliminar_ticket = $this->ticket->where('id', $request->id)
+            $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 99)
             ->update(['status' => 9]);
           }
-           
+          $tickets = PortalSolicitudesTicket::where("clave", $clave)
+          ->where("status", 99)->get();
+
+          if($tickets!=null){
+            Log::info('Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
+            $error = [
+                "Code" => "400",
+                "Message" => "Ticket ya existe".$e->getMessage()
+            ];
+
+          }
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);           
             foreach($datosrecorrer as $key => $value){
