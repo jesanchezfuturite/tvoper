@@ -62,28 +62,26 @@
                 <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
               </div>
             </div>
-            <div class="col-md-1 col-ms-12">
-              <div class="form-group">
-                  <span class="help-block">&nbsp;</span>
-                  <button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
-              </div>
-            </div> 
              @else  
             <div class="col-md-3 col-ms-12">
               <div class="form-group"> 
                 <label >Usuario</label> 
                 <select class="select2me form-control" name="opUser" id="opUser" onchange="">         
-                   <option value="">------</option>
+                   <option value="0">------</option>
+                    @foreach( $usuarios_atencion as $us)
+                    <option value="{{$us['id_usuario']}}">{{$us["name"]}} - {{$us["email"]}}</option>     
+                    @endforeach  
                 </select>    
               </div>
             </div>
+            @endif 
             <div class="col-md-1 col-ms-12">
               <div class="form-group">
                   <span class="help-block">&nbsp;</span>
                   <button type="button" class="btn green" onclick="findSolicitudes()">Buscar</button>
               </div>
             </div>
-            @endif               
+                         
           </div> 
         </div>        
       </div>
@@ -568,6 +566,9 @@ function configprelacion()
       Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
     }else if( opEstatus != ""){   
       Object.assign(formdata,{estatus:opEstatus}); 
+    }else if({{$atencion}}){
+      Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
+      Object.assign(formdata,{user_id:opUser}); 
     }else{
       Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
       return;
@@ -594,9 +595,9 @@ function configprelacion()
                   
                   var legt=response[n].grupo[k].bitacora.length-1;
                   if(legt>0){
-                    catalogos_id.push(response[n].grupo[k].bitacora[legt].catalogo);
+                    catalogos_id.push(response[n].grupo[k].bitacora[legt].id_estatus_atencion);
                   }else{
-                    catalogos_id.push(response[n].grupo[k].catalogo);
+                    catalogos_id.push(0);
                   }
                   
                   if(response[n].grupo[k].status!="11"){
@@ -622,7 +623,7 @@ function configprelacion()
                     } 
                     if(typeof (response[n].grupo[k])!=="undefined" )
                     {
-                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe && response[n].grupo[k].status==11)
+                       if(response[n].grupo[k].id==response[n].grupo[h].info.complementoDe && response[n].grupo[h].info.complementoDe != null && response[n].grupo[h].id!=response[n].grupo[h].info.complementoDe && response[n].grupo[h].status==11)
                        {                       
                           Object.assign(response[n].grupo[h],{"id_transaccion_motor":[response[n].grupo[k].id_transaccion_motor]});
                        }
