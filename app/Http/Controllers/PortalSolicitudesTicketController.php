@@ -172,7 +172,7 @@ class PortalSolicitudesTicketController extends Controller
             Log::info('Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
             $error = [
                 "Code" => "400",
-                "Message" => "Ticket ya existe".$e->getMessage()
+                "Message" => "Ticket ya se creo".$e->getMessage()
             ];
 
           }
