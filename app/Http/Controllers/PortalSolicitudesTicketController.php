@@ -162,7 +162,7 @@ class PortalSolicitudesTicketController extends Controller
         }else{
           if($request->has("id")){
             //se hace un borrado logico del ticket anterior borrador
-            $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 99)
+            $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 80)
             ->update(['status' => 9]);
           }
           $tickets = PortalSolicitudesTicket::where("clave", $clave)
