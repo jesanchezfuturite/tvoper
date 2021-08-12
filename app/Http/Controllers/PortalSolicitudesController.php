@@ -744,10 +744,10 @@ class PortalSolicitudesController extends Controller
           'attach'    =>  $attach
           ]);
         }
-        foreach($request->tickets_id as $i)
+       /* foreach($request->tickets_id as $i)
         {
           $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,1);
-        }
+        }*/
         $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,"Pasa a Validador",$request->id_estatus_atencion);
       }
     try {  

@@ -671,7 +671,7 @@ function configprelacion()
     $('#portlet-cerrarTickets').modal('show');
     document.getElementById("idgrupo").value=grupo_clave;
     document.getElementById("id_proceso").value=id_proceso;
-    document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
+    document.getElementById("tickets_id").value=JSON.stringify(ids);
     document.getElementById("ids").value=JSON.stringify(ids);
   }
   function cerrarSolicitudes()
@@ -1116,7 +1116,7 @@ function configprelacion()
               Object.assign(response_grp[n].grupo[g],{"pagos":pagos});
               Object.assign(response_grp[n].grupo[g],{"partida":partida});
               id_=response_grp[n].grupo[g].id; 
-               formdata.append("tickets_id[]", id_);   
+                  
               grupo_clave=response_grp[n].grupo[g].grupo_clave;
               for(h in response_grp[n].grupo)
               {
@@ -1158,10 +1158,10 @@ function configprelacion()
             {   count+=1;
               var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos); 
               if(typeof(distrito)==='object'){
-                if(response_grp[n].grupo[g].status=='2' || response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
+                if(response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
                 {
                    
-                
+                formdata.append("tickets_id[]", response_grp[n].grupo[g].id);
                   formdata.append("id[]", id_);
                  
                   document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
@@ -1298,7 +1298,7 @@ function configprelacion()
         document.getElementById("ids").value=JSON.stringify(ids);
          $('#portlet-rechazar').modal('show');
          document.getElementById("idgrupo").value=id_transaccion;
-         document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
+         document.getElementById("tickets_id").value=JSON.stringify(ids);
          document.getElementById("id_proceso").value=id_estatus_atencion;
       }
 
