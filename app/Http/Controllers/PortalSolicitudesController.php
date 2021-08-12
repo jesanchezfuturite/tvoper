@@ -939,25 +939,28 @@ class PortalSolicitudesController extends Controller
 
     }
     public function getMensajes($id){
-      try{
+      try{ 
+        $id=json_decode($id);
+        log::info($id);
         $mensajes=array();
-         $findmensajes = $this->mensajes->where('ticket_id', $id)
+         $findmensajes = $this->mensajes->whereIn('ticket_id', $id)
                     ->orderBy('created_at', 'DESC')
                     ->get()
                     ->toArray();
 
 
-        $findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
+        /*$findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
         $findMensajesPadre=[];
-        //log::info($findSolicitudes[0]["ticket_relacionado"]);
+        log::info($findSolicitudes[0]["ticket_relacionado"]);
         if(isset($findSolicitudes[0]["ticket_relacionado"])){
           $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
           ->orderBy('created_at', 'DESC')
           ->get()
           ->toArray();
 
-        }
-        $mensajes=array_merge($findmensajes,$findMensajesPadre);
+        }*/
+        $mensajes=$findmensajes;
+       // $mensajes=array_merge($findmensajes,$findMensajesPadre);
 
 
      

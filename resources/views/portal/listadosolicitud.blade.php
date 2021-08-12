@@ -556,23 +556,28 @@ function configprelacion()
     var noSolicitud=$("#noSolicitud").val();
     var opTipoSolicitud=$("#opTipoSolicitud").val();
     var opEstatus=$("#opEstatus").val();
+    var opUser=$("#opUser").val();
     var formdata={            };
-    if(noSolicitud.length>0){
-       Object.assign(formdata,{id_solicitud:noSolicitud});  
-    }else if(opTipoSolicitud !="0" && opEstatus !=""){
-      Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
-      Object.assign(formdata,{estatus:opEstatus});    
-    }else if(opTipoSolicitud != "0"){ 
-      Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
-    }else if( opEstatus != ""){   
-      Object.assign(formdata,{estatus:opEstatus}); 
-    }else if({{$atencion}}){
+
+    if({{$atencion}}){
       Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
       Object.assign(formdata,{user_id:opUser}); 
     }else{
-      Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
-      return;
+      if(noSolicitud.length>0){
+         Object.assign(formdata,{id_solicitud:noSolicitud});  
+      }else if(opTipoSolicitud !="0" && opEstatus !=""){
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
+        Object.assign(formdata,{estatus:opEstatus});    
+      }else if(opTipoSolicitud != "0"){ 
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud});  
+      }else if( opEstatus != ""){   
+        Object.assign(formdata,{estatus:opEstatus}); 
+      }else{
+        Command: toastr.warning("campo Tipo Solitud / Estatus / Numero de Solitud, requerido!", "Notifications");
+        return;
+      }
     }
+    
     Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
     $.ajax({
          method: "POST", 
@@ -1405,7 +1410,7 @@ function configprelacion()
       document.getElementById("tickets_id").value=tickets_id;
       document.getElementById("data").value=data_o;
       //console.log(tickets_id);
-      findMessage(id);
+      findMessage(tickets_id);
             response=$.parseJSON(JSON.stringify(data_o));
           document.getElementById("jsonCode").value=JSON.stringify(response);
           var Resp=response;
@@ -1628,7 +1633,7 @@ function configprelacion()
               document.getElementById("message").value="";
               document.getElementById("file").value="";
               limpiar();
-              findMessage(id_);
+              findMessage(ticks_id);
                Command: toastr.success(response.Message, "Notifications")
                findSolicitudes();
                return;
