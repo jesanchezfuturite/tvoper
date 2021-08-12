@@ -174,7 +174,7 @@ class PortalSolicitudesTicketController extends Controller
         }else{
           if($request->has("id")){
             //se hace un borrado logico del ticket anterior borrador
-            $eliminar_ticket = $this->ticket->where('id', $request->id)
+            $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 80)
             ->update(['status' => 9]);
           }
            
@@ -303,26 +303,26 @@ class PortalSolicitudesTicketController extends Controller
                 $this->saveFile($data);
               }    
     
-          }
+            }
         }
-
-      } catch (\Exception $e) {
-        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
-        $error = [
-            "Code" => "400",
-            "Message" => "Error al guardar la solicitud ".$e->getMessage()
-        ];
-
-      }
-      if($error) return response()->json($error);
-
-
-      return response()->json(
+        return response()->json(
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
           ]
         );
+
+      } catch (\Exception $e) {
+        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar solicitud ".$e->getMessage(),
+          ],400
+        );
+
+      }
+    
     }
   public function eliminarSolicitud(Request $request, $id){
       $valor = $request->tipo;
