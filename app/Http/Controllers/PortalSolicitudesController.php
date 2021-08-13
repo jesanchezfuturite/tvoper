@@ -758,19 +758,8 @@ class PortalSolicitudesController extends Controller
      
 
       }catch(\Exception $e){
-        log::info("error ReporteController@downloadFile ".$e->getMessage());
+        log::info("error PortalSolicitudesController@getFileRoute ".$e->getMessage());
       }
-        // $url= env("SESSION_HOSTNAME");
-        // $link = env("SESSION_HOSTNAME")."/notary-offices/file/"."$id/$type";
-        // $ch = curl_init();
-        // curl_setopt($ch, CURLOPT_URL, $link);
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // $route = curl_exec($ch);
-        // $error =curl_error($ch);
-        // curl_close($ch);
-        // $route=json_decode($route);
-        // return $url."/".$route->response;
-
 
     }
 
