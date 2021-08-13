@@ -941,7 +941,7 @@ class PortalSolicitudesController extends Controller
     public function getMensajes($id){
       try{ 
         $id=json_decode($id);
-        log::info($id);
+        //log::info($id);
         $mensajes=array();
          $findmensajes = $this->mensajes->whereIn('ticket_id', $id)
                     ->orderBy('created_at', 'DESC')

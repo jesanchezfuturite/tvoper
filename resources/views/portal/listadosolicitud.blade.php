@@ -132,7 +132,7 @@
           </div>
         </div>        
       </div>
-      <div class="modal-body" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
+      <div class="modal-body" id="scrollDiv" style="height:520px  !important;overflow-y:scroll;overflow-y:auto;">
         <input type="text" name="idTicket" id="idTicket" hidden="true">
         <div class="content-detalle">
         <div class="row divDetalles">
@@ -1479,7 +1479,7 @@ function configprelacion()
                 $("#addDetalles").append("<div class='col-md-4'><div class='form-group'><label><strong>"+n+":</strong></label><br><label>"+ Mp+"</label></div></div>");
             }             
           }
-
+            $("#scrollDiv").animate({ scrollTop: 0 }, "slow");
           findMotivosSelect([catalogo_id]);
     }
     function findMessage(id_)    
