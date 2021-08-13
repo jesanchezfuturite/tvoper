@@ -455,8 +455,7 @@ class PortalSolicitudesController extends Controller
 
   }
   public function filtrar(Request $request){
-    // $user_id = auth()->user()->id;
-    $user_id = 2;
+    $user_id = auth()->user()->id;
 
     $filtro = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
