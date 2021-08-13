@@ -459,7 +459,6 @@ class PortalSolicitudesController extends Controller
 
     $filtro = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
-    ->leftjoin('solicitudes_responsables as res', "c.id", "=", "res.catalogo_id")
     ->where('solicitudes_ticket.status', '!=', 99)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
@@ -483,20 +482,24 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has("user_id")){
-      $filtro->where("res.user_id", $request->user_id)
+      $filtro->leftjoin('solicitudes_responsables as res', "solicitudes_ticket.catalogo_id", "=", "res.catalogo_id") 
+      ->join('solicitudes_ticket_bitacora as tkb', "solicitudes_ticket.id", "=", "tkb.id_ticket")
+      ->where("res.user_id", $request->user_id)
+      ->where("res.catalogo_id", $request->tipo_solicitud)
       ->whereNotNull('res.id_estatus_atencion');
     }
-    
+  
     $cat = $filtro->get()->pluck("id_catalogo")->toArray();  
     $ids_catalogos= array_unique($cat);
 
-     $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
-    ->get()->toArray();
+    //  $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
+    // ->get()->toArray();
    
 
     $filter = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
     $grupo=array_filter($filter);
+    
       // $catalogo = array_intersect($ids_catalogos, $responsables);
    
   
