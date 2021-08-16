@@ -817,8 +817,10 @@ function downloadPdf(file)
         method: "get",            
         url: "{{ url('/get-route') }}"+"/"+id_notary+"/"+file,
         data: {_token:'{{ csrf_token() }}'}  })
-        .done(function (response) {     
+        .done(function (response) {  
+          console.log(response);   
            window.open(response, '_blank');
+
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error al descargar", "Notifications")   });
@@ -1308,7 +1310,7 @@ function changeComunidad()
               if(item.role_id==2 && status=="1")
               {
                 document.getElementById('id_NotTitular').value=item.id;
-                btn_download="<a class='btn btn-icon-only yellow' href='#' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' onclick='downloadPdf(\"sat\")'><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='#'  title='Descargar Constancia Notaria' onclick='downloadPdf(\"notary\")'><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='{{ url('/get-route') }}"+"/"+item.pivot.notary_office_id+"/sat' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='{{ url('/get-route') }}"+"/"+item.pivot.notary_office_id+"/notary'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
                 btn_desact="</a><a class='btn btn-icon-only default' data-toggle='modal' href='#'  title='No Aplica')'><i class='fa fa-power-off'></i></a>";
               }else{
                 btn_download=""; 
