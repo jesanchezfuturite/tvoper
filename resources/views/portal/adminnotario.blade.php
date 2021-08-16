@@ -600,9 +600,9 @@
     }
     $.ajax({
         method: "POST", 
-           contentType: false,
-            processData: false,           
-        url: "{{ url('/notary-offices-username') }}",
+        contentType: false,
+        processData: false,           
+        url: "{{ url()->route('notary-offices-username') }}",              
         data: formdata  })
         .done(function (response) { 
         //console.log(response); 
@@ -677,9 +677,12 @@
   {
     document.getElementById("numNotario").disabled=true;
     var id_=$("#itemsNotario").val();
+    var url="{{ url()->route('get-notary-offices', ':id') }}";
+    var urlnew=  url.replace(':id', id);
+
     $.ajax({
         method: "get",            
-        url: "{{ url('/get-notary-offices/') }}"+"/"+id_,
+        url: urlnew,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           var resp=$.parseJSON(response); 
@@ -713,9 +716,11 @@
   function findCurp()
   {
     var curp=$("#curpUser").val();
+    var url="{{ url()->route('consultar-curp', ':curp') }}";
+    var urlnew=  url.replace(':curp', curp);
    $.ajax({
         method: "get",            
-        url: "{{ url('/consultar-curp') }}"+"/"+curp,
+        url:urlnew,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           var resp=$.parseJSON(response); 
@@ -743,7 +748,7 @@
   
    $.ajax({
         method: "get",            
-        url: "{{ url('/obtener-estados') }}",
+        url: "{{ url()->route('obtener-estados') }}",        
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
         var resp=$.parseJSON(response); 
@@ -765,9 +770,11 @@
 function changeEntidades()
 {
   var entidad=$("#itemsEntidadNot").val();
+  var url="{{ url()->route('obtener-municipios', ':entidad') }}";
+  var urlnew=  url.replace(':entidad', entidad);
    $.ajax({
         method: "get",            
-        url: "{{ url('/obtener-municipios') }}"+"/"+entidad,
+        url: urlnew,
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
         //console.log(response);  
@@ -830,6 +837,7 @@ function changeComunidad()
 {
   //var comunidad=$("#itemsConfigUser").val();
   var comunidad="4";
+  console.log(comunidad);
   //$("#itemsNotario").val("0").change();
   if(comunidad=="0")
   {
@@ -838,9 +846,12 @@ function changeComunidad()
     $(".perfilesHide").css("display", "none");
     return;
   }
+
+  var url="{{ url()->route('notary-offices-community', ':comunidad') }}";
+  var urlnew=  url.replace(':comunidad', comunidad);
    $.ajax({
         method: "get",            
-        url: "{{ url('/notary-offices-community') }}"+"/"+comunidad,
+        url: urlnew,        
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) { 
           //console.log(response)
@@ -863,7 +874,7 @@ function changeComunidad()
   {
     $.ajax({
       method: "get",            
-      url: "{{ url('/notary-offices-roles') }}",
+      url: "{{ url()->route('notary-offices-roles') }}",      
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {     
         //console.log(response);
@@ -918,7 +929,7 @@ function changeComunidad()
     {
         $.ajax({
         method: "get",            
-        url: "{{ url('/operacion-roles-get-rol') }}",
+        url: "{{ url()->route('operacion-roles-get-rol') }}",        
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
             $("#itemsCofigNotario option").remove();
@@ -1033,8 +1044,8 @@ function changeComunidad()
     $.ajax({
            method: "POST", 
            contentType: false,
-            processData: false,
-           url: "{{ url('/notary-offices-update') }}",
+           processData: false,
+           url: "{{ url()->route('notary-offices-update') }}",           
            data:formdata })
         .done(function (response) {
           var resp=$.parseJSON(response);
@@ -1219,7 +1230,7 @@ function changeComunidad()
            method: "POST", 
            contentType:false,
            processData:false,
-           url: "{{ url('/notary-offices') }}",
+           url: "{{ url()->route('notary-offices') }}",
            data:formdata  })
         .done(function (response) {
           //console.log(response);
@@ -1269,10 +1280,12 @@ function changeComunidad()
       return;
     }
     $(".edit-notary").css("display", "block");
+    var url="{{ url()->route('notary-offices-get-users', ':id') }}";
+    var urlnew=  url.replace(':id', id);
     //$(".iDocument").css("display","block");
     $.ajax({
            method: "get",            
-           url: "{{ url('/notary-offices-get-users') }}"+"/"+id,
+           url: urlnew,
            data: {_token:'{{ csrf_token() }}'}   })
         .done(function (response) { 
           //console.log(response);
@@ -1309,8 +1322,15 @@ function changeComunidad()
               }              
               if(item.role_id==2 && status=="1")
               {
+                var id_notaria=item.pivot.notary_office_id;
+                var urlsat="{{ url()->route('get-route', ':id_notaria') }}";
+                var urlnewsat=  urlsat.replace(':id_notaria', id_notaria);
+
+                var urlnotaria="{{ url()->route('get-route', ':id_notaria') }}";
+                var urlnewnotaria=  urlnotaria.replace(':id_notaria', id_notaria);
+
                 document.getElementById('id_NotTitular').value=item.id;
-                btn_download="<a class='btn btn-icon-only yellow' href='{{ url('/get-route') }}"+"/"+item.pivot.notary_office_id+"/sat' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='{{ url('/get-route') }}"+"/"+item.pivot.notary_office_id+"/notary'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='"+urlnewsat+"/sat' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='"+urlnewnotaria+"/notary'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
                 btn_desact="</a><a class='btn btn-icon-only default' data-toggle='modal' href='#'  title='No Aplica')'><i class='fa fa-power-off'></i></a>";
               }else{
                 btn_download=""; 
@@ -1387,7 +1407,7 @@ function changeComunidad()
     }
     $.ajax({
            method: "POST",            
-           url: "{{ url('/notary-offices-user-status') }}",
+           url: "{{ url()->route('notary-offices-user-status') }}",           
            data: {notary_id:id_notary,user_id:id_,status:estatus, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {     
           changeNotario();
@@ -1495,7 +1515,7 @@ function changeComunidad()
            method: "POST",
            contentType:false,
            processData:false,           
-           url: "{{ url('/notary-offices-edit-user') }}",
+           url: "{{ url()->route('notary-offices-edit-user') }}",           
            data: formdata  })
         .done(function (response) {          
              //limpiarNot();
@@ -1666,7 +1686,7 @@ function changeComunidad()
            method: "POST",  
           contentType:false,
            processData:false,   
-           url: "{{ url('/notary-offices-create-users') }}",
+           url: "{{ url()->route('notary-offices-create-users') }}",           
            data: formdata })
         .done(function (response) { 
           //console.log(response);

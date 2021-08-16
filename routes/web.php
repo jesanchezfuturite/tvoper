@@ -402,7 +402,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/cerrar-ticket', 'PortalSolicitudesController@cerrarTicket')->name('cerrar-ticket');
     Route::get('/listado-mensajes/{id}', 'PortalSolicitudesController@getMensajes')->name('listado-mensajes');
     Route::get('/listado-download/{file}' , 'PortalSolicitudesController@downloadFile')->name('listado-download');
-    Route::get('/get-route/{id}/{type}' , 'PortalSolicitudesController@getFileRoute')->name('get-route');
+    Route::get('/get-route/{id}/{type?}' , 'PortalSolicitudesController@getFileRoute')->name('get-route');
     Route::post('/solicitudes-update-status' , 'PortalSolicitudesController@updateStatus')->name('solicitudes-update-status');
     Route::get('/find-solicitudes' , 'PortalSolicitudesController@findSol')->name('find-solicitudes');
     Route::get('/get-motivos' , 'PortalSolicitudesController@getmotivos')->name('get-motivos');
