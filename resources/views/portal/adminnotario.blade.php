@@ -1323,14 +1323,15 @@ function changeComunidad()
               if(item.role_id==2 && status=="1")
               {
                 var id_notaria=item.pivot.notary_office_id;
-                var urlsat="{{ url()->route('get-route', ':id_notaria') }}";
-                var urlnewsat=  urlsat.replace(':id_notaria', id_notaria);
+                var urlsat="{{ url()->route('get-route', [':id_notaria','type'=>'sat']) }}";
+                var urlsat=  urlsat.replace(':id_notaria', id_notaria);
 
-                var urlnotaria="{{ url()->route('get-route', ':id_notaria') }}";
-                var urlnewnotaria=  urlnotaria.replace(':id_notaria', id_notaria);
+
+                var urlnotaria="{{ url()->route('get-route', [':id_notaria','type'=>'notaria']) }}";
+                var urlnotaria=  urlnotaria.replace(':id_notaria', id_notaria);
 
                 document.getElementById('id_NotTitular').value=item.id;
-                btn_download="<a class='btn btn-icon-only yellow' href='"+urlnewsat+"/sat' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='"+urlnewnotaria+"/notary'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='"+urlsat+"' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='"+urlnotaria+"'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
                 btn_desact="</a><a class='btn btn-icon-only default' data-toggle='modal' href='#'  title='No Aplica')'><i class='fa fa-power-off'></i></a>";
               }else{
                 btn_download=""; 
