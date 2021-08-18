@@ -261,6 +261,14 @@
                         <span class="check"></span>
                         <span class="box"></span>
                           Pesos.</label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio16" name="radio3" class="md-radiobtn" value="T" >
+                        <label for="radio16">
+                        <span></span>
+                        <span class="check"></span>
+                        <span class="box"></span>
+                          Por Cantidad.</label>
                     </div>
                   </div>
               </div>
@@ -772,6 +780,10 @@
           if(item.tipo_costo_fijo=='C')
           {costoFijo="Cuotas";
           }else if(item.tipo_costo_fijo=='P')
+          {costoFijo="Pesos";
+          }else if(item.tipo_costo_fijo=='F')
+          {costoFijo="Pesos";
+        }else if(item.tipo_costo_fijo=='T')
           {costoFijo="Pesos";
           }else{
             costoFijo="N/A";
