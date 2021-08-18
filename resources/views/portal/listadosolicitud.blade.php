@@ -862,7 +862,7 @@ function configprelacion()
           {
             btn_revisar='';
           }
-          if(bitacora.responsables.permiso==1 && index==bitacora_end)
+          if(bitacora.responsables.permiso==1 && index==bitacora_end && solicitud.status=='1')
           {
             valid=1;
           }
