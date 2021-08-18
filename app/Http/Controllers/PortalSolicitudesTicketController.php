@@ -734,9 +734,8 @@ class PortalSolicitudesTicketController extends Controller
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor;
-                 $verificar = array_search("1", array_column($valor, 'distrito'));
-                 if(false !== $verificar){
+                 $valor = $distrito->valor->distrito;
+                 if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
                   $bitacora=TicketBitacora::create([
@@ -745,6 +744,7 @@ class PortalSolicitudesTicketController extends Controller
                     "id_estatus_atencion" => 4,
                     "status"=>$value->status
                   ]);
+                  Log::info("distrito 1 if " .$bitacora->id);
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
@@ -754,6 +754,7 @@ class PortalSolicitudesTicketController extends Controller
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
                     ]);
+                    Log::info("distrito 1 else " .$bitacora->id);
                  }
               }else{
                 if($value->status<>5){
@@ -769,24 +770,25 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-
+        Log::info('Transaccion guardada');
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción motor actualizado"
+        ]);
       } catch (\Exception $e) {
-        $error = $e;
-      }
-      if($error){
         Log::info('Error Guardar transaccion: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
             "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
           ]);
-      }else{
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Transacción motor actualizado"
-          ]);
       }
+      // if($error){
+       
+      // }else{
+       
+      // }
 
     }
     public function updateStatusTramite(Request $request){
@@ -840,13 +842,14 @@ class PortalSolicitudesTicketController extends Controller
           $this->guardarCarrito($value->id, 2);        
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados) && $value->status<>5){
-            $campos = $info->camposConfigurados;
+         
+            Log::info("campos configurados");
+            $campos = $info->camposConfigurados;           
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor;
-                 $verificar = array_search("1", array_column($valor, 'distrito'));
-                 if(false !== $verificar){
+                 $valor = $distrito->valor->distrito;
+                 if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
                   $bitacora=TicketBitacora::create([
@@ -855,6 +858,7 @@ class PortalSolicitudesTicketController extends Controller
                     "id_estatus_atencion" => 4,
                     "status"=>$value->status
                   ]);
+                  Log::info("distrito 1 if" .$bitacora->id);
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
@@ -864,6 +868,7 @@ class PortalSolicitudesTicketController extends Controller
                       "id_estatus_atencion" => 4,
                       "status"=>$value->status
                     ]);
+                    Log::info("distrito 1 else" .$bitacora->id);
                  }
               }else{
                 if($value->status<>5){
@@ -878,25 +883,32 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-
-
-
-      } catch (\Exception $e) {
-          $error = $e;
-      }
-      if ($error) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al actualizar estatus ".$e->getMessage()
-          ]);
-      }else {
+        Log::info('Estatus actualizado');
         return response()->json(
           [
             "Code" => "200",
             "Message" => "Estatus actualizado",
           ]);
+
+
+      } catch (\Exception $e) {
+        Log::info('Error al actualizar status' .$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus ".$e->getMessage()
+          ]);
+          // $error = $e;
       }
+      // if ($error) {
+      
+      // }else {
+      //   return response()->json(
+      //     [
+      //       "Code" => "200",
+      //       "Message" => "Estatus actualizado",
+      //     ]);
+      // }
 
     }
     public function getStatus(Request $request){
