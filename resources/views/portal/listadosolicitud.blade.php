@@ -56,12 +56,7 @@
                 </select>  
               </div>
             </div>
-            <div class="col-md-2 col-ms-12">
-              <div class="form-group"> 
-                <label >FSE/Folio Pago</label>          
-                <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
-              </div>
-            </div>
+            
              @else  
             <div class="col-md-3 col-ms-12">
               <div class="form-group"> 
@@ -75,6 +70,12 @@
               </div>
             </div>
             @endif 
+            <div class="col-md-2 col-ms-12">
+              <div class="form-group"> 
+                <label >FSE/Folio Pago</label>          
+                <input type="text" class="form-control" name="noSolicitud" id="noSolicitud" placeholder="Numero de Solicitud..." autocomplete="off">  
+              </div>
+            </div>
             <div class="col-md-1 col-ms-12">
               <div class="form-group">
                   <span class="help-block">&nbsp;</span>
@@ -560,8 +561,12 @@ function configprelacion()
     var formdata={            };
 
     if({{$atencion}}){
-      Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
-      Object.assign(formdata,{user_id:opUser}); 
+       if(noSolicitud.length>0){
+         Object.assign(formdata,{id_solicitud:noSolicitud});  
+      }else{        
+        Object.assign(formdata,{tipo_solicitud:opTipoSolicitud}); 
+        Object.assign(formdata,{user_id:opUser});
+      } 
     }else{
       if(noSolicitud.length>0){
          Object.assign(formdata,{id_solicitud:noSolicitud});  
@@ -853,7 +858,7 @@ function configprelacion()
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
             btn_revisar='';
           } 
-          if(bitacora.responsables.permiso==0 && index==bitacora_end)
+          if(bitacora.responsables.permiso==0 || bitacora.permiso==0  && index==bitacora_end)
           {
              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
             btn_revisar='';
@@ -893,7 +898,7 @@ function configprelacion()
           }
 
           html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td style="display:none;">'+ bitacora.created_at  + '</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
-            if(bitacora.id_estatus_atencion==2 && bitacora.user_id=='{{Auth::user()->id}}'){
+            if(bitacora.id_estatus_atencion==2 && bitacora.responsables.permiso==1){
                 g_prelacion=1;
             }
           }
