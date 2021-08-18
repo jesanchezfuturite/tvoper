@@ -494,10 +494,10 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/campo-alias-update', 'PortalSolicitudesTicketController@updateAlias')->name('campo-alias-update');
 
-    Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarIndividuo');
-    Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaNac');
-    Route::get('/wsrc-actadef','ApircController@buscarActaDef');
-    Route::get('/wsrc-actamat','ApircController@buscarActaMat');
+    Route::get('/wsrc-individuo/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarIndividuo')->name('wsrc-individuo');
+    Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}','ApircController@buscarActaNac')->name('wsrc-actanac');
+    Route::get('/wsrc-actadef','ApircController@buscarActaDef')->name('wsrc-actadef');
+    Route::get('/wsrc-actamat','ApircController@buscarActaMat')->name('wsrc-actamat');
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
     Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo');
