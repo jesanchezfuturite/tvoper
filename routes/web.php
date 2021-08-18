@@ -498,8 +498,9 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/wsrc-actanac/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaNac')->name('wsrc-actanac');
     Route::get('/wsrc-actadef/{nombre}/{apaterno}/{amaterno}/{genero}/{fechanac}', 'ApircController@buscarActaDef')->name('wsrc-actadef');
     Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaMat')->name('wsrc-actamat');
-    Route::get('/wsedu-catescuela/{escuela}/{nivel}','ApiEducacionController@buscarEscuela');
-    Route::get('/wsedu-certificado','ApiEducacionController@certificadoEstudios');
+    Route::get('/wsedu-catescuela/{nivel}','ApiEducacionController@buscarEscuela')->name('wsedu-catescuela');
+    Route::get('/wsedu-certificado','ApiEducacionController@certificadoEstudios')->name('wsedu-certificado');
+
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
     Route::post('/update-rechazo', 'PortalSolicitudesController@upStatusRechazo')->name('update-rechazo');

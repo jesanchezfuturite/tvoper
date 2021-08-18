@@ -11,6 +11,7 @@ use Guzzle\Http\Exception\ClientErrorResponseException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\BadResponseException;
 
+use App\Repositories\PortalCatalogoescuelasRepositoryEloquent;
 
 
 class ApiEducacionController extends Controller
@@ -18,14 +19,13 @@ class ApiEducacionController extends Controller
 	protected $header = array (
                 'Content-Type' => 'application/json; charset=UTF-8',
                 'charset' => 'utf-8'
-            );
+            ); 
 
+    protected $catalogo;  
 
-	public function __constructor()
+	public function __construct(PortalCatalogoescuelasRepositoryEloquent $catalogo)
 	{
-
-
-
+        $this->catalogo = $catalogo;
 	}
 
 	/**
@@ -42,34 +42,16 @@ class ApiEducacionController extends Controller
 	public function buscarEscuela(Request $request)
 	{
 
-		$nomesc = strtoupper($request->escuela);
 		$lvlesc = $request->nivel;
 
         if(!in_array($lvlesc, [11,12,13]))
             return response()->json(['err'=>true,'msg'=>'Nivel de escuela desconocido','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
 
-		$url = env("URL_CATEDU_ESCUELA") . $nomesc . "/" . $lvlesc;
-
 		try {
 			
-			$client = new \GuzzleHttp\Client();
-
-			$response = $client->get(
-                $url,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',  
-                    ]
-                ]
-            );
-
-            $results = $response->getBody();
-
-            $results = json_decode($results);
-
-            $data = (empty($results->results) || count($results->results) == 0) ? [] : $results->results;
-
-            return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia de escuela','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
+			$info = $this->catalogo->findWhere(['clave_nivel' => $lvlesc]);
+            
+            return empty($info) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia de escuela','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$info],200,$this->header,JSON_UNESCAPED_UNICODE);            
 
 		} catch (\Exception $e) {
 			Log::info("Error Api EDU @ buscarEscuela ".$e->getMessage());
@@ -141,5 +123,6 @@ class ApiEducacionController extends Controller
             return response()->json(['err'=>true,'msg'=>'Error desconocido, accesos a certificados no esta disponible','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
+
 
 }
