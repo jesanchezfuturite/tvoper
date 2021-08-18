@@ -89,6 +89,12 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        'pagos-verificados' => [
+            'driver' => 'single',
+            'path' => storage_path("logs/pagos-verificados-".date('Y-m-d').".log"),
+            'level' => 'info',
+        ]
     ],
 
 ];
