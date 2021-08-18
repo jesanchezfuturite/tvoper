@@ -290,6 +290,14 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
+          if($ticket->wasRecentlyCreated){
+            $bitacora=TicketBitacora::create([
+              "id_ticket" => $ticket->id,
+              "grupo_clave" => $grupo,
+              "id_estatus_atencion" => 1,
+              "status"=>$status
+            ]);
+          }
 
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
@@ -320,6 +328,14 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
+          if($ticket->wasRecentlyCreated){
+            $bitacora=TicketBitacora::create([
+              "id_ticket" => $ticket->id,
+              "grupo_clave" => $grupo,
+              "id_estatus_atencion" => 1,
+              "status"=>$status
+            ]);
+          }
 
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
