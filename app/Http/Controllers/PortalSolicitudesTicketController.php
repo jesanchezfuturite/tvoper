@@ -741,7 +741,7 @@ class PortalSolicitudesTicketController extends Controller
                   $bitacora=TicketBitacora::create([
                     "id_ticket" => $value->id,
                     "grupo_clave" =>$value->grupo_clave,
-                    "id_estatus_atencion" => 4,
+                    "id_estatus_atencion" => 2,
                     "status"=>$value->status
                   ]);
                   Log::info("distrito 1 if " .$bitacora->id);
@@ -855,7 +855,7 @@ class PortalSolicitudesTicketController extends Controller
                   $bitacora=TicketBitacora::create([
                     "id_ticket" => $value->id,
                     "grupo_clave" =>$value->grupo_clave,
-                    "id_estatus_atencion" => 4,
+                    "id_estatus_atencion" => 2,
                     "status"=>$value->status
                   ]);
                   Log::info("distrito 1 if" .$bitacora->id);
