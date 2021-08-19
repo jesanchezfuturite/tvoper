@@ -277,7 +277,7 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==7){
           $info_bitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = $info->info;
+          $info_bitacora = $info_bitacora->info;
         
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
