@@ -219,6 +219,7 @@ class PortalSolicitudesTicketController extends Controller
                 $bitacora=TicketBitacora::create([
                   "id_ticket" => $ticket->id,
                   "grupo_clave" => $grupo,
+                  "info"=> json_encode($info),
                   "id_estatus_atencion" => 1,
                   "status"=>$status
                 ]);
@@ -277,7 +278,7 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==7){
           $info_bitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = $info_bitacora->info;
+          $info_bitacora = json_decode($info_bitacora->info);
         
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
@@ -296,7 +297,7 @@ class PortalSolicitudesTicketController extends Controller
             "id_ticket" => $ticket->id,
             "grupo_clave" => $grupo,
             "id_estatus_atencion" => 2,
-            "info"=>$info_bitacora,
+            "info"=>json_encode($info_bitacora),
             "status"=>$status
           ]);
         
@@ -317,7 +318,9 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-      
+          $info_bitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
+          $info_bitacora = json_decode($info_bitacora->info);
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" => $grupo,
@@ -335,6 +338,7 @@ class PortalSolicitudesTicketController extends Controller
               "id_ticket" => $ticket->id,
               "grupo_clave" => $grupo,
               "id_estatus_atencion" => 1,
+              "info"=>json_encode($info_bitacora),
               "status"=>$status
             ]);
           }
