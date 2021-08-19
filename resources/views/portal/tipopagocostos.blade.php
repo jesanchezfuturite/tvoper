@@ -500,7 +500,7 @@
   {
         $.ajax({
         method: "get",
-        url: "{{ url('/traux-get-reglas') }}",
+        url: "{{ url()->route('traux-get-reglas') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             $("#itemsReglas option").remove();
@@ -543,7 +543,7 @@
     {
         $.ajax({
         method: "get",
-        url: "{{ url('/traux-get-tramites') }}",
+        url: "{{ url()->route('traux-get-tramites') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             $("#itemsTramites option").remove();
@@ -564,7 +564,7 @@
     {
         $.ajax({
         method: "get",
-        url: "{{ url('/traux-get-cuota') }}",
+        url: "{{ url()->route('traux-get-cuota') }}",
         data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
             var Resp=$.parseJSON(response);
@@ -579,7 +579,7 @@
   {
       $.ajax({
          method: "get",
-         url: "{{ url('/traux-get-partida') }}",
+         url: "{{ url()->route('traux-get-partida') }}",
          data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) {
       var Resp=$.parseJSON(response);
@@ -721,7 +721,7 @@
     //console.log(option);
       $.ajax({
            method: "POST",
-           url: "{{ url('/traux-post-tramites') }}",
+           url: "{{ url()->route('traux-post-tramites') }}",
            data: {tramite:idTramites,tipo:tipoTramite,costo:option,tipo_costo_fijo:optionMoneda,fijo:fijo,minimo:cuotaMin,maximo:cuotaMax, valor:valor, regla_id:null,multiple:multiple, var_costo:optioncosto, cuotamin2:cuotamin2, valor2:valor2, vigencia:null,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -753,7 +753,7 @@
 
     $.ajax({
       method: "get",
-      url: "{{ url('/traux-get-costos') }}",
+      url: "{{ url()->route('traux-get-costos') }}",
       data: { _token: '{{ csrf_token() }}' }
       })
       .done(function (response) {
@@ -838,7 +838,7 @@
     }
     $.ajax({
            method: "POST",
-           url: "{{ url('/traux-edit-porcentaje') }}",
+           url: "{{ url()->route('traux-edit-porcentaje') }}",
            data: {id:id_,porcentaje:porcentaje_, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -863,7 +863,7 @@
     var id_=$("#iddeleted").val();
     $.ajax({
            method: "POST",
-           url: "{{ url('/traux-del-tramites') }}",
+           url: "{{ url()->route('traux-del-tramites') }}",
            data: {id:id_, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -962,7 +962,7 @@
       {vig=null}*/
       $.ajax({
            method: "POST",
-           url: "{{ url('/traux-edit-tramites') }}",
+           url: "{{ url()->route('traux-edit-tramites') }}",
            data: {id:id_,tramite:idTramites,tipo:tipoTramite,costo:option,minimo:cuotaMin,maximo:cuotaMax, valor:valor,tipo_costo_fijo:optionMoneda,fijo:fijo,regla_id:null,vigencia:null, multiple:multiple, var_costo:optioncosto, cuotamin2:cuotamin2, valor2:valor2, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -1039,7 +1039,7 @@
 
       $.ajax({
            method: "POST",
-           url: "{{ url('/traux-post-subsidios') }}",
+           url: "{{ url()->route('traux-post-subsidios') }}",
            data: {id:id_,tramite:id_tramite,costo_id:id_costo,cuotas:cuotas_,oficio:oficio ,limite_cuotas:cuotaLimit,partida:partida, optionPersona:optionPersona, _token:'{{ csrf_token() }}'}  })
         .done(function (response) {
 
@@ -1068,7 +1068,7 @@
         var id_=$("#idvalor").val();
         $.ajax({
            method: "POST",
-           url: "{{ url('/tipo-servicio-delete') }}",
+           url: "{{ url()->route('tipo-servicio-delete') }}",
            data: { id:id_, _token: '{{ csrf_token() }}' }
        })
         .done(function (response) {
