@@ -28,7 +28,8 @@ class TicketBitacora extends Model implements Transformable
         'grupo_clave',
         'id_estatus_atencion',
         'user_id',
-        'mensaje',
+        'info',
+        'mensaje',        
         'status'
     ];
 
