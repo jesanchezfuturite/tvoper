@@ -1565,7 +1565,8 @@ class PortalSolicitudesController extends Controller
   private function saveTicketBitacora($ticket_id,$grupo_clave,$id_estatus_atencion,$user_id,$mensaje,$status)
   {
     try {
-      $this->ticketBitacoradb->create(["id_ticket"=>$ticket_id,"grupo_clave"=>$grupo_clave,"id_estatus_atencion"=>$id_estatus_atencion,"user_id"=>$user_id,"mensaje"=>$mensaje,"status"=>$status]);
+      $findInfoTicket=$this->ticket->findWhere(["id"=>$ticket_id]);
+      $this->ticketBitacoradb->create(["id_ticket"=>$ticket_id,"grupo_clave"=>$grupo_clave,"id_estatus_atencion"=>$id_estatus_atencion,"info"=>$findInfoTicket[0]->info,"user_id"=>$user_id,"mensaje"=>$mensaje,"status"=>$status]);
     } catch (Exception $e) {
       log::info("saveTicketBitacora: ".$e);
     }
