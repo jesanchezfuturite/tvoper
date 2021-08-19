@@ -821,7 +821,14 @@ function configprelacion()
       var ticket_status="";     
       var status_proceso=0;     
       d.grupo.forEach( (solicitud) =>{     
-      //console.log(solicitud.permiso);    
+      //console.log(solicitud.permiso);  
+        var municipio=searchIndex('municipio',solicitud.info.campos);
+        var Mp='';
+        if(typeof (municipio) !== 'object'){
+          Mp=municipio;
+        }else{          
+           Mp=conctenaM(municipio);
+        }  
         if(solicitud.bitacora.length==0)
         {
           solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1,responsables:{permiso:0}});
@@ -829,7 +836,17 @@ function configprelacion()
         var bitacora_end=solicitud.bitacora.length-1;
         status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
         solicitud.bitacora.forEach((bitacora,index)=>{
-        {    
+        {  
+          if(bitacora.info!=null)
+          {
+            var infoM=$.parseJSON(bitacora.info);
+            var municipioM=searchIndex('municipio',infoM.campos);
+            if(typeof (municipioM) !== 'object'){
+              Mp=municipioM;
+            }else{          
+               Mp=conctenaM(municipioM);
+            }  
+          }
           var clase='';
           var btn_revisar="<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora.id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
@@ -876,18 +893,13 @@ function configprelacion()
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
           var escrituraActaOficio=searchIndex('escrituraActaOficio',solicitud.info.campos);
-          var municipio=searchIndex('municipio',solicitud.info.campos);
+          
            if(typeof (escrituraActaOficio) === 'object'){
             escrituraActaOficio=conctenaM(escrituraActaOficio);
           }else{          
              escrituraActaOficio=escrituraActaOficio;
           }
-          var Mp='';
-          if(typeof (municipio) !== 'object'){
-            Mp=municipio;
-          }else{          
-             Mp=conctenaM(municipio);
-          }      
+
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
           var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
