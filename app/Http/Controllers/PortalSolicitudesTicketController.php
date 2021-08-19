@@ -201,6 +201,7 @@ class PortalSolicitudesTicketController extends Controller
             $ids_eliminar = array_diff($ids_originales, $ids_entrada);
             $ids_agregar = array_diff($ids_entrada, $ids_originales);
             $eliminar_datosrecorrer = $this->ticket->whereIn('id', $ids_eliminar)->delete();
+     
             foreach($datosrecorrer as $key => $value){
               $data==1 ? $info->solicitante=$value :  $info=$value;
               $ticket = $this->ticket->updateOrCreate(["id" =>$value->id],[
@@ -214,16 +215,6 @@ class PortalSolicitudesTicketController extends Controller
                 "required_docs"=>$request->required_docs
 
               ]);
-
-              if($ticket->wasRecentlyCreated){
-                $bitacora=TicketBitacora::create([
-                  "id_ticket" => $ticket->id,
-                  "grupo_clave" => $grupo,
-                  "info"=> json_encode($info),
-                  "id_estatus_atencion" => 1,
-                  "status"=>$status
-                ]);
-              }
 
              array_push($ids, $ticket->id);
             }
@@ -253,12 +244,14 @@ class PortalSolicitudesTicketController extends Controller
             ]);
 
             if($ticket->wasRecentlyCreated){
-              $bitacora=TicketBitacora::create([
-                "id_ticket" => $ticket->id,
-                "grupo_clave" => $grupo,
-                "id_estatus_atencion" => 1,
-                "status"=>$status
-              ]);
+                $bitacora=TicketBitacora::create([
+                  "id_ticket" => $ticket->id,
+                  "grupo_clave" => $grupo,
+                  "info"=> $ticket->info,
+                  "id_estatus_atencion" => 1,
+                  "status"=>$status
+                ]);
+              
             }
 
 
@@ -277,8 +270,8 @@ class PortalSolicitudesTicketController extends Controller
           }
         }
         if($status==7){
-          $info_bitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = json_decode($info_bitacora->info);
+          $infobitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
+          $info_bitacora = $infobitacora->info;
         
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
@@ -297,7 +290,7 @@ class PortalSolicitudesTicketController extends Controller
             "id_ticket" => $ticket->id,
             "grupo_clave" => $grupo,
             "id_estatus_atencion" => 2,
-            "info"=>json_encode($info_bitacora),
+            "info"=>$info_bitacora,
             "status"=>$status
           ]);
         
@@ -318,8 +311,8 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-          $info_bitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = json_decode($info_bitacora->info);
+          $infobitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
+          $info_bitacora = $infobitacora->info;
 
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
@@ -338,7 +331,7 @@ class PortalSolicitudesTicketController extends Controller
               "id_ticket" => $ticket->id,
               "grupo_clave" => $grupo,
               "id_estatus_atencion" => 1,
-              "info"=>json_encode($info_bitacora),
+              "info"=>$info_bitacora,
               "status"=>$status
             ]);
           }
@@ -358,6 +351,14 @@ class PortalSolicitudesTicketController extends Controller
           
         }
 
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Solicitud registrada",
+            "id"=> $ids
+          ]
+        );
+
       } catch (\Exception $e) {
         Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
         $error = [
@@ -369,13 +370,7 @@ class PortalSolicitudesTicketController extends Controller
       if($error) return response()->json($error);
 
 
-      return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Solicitud registrada",
-            "id"=> $ids
-          ]
-        );
+     
     }
     public function eliminarSolicitud(Request $request, $id){
         $valor = $request->tipo;
@@ -764,6 +759,7 @@ class PortalSolicitudesTicketController extends Controller
                     "id_ticket" => $value->id,
                     "grupo_clave" =>$value->grupo_clave,
                     "id_estatus_atencion" => 2,
+                    "info"=>$value->info,
                     "status"=>$value->status
                   ]);
                   Log::info("distrito 1 if " .$bitacora->id);
@@ -774,6 +770,7 @@ class PortalSolicitudesTicketController extends Controller
                       "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
+                      "info"=>$value->info,
                       "status"=>$value->status
                     ]);
                     Log::info("distrito 1 else " .$bitacora->id);
@@ -878,6 +875,7 @@ class PortalSolicitudesTicketController extends Controller
                     "id_ticket" => $value->id,
                     "grupo_clave" =>$value->grupo_clave,
                     "id_estatus_atencion" => 2,
+                    "info"=>$value->info,
                     "status"=>$value->status
                   ]);
                   Log::info("distrito 1 if" .$bitacora->id);
@@ -888,6 +886,7 @@ class PortalSolicitudesTicketController extends Controller
                       "id_ticket" => $value->id,
                       "grupo_clave" =>$value->grupo_clave,
                       "id_estatus_atencion" => 4,
+                      "info"=>$value->info,
                       "status"=>$value->status
                     ]);
                     Log::info("distrito 1 else" .$bitacora->id);
@@ -1204,6 +1203,7 @@ class PortalSolicitudesTicketController extends Controller
           "id_ticket" => $ticket->id,
           "grupo_clave" =>$ticket->grupo_clave,
           "id_estatus_atencion" => 4,
+          "info"=>$ticket->info,
           "status"=>$ticket->status
         ]);
           
