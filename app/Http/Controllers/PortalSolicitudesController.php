@@ -951,7 +951,7 @@ class PortalSolicitudesController extends Controller
       $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
       $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
       if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
-      $attach = str_replace($name, urlencode($name), $attach);
+      $attach = str_replace($name, rawurlencode($name), $attach);
       $imageData = base64_encode(file_get_contents($attach));
       return response()->json([
         "Code" => "200",
@@ -1070,7 +1070,7 @@ class PortalSolicitudesController extends Controller
             $file_extension=$extension[count($extension)-1];
             //log::info($attach);
             if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
-            $attach = str_replace($file_name, urlencode($file_name), $attach);
+            $attach = str_replace($file_name, rawurlencode($file_name), $attach);
             $imageData = base64_encode(file_get_contents($attach));            
             $file_data=$imageData;
           }
