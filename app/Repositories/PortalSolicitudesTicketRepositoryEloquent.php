@@ -58,7 +58,7 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
         ->leftJoin('config_user_notary_offices', 'config_user_notary_offices.user_id', 'solicitudes_ticket.user_id')
         ->leftJoin('notary_offices', 'notary_offices.id', 'config_user_notary_offices.notary_office_id')  
         ->where('solicitudes_ticket.status','=','2')    
-        ->where('operacion.oper_transacciones.estatus','=','9')    
+        ->where('operacion.oper_transacciones.entidad','=','9')    
         ->where('solicitudes_ticket.doc_firmado','<>',null)    
         ->select('solicitudes_ticket.id',
             'solicitudes_ticket.clave',
