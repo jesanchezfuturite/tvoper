@@ -530,7 +530,7 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.notary_offices as n', 'n.id', 'config.notary_office_id')
     ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
     ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
-    ->orderBy('tk.created_at', 'DESC')
+    ->orderBy('tk.created_at', 'ASC')
     ->whereIn('c.id',$ids_catalogos)->get();
 
     $newDato=[];
