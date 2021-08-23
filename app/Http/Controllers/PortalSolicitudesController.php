@@ -517,8 +517,8 @@ class PortalSolicitudesController extends Controller
     "n.city_id", "n.zip", "n.sat_constancy_file", "n.notary_constancy_file", "usert.name as nombre_titular", 
     "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular", 
     "usert.status as status_titular", "userss.name as nombre_susbtituto", 
-    "userss.fathers_surname as apellido_pat_titular",
-    "userss.mothers_surname as apellido_mat_titular", "userss.status as status_substituto")
+    "userss.fathers_surname as apellido_pat_substituto",
+    "userss.mothers_surname as apellido_mat_substituto", "userss.status as status_substituto")
     ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
