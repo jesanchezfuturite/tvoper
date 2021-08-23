@@ -350,7 +350,7 @@
                         <br><label>{{$dat->fecha}}</label>
                       </td>
                       <td style="text-align: center;"><label><strong>Folio trámite</strong></label>
-                        <br><label>{{$dat->folioTramite}}</label>
+                        <br><label>{{$dat->fse}}</label>
                       </td>
                       <td><label><strong>No. Control</strong></label>
                         <br><label></label>
@@ -523,7 +523,7 @@
                                           {{$dat->Municipio}}
                                        </td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->fse}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
                                         <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
                                       </tr>
@@ -685,7 +685,7 @@
                                         <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
                                         <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
-                                        <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
+                                        <td class="tbl-label" style="text-align: center;">{{$dat->fse}}</td>
                                         <td class="tbl-label" style="text-align: center;"></td>
                                         <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
                                       </tr>
@@ -855,7 +855,7 @@
                                           <td class="tbl-label" style="text-align: center;">{{isset($dat->noNotaria) ? $dat->noNotaria : ''}}</td>
                                           <td class="tbl-label" style="text-align: center;">{{$dat->Municipio}}</td>
                                           <td class="tbl-label" style="text-align: center;">{{$dat->fecha}}</td>
-                                          <td class="tbl-label" style="text-align: center;">{{$dat->folioTramite}}</td>
+                                          <td class="tbl-label" style="text-align: center;">{{$dat->fse}}</td>
                                           <td class="tbl-label" style="text-align: center;"></td>
                                           <td class="tbl-label" style="text-align: center;">{{isset($dat->folioPago) ? $dat->folioPago : ''}}</td>
                                         </tr>
