@@ -516,9 +516,8 @@ class PortalSolicitudesController extends Controller
     "n.phone","n.fax","n.email", "n.street", "n.number", "n.indoor-number", "n.district", "n.federal_entity_id",
     "n.city_id", "n.zip", "n.sat_constancy_file", "n.notary_constancy_file", "usert.name as nombre_titular", 
     "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular", 
-    "usert.status as status_titular", "userss.name as nombre_susbtituto", 
-    "userss.fathers_surname as apellido_pat_substituto",
-    "userss.mothers_surname as apellido_mat_substituto", "userss.status as status_substituto")
+    "usert.status as status_titular", "u.name as nombre_usuario_tramite", "u.fathers_surname as apellido_pat_tramite",
+    "u.mothers_surname as apellido_mat_tramite")
     ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
@@ -529,7 +528,6 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.config_user_notary_offices as config', 'config.user_id', 'tk.user_id')
     ->leftJoin('portal.notary_offices as n', 'n.id', 'config.notary_office_id')
     ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
-    ->leftJoin('portal.users as userss', 'n.substitute_id', 'userss.id')
     ->orderBy('tk.created_at', 'ASC')
     ->whereIn('c.id',$ids_catalogos)->get();
 
