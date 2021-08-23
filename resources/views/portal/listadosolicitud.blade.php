@@ -1741,7 +1741,7 @@ function configprelacion()
    
     if(typeof(Resp.notary_number)!=="undefined"){
       Object.assign(data,{noNotaria:Resp.notary_number});
-      Object.assign(data,{elaboro:Resp.nombre_titular+" "+Resp.apellido_pat_titular+" "+Resp.apellido_mat_titular});
+      Object.assign(data,{elaboro:Resp.nombre_usuario_tramite+" "+Resp.apellido_pat_tramite+" "+Resp.apellido_mat_tramite});
     }else{
       Object.assign(data,{noNotaria:0});
       Object.assign(data,{elaboro:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});
