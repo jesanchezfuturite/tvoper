@@ -8,7 +8,7 @@
                 <div class="card-header"></div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ url('/register') }}">
+                    <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <div class="form-group row">
@@ -41,10 +41,10 @@
                         @if(session('is_admin') == 1)
                         
                             <div class="form-group row">
-                                <label for="rol" class="col-md-4 col-form-label text-md-right">{{ __('Rol usuario') }}</label>
+                                <label for="rol" class="col-md-4 col-form-label text-md-right">{{ __('Rol Usuario') }}</label>
                                 <div class="col-md-6">
                                     <select class="select2me form-control"name="rol" id="rol" required>
-                                        <option value="">Selecciona</option>
+                                        <option value="">Seleccionar Rol</option>
                                             <option value="0">Usuario</option>
                                             <option value="2">Administrador</option>                                       
                                       </select> 
@@ -56,11 +56,19 @@
                                 <label for="rol" class="col-md-4 col-form-label text-md-right">{{ __('Rol Usuario') }}</label>
                                 <div class="col-md-6">
                                     <select class="select2me form-control"name="rol" id="rol" required>
-                                        <option value="0">Usuario</option>                                       
+                                        <option value="0">Seleccionar Rol</option>                                       
                                      </select> 
                                 </div>
                             </div>
                         @endif
+                        <div class="form-group row">
+                            <label for="comunidad" class="col-md-4 col-form-label text-md-right">{{ __('Comunidad') }}</label>
+                            <div class="col-md-6">
+                                <select class="select2me form-control"name="itemsComunidad" id="itemsComunidad" required>
+                                    <option value="0">Seleccionar Comunidad</option>                                       
+                                </select> 
+                            </div>
+                        </div>
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
@@ -96,4 +104,30 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    findiComunidad();
+    });
+  function findiComunidad()
+  {
+
+     $.ajax({
+           method: "get",            
+           url: "{{ url()->route('operacion-roles-get-rol') }}",
+           data: {_token:'{{ csrf_token() }}'}  })
+        .done(function (response) {    
+          $("#itemsComunidad option").remove();
+          $("#itemsComunidad").append("<option value='0'>-------</option>");
+            $.each(response, function(i, item) {                
+               $("#itemsComunidad").append("<option value='"+item.id+"'>"+item.descripcion+"</option>");  
+            });
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("No Success", "Notifications")  });
+  }
+</script>
 @endsection
