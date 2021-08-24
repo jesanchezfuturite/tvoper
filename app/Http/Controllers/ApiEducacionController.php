@@ -116,7 +116,10 @@ class ApiEducacionController extends Controller
 
             $data = empty($results->results) ? [] : $results->results;
 
-            return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia de escuela','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
+            if(is_base64($data))
+                return response()->json(['err'=>false,'msg'=>'','data'=>'Certificado encontrado exitosamente.'],200,$this->header,JSON_UNESCAPED_UNICODE);
+
+            return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia para certificado','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
             
         } catch (\Exception $e) {
             Log::info("Error Api EDU @ certificadoEstudios ".$e->getMessage());
@@ -124,5 +127,18 @@ class ApiEducacionController extends Controller
         }
     }
 
+    function is_base64($s){
+        // Check if there are valid base64 characters
+        if (!preg_match('/^[a-zA-Z0-9\/\r\n+]*={0,2}$/', $s)) return false;
+
+        // Decode the string in strict mode and check the results
+        $decoded = base64_decode($s, true);
+        if(false === $decoded) return false;
+
+        // Encode the string again
+        if(base64_encode($decoded) != $s) return false;
+
+        return true;
+    }
 
 }
