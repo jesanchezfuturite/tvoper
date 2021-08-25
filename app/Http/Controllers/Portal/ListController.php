@@ -13,6 +13,9 @@ class ListController extends Controller {
 		$maxLimit = 500;
 		$status = $request->status ?? null;
 		$searchBy = $request->search_by ?? 'servicio.Tipo_Descripcion';
+		$groupBy = $request->group_by ?? 'clave';
+		if($groupBy && strpos($groupBy, '.') === false) $groupBy = 'ticket.'.$groupBy;
+		
 		switch($searchBy){
 			case 'enajenante':
 				$searchBy = DB::raw('JSON_EXTRACT(ticket.info, "$.enajenante")');
@@ -29,17 +32,19 @@ class ListController extends Controller {
 			case 'fse':
 				$searchBy = DB::raw('ticket.id_transaccion');
 			break;
+			case 'grupo_clave':
+				$searchBy = DB::raw('ticket.grupo_clave');
+			break;
 			default:
 				$searchBy = DB::raw('servicio.Tipo_Descripcion');
 			break;
 		}
+
 		$search = $request->search ?? null;
 		if(gettype($status) != 'array') $status = [(int)$status];
 		if(array_search(3, $status) !== false) array_push($status, 7, 8);
 		if(array_search(98, $status) !== false) array_push($status, 2);
 
-		$groupBy = $request->group_by ?? 'clave';
-		if($groupBy && strpos($groupBy, '.') === false) $groupBy = 'ticket.'.$groupBy;
 		$limit = $request->limit ? (int)$request->limit : 30;
 		if($limit >= $maxLimit) $limit = $maxLimit;
 		$currentPage = $request->page ? (int)$request->page : 1;
@@ -48,9 +53,10 @@ class ListController extends Controller {
 		$currentDate = date('Y-m-d');
 		$startDate = $request->start_date ? date('Y-m-d H:i:s', strtotime($request->start_date.' 00:00:00')) : date('Y-m-d H:i:s', strtotime('-30 days '.$currentDate." 00:00:00"));
 		$endDate = $request->end_date ? date('Y-m-d H:i:s', strtotime($request->end_date.' 23:59:59')) : date('Y-m-d H:i:s', strtotime($currentDate." 23:59:59"));
-		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 404);;
+		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 409);
 
 		$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
+		if(!$user) return response()->json(["code" => 409, "message" => "conflict", "description" => "Usuario '{$request->user}' no encontrado"], 409);
 		$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
 		$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
 		if(gettype($users) != 'array') $users = [$users];
