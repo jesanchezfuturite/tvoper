@@ -5,6 +5,8 @@ on:
     branches: ['*']
     types:
       - completed
+      - requested
+
   # pull_request:
   #   types: [assigned, opened, synchronize, reopened]
   #   branches:
