@@ -116,7 +116,7 @@ class ApiEducacionController extends Controller
 
             $data = empty($results->results) ? [] : $results->results;
 
-            if(is_base64($data))
+            if($this->is_base64($data))
                 return response()->json(['err'=>false,'msg'=>'','data'=>'Certificado encontrado exitosamente.'],200,$this->header,JSON_UNESCAPED_UNICODE);
 
             return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia para certificado','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
