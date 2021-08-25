@@ -7,11 +7,11 @@ on:
       - completed
       - requested
 
-  # pull_request:
-  #   types: [assigned, opened, synchronize, reopened]
-  #   branches:
-  #     - '*'
-  #     - '!master'
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+    branches:
+      - '*'
+      - '!master'
 
 jobs:
   deploy-review-app:
