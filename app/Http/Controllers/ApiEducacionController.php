@@ -110,16 +110,28 @@ class ApiEducacionController extends Controller
                 ]
             );
 
-            $results = $response->getBody();
+            // Log::info("StatusCode : ". $response->getStatusCode() . " Response: " . $response->getBody());
 
-            $results = json_decode($results);
+            if($response->getStatusCode() == 200) {
 
-            $data = empty($results->results) ? [] : $results->results;
+                $results = $response->getBody();
+                $results = json_decode($results);
+                $data = empty($results->results) ? [] : $results->results;
+                
+                if($this->is_base64($data))
+                    return response()->json(['err'=>false,'msg'=>'','data'=>'Certificado encontrado exitosamente.'],200,$this->header,JSON_UNESCAPED_UNICODE);
 
-            if($this->is_base64($data))
-                return response()->json(['err'=>false,'msg'=>'','data'=>'Certificado encontrado exitosamente.'],200,$this->header,JSON_UNESCAPED_UNICODE);
+                if((strcmp($data, "Alumno no encontrado, sujeto a revisión por Control Escolar") === 0) || (strcmp($data, "Certificado encontrado exitosamente") == 0))
+                    return response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
+                else
+                    return response()->json(['err'=>true,'msg'=>$data,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
+            }
+            else {
 
-            return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia para certificado','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
+                return response()->json(['err'=>true,'msg'=>'Ocurrio un error desconocido o La solicitud no es válida'],400,$this->header,JSON_UNESCAPED_UNICODE);
+            }
+
+            // return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia para certificado','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
             
         } catch (\Exception $e) {
             Log::info("Error Api EDU @ certificadoEstudios ".$e->getMessage());
