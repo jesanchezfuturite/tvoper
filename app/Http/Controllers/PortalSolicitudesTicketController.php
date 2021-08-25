@@ -130,25 +130,37 @@ class PortalSolicitudesTicketController extends Controller
               //si tiene id es porque se esta volviendo a editar
               if($request->has("id")){
                 $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                $attach =$consultar->attach;
-                $archivo = explode("/download/", $attach);                   
-                $nombre = $file->getClientOriginalName();             
-                $verificar=strcmp($archivo[1], $nombre); 
-                 
-                  if ($verificar!== 0) {
-                    //se hace un borrado logico al registo anterior
-            
-                    $consultar->update(["status"=>0]);
-
-                    //se guarda un archivo nuevo
-                      $data =[
-                        'ticket_id'=>$ticket->id,
-                        'clave'=>$clave,
-                        'mensaje' => $request->descripcion[0],
-                        'file'    => $request->file[0]
-                        ];
-                      $this->saveFile($data);
-                  }
+                if($consultar!=null){
+                  $attach =$consultar->attach;
+                  $archivo = explode("/download/", $attach);                   
+                  $nom = $file->getClientOriginalName(); 
+                  $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);            
+                  $verificar=strcmp($archivo[1], $nombre); 
+                   
+                    if ($verificar!== 0) {
+                      //se hace un borrado logico al registo anterior
+              
+                      $consultar->update(["status"=>0]);
+  
+                      //se guarda un archivo nuevo
+                        $data =[
+                          'ticket_id'=>$ticket->id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $request->file[0]
+                          ];
+                        $this->saveFile($data);
+                    }
+                }else{
+                  $data =[
+                    'ticket_id'=>$ticket->id,
+                    'clave'=>$clave,
+                    'mensaje' => $request->descripcion[0],
+                    'file'    => $request->file[0]
+                    ];
+                  $this->saveFile($data);
+                }
+               
               }else{
                 $data =[
                   'ticket_id'=>$ticket->id,
@@ -162,7 +174,7 @@ class PortalSolicitudesTicketController extends Controller
         }else{
           if($request->has("id")){
             //se hace un borrado logico del ticket anterior borrador
-            $eliminar_ticket = $this->ticket->where('id', $request->id)
+            $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 80)
             ->update(['status' => 9]);
           }
            
@@ -190,28 +202,41 @@ class PortalSolicitudesTicketController extends Controller
               if($request->has("id")){
                   //consulta el nombre del archivo guardado en mensajes    
                   $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                  $archivo = explode("/download/",$consultar->attach);                   
-                  $nombre = $file->getClientOriginalName();             
-                  $verificar=strcmp($archivo[1], $nombre);   
-                  //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
-                  if ($verificar!== 0) {
-                      $data =[
-                        'ticket_id'=> $first_id,
-                        'clave'=>$clave,
-                        'mensaje' => $request->descripcion[0],
-                        'file'    => $file
-                      ];
+                  if($consultar!=null){
+                    $archivo = explode("/download/",$consultar->attach);                   
+                    $nom = $file->getClientOriginalName();    
+                    $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);              
+                    $verificar=strcmp($archivo[1], $nombre);   
+                    //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
+                    if ($verificar!== 0) {
+                        $data =[
+                          'ticket_id'=> $first_id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $file
+                        ];
 
-                      $this->saveFile($data);
+                        $this->saveFile($data);
+                    }else{
+                      //si es igual a 0 ya no se guarda el archivo y solo se duplica el registo de mensajes relacionado al nuevo ticket
+                      PortalSolicitudesMensajes::create([
+                        'ticket_id'=> $first_id,
+                        'mensaje' => $request->descripcion[0],
+                        'clave' => $clave,
+                        'attach'=>$consultar->attach
+                      ]);
+                    }
                   }else{
-                    //si es igual a 0 ya no se guarda el archivo y solo se duplica el registo de mensajes relacionado al nuevo ticket
-                    PortalSolicitudesMensajes::create([
-                      'ticket_id'=> $first_id,
-                      'mensaje' => $request->descripcion[0],
-                      'clave' => $clave,
-                      'attach'=>$consultar->attach
-                    ]);
+                    $data =[
+                          'ticket_id'=> $first_id,
+                          'clave'=>$clave,
+                          'mensaje' => $request->descripcion[0],
+                          'file'    => $file
+                        ];
+
+                        $this->saveFile($data);
                   }
+                  
                   
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
@@ -278,26 +303,26 @@ class PortalSolicitudesTicketController extends Controller
                 $this->saveFile($data);
               }    
     
-          }
+            }
         }
-
-      } catch (\Exception $e) {
-        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
-        $error = [
-            "Code" => "400",
-            "Message" => "Error al guardar la solicitud ".$e->getMessage()
-        ];
-
-      }
-      if($error) return response()->json($error);
-
-
-      return response()->json(
+        return response()->json(
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
           ]
         );
+
+      } catch (\Exception $e) {
+        Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al guardar solicitud ".$e->getMessage(),
+          ],400
+        );
+
+      }
+    
     }
   public function eliminarSolicitud(Request $request, $id){
       $valor = $request->tipo;
@@ -502,7 +527,8 @@ class PortalSolicitudesTicketController extends Controller
       $file = $data['file'];
       $clave = $data['clave'];
       $extension = $file->getClientOriginalExtension();
-      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $filename);     
 
       $number = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
       ->select("notary.notary_number")
@@ -522,8 +548,8 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $name = $nombre."-".$ticket_id.$number->notary_number.date("U").".".$extension;
-        $attach = $this->url->to('/') . '/download/'.$name;
-
+        // $attach = $this->url->to('/') . '/download/'.$name;
+        $attach = env("APP_URL") . '/download/'.$name;
         $guardar =$this->mensajes->where("id", $mensajes->id)->update([
           'attach' => $attach,
         ]);
@@ -1074,7 +1100,7 @@ class PortalSolicitudesTicketController extends Controller
         $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update([
           'por_firmar' => null, 
           'firmado'=>$body['status'],
-          'id_insumos'=>$body['id_insumos']
+          'id_insumos'=>isset($body['id_insumos']) ? $body['id_insumos'] : null
         ]);
         $count = $this->ticket->where(["firmado" => 1, "status" => 2])->whereIn('user_id', $users)->count();
         $mensaje="Solicitudes firmadas";
@@ -1343,7 +1369,8 @@ class PortalSolicitudesTicketController extends Controller
           $mensaje = $value["mensaje"];
           $ticket_id = $value["ticket_id"];
           $file = $value['file'];
-          $filename = $value['filename'];
+          $nomArchivo = $value['filename'];
+          $filename = preg_replace('([^A-Za-z0-9 ])', ' ', $nomArchivo);
 
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
