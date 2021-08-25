@@ -1,0 +1,61 @@
+name: eslint-test
+on: push
+
+jobs:
+  php-lint:
+    name: Lint Test PHP files
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set env
+      run: |
+        echo "STATUS=true" >> $GITHUB_ENV
+
+    - name: Setup PHP with fail-fast
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        extensions: oci8
+        tools: composer
+
+    - name: Checkout repository
+      uses: actions/checkout@master
+
+    - name: Install Open VPN
+      run: sudo apt install openvpn -y && sudo apt install expect
+
+    - name: Connect VPN
+      uses: golfzaptw/action-connect-ovpn@master
+      id: connect_vpn
+      with:
+        PING_URL: '127.0.0.1'
+        FILE_OVPN: '.github/vpn/config.ovpn'
+        SECRET: ${{ secrets.SECRET_USERNAME_PASSWORD }}
+      env:
+          CA_CRT: ${{ secrets.CA_CRT}}
+          USER_CRT: ${{ secrets.USER_CRT }}
+          USER_KEY: ${{ secrets.USER_KEY }}
+
+    - name: lint tests
+      run: |
+        cp .env.test .env &&
+        ls -lha &&
+        
+        search_1="__DB_CONNECTION_EGOBIERNO__" &&
+        search_2="__DB_CONNECTION_OPERACION__" &&
+        search_3="__DB_CONNECTION_PORTAL__" &&
+        
+        replace_1="${{ secrets.DB_CONNECTION_EGOBIERNO }}" &&
+        replace_2="${{ secrets.DB_CONNECTION_OPERACION }}" &&
+        replace_3="${{ secrets.DB_CONNECTION_PORTAL }}" &&
+        
+        sed -i "s/$search_1/$replace_1/gi" .env &&
+        sed -i "s/$search_2/$replace_2/gi" .env &&
+        sed -i "s/$search_3/$replace_3/gi" .env &&
+        
+        composer install &&
+        composer lint && echo "STATUS=false" >> $GITHUB_ENV
+
+    - name: kill vpn
+      if: always()
+      run: sudo killall openvpn

@@ -75,7 +75,7 @@ class PortalSolicitudesController extends Controller
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
-     OperacionUsuariosEstatusRepositoryEloquent $userEstatus
+     OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
      PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
      UrlGenerator $url,
      PortalTramitesRepositoryEloquent $tramitesdb
