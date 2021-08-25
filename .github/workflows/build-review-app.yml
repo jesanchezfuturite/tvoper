@@ -1,10 +1,14 @@
 name: build-review-app
 on:
-  pull_request:
-    types: [assigned, opened, synchronize, reopened]
-    branches:
-      - '*'
-      - '!master'
+  workflow_run:
+    workflows: ["eslint-test"]
+    types:
+      - completed
+  # pull_request:
+  #   types: [assigned, opened, synchronize, reopened]
+  #   branches:
+  #     - '*'
+  #     - '!master'
 
 jobs:
   deploy-review-app:
