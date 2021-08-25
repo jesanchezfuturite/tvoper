@@ -116,7 +116,7 @@ class ApiEducacionController extends Controller
 
                 $results = $response->getBody();
                 $results = json_decode($results);
-                $data = empty($results->results) ? [] : $results->results;
+                $data = empty($results->results) ? "" : $results->results;
                 
                 if($this->is_base64($data))
                     return response()->json(['err'=>false,'msg'=>'','data'=>'Certificado encontrado exitosamente.'],200,$this->header,JSON_UNESCAPED_UNICODE);
@@ -130,12 +130,25 @@ class ApiEducacionController extends Controller
 
                 return response()->json(['err'=>true,'msg'=>'Ocurrio un error desconocido o La solicitud no es válida'],400,$this->header,JSON_UNESCAPED_UNICODE);
             }
-
-            // return empty($data) ? response()->json(['err'=>true,'msg'=>'No se encontro coincidencia para certificado','data'=>''],204,$this->header,JSON_UNESCAPED_UNICODE) : response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
             
-        } catch (\Exception $e) {
+        } 
+        catch(RequestException $e) {
+            
+            $m = 'Error, información de solicitud erronea';
+
+            if($e->hasResponse()) {
+
+                $b = json_decode($e->getResponse()->getBody());
+                if(in_array($e->getResponse()->getStatusCode(),['400','500']))    
+                    $m = $b->Message;
+            }
+            
+            return response()->json(['err'=>true,'msg'=>$m,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
+        }
+        catch (\Exception $e) {
+
             Log::info("Error Api EDU @ certificadoEstudios ".$e->getMessage());
-            return response()->json(['err'=>true,'msg'=>'Error desconocido, accesos a certificados no esta disponible','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
+            return response()->json(['err'=>true,'msg'=>'Error desconocido o la solicitud no es válida.','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
 
