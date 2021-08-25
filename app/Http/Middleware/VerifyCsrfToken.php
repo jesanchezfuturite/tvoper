@@ -42,6 +42,8 @@ class VerifyCsrfToken extends Middleware
             $prefix.'edit-solicitudes-info*',
             $prefix.'registro-catastro',
             $prefix.'cancelar-transaccion*'
+            $prefix.'cancelar-transaccion*',
+            $prefix.'file*',
         ];
     }
 }

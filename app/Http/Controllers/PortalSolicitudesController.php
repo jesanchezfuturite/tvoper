@@ -22,6 +22,11 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
+
+use App\Repositories\PortalDocumentosBitacoraRepositoryEloquent;
+use Illuminate\Routing\UrlGenerator;
+use App\Repositories\PortalTramitesRepositoryEloquent;
+
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
@@ -51,7 +56,9 @@ class PortalSolicitudesController extends Controller
   protected $solicitudesMotivos;
   protected $motivos;
   protected $userEstatus;
-
+  protected $docbitacoradb;
+  protected $url;
+  protected $tramitesdb;
 
 
   public function __construct(
@@ -70,8 +77,10 @@ class PortalSolicitudesController extends Controller
      PortalmensajeprelacionRepositoryEloquent $msjprelaciondb,
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
-     OperacionUsuariosEstatusRepositoryEloquent $userEstatus
-
+     OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
+     PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
+     UrlGenerator $url,
+     PortalTramitesRepositoryEloquent $tramitesdb
     )
     {
       $this->middleware('auth');
@@ -91,8 +100,9 @@ class PortalSolicitudesController extends Controller
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
       $this->userEstatus = $userEstatus;
-
-
+      $this->docbitacoradb = $docbitacoradb;
+      $this->url = $url;
+      $this->tramitesdb = $tramitesdb;
     }
 
   /**
@@ -1105,22 +1115,169 @@ class PortalSolicitudesController extends Controller
     return view('portal/permisosdocumentos');
   }
 
-
+  public function saveFile(Request $request)
+  {
+    
+    try {
+      //log::info($request->all());
+      $fech=Carbon::now();
+      $fech=$fech->format("Hms");
+      $file = $request['file'];
+      $extension = $file->getClientOriginalExtension();
+      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $name = $nombre . "-" . $request->ticket_id . $fech . "." . $extension;
+      $attach = $this->url->to('/') . '/download/'.$name;
+      $path=storage_path('app/'.$name);
+      \Storage::disk('local')->put($name,  \File::get($file));
+      if($request->id_mensaje!=null)
+      {
+        $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
+      }
+      $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
+      if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+      $imageData = base64_encode(file_get_contents($attach));
+      return response()->json([
+        "Code" => "200",
+        "Message" => "Guardado correctamente",
+        "file_name_new"=>$name,
+        "file_attach"=>$attach,
+        "file_data"=>$imageData
+      ]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveFile ").$e;
+      return response()->json([
+        "Code" => "400",
+        "Message" => "Error al guardar"
+      ]);
+    }
+  }
+  public function saveDocBitacora($ticket_id,$attch,$descripcion)
+  {
+    try {
+      $this->docbitacoradb->create(["ticket_id"=>$ticket_id,"attach"=>$attch,"descripcion"=>$descripcion,"user_id"=>auth()->user()->id]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveDocBitacora ").$e;
+    }
+  }
   public  function findTicketidFolio(Request $request)
   {
     try {
+      $folios=array();
+      $resp=array();
       $response=array();
-      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
-      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+      if($request->tipo=="fse")
+      {
+        $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
+        if($findFolios->count()>0){ 
+          foreach ($findFolios as $f) {
+            $folios []= $f->id;
+          }
+        }else{
+          return response()->json(["Code" => "200","Message" =>[]]);
+        }
+      }else if($request->tipo=="folio_pago"){
+        $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
+        if($findFolios->count()>0){
+          $folios=json_decode($findFolios[0]->id_ticket);
+        }else{
+           return response()->json(["Code" => "200","Message" =>[]]);
+        }
+      }else{
+        $findFolios=$this->ticket->findWhere(["id"=>$request->folio]);       
+        if($findFolios->count()>0){
+           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion,"clave"=>$findFolios[0]->clave]);
+          if($findFolios->count()>0){
+            foreach ($findFolios as $f) {
+              $folios []= $f->id;
+            }
+          }else{
+             return response()->json(["Code" => "200","Message" =>[]]);
+          }
+        }
+      }
+      $clave_unique=array();
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
+      foreach ($findTickets as $key => $value) {
+            $clave_unique []=$value["clave"];
+      }
+      
+      $clave_unique=array_unique($clave_unique);
+      foreach ($clave_unique as $k) {
+        $id_transaccion_motor="";
+        $id_transaccion="";
+        $num_notaria="";
+        $notario="";
+        $FechaEscritura="";
+        $Escritura="";
+        $info=array();
+        $grupo=array();
+        $tickets_id=array();
+        foreach ($findTickets as $e => $v) {
+          if($k==$v["clave"])
+          {
+            $id_transaccion_motor=$v["id_transaccion_motor"];
+            $id_transaccion=$v["id_transaccion"];
+            $num_notaria=$v["notary_number"];
+            $notario=$v["name_notary"] ." ". $v["ap_pat_notary"] ." ". $v["ap_mat_notary"];
+            $info=json_decode($v["info"]);
+            foreach ($info->camposConfigurados as $i) {
+              if($i->tipo=="enajenante")
+              {
+                $FechaEscritura=$i->valor->enajenantes[0]->detalle->Entradas->fecha_escritura;
+              }
+              if($i->nombre=="Escritura")
+              {
+                $Escritura= $i->valor;
+              }
+             } 
+            $grupo []=$v;
+            $tickets_id []=$v["id"];
+          }           
+        }
+        $file_data="";
+        $file_extension="";
+        $file_name="";
+        $id_mensaje="";
+        $attach="";
+        $findAttach=$this->mensajes->WhereIn('ticket_id',$tickets_id)->where('attach','<>',null)->where('status',"1")->get();
+        foreach ($findAttach as $key => $value) {
+          $imageData='';
+          
+          $attach=$value["attach"];
+          $file_name=explode("/",$attach);        
+          $file_name=$file_name[count($file_name)-1];
+          if($attach<>null)
+          { 
+            $id_mensaje=$value["id"];         
+            $extension=explode(".",$file_name); 
+            $file_extension=$extension[count($extension)-1];
+            //log::info($attach);
+            if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+            $imageData = base64_encode(file_get_contents($attach));            
+            $file_data=$imageData;
+          }
+        }
 
-      $response=array_merge($response,$findClav);
-      $response=array_merge($response,$findid);
-     
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>$response
-        ]);  
+        $response []=array(
+          "clave"=> $k,
+          "id_transaccion_motor"=> $id_transaccion_motor,
+          "id_transaccion"=> $id_transaccion,         
+          "num_notaria"=> $num_notaria,         
+          "notario"=> $notario,         
+          "fecha_escritura"=> $FechaEscritura,         
+          "escritura"=> $Escritura,         
+          "tickets_id"=> $tickets_id,
+          "id_mensaje"=> $id_mensaje,
+          "file_data"=>$file_data,
+          "file_extension"=>$file_extension,
+          "file_name"=>$file_name,       
+          "file_attach"=>$attach,       
+          "grupo"=>$grupo
+        );
+      }
+      return $response;
+
     } catch (Exception $e) {
      return response()->json(
           [
@@ -1131,16 +1288,21 @@ class PortalSolicitudesController extends Controller
   }
   public function updatePermisoSolicitud(Request $request)
   {
+    //log::info($request->all());
     try {
-      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
-         return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>"Actualizado correctamente"
-        ]);  
+      $folios=json_decode(json_decode($request->id ));
+      //log::info($folios);
+      foreach ($folios as $k) {
+        $this->saveDocBitacora($k,"","Permiso ".(string)$request->required_docs);
+      $response=$this->ticket->where("id",$k)->update(['required_docs'=>$request->required_docs]);
+
+      }
+      
+
+      return response()->json(["Code" => "200", "Message" =>"Actualizado correctamente" ]); 
+
     } catch (Exception $e) {
-     return response()->json(
-          [
+     return response()->json([
             "Code" => "400",
             "Message" =>"Error al actualizar permisos"
         ]);   
