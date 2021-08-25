@@ -19,11 +19,32 @@
     </ul>
 </div>
 
+<div class="row">  
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-bank"></i>Entidad
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-1">
+                        <label>Entidad</label>
+                    </div>
+                    <div class="col-md-4">   
+                        <div class="form-group">    
+                            <select class="select2me form-control" name="itemsEntidad" id="itemsEntidad" onchange="changeEntidad()">
+                                <option value="limpia">------</option>
+                            </select>       
+                        </div> 
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </div>    
+</div>
 <div class="row">
-     <div hidden="true">
-  <a href="javascript:;" class="btn green" id="blockui_sample_3_1" >Block</a>
-  <a href="javascript:;" class="btn default" id="blockui_sample_3_1_1" >Unblock</a></div>
-  <div id="blockui_sample_3_1_element">
     <!-- BEGIN SAMPLE TABLE PORTLET-->
     <div class="portlet box blue" id="Addtable">
         <div class="portlet-title">
@@ -78,7 +99,6 @@
             </table>
           
         </div>
-    </div>
     </div>
     <!-- END SAMPLE TABLE PORTLET-->    
 
@@ -193,7 +213,10 @@
         document.getElementById('idupdate').value="";
         document.getElementById('estatus').value="";
     }
-
+    function changeEntidad()
+    {
+        return;
+    }
     function VerificaInsert()
     {
         var nombre=$("#nombre").val();
