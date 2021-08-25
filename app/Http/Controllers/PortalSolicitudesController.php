@@ -2028,12 +2028,14 @@ class PortalSolicitudesController extends Controller
   {
     $folio=3158;
     $encabezado="Expediente aprobado en IRCNL";
-    $mensaje="Tu trámite con número de folio $folio fue aprobado por el
+    
+    $mensaje="Tu trámite con número de folio <strong>$folio</strong> fue aprobado por el
     registrador asignado. Por favor, recoge tu expediente con el trámite
     terminado en el Módulo de Entrega de Documentos dentro de 2
     días hábiles. Si tienes dudas sobre el uso de esta plataforma
     puedes llamar a Informatel 070.";
     $nombre="Karla Cespedes";
+
    
       $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Egobierno</title><style> 
     img {
@@ -2111,11 +2113,20 @@ class PortalSolicitudesController extends Controller
         font-size: 12px;
         text-align: center; 
     }
-    h1,
+
     h2,
     h3,
     h4 {
       color: #000000;
+      font-family: sans-serif;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
+      margin-bottom: 30px; 
+    }
+
+    h1 {
+      color: #035a54;
       font-family: sans-serif;
       font-weight: 400;
       line-height: 1.4;
@@ -2332,15 +2343,20 @@ class PortalSolicitudesController extends Controller
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                   <tr>
                     <td>
-                     <center><h2><strong>'.$encabezado.'</strong></h2></center> 
-                     <h3>Estimado(a) '.$nombre.'</h3>                                 
+                     <center><h1><strong>'.$encabezado.'</strong></h1></center> 
+                     <h3>Estimado(a) <strong>'.$nombre.'</strong></h3>                                 
                       <br>
                       <p>'.$mensaje.' </p> 
                       <br>
                       <!--<p></p>-->
                       <br>
                       <br>
-                      
+                      <p><h2><center>ATENTAMENTE</center><h2></p>
+                      <p><h2><center>Dirección General de Instituto Registral y Catastral</center><h2></p>
+                      <p>Con fundamento en los artículos 18, 20, 21 y 22 de la Ley Federal de Transparencia y Acceso a la Información
+                      Pública Gubernamental. Artículos 37 y 40 de su reglamento, así como los lineamientos de la Protección de
+                      Datos Personales expedidos por el Instituto Federal de Acceso a la Información y Protección de Datos; los Datos Personales contenidos en el presente documento están protegidos, por tanto solo podrán ser usados para
+                      los fines por los cuales fueron entregados, cualquier uso deberá ser autorizado por el titular de los mismos.</p>
                        <br> <br>
                       <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                         <tbody>
@@ -2362,12 +2378,7 @@ class PortalSolicitudesController extends Controller
                 </table>
               </td>
             </tr>
-          </table>
-         <!-- <div class="footer">
-            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-              <tr><td class="content-block"><span class="apple-link">Emial Prueba</span></td></tr><tr> </tr>
-            </table>
-          </div>-->
+          </table>       
         </div></td><td>&nbsp;</td></tr></table></body></html>
   ';
   return $email;
