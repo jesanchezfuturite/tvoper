@@ -307,22 +307,20 @@ class PortalSolicitudesTicketController extends Controller
                       'attach'=>$consultar->attach
                     ]);
                   }
-                }
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'clave'=>$clave,
                   'mensaje' => $request->descripcion[0],
                   'file'    => $file
                 ];
 
                 $this->saveFile($data);
-              }    
-    
+              }      
             }
+          }
         }
-
         if($status==7){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
         
