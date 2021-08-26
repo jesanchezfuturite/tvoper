@@ -418,7 +418,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite')->name('get-firma-find');
     Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite')->name('update-firma');
-
+    Route::get('/view-file/{file}', 'PortalSolicitudesController@viewFile')->name('view-file');
 
     Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name('solicitudes-register');
     Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');

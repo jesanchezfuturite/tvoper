@@ -1616,6 +1616,14 @@ class PortalSolicitudesController extends Controller
     }
     
   }
-  
+  public function viewFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->file($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@viewFile");
+      }
+    }
   
 }
