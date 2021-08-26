@@ -548,10 +548,10 @@ class ConsultasController extends Controller
         $noInsert=array();
         //log::info($request->request);
 
-        Log::info("[ConsultasController@PagosVerificados] USER " . $request->user);
-        Log::info("[ConsultasController@PagosVerificados] FOLIOS " . json_encode($request->id_transaccion_motor));
-        Log::info("[ConsultasController@PagosVerificados] NOW " . date("Y-m-d H:i:s"));
-        Log::info("[ConsultasController@PagosVerificados] ALL " . json_encode($request->all());
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] USER " . $request->user);
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] FOLIOS " . json_encode($request->id_transaccion_motor));
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] NOW " . date("Y-m-d H:i:s"));
+        Log::stack(['pagos-verificados'])->info("[ConsultasController@PagosVerificados] ALL " . json_encode($request->all()));
 
         try
         {
