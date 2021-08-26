@@ -17,7 +17,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <!--<![endif]-->
 <!-- BEGIN HEAD -->
 <head>
-	<base href="{{ env('APP_URL') }}/">
+<base href="{{ env('APP_URL') }}/">
 <meta charset="utf-8"/>
 <title>Tesorería Virtual | Módulo de operación</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
