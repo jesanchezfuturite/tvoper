@@ -50,8 +50,15 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
     }
     public function findTicket($campo,$var)
     {
-        $data = PortalSolicitudesTicket::where('solicitudes_ticket.'.$campo,$var)
-        ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')        
+        $data = PortalSolicitudesTicket::whereIn('solicitudes_ticket.'.$campo,$var)
+        ->leftjoin('solicitudes_status','solicitudes_status.id','=','solicitudes_ticket.status')   
+        ->leftjoin('operacion.oper_transacciones','operacion.oper_transacciones.id_transaccion','=','solicitudes_ticket.id_transaccion')   
+        ->leftjoin('solicitudes_tramite','solicitudes_tramite.id_transaccion_motor','=','operacion.oper_transacciones.id_transaccion_motor')
+        ->leftJoin('users', 'users.id', 'solicitudes_ticket.user_id')
+        ->leftJoin('config_user_notary_offices', 'config_user_notary_offices.user_id', 'solicitudes_ticket.user_id')
+        ->leftJoin('notary_offices', 'notary_offices.id', 'config_user_notary_offices.notary_office_id')  
+        ->where('solicitudes_ticket.status','=','2')    
+        ->where('solicitudes_ticket.doc_firmado','<>',null)    
         ->select('solicitudes_ticket.id',
             'solicitudes_ticket.clave',
             'solicitudes_ticket.id_tramite',
@@ -72,7 +79,12 @@ class PortalSolicitudesTicketRepositoryEloquent extends BaseRepository implement
             'solicitudes_ticket.status',
             'solicitudes_ticket.created_at',
             'solicitudes_ticket.updated_at',
-            'solicitudes_status.descripcion'
+            'solicitudes_status.descripcion',
+            'solicitudes_tramite.id_transaccion_motor',
+            'users.name as name_notary',
+            'users.mothers_surname as ap_mat_notary',
+            'users.fathers_surname as ap_pat_notary',
+            'notary_offices.notary_number'
         )->get();
         return $data;
     }

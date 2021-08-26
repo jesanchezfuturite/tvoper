@@ -22,6 +22,11 @@ use App\Repositories\PortalSolicitudesMensajesRepositoryEloquent;
 use App\Repositories\PortalNotaryOfficesRepositoryEloquent;
 use App\Repositories\PortalConfigUserNotaryOfficeRepositoryEloquent;
 use App\Repositories\TramitedetalleRepositoryEloquent;
+
+use App\Repositories\PortalDocumentosBitacoraRepositoryEloquent;
+use Illuminate\Routing\UrlGenerator;
+use App\Repositories\PortalTramitesRepositoryEloquent;
+
 use App\Repositories\EgobiernotiposerviciosRepositoryEloquent;
 use App\Repositories\EgobiernopartidasRepositoryEloquent;
 use App\Repositories\PortalsolicitudesresponsablesRepositoryEloquent;
@@ -37,9 +42,9 @@ use App\Entities\Portalsolicitudesresponsables;
 use App\Entities\Users;
 use App\Entities\TicketBitacora;
 use App\Entities\UsersPortal;
-use App\Entities\NotificacionEstatusAtencion;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
+use App\Entities\NotificacionEstatusAtencion;
 
 class PortalSolicitudesController extends Controller
 {
@@ -59,8 +64,12 @@ class PortalSolicitudesController extends Controller
   protected $solicitudesMotivos;
   protected $motivos;
   protected $userEstatus;
+
   protected $ticketBitacoradb;
 
+  protected $docbitacoradb;
+  protected $url;
+  protected $tramitesdb;
 
 
   public function __construct(
@@ -80,7 +89,10 @@ class PortalSolicitudesController extends Controller
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
      OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
-     TicketBitacora $ticketBitacoradb
+     TicketBitacora $ticketBitacoradb,
+     PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
+     UrlGenerator $url,
+     PortalTramitesRepositoryEloquent $tramitesdb
 
     )
     {
@@ -101,8 +113,13 @@ class PortalSolicitudesController extends Controller
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
       $this->userEstatus = $userEstatus;
+
       $this->ticketBitacoradb = $ticketBitacoradb;
 
+
+      $this->docbitacoradb = $docbitacoradb;
+      $this->url = $url;
+      $this->tramitesdb = $tramitesdb;
 
     }
 
@@ -1201,22 +1218,169 @@ class PortalSolicitudesController extends Controller
     return view('portal/permisosdocumentos');
   }
 
-
+  public function saveFile(Request $request)
+  {
+    
+    try {
+      //log::info($request->all());
+      $fech=Carbon::now();
+      $fech=$fech->format("Hms");
+      $file = $request['file'];
+      $extension = $file->getClientOriginalExtension();
+      $nombre = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+      $name = $nombre . "-" . $request->ticket_id . $fech . "." . $extension;
+      $attach = $this->url->to('/') . '/download/'.$name;
+      $path=storage_path('app/'.$name);
+      \Storage::disk('local')->put($name,  \File::get($file));
+      if($request->id_mensaje!=null)
+      {
+        $this->mensajes->update(["status"=>"0"],$request->id_mensaje); 
+      }
+      $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
+      $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
+      if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+      $imageData = base64_encode(file_get_contents($attach));
+      return response()->json([
+        "Code" => "200",
+        "Message" => "Guardado correctamente",
+        "file_name_new"=>$name,
+        "file_attach"=>$attach,
+        "file_data"=>$imageData
+      ]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveFile ").$e;
+      return response()->json([
+        "Code" => "400",
+        "Message" => "Error al guardar"
+      ]);
+    }
+  }
+  public function saveDocBitacora($ticket_id,$attch,$descripcion)
+  {
+    try {
+      $this->docbitacoradb->create(["ticket_id"=>$ticket_id,"attach"=>$attch,"descripcion"=>$descripcion,"user_id"=>auth()->user()->id]);
+    } catch (Exception $e) {
+      log::info("PortalSolicitudesController@saveDocBitacora ").$e;
+    }
+  }
   public  function findTicketidFolio(Request $request)
   {
     try {
+      $folios=array();
+      $resp=array();
       $response=array();
-      $findClav=$this->ticket->findTicket('clave',$request->folio)->toArray();
-      $findid=$this->ticket->findTicket('id',$request->folio)->toArray();
+      if($request->tipo=="fse")
+      {
+        $findFolios=$this->ticket->findWhere(["id_transaccion"=>$request->folio]);
+        if($findFolios->count()>0){ 
+          foreach ($findFolios as $f) {
+            $folios []= $f->id;
+          }
+        }else{
+          return response()->json(["Code" => "200","Message" =>[]]);
+        }
+      }else if($request->tipo=="folio_pago"){
+        $findFolios=$this->tramitesdb->findWhere(["id_transaccion_motor"=>$request->folio]);
+        if($findFolios->count()>0){
+          $folios=json_decode($findFolios[0]->id_ticket);
+        }else{
+           return response()->json(["Code" => "200","Message" =>[]]);
+        }
+      }else{
+        $findFolios=$this->ticket->findWhere(["id"=>$request->folio]);       
+        if($findFolios->count()>0){
+           $findFolios=$this->ticket->findWhere(["id_transaccion"=>$findFolios[0]->id_transaccion,"clave"=>$findFolios[0]->clave]);
+          if($findFolios->count()>0){
+            foreach ($findFolios as $f) {
+              $folios []= $f->id;
+            }
+          }else{
+             return response()->json(["Code" => "200","Message" =>[]]);
+          }
+        }
+      }
+      $clave_unique=array();
+      $findTickets=$this->ticket->findTicket('id',$folios)->toArray();
+      foreach ($findTickets as $key => $value) {
+            $clave_unique []=$value["clave"];
+      }
+      
+      $clave_unique=array_unique($clave_unique);
+      foreach ($clave_unique as $k) {
+        $id_transaccion_motor="";
+        $id_transaccion="";
+        $num_notaria="";
+        $notario="";
+        $FechaEscritura="";
+        $Escritura="";
+        $info=array();
+        $grupo=array();
+        $tickets_id=array();
+        foreach ($findTickets as $e => $v) {
+          if($k==$v["clave"])
+          {
+            $id_transaccion_motor=$v["id_transaccion_motor"];
+            $id_transaccion=$v["id_transaccion"];
+            $num_notaria=$v["notary_number"];
+            $notario=$v["name_notary"] ." ". $v["ap_pat_notary"] ." ". $v["ap_mat_notary"];
+            $info=json_decode($v["info"]);
+            foreach ($info->camposConfigurados as $i) {
+              if($i->tipo=="enajenante")
+              {
+                $FechaEscritura=$i->valor->enajenantes[0]->detalle->Entradas->fecha_escritura;
+              }
+              if($i->nombre=="Escritura")
+              {
+                $Escritura= $i->valor;
+              }
+             } 
+            $grupo []=$v;
+            $tickets_id []=$v["id"];
+          }           
+        }
+        $file_data="";
+        $file_extension="";
+        $file_name="";
+        $id_mensaje="";
+        $attach="";
+        $findAttach=$this->mensajes->WhereIn('ticket_id',$tickets_id)->where('attach','<>',null)->where('status',"1")->get();
+        foreach ($findAttach as $key => $value) {
+          $imageData='';
+          
+          $attach=$value["attach"];
+          $file_name=explode("/",$attach);        
+          $file_name=$file_name[count($file_name)-1];
+          if($attach<>null)
+          { 
+            $id_mensaje=$value["id"];         
+            $extension=explode(".",$file_name); 
+            $file_extension=$extension[count($extension)-1];
+            //log::info($attach);
+            if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+            $imageData = base64_encode(file_get_contents($attach));            
+            $file_data=$imageData;
+          }
+        }
 
-      $response=array_merge($response,$findClav);
-      $response=array_merge($response,$findid);
-     
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>$response
-        ]);  
+        $response []=array(
+          "clave"=> $k,
+          "id_transaccion_motor"=> $id_transaccion_motor,
+          "id_transaccion"=> $id_transaccion,         
+          "num_notaria"=> $num_notaria,         
+          "notario"=> $notario,         
+          "fecha_escritura"=> $FechaEscritura,         
+          "escritura"=> $Escritura,         
+          "tickets_id"=> $tickets_id,
+          "id_mensaje"=> $id_mensaje,
+          "file_data"=>$file_data,
+          "file_extension"=>$file_extension,
+          "file_name"=>$file_name,       
+          "file_attach"=>$attach,       
+          "grupo"=>$grupo
+        );
+      }
+      return $response;
+
     } catch (Exception $e) {
      return response()->json(
           [
@@ -1227,16 +1391,21 @@ class PortalSolicitudesController extends Controller
   }
   public function updatePermisoSolicitud(Request $request)
   {
+    //log::info($request->all());
     try {
-      $response=$this->ticket->update(['required_docs'=>$request->required_docs],$request->id);
-         return response()->json(
-          [
-            "Code" => "200",
-            "Message" =>"Actualizado correctamente"
-        ]);  
+      $folios=json_decode(json_decode($request->id ));
+      //log::info($folios);
+      foreach ($folios as $k) {
+        $this->saveDocBitacora($k,"","Permiso ".(string)$request->required_docs);
+      $response=$this->ticket->where("id",$k)->update(['required_docs'=>$request->required_docs]);
+
+      }
+      
+
+      return response()->json(["Code" => "200", "Message" =>"Actualizado correctamente" ]); 
+
     } catch (Exception $e) {
-     return response()->json(
-          [
+     return response()->json([
             "Code" => "400",
             "Message" =>"Error al actualizar permisos"
         ]);   
@@ -1622,6 +1791,17 @@ class PortalSolicitudesController extends Controller
     
   }
 
+  public function viewFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->file($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@viewFile");
+      }
+    }
+
+
   /**
 	 *	
 	 * notify. Este metodo es para la modificacion de enviar el correo 
@@ -1631,19 +1811,54 @@ class PortalSolicitudesController extends Controller
 	 * @return 99 si error 100 si todo correcto
 	 *
 	 */
-	public function notify($id, $folio){
+	public function notify($id, $folio, $status){
 
+        switch ($status) {
+          case "1":
+            $encabezado="Expediente aprobado en IRCNL";
+                    
+            $mensaje="Tu trámite con número de folio <strong>$folio</strong> fue aprobado por el
+            registrador asignado. Por favor, recoge tu expediente con el trámite
+            terminado en el Módulo de Entrega de Documentos dentro de 2
+            días hábiles. Si tienes dudas sobre el uso de esta plataforma
+            puedes llamar a Informatel 070.";
+            break;
+          case "7":
+            $encabezado="Expediente rechazado en IRCNL";
+
+            $mensaje="Tu trámite con Núm. De <strong>$folio</strong> fue rechazado por el motivo:
+            falta de documentación El registrador asignado realizó además el
+            siguiente comentario: 
+            ' faltan colindancias. '
+            Por favor, recoge tu expediente en el Módulo de Entrega de
+            Documentos, completa la información que te solicitan y
+            posteriormente preséntate en el Módulo de Recepción de
+            Documentos para reingresar el expediente. Si tienes dudas sobre el
+            uso de esta plataforma puedes llamar a Informatel 070";
+            break;
+          case "8":
+            $encabezado="Expediente rechazado en IRCNL";
+            break;
+          case "5":
+            $encabezado="Orden de Referencia";
+            $mensaje ="Su pedido con folio <strong>$folio</strong> está en espera del pago";
+            break;
+          case "2":
+            $encabezado="Recibo Pagado";
+            $mensaje ="Su pedido con folio <strong>$folio</strong>3 ha sido pagado.";
+            break;
+          default:
+          $statusTicket = 1;
+        }
         $table = new NotificacionEstatusAtencion();
         $mail = new PHPMailer(true);
 
         $user = UsersPortal::findOrFail($id);
 			  $correo= $user->email;
 
-        $encabezado="Notificacion de Resolucion";
-        $mensaje="Tu tramite fue aprobado";
         $nombre =$user->name." ".$user->fathers_surname." ".$user->mothers_surname;
          
-        $message=$this->plantillaEmail($encabezado,$nombre,$folio, $mensaje);
+        $message=$this->plantilla($nombre, $folio, $encabezado, $mensaje);
         //log::info($correo.'  '.$nombre.' '.$folio);
         try{
             
@@ -1677,372 +1892,20 @@ class PortalSolicitudesController extends Controller
 		
 
 	}
-  private function plantillaEmail($encabezado,$nombre,$folio,$mensaje, $url="",$footer="")
-  {
-    $email='<!doctype html>
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Egobierno</title>
-        <style> 
-          img {
-            border: none;
-            -ms-interpolation-mode: bicubic;
-            max-width: 100%; 
-          }
-          body {
-            background-color: #f6f6f6;
-            font-family: sans-serif;
-            -webkit-font-smoothing: antialiased;
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 0;
-            padding: 0;
-            -ms-text-size-adjust: 100%;
-            -webkit-text-size-adjust: 100%; 
-          }
-          table {
-            border-collapse: separate;
-            mso-table-lspace: 0pt;
-            mso-table-rspace: 0pt;
-            width: 100%; }
-            table td {
-              font-family: sans-serif;
-              font-size: 14px;
-              vertical-align: top; 
-          }
-          .body {
-            background-color: #f6f6f6;
-            width: 100%; 
-          }
-          .container {
-            display: block;
-            margin: 0 auto !important;
-            /* makes it centered */
-            max-width: 780px;
-            padding: 10px;
-            width: 780px; 
-          }
-          .content {
-            box-sizing: border-box;
-            display: block;
-            margin: 0 auto;
-            max-width: 680px;
-            padding: 10px; 
-          }
-          .main {
-            background: #ffffff;
-            border-radius: 3px;
-            width: 100%; 
-          }
-
-          .wrapper {
-            box-sizing: border-box;
-            padding: 20px; 
-          }
-
-          .content-block {
-            padding-bottom: 10px;
-            padding-top: 10px;
-          }
-
-          .footer {
-            clear: both;
-            margin-top: 10px;
-            text-align: center;
-            width: 100%; 
-          }
-          .footer td,
-          .footer p,
-          .footer span,
-          .footer a {
-            color: #999999;
-            font-size: 12px;
-            text-align: center; 
-          }
-          h1,
-          h2,
-          h3,
-          h4 {
-            color: #000000;
-            font-family: sans-serif;
-            font-weight: 400;
-            line-height: 1.4;
-            margin: 0;
-            margin-bottom: 30px; 
-          }
-
-          h1 {
-            font-size: 35px;
-            font-weight: 300;
-            text-align: center;
-            text-transform: capitalize; 
-          }
-
-          p,
-          ul,
-          ol {
-            font-family: sans-serif;
-            font-size: 14px;
-            font-weight: normal;
-            margin: 0;
-            margin-bottom: 15px; 
-          }
-            p li,
-            ul li,
-            ol li {
-              list-style-position: inside;
-              margin-left: 5px; 
-          }
-
-          a {
-            color: #3498db;
-            text-decoration: underline; 
-          }
-          .btn {
-            box-sizing: border-box;
-            width: 100%; }
-            .btn > tbody > tr > td {
-              padding-bottom: 15px; }
-            .btn table {
-              width: auto; 
-          }
-          .btn table td {
-            background-color: #ffffff;
-            border-radius: 5px;
-            text-align: center; 
-          }
-          .btn a {
-            background-color: #ffffff;
-            border: solid 1px #3498db;
-            border-radius: 5px;
-            box-sizing: border-box;
-            color: #3498db;
-            cursor: pointer;
-            display: inline-block;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 0;
-            padding: 12px 25px;
-            text-decoration: none;
-            text-transform: capitalize; 
-          }
-          .btn-primary table td {
-            background-color: #3498db; 
-          }
-
-          .btn-primary a {
-            background-color: #3498db;
-            border-color: #3498db;
-            color: #ffffff; 
-          }
-          .last {
-            margin-bottom: 0; 
-          }
-
-          .first {
-            margin-top: 0; 
-          }
-
-          .align-center {
-            text-align: center; 
-          }
-
-          .align-right {
-            text-align: right; 
-          }
-
-          .align-left {
-            text-align: left; 
-          }
-
-          .clear {
-            clear: both; 
-          }
-
-          .mt0 {
-            margin-top: 0; 
-          }
-
-          .mb0 {
-            margin-bottom: 0; 
-          }
-
-          .preheader {
-            color: transparent;
-            display: none;
-            height: 0;
-            max-height: 0;
-            max-width: 0;
-            opacity: 0;
-            overflow: hidden;
-            mso-hide: all;
-            visibility: hidden;
-            width: 0; 
-          }
-
-          .powered-by a {
-            text-decoration: none; 
-          }
-
-          hr {
-            border: 0;
-            border-bottom: 1px solid #bebebe;
-            margin: 20px 0; 
-          }
-          @media only screen and (max-width: 620px) {
-            table[class=body] h1 {
-              font-size: 28px !important;
-              margin-bottom: 10px !important; 
-            }
-            table[class=body] p,
-            table[class=body] ul,
-            table[class=body] ol,
-            table[class=body] td,
-            table[class=body] span,
-            table[class=body] a {
-              font-size: 16px !important; 
-            }
-            table[class=body] .wrapper,
-            table[class=body] .article {
-              padding: 10px !important; 
-            }
-            table[class=body] .content {
-              padding: 0 !important; 
-            }
-            table[class=body] .container {
-              padding: 0 !important;
-              width: 100% !important; 
-            }
-            table[class=body] .main {
-              border-left-width: 0 !important;
-              border-radius: 0 !important;
-              border-right-width: 0 !important; 
-            }
-            table[class=body] .btn table {
-              width: 100% !important; 
-            }
-            table[class=body] .btn a {
-              width: 100% !important; 
-            }
-            table[class=body] .img-responsive {
-              height: auto !important;
-              max-width: 100% !important;
-              width: auto !important; 
-            }
-          }
-          @media all {
-            .ExternalClass {
-              width: 100%; 
-            }
-            .ExternalClass,
-            .ExternalClass p,
-            .ExternalClass span,
-            .ExternalClass font,
-            .ExternalClass td,
-            .ExternalClass div {
-              line-height: 100%; 
-            }
-            .apple-link a {
-              color: inherit !important;
-              font-family: inherit !important;
-              font-size: inherit !important;
-              font-weight: inherit !important;
-              line-height: inherit !important;
-              text-decoration: none !important; 
-            }
-            #MessageViewBody a {
-              color: inherit;
-              text-decoration: none;
-              font-size: inherit;
-              font-family: inherit;
-              font-weight: inherit;
-              line-height: inherit;
-            }
-            .btn-primary table td:hover {
-              background-color: #34495e !important; 
-            }
-            .btn-primary a:hover {
-              background-color: #34495e !important;
-              border-color: #34495e !important; 
-            } 
-          }
-        </style>
-      </head>
-      <body class="">  
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
-          <tr>
-            <td>&nbsp;</td>
-            <td class="container">
-              <div class="content">
-                <table role="presentation" class="main">
-                  <tr>
-                    <td class="wrapper">
-                      <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td>
-                          <center><h2><strong>'.$encabezado.'</strong></h2></center> 
-                          <center><h3>'.$nombre.'</h3></center> 
-                          <div style="text-align:right;"> <p>'.$folio.'</p></div>
-                          <hr style="color:#000;">             
-                            <br>
-                            <p>Datos: </p>
-                            <p>'.$mensaje.' </p> 
-                            <br>
-                            <!--<p></p>-->
-                            <br>
-                            <br>
-                            
-                            <br> <br>
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
-                              <tbody>
-                                <tr>
-                                  <td align="left">
-                                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                                      <tbody >
-                                        <tr> </td>
-                                        <!-- <td whidth="100%" align="center"> <a href="" target="_blank">Ver Recibo</a> </td>-->
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </div></td><td>&nbsp;</td></tr>
-            </table>
-          </body>
-    </html>
-  ';
-  return $email;
-  }
 
 
-  public function plantilla()
-  {
-    $folio=3158;
-    $encabezado="Expediente aprobado en IRCNL";
-    
-    $mensaje="Tu trámite con número de folio <strong>$folio</strong> fue aprobado por el
-    registrador asignado. Por favor, recoge tu expediente con el trámite
-    terminado en el Módulo de Entrega de Documentos dentro de 2
-    días hábiles. Si tienes dudas sobre el uso de esta plataforma
-    puedes llamar a Informatel 070.";
-    $nombre="Karla Cespedes";
 
+  public function plantilla($nombre, $folio, $encabezado, $mensaje)
+  {  
    
       $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Egobierno</title><style> 
     img {
       border: none;
       -ms-interpolation-mode: bicubic;
       max-width: 100%; 
+    }
+    .footer{
+      font-style: italic;
     }
     body {
       background-color: #f6f6f6;
@@ -2353,7 +2216,7 @@ class PortalSolicitudesController extends Controller
                       <br>
                       <br>
                       <p><h2><center>ATENTAMENTE</center><h2></p>
-                      <p><h2><center>Dirección General de Instituto Registral y Catastral</center><h2></p>
+                      <p class="footer"><h2><center>Dirección General de Instituto Registral y Catastral</center><h2></p>
                       <p>Con fundamento en los artículos 18, 20, 21 y 22 de la Ley Federal de Transparencia y Acceso a la Información
                       Pública Gubernamental. Artículos 37 y 40 de su reglamento, así como los lineamientos de la Protección de
                       Datos Personales expedidos por el Instituto Federal de Acceso a la Información y Protección de Datos; los Datos Personales contenidos en el presente documento están protegidos, por tanto solo podrán ser usados para
@@ -2384,6 +2247,5 @@ class PortalSolicitudesController extends Controller
   ';
   return $email;
   }
-  
   
 }

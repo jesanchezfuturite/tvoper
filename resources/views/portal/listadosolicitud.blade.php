@@ -755,7 +755,7 @@ function configprelacion()
         });
       $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
       await sleep(1000);
-      if(dataS.length<2){
+      if(dataS.length<6){
         dataS.forEach((grupo) =>{
           $("#iconShow-"+grupo.grupo_clave).trigger("click");
         });
@@ -835,11 +835,16 @@ function configprelacion()
         }
         var bitacora_end=solicitud.bitacora.length-1;
         status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
-        solicitud.bitacora.forEach((bitacora,index)=>{
-        {  
-          if(bitacora.info!=null)
-          {
-            var infoM=$.parseJSON(bitacora.info);
+        var bitacora=solicitud.bitacora;
+        @if($atencion=="true")
+          solicitud.bitacora.forEach((bitacora,index)=>{ 
+           
+          bitacora_end=index;
+          bitacora=solicitud.bitacora;
+        @endif 
+        if(bitacora[bitacora_end].info!=null)
+            {
+            var infoM=$.parseJSON(bitacora[bitacora_end].info);
             var municipioM=searchIndex('municipio',infoM.campos);
             if(typeof (municipioM) !== 'object'){
               Mp=municipioM;
@@ -848,7 +853,7 @@ function configprelacion()
             }  
           }
           var clase='';
-          var btn_revisar="<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora.id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
+          var btn_revisar="<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora[bitacora_end].id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
           var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
           var dist='0';
@@ -870,25 +875,25 @@ function configprelacion()
             ticket_status=solicitud.status;
 
           }
-          if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null || bitacora_end!=index)
+          if(d.grupo[0].url_prelacion!=null && d.grupo[0].distrito==null /*|| bitacora_end!=index*/)
           {
             Atender_btn="&nbsp;<span class='label label-sm label-warning'>Atendido</span>";
             btn_revisar='';
           } 
-          if(bitacora.responsables.permiso==0 || bitacora.permiso==0  && index==bitacora_end)
+          if(bitacora[bitacora_end].responsables.permiso==0 || bitacora[bitacora_end].permiso==0  /*&& index==bitacora_end*/)
           {
-             Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora.nombre+"</span>";
+             Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+bitacora[bitacora_end].nombre+"</span>";
             btn_revisar='';
           }
-          if(bitacora.id_estatus_atencion!="2")
+          if(bitacora[bitacora_end].id_estatus_atencion!="2")
           {
             btn_revisar='';
           }
-          if(bitacora.responsables.permiso==1 && index==bitacora_end && solicitud.status=='1')
+          if(bitacora[bitacora_end].responsables.permiso==1  && solicitud.status=='1')
           {
             valid=1;
           }
-          //console.log(valid);
+          //console.log(valid);&& index==bitacora_end
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
@@ -909,20 +914,23 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td style="display:none;">'+ bitacora.created_at  + '</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora.nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
-            if(bitacora.id_estatus_atencion==2 && bitacora.responsables.permiso==1){
-                g_prelacion=1;
-            }
-          }
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td style="display:none;">'+ bitacora[bitacora_end].created_at  + '</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+escrituraActaOficio+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ valorISAI  + '</td><td>'+ solicitud.descripcion  + '</td><td>'+ bitacora[bitacora_end].nombre  + '</td><td>'+btn_revisar+'</td>'+ botonAtender + '</tr>';
+           
+        @if($atencion=="true")
         })
-        
+        @endif 
+         solicitud.bitacora.forEach((bitacora,index)=>{
+         if(bitacora.id_estatus_atencion==2 && bitacora.responsables.permiso==1){
+                g_prelacion=1;
+            }          
+        })
         /*if(status_proceso==2 || status_proceso==3)
         {
                   }*/
       });
       //console.log(exist);
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'>Finalizar Ticket</a>";
-      var url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+      var url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo' target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult("+d.grupo[0].grupo_clave+","+JSON.stringify(d)+","+status_proceso+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
         var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d.tickets_id)+","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
@@ -961,7 +969,7 @@ function configprelacion()
           btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Solicitud----</option></select>';
         }
         if(g_prelacion==1 || {{$atencion}}){
-          url_prelacion="<a href='{{ url()->route('listado-download', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+          url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'  target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
         }        
         if(d.grupo[0].url_prelacion==null)
         {

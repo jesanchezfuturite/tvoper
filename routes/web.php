@@ -82,7 +82,6 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
 
     /********************  metodo tipo PagoTramite  ***************/
-
     Route::post('/pagotramite-find', 'MotorpagosController@findTipoServicio')->name('pagotramite-find');
     Route::post('/pagotramite-insert', 'MotorpagosController@insertPagoTramite')->name('pagotramite-insert');
     Route::post('/pagotramite-find-where', 'MotorpagosController@findPagoTramiteWhere')->name('pagotramite-find-where');
@@ -344,7 +343,13 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/solicitud-documentos', 'PortalSolicitudesController@viewpermisosdocumentos')->name('solicitud-documentos');
     Route::post('/solicitud-find-folio', 'PortalSolicitudesController@findTicketidFolio')->name('solicitud-find-folio');
     Route::post('/solicitud-update-permisos', 'PortalSolicitudesController@updatePermisoSolicitud')->name('solicitud-update-permisos');
+
     Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle/{idticket?}');
+
+    Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle');
+
+    Route::post('/solicitud-save-documento', 'PortalSolicitudesController@saveFile')->name('solicitud-save-documento');
+
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
     Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion')->name('get-estatus-atencion');
@@ -419,6 +424,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite')->name('get-firma-find');
     Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite')->name('update-firma');
 
+    Route::get('/view-file/{file}', 'PortalSolicitudesController@viewFile')->name('view-file');
 
     Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name('solicitudes-register');
     Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
@@ -434,7 +440,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/solicitudes-get-tramite/{clave}', 'PortalSolicitudesTicketController@getRegistroTramite')->name('solicitudes-get-tramite');
     Route::post('/solicitudes-update-tramite', 'PortalSolicitudesTicketController@updateSolTramites')->name('solicitudes-update-tramite');
     Route::get('/solicitudes-get-tramite-pdf/{id}', 'PortalSolicitudesTicketController@getDataTramite')->name('solicitudes-get-tramite-pdf');
-    Route::get('/download/{file}', 'PortalSolicitudesTicketController@downloadFile')->name('download');
+    Route::get('/download/{file?}', 'PortalSolicitudesTicketController@downloadFile')->name('download');
     Route::post('/solicitudes-guardar-carrito', 'PortalSolicitudesTicketController@enCarrito')->name('solicitudes-guardar-carrito');
     Route::get('/getInfoNormales/{folio}', 'PortalSolicitudesTicketController@getNormales')->name('getInfoNormales');
 
@@ -488,13 +494,11 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/obtener-distritos', 'CatalogosController@obtDistritos')->name('obtener-distritos');
     Route::get('/obtener-instituciones', 'CatalogosController@getInstituciones')->name('obtener-instituciones');
     Route::get('/obtener-region/{id_ticket}/{user_id}', 'CatalogosController@getRegion')->name('obtener-region');
-    
     Route::get('/porcentaje-recargos', 'PortaltramitesauxController@viewPorcentajes')->name('porcentaje-recargos');
     Route::get('/porcentaje-find-all', 'PortaltramitesauxController@findPorcentajes')->name('porcentaje-find-all');
     Route::post('/porcentaje-insert', 'PortaltramitesauxController@insertPorcentajes')->name('porcentaje-insert');
     Route::post('/porcentaje-update', 'PortaltramitesauxController@updatePorcentajes')->name('porcentaje-update');
     Route::post('/porcentaje-deleted', 'PortaltramitesauxController@deletePorcentajes')->name('porcentaje-deleted');
-
 
     Route::get('/campo-alias-update', 'PortalSolicitudesTicketController@updateAlias')->name('campo-alias-update');
 
@@ -521,7 +525,15 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
 
+    Route::get('/reporte-usuarios', 'ReportesController@listadoUsuariosPortal')->name('reporte-usuarios');
+    Route::post('/find-usuarios', 'ReportesController@findUsuarios')->name('find-usuarios');
+    Route::post('/descargar-excel', 'ReportesController@excelUsuarios')->name("export");
+    Route::post('/descargar-excel-notaria', 'ReportesController@excelNotaria')->name("export-notaria");
+    Route::get('/file/{file?}' , 'ReportesController@downloadFile')->name('file');
+    
+    Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
     Route::get('/plantilla', 'PortalSolicitudesController@plantilla');
 
-});
+    Route::get('/notify/{id}/{folio}', 'PortalSolicitudesController@notify');
 
+});
