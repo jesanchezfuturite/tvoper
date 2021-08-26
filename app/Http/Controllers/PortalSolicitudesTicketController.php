@@ -698,6 +698,8 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function saveTransaccionMotor(Request $request){
       $error=null;
+      $success=0;
+      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -758,6 +760,8 @@ class PortalSolicitudesTicketController extends Controller
                     "info"=>$value->info,
                     "status"=>$value->status
                   ]);
+                  $success=1;
+                  $user_id=$value->user_id; 
                   Log::info("distrito 1 if " .$bitacora->id);
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
@@ -769,6 +773,8 @@ class PortalSolicitudesTicketController extends Controller
                       "info"=>$value->info,
                       "status"=>$value->status
                     ]);
+                    $success=1;
+                    $user_id=$value->user_id; 
                     Log::info("distrito 1 else " .$bitacora->id);
                  }
               }else{
@@ -785,6 +791,14 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
+        if($success==1){
+          try {				
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
+            
+          } catch (\Exception $e) {
+            return ["status"=>403];
+          }
+        }
         Log::info('Transaccion guardada');
         return response()->json(
           [
@@ -799,15 +813,12 @@ class PortalSolicitudesTicketController extends Controller
             "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
           ]);
       }
-      // if($error){
-       
-      // }else{
-       
-      // }
 
     }
     public function updateStatusTramite(Request $request){
       $error=null;
+      $success=0;
+      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -865,16 +876,18 @@ class PortalSolicitudesTicketController extends Controller
                  $distrito = $campos[$key2];
                  $valor = $distrito->valor->clave;
                  if($valor==1){
-                  $solicitudTicket = $this->ticket->where('id',$value->id)
-                  ->update(['status'=>1]);
-                  $bitacora=TicketBitacora::create([
-                    "id_ticket" => $value->id,
-                    "grupo_clave" =>$value->grupo_clave,
-                    "id_estatus_atencion" => 2,
-                    "info"=>$value->info,
-                    "status"=>$value->status
-                  ]);
-                  Log::info("distrito 1 if" .$bitacora->id);
+                    $solicitudTicket = $this->ticket->where('id',$value->id)
+                    ->update(['status'=>1]);
+                    $bitacora=TicketBitacora::create([
+                      "id_ticket" => $value->id,
+                      "grupo_clave" =>$value->grupo_clave,
+                      "id_estatus_atencion" => 2,
+                      "info"=>$value->info,
+                      "status"=>$value->status
+                    ]);
+                    $success=1;     
+                    $user_id=$value->user_id;        
+                    Log::info("distrito 1 if" .$bitacora->id);
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
@@ -885,6 +898,8 @@ class PortalSolicitudesTicketController extends Controller
                       "info"=>$value->info,
                       "status"=>$value->status
                     ]);
+                    $success=1;
+                    $user_id=$value->user_id; 
                     Log::info("distrito 1 else" .$bitacora->id);
                  }
               }else{
@@ -898,6 +913,14 @@ class PortalSolicitudesTicketController extends Controller
             if($value->status<>5){
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
+          }
+        }
+        if($success==1){
+          try {				
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
+            
+          } catch (\Exception $e) {
+            return ["status"=>403];
           }
         }
         Log::info('Estatus actualizado');
@@ -915,17 +938,8 @@ class PortalSolicitudesTicketController extends Controller
             "Code" => "400",
             "Message" => "Error al actualizar estatus ".$e->getMessage()
           ]);
-          // $error = $e;
       }
-      // if ($error) {
-      
-      // }else {
-      //   return response()->json(
-      //     [
-      //       "Code" => "200",
-      //       "Message" => "Estatus actualizado",
-      //     ]);
-      // }
+
 
     }
     public function getStatus(Request $request){
