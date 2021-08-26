@@ -480,9 +480,9 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('id_solicitud')){
-      $filtro->where('solicitudes_ticket.id_transaccion','LIKE',"%$request->id_solicitud%")
-      ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%")
-      ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%");
+      $filtro->where('solicitudes_ticket.id_transaccion',$request->id_solicitud)
+      ->orWhere('tmt.id_transaccion_motor',$request->id_solicitud)
+      ->orWhere('solicitudes_ticket.grupo_clave',$request->id_solicitud);
       
     }
 
