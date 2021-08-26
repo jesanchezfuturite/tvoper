@@ -834,7 +834,10 @@ function configprelacion()
           solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1,responsables:{permiso:0}});
         }
         var bitacora_end=solicitud.bitacora.length-1;
-        status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
+        if(solicitud.bitacora[bitacora_end].id_estatus_atencion==2){
+          status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
+        }
+        
         var bitacora=solicitud.bitacora;
         @if($atencion=="true")
           solicitud.bitacora.forEach((bitacora,index)=>{ 
@@ -919,8 +922,8 @@ function configprelacion()
         @if($atencion=="true")
         })
         @endif 
-         solicitud.bitacora.forEach((bitacora,index)=>{
-         if(bitacora.id_estatus_atencion==2 && bitacora.responsables.permiso==1){
+         solicitud.bitacora.forEach((bitac,index)=>{
+         if(bitac.id_estatus_atencion==2 && bitac.responsables.permiso==1){
                 g_prelacion=1;
             }          
         })
@@ -941,6 +944,7 @@ function configprelacion()
           btn_rechazo="";
           btn_cerrarTicket="";
         }
+        console.log(status_proceso);
         if(status_proceso!=2)
         {
           btn_prelacion=''; 
