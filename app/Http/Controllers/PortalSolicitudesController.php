@@ -1854,7 +1854,7 @@ class PortalSolicitudesController extends Controller
         $mail = new PHPMailer(true);
 
         $user = UsersPortal::findOrFail($id);
-			  $correo= $user->email;
+			  $correo= "karla.cesgu@gmail.com";
 
         $nombre =$user->name." ".$user->fathers_surname." ".$user->mothers_surname;
          
