@@ -30,9 +30,9 @@ class RolesController extends Controller
       *
      */
 
-    public function asignaSolicitud(Request $request)
+    public function index(Request $request)
     {
-    	
+    	return view('portal/asignatramites');
     }
 
 
