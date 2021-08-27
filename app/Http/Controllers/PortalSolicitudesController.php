@@ -1845,7 +1845,7 @@ class PortalSolicitudesController extends Controller
             break;
           case "2":
             $encabezado="Recibo Pagado";
-            $mensaje ="Su pedido con folio <strong>$folio</strong>3 ha sido pagado.";
+            $mensaje ="Su pedido con folio <strong>$folio</strong> ha sido pagado.";
             break;
           default:
           $statusTicket = 1;
