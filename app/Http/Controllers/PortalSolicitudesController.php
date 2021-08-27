@@ -1855,7 +1855,7 @@ class PortalSolicitudesController extends Controller
             break;
           case "2":
             $encabezado="Recibo Pagado";
-            $mensaje ="Su pedido con folio <strong>$folio</strong>3 ha sido pagado.";
+            $mensaje ="Su pedido con folio <strong>$folio</strong> ha sido pagado.";
             break;
           default:
           $statusTicket = 1;
@@ -1864,7 +1864,7 @@ class PortalSolicitudesController extends Controller
         $mail = new PHPMailer(true);
 
         $user = UsersPortal::findOrFail($id);
-			  $correo= $user->email;
+			  $correo= "karla.cesgu@gmail.com";
 
         $nombre =$user->name." ".$user->fathers_surname." ".$user->mothers_surname;
          

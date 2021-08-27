@@ -333,12 +333,7 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         if($status==7){
-          $infobitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = $infobitacora->info;
-        
-          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>11]);
-        
-          $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
+          $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
             "grupo_clave" => $grupo,
             "catalogo_id" => $catalogo_id,
@@ -354,10 +349,9 @@ class PortalSolicitudesTicketController extends Controller
             "id_ticket" => $ticket->id,
             "grupo_clave" => $grupo,
             "id_estatus_atencion" => 2,
-            "info"=>$info_bitacora,
+            "info"=>$ticket->info,
             "status"=>$status
           ]);
-        
 
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
@@ -375,9 +369,7 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-          $infobitacora = $this->ticket->where('id',$request->ticket_anterior)->first();
-          $info_bitacora = $infobitacora->info;
-      
+   
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" => $grupo,
@@ -390,13 +382,12 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
-
           if($ticket->wasRecentlyCreated){
             $bitacora=TicketBitacora::create([
               "id_ticket" => $ticket->id,
               "grupo_clave" => $grupo,
               "id_estatus_atencion" => 1,
-              "info"=>$info_bitacora,
+              "info"=>$ticket->info,
               "status"=>$status
             ]);
           }
