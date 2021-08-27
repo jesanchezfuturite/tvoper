@@ -1608,7 +1608,7 @@ function configprelacion()
       var mot=$("#itemsMotivos option:selected").text();
       var file=$("#file").val();
       var id_=$("#idTicket").val();
-      var ticks_id=$.parseJSON($("#tickets_id").val());
+      var ticks_id=$.parseJSON($.parseJSON($("#tickets_id").val()));
       var grp_clave=$("#grp_clave").val();
       var check=$("#checkbox30").prop("checked");
       var checkRechazo=$("#checkbox1").prop("checked");
@@ -1628,10 +1628,11 @@ function configprelacion()
         {
           mensaje=', Nota: '+mensaje;
         } 
-        mensaje="Motivo de rechazo: "+mot +mensaje;
+        mensaje=mot +mensaje;
         formdata.append("rechazo_id",select);
         
       }
+    console.log(ticks_id);
       for(r in ticks_id)
         {
           formdata.append("tickets_id[]", ticks_id[r]);  
@@ -1666,7 +1667,7 @@ function configprelacion()
               document.getElementById("message").value="";
               document.getElementById("file").value="";
               limpiar();
-              findMessage(ticks_id);
+              findMessage(JSON.stringify(ticks_id));
                Command: toastr.success(response.Message, "Notifications")
                findSolicitudes();
                return;

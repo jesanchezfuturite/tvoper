@@ -801,12 +801,12 @@ class PortalSolicitudesController extends Controller
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
             $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
-          }else{            
+          }else if($rch==7 || $rch==8){            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
             $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
 
-            $newCatalogoid=$findSolTicket[0]->catalogo_id;
+            //$newCatalogoid=$findSolTicket[0]->catalogo_id;
 
             /*while(true)
             {                
@@ -826,7 +826,12 @@ class PortalSolicitudesController extends Controller
             }else{
               $status=$findSolTicket[0]->status;
             }
-            $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,$status);
+            $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
+          }else{
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            $status=$rch;
+            $this->saveTicketBitacora($i,$request->grupo_clave,2,auth()->user()->id,$mensaje,$status);
           }
           
           $mensajes =$this->mensajes->create([
@@ -1524,7 +1529,7 @@ class PortalSolicitudesController extends Controller
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
             $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
-          }else{            
+          }else if($rch==7 || $rch==8){            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
             $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
@@ -1549,7 +1554,12 @@ class PortalSolicitudesController extends Controller
             }else{
               $status=$findSolTicket[0]->status;
             }
-            $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,$status);
+            $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
+          }else{
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            $status=$rch;
+            $this->saveTicketBitacora($i,$request->grupo_clave,2,auth()->user()->id,$mensaje,$status);
           }
           //$ins=$this->ticket->whereIn("id",$request->id)->update(["status"=>$rch]);
            $mensajes =$this->mensajes->create([
