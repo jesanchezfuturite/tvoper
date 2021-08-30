@@ -36,7 +36,7 @@ use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 
-class PortalSolicitudesController extends Controller
+class PortalSolicitudesTicketController extends Controller
 {
   protected $users;
   protected $solicitudes;
