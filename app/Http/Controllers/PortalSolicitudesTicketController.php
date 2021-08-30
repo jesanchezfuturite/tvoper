@@ -842,9 +842,7 @@ class PortalSolicitudesTicketController extends Controller
                       "id_estatus_atencion" => 4,
                       "info"=>$value->info,
                       "status"=>$value->status
-                    ]);
-                    $success=1;
-                    $user_id=$value->user_id; 
+                    ]); 
                     Log::info("distrito 1 else ");
                  }
               }else{
@@ -969,8 +967,6 @@ class PortalSolicitudesTicketController extends Controller
                       "info"=>$value->info,
                       "status"=>$value->status
                     ]);
-                    $success=1;
-                    $user_id=$value->user_id; 
                     Log::info("distrito 1 else");
                  }
               }else{
@@ -988,7 +984,7 @@ class PortalSolicitudesTicketController extends Controller
         }
         if($success==1){
           try {				
-            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 1]);
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);
             
           } catch (\Exception $e) {
             return ["status"=>403];

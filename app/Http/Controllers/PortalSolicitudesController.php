@@ -1821,7 +1821,7 @@ class PortalSolicitudesController extends Controller
 	 * @return 99 si error 100 si todo correcto
 	 *
 	 */
-	public function notify($id, $folio, $status){
+	public function notify($id, $folio, $status, $motivo=""){
 
         switch ($status) {
           case "1":
@@ -1837,9 +1837,7 @@ class PortalSolicitudesController extends Controller
             $encabezado="Expediente rechazado en IRCNL";
 
             $mensaje="Tu trámite con Núm. De <strong>$folio</strong> fue rechazado por el motivo:
-            falta de documentación El registrador asignado realizó además el
-            siguiente comentario: 
-            ' faltan colindancias. '
+            $motivo
             Por favor, recoge tu expediente en el Módulo de Entrega de
             Documentos, completa la información que te solicitan y
             posteriormente preséntate en el Módulo de Recepción de
@@ -1847,7 +1845,15 @@ class PortalSolicitudesController extends Controller
             uso de esta plataforma puedes llamar a Informatel 070";
             break;
           case "8":
-            $encabezado="Expediente rechazado en IRCNL";
+            $encabezado="Notificación de falta de pago";
+            $mensaje="Es necesario que complementes el pago de tu trámite con número
+            de folio <strong>$folio</strong> para que pueda ser ingresado correctamente. Retoma
+            tu trámite en la bandeja de Recibidos y realiza el pago
+            correspondiente. Al terminar, preséntate en el Módulo de Recepción
+            de Documentos con tu expediente y tu comprobante de pago. Si
+            tienes dudas sobre el uso de esta plataforma puedes llamar a
+            Informatel 070.
+            ";
             break;
           case "5":
             $encabezado="Orden de Referencia";
@@ -1872,30 +1878,30 @@ class PortalSolicitudesController extends Controller
         //log::info($correo.'  '.$nombre.' '.$folio);
         try{
             
-            $mail->isSMTP();
-            $mail->CharSet = 'utf-8';
-            $mail->SMTPAuth =true;
-            $mail->SMTPSecure = 'tls';
-            $mail->Host = 'smtp.gmail.com';
-            $mail->Port = '587'; 
-            $mail->Username = 'karlacespedesgob@gmail.com';
-            $mail->Password = 'cespedes2020';
-            $mail->setFrom('karlacespedesgob@gmail.com', 'noreply tesoreria'); 
-            $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
-            $mail->MsgHTML($message);                    
-            $mail->addAddress($correo, $nombre); 
-            $mail->send();
+            // $mail->isSMTP();
+            // $mail->CharSet = 'utf-8';
+            // $mail->SMTPAuth =true;
+            // $mail->SMTPSecure = 'tls';
+            // $mail->Host = 'smtp.gmail.com';
+            // $mail->Port = '587'; 
+            // $mail->Username = 'karlacespedesgob@gmail.com';
+            // $mail->Password = 'cespedes2020';
+            // $mail->setFrom('karlacespedesgob@gmail.com', 'noreply tesoreria'); 
+            // $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
+            // $mail->MsgHTML($message);                    
+            // $mail->addAddress($correo, $nombre); 
+            // $mail->send();
 
             
             $table->create(
               [
                   "user"      => $correo,
                   "message"   => $message,
-                  "sent"      => 1 
+                  "sent"      => 0
               ]
           );
           return  1;
-        }catch(phpmailerException $e){
+        }catch(\Exception $e){
           \Log::info("Error email => ".$e->getMessage());
           return 99;
         }
