@@ -7,11 +7,11 @@ use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
 /**
- * Class PortalSolicitudesMensajes.
+ * Class PortalDocumentosBitacora.
  *
  * @package namespace App\Entities;
  */
-class PortalSolicitudesMensajes extends Model implements Transformable
+class PortalDocumentosBitacora extends Model implements Transformable
 {
     use TransformableTrait;
 
@@ -22,15 +22,9 @@ class PortalSolicitudesMensajes extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
+    protected $fillable = ['id','ticket_id','attach','descripcion','user_id'];
 
-    protected $fillable = ['id','ticket_id','mensaje','attach','mensaje_para','status','clave'];
+    protected $table = "documentos_bitacora";
 
-
-    protected $table = "solicitudes_mensajes";
-
-    public function ticket(){
-		return $this->hasMany('App\Entities\PortalSolicitudesTicket', 'ticket_id', 'id');
-	}
- 
 
 }

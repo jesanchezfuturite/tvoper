@@ -37,4 +37,17 @@ class PortalNotaryOffices extends Model implements Transformable
     ];
     protected $table = "notary_offices";
 
+	
+	public function titular () {
+		return $this->hasOne("App\Entities\UsersPortal", "id", "titular_id");
+	}
+
+	public function substitute () {
+		return $this->hasOne("App\Entities\UsersPortal", "id", "substitute_id");
+	}
+
+	public function users () {
+		return $this->belongsToMany("App\Entities\UsersPortal", "App\Entities\PortalConfigUserNotaryOffice", "notary_office_id");
+	}
+
 }

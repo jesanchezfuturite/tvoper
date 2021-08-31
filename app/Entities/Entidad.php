@@ -27,4 +27,8 @@ class Entidad extends Model implements Transformable
     protected $table = "oper_entidad";
 
     public $timestamps = false;
+
+    public function familia () {
+		return $this->belongsToMany("App\Entities\Familia", "App\Entities\Familiaentidad", "entidad_id");
+	}
 }
