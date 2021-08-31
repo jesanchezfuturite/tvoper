@@ -105,6 +105,15 @@ class PortalSolicitudesTicketController extends Controller
         $status=8;
       }
 
+    public function detalleTramite($clave){
+      try {
+        $tickets = PortalSolicitudesTicket::where('clave', $clave)->get()->toArray();
+        return response()->json(
+          [
+            "Code" => "200",
+            "resultado" => $tickets
+          ]
+        );
 
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
@@ -631,20 +640,17 @@ class PortalSolicitudesTicketController extends Controller
         }
 
 
-      } catch (\Exception $e) {
-          $error = $e;
-      }
-      if ($error) {
-        return response()->json(
+  }
+
+    public function guardarCarrito($id, $status){
+        try{
+        $solicitudTicket = $this->ticket->where('id',$id)
+        ->update(['en_carrito'=>$status]);
+
+        return json_encode(
           [
-            "Code" => "400",
-            "Message" => "Error al actualizar estatus"
-          ]);
-      }else {
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Estatus actualizado",
+            "response" 	=> "Solicitud en el carrito",
+            "code"		=> 200
           ]);
       }
 
@@ -697,7 +703,9 @@ class PortalSolicitudesTicketController extends Controller
           'clave' => $clave,
           'status'=>1
 
-        ]);
+        if($body["type"]=="firmado"){
+          foreach($body["ids"] as $key => $value){
+              $doc_firmado = $this->ticket->where('id',$value)->update(['doc_firmado'=>$body["urls"][$key]]);
 
         $name = $nombre."-".$ticket_id.$number->notary_number.date("U").".".$extension;
         // $attach = $this->url->to('/') . '/download/'.$name;
@@ -762,8 +770,209 @@ class PortalSolicitudesTicketController extends Controller
             "Message" => "Solicitud transacción generada",
             "id_transaccion"=>$id_transaccion,
           ]);
-      }
+          $count = $this->ticket->where(["firmado" => 1, "status" => 2])->whereIn('user_id', $users)->count();
+          $mensaje="Solicitudes firmadas";
+        }
 
+        if($body["type"]=="por_firmar"){
+          $solicitudTicket = $this->ticket->whereIn('clave',$clave)->update(['por_firmar'=>$body['status']]);
+          $count = $this->ticket->where(["por_firmar" => 1, "firmado" => null])->whereIn('status', [2,3])->whereIn('user_id', $users)->count();
+          $mensaje="Solicitudes por firmar";
+
+
+        }
+        return json_encode([
+          "response" 	=> $mensaje,
+          "code"		=> 200,
+          "count"=>$count,
+          "ids" => $ids
+
+        ]);
+      } catch (\Exception $e) {
+        return json_encode([
+          "response" 	=> "Error al guardar - " . $e->getMessage(),
+          "code"		=> 402
+        ]);
+      }
+    }
+    public function filtrarSolicitudes(Request $request){
+        $max = Input::get('max');
+        $request = $request->all();
+        $flag=0;
+        if(!isset($request["data"])){
+          $body[] = $request;
+          $flag=1;
+        }else{
+          $body = $request["data"];
+        }
+        $data=[];
+
+        foreach($body as $key => $value){
+            $select = DB::raw("
+            `solicitudes_ticket`.`id`,
+            `servicio`.`Tipo_Descripcion` as `nombre_servicio`,
+            `servicio`.`perfil`,
+            `solicitudes_catalogo`.`titulo`,
+            `solicitudes_catalogo`.`tramite_id`,
+            `solicitudes_catalogo`.`firma`,
+
+            IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
+
+            `solicitudes_ticket`.`status`,
+            `solicitudes_ticket`.`en_carrito`,
+            `solicitudes_ticket`.`id_transaccion`,
+            `solicitudes_ticket`.`created_at`,
+            `solicitudes_ticket`.`user_id`,
+            `solicitudes_ticket`.`info`,
+            `solicitudes_ticket`.`clave`,
+            `solicitudes_ticket`.`por_firmar`,
+            `solicitudes_ticket`.`doc_firmado`,
+            `solicitudes_ticket`.`firmado`,
+            `solicitudes_ticket`.`id_tramite`,
+            `solicitudes_ticket`.`recibo_referencia`,
+            `solicitudes_ticket`.`required_docs`,
+            `solicitudes_ticket`.`grupo_clave`
+            ");
+            $solicitudes = PortalSolicitudesTicket::with(["mensajes", "tramites"])
+            ->select($select)
+            ->leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
+            ->leftJoin('solicitudes_status', 'solicitudes_ticket.status', '=', 'solicitudes_status.id')
+            ->leftJoin('egobierno.tipo_servicios as servicio', 'solicitudes_catalogo.tramite_id', 'servicio.Tipo_Code');
+
+
+            if(isset($value["pendiente_firma"])){
+                $solicitudes->where('solicitudes_catalogo.firma', "1")
+                ->whereNull("solicitudes_ticket.firmado")
+                ->where("solicitudes_ticket.status", 2)
+                ->whereNotNull('solicitudes_ticket.id_transaccion');
+            }
+
+            if(isset($value["firmado"])){
+                $solicitudes->where('solicitudes_catalogo.firma', "1")
+                ->where("solicitudes_ticket.status", 2)
+                ->whereNotNull('solicitudes_ticket.id_transaccion')
+                ->whereNotNull('solicitudes_ticket.firmado');
+            }
+
+            if(isset($value["tipo_solicitud"])){
+                $solicitudes->where('solicitudes_catalogo.id', $value["tipo_solicitud"]);
+            }
+            if(isset($value["en_carrito"])){
+                $solicitudes->where('solicitudes_ticket.en_carrito', 1)
+                ->where('solicitudes_ticket.status', 99);
+            }
+
+            if(isset($value["id_solicitud"])){
+                $solicitudes->where('solicitudes_ticket.id',  $value["id_solicitud"]);
+            }
+            if(isset($value["notary_id"])){
+                $users = $this->configUserNotary->where('notary_office_id', $value["notary_id"])->get()->pluck(["user_id"])->toArray();
+                $solicitudes->whereIn('user_id', $users);
+            }
+
+            if(isset($value["id_usuario"])){
+                $relation = $this->configUserNotary->where('user_id', $value["id_usuario"])->first();
+                if($relation){
+                    $notary_id = $relation->notary_office_id;
+                    $users = $this->configUserNotary->where('notary_office_id', $notary_id)->get()->pluck(["user_id"])->toArray();
+                }else{
+                    $users = [$value["id_usuario"]];
+                }
+
+                $solicitudes->whereIn('user_id', $users);
+            }
+
+            if(isset($value["estatus"])){
+                if($value["estatus"]==3){
+                  $solicitudes->whereIn('solicitudes_ticket.status', [3, 7, 8]);
+                }else{
+                  $solicitudes->where('solicitudes_ticket.status', $value["estatus"]);
+
+                }
+            }
+            $solicitudes->orderBy('solicitudes_ticket.created_at', 'DESC');
+
+            if(isset($max)){
+                $solicitudes->latest()->take($max);
+            }
+            $solicitudes=$solicitudes->get();
+            $data[$key]=$solicitudes;
+
+        }
+
+        $campos = [];
+        $response = [];
+        foreach($data as $key => $solicitud){
+            foreach($solicitud as $key2 => $value){
+              $value->info = json_decode($value->info);
+              if(isset($value->info->campos)) $campos = array_merge($campos, array_keys((array)$value->info->campos));
+
+            }
+        }
+        $campos = array_unique($campos);
+        $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')->whereIn('id', $campos)->get()->toArray();
+        $catalogoCampos = DB::connection('mysql6')->table('campos_catalogue')->select('id','alias')->get()->toArray();
+        foreach($data as $key => $solicitud){
+            foreach($solicitud as $key2 => $value){
+                if(isset($value->info->campos)){
+                    $campos = [];
+                    foreach($value->info->campos as $key2 => $val){
+                        if(is_numeric($key2)) $key2 = $catalogo[array_search($key, array_column($catalogo, 'id'))]->descripcion;
+                        $campos[$key2] = $val;
+                    }
+                    $value->info->campos = $campos;
+                }
+                if(isset($value->info->camposConfigurados)){
+                    $alias = array();
+                    $doc=[];
+                    foreach($value->info->camposConfigurados as $k => $val){
+                      if($val->tipo=="file"){
+                        $attach=[];
+                        foreach ($value->mensajes as $m => $msje) {
+                            if($msje->attach!=null){
+                              $attach[$m] =$msje->attach;
+                            }
+
+                        }
+
+                        $val->documento=$attach;
+                      }
+                      $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
+                      $alias = array('alias'=>$al);
+                      $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                    }
+
+                }
+
+                if(isset($value->info->tipoTramite) && $value->info->tipoTramite=="complementaria" && isset($value->info->idTicketNormal)){
+                    $solTicketAnterior = $this->ticket->where("id", $value->info->idTicketNormal)->first();
+                    $expedientes = $this->asignarClavesCatalogo($solTicketAnterior->info);
+                    $campos = $expedientes->campos;
+                    $camposConfigurados = $expedientes->camposConfigurados;
+                    $value->info->campos=$campos;
+                    $value->info->camposConfigurados=$camposConfigurados;
+                   if(isset($value->info->camposConfigurados)){
+
+                      foreach($value->info->camposConfigurados as $k => $val){
+                        $al = $catalogoCampos[array_search($val->campo_id, array_column($catalogoCampos, 'id'))]->alias;
+                        $alias = array('alias'=>$al);
+                        $value->info->camposConfigurados[$k] = (object)array_merge((array)$val,(array)$alias);
+                      }
+                    }
+                }
+            }
+        }
+        $data = $flag==1 ? $data[0] : $data;
+
+
+        foreach ($data as $solicitud) {
+          foreach ($solicitud->tramites as $tramite){
+            if(isset($tramite->json_envio)) unset($tramite->json_envio);
+            if(isset($tramite->json_recibo)) unset($tramite->json_recibo);
+          }
+        }
+
+        return $data;
     }
     public function saveTransaccionMotor(Request $request){
       $error=null;
