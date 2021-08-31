@@ -439,9 +439,11 @@ class PortalSolicitudesTicketController extends Controller
         if($type=="firma"){
           $solicitudes = PortalSolicitudesTicket::whereIn('solicitudes_ticket.user_id', $users)
           ->select('solicitudes_ticket.*', 'tmt.id_transaccion_motor', 'op.fecha_limite_referencia',
-          'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia')
-          ->leftJoin('solicitudes_tramite as tmt', 'solicitudes_ticket.id_transaccion', '=', 'tmt.id')
+          'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia', 'servicio.perfil')
+          ->leftJoin('portal.solicitudes_catalogo as c', 'solicitudes_ticket.catalogo_id', '=', 'c.id')
+          ->leftJoin('portal.solicitudes_tramite as tmt', 'solicitudes_ticket.id_transaccion', '=', 'tmt.id')
           ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
+          ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', '=','servicio.Tipo_Code')
           ->where(function ($query) {
             $query->where('solicitudes_ticket.por_firmar', '=', 1)
             ->where('solicitudes_ticket.firmado', null)
@@ -534,6 +536,7 @@ class PortalSolicitudesTicketController extends Controller
                 $data["referencia"]=$dato["referencia"];
                 $data["fecha_limite_referencia"]=$dato["fecha_limite_referencia"];
                 $data["costo"]=$costo_tramite;
+                $data["perfil"]=$dato["perfil"];
               }
             
               array_push($datos, $data);
