@@ -1023,9 +1023,9 @@ class PortalSolicitudesTicketController extends Controller
     public function getRegistroTramite($id){
       try {
         $solicitud = PortalSolicitudesTicket::with(["archivos" => function( $query ){
-          $query->where('status', 1);
+          $query->where('status', 1)->orderBy("id","DESC");
 
-         }])->where('clave' , $id)->get();
+         }])->where('clave' , $id)->where("status","<>", 9)->get();
 
 
         return $solicitud;
