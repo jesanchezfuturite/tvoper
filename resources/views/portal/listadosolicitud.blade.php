@@ -815,7 +815,8 @@ function configprelacion()
     }
   function format ( d ,b_pr) {                 
       var valid=0;            
-      let html = ''; 
+     var rechazados=0;            
+ let html = ''; 
       let g_prelacion = 0; 
       var exist=0;     
       var ticket_status="";     
@@ -900,6 +901,10 @@ function configprelacion()
           {
             valid=1;
           }
+          if(solicitud.status=='7' || solicitud.status=='8' && dist=='1')
+          {
+            rechazados=1;
+          }
           //console.log(valid);&& index==bitacora_end
           let botonAtender = "<td class='text-center' width='5%'>"+Atender_btn+"</td>";
           var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
@@ -962,7 +967,7 @@ function configprelacion()
           btn_prelacion="";
           btn_cerrarTicket='';
         }
-        if( valid==0 ){
+        if( valid==0 || rechazados==1 ){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
