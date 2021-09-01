@@ -385,9 +385,6 @@ class PortalSolicitudesTicketController extends Controller
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->first();
           $update=$ticket_anterior->update(["status"=>10]);
 
-          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-   
-
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" =>$ticket_anterior->grupo_clave,
