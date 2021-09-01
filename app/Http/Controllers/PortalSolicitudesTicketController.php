@@ -21,7 +21,6 @@ use DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
-use App\Entities\TicketBitacora;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -279,15 +278,6 @@ class PortalSolicitudesTicketController extends Controller
               "required_docs"=>$request->required_docs
             ]);
 
-            if($ticket->wasRecentlyCreated){
-              $bitacora=TicketBitacora::create([
-                "id_ticket" => $ticket->id,
-                "grupo_clave" => $grupo,
-                "info"=> $ticket->info,
-                "id_estatus_atencion" => 1,
-                "status"=>$status
-              ]);
-            }
 
             if($request->has("file")){ 
               $file=$request->file[0];
@@ -346,13 +336,6 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
-          $bitacora=TicketBitacora::create([
-            "id_ticket" => $ticket->id,
-            "grupo_clave" => $grupo,
-            "id_estatus_atencion" => 2,
-            "info"=>$ticket->info,
-            "status"=>$status
-          ]);
 
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
@@ -383,16 +366,7 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
-          if($ticket->wasRecentlyCreated){
-            $bitacora=TicketBitacora::create([
-              "id_ticket" => $ticket->id,
-              "grupo_clave" => $grupo,
-              "id_estatus_atencion" => 1,
-              "info"=>$ticket->info,
-              "status"=>$status
-            ]);
-          }
-
+ 
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
