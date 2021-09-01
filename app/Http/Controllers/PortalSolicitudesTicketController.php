@@ -81,6 +81,7 @@ class PortalSolicitudesTicketController extends Controller
                 );
             }
 
+
         }catch(\Exception $e){
             Log::info('Error Portal - ver Tramites: '.$e->getMessage());
         }
@@ -383,7 +384,10 @@ class PortalSolicitudesTicketController extends Controller
         if($status==8){
           $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->first();
           $update=$ticket_anterior->update(["status"=>10]);
-      
+
+          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
+   
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
             "grupo_clave" =>$ticket_anterior->grupo_clave,
@@ -396,6 +400,7 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
+          
           if($ticket->wasRecentlyCreated){
             $bitacora=TicketBitacora::create([
               "id_ticket" => $ticket->id,
@@ -405,7 +410,6 @@ class PortalSolicitudesTicketController extends Controller
               "status"=>$status
             ]);
           }
-
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
@@ -751,7 +755,11 @@ class PortalSolicitudesTicketController extends Controller
               $solicitudTicket = $this->ticket->where('id' , $value->id)
               ->update(['id_transaccion'=>$id_transaccion]);
               array_push($array_tramites, $value->id);
-              $this->guardarCarrito($value->id, 1);
+              $es_aviso=$this->es_aviso($value->id);
+              if($es_aviso!=1){
+                $this->guardarCarrito($value->id, 1);
+              }
+              
           }
         }
         $solTramitesUpdate = $this->solTramites->where("id", $id_transaccion)->update([
@@ -1247,6 +1255,8 @@ class PortalSolicitudesTicketController extends Controller
 
       }catch(\Exception $e) {
 
+      } catch (\Exception $e) {
+        Log::info('Error al actualizar status' .$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
@@ -2021,6 +2031,27 @@ class PortalSolicitudesTicketController extends Controller
           ]
         );
       }
-  }
+    }
+    public function es_aviso($id){    
+        $aviso=env("TRAMITE_AVISO");
+
+        try {
+        $solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
+        ->where("solicitudes_ticket", $id)->first();
+        if($solicitudes->tramite_id==$aviso){
+            return 1;
+        }else{
+            return 0;
+        }
+        } catch (\Exception $e) {
+        Log::info('Error Portal - verificar aviso: '.$e->getMessage());
+        return response()->json(
+            [
+            "Code" => "400",
+            "Message" => "Error al verificar aviso ".$e->getMessage(),
+            ]
+        );
+        }
+    }
 
 }
