@@ -604,7 +604,7 @@ function configprelacion()
                   tickets_id.push(response[n].grupo[k].id);
                   
                   var legt=response[n].grupo[k].bitacora.length-1;
-                  if(legt>0){
+                  if(legt>=0){
                     catalogos_id.push(response[n].grupo[k].bitacora[legt].id_estatus_atencion);
                   }else{
                     catalogos_id.push(0);
