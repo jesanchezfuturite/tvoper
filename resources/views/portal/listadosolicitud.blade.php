@@ -1178,7 +1178,7 @@ function configprelacion()
                             pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[h].info.detalle.descuentos[descc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[h].id_transaccion_motor});
                             partida=partida + " "+response_grp[n].grupo[h].info.detalle.descuentos[desc].partida_descuento;
                           }else{
-                           pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
+                           //pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
                             partida=partida;
                           }
                         }
