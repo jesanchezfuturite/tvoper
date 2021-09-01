@@ -295,7 +295,7 @@ class PortalSolicitudesTicketController extends Controller
             if($ticket->wasRecentlyCreated){
               $bitacora=TicketBitacora::create([
                 "id_ticket" => $ticket->id,
-                "grupo_clave" => $ticket->grupo_clave,
+                "grupo_clave" => $saveClave->grupo_clave,
                 "info"=> $ticket->info,
                 "id_estatus_atencion" => 1,
                 "status"=>$status
