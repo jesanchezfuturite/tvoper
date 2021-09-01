@@ -2037,7 +2037,7 @@ class PortalSolicitudesTicketController extends Controller
 
         try {
         $solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-        ->where("solicitudes_ticket", $id)->first();
+        ->where("solicitudes_ticket.id", $id)->first();
         if($solicitudes->tramite_id==$aviso){
             return 1;
         }else{
