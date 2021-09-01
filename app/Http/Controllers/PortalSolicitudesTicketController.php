@@ -130,7 +130,6 @@ class PortalSolicitudesTicketController extends Controller
         if($status==80){   
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
-              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -138,6 +137,11 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+            $grupo_clave="G$ticket->id";
+            $saveClave = $this->ticket->where("id",$ticket->id)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
+
 
             if($request->has("file")){
               $file=$request->file[0];
@@ -212,6 +216,12 @@ class PortalSolicitudesTicketController extends Controller
                array_push($ids, $ticket->id);              
             }
             $first_id = reset($ids);
+            
+            $grupo_clave="G$first_id";
+            $saveClave = $this->ticket->where("clave",$clave)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
+
             if($request->has("file")){ 
               $file=$request->file[0];
               //si tiene id es porque el registo viene de borrador
@@ -269,7 +279,6 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->create([
               "clave" => $clave,
-              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -278,10 +287,15 @@ class PortalSolicitudesTicketController extends Controller
               "required_docs"=>$request->required_docs
             ]);
 
+            $grupo_clave="G$ticket->id";
+            $saveClave = $this->ticket->where("id",$ticket->id)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
+
             if($ticket->wasRecentlyCreated){
               $bitacora=TicketBitacora::create([
                 "id_ticket" => $ticket->id,
-                "grupo_clave" => $grupo,
+                "grupo_clave" => $ticket->grupo_clave,
                 "info"=> $ticket->info,
                 "id_estatus_atencion" => 1,
                 "status"=>$status
@@ -335,7 +349,6 @@ class PortalSolicitudesTicketController extends Controller
         if($status==7){
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
-            "grupo_clave" => $grupo,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
@@ -347,7 +360,7 @@ class PortalSolicitudesTicketController extends Controller
           ]);
           $bitacora=TicketBitacora::create([
             "id_ticket" => $ticket->id,
-            "grupo_clave" => $grupo,
+            "grupo_clave" => $ticket->grupo_clave,
             "id_estatus_atencion" => 2,
             "info"=>$ticket->info,
             "status"=>$status
@@ -368,11 +381,12 @@ class PortalSolicitudesTicketController extends Controller
         
         }
         if($status==8){
-          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-   
+          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->first();
+          $update=$ticket_anterior->update(["status"=>10]);
+      
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
-            "grupo_clave" => $grupo,
+            "grupo_clave" =>$ticket_anterior->grupo_clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
@@ -385,7 +399,7 @@ class PortalSolicitudesTicketController extends Controller
           if($ticket->wasRecentlyCreated){
             $bitacora=TicketBitacora::create([
               "id_ticket" => $ticket->id,
-              "grupo_clave" => $grupo,
+              "grupo_clave" => $ticket_anterior->grupo_clave,
               "id_estatus_atencion" => 1,
               "info"=>$ticket->info,
               "status"=>$status
