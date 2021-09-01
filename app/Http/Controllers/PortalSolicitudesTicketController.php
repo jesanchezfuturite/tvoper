@@ -292,11 +292,11 @@ class PortalSolicitudesTicketController extends Controller
             $saveClave = $this->ticket->where("id",$ticket->id)->update([
               "grupo_clave" => $grupo_clave,
             ]);
-
+            $grupoClave = $this->ticket->where("id",$ticket->id)->first();
             if($ticket->wasRecentlyCreated){
               $bitacora=TicketBitacora::create([
                 "id_ticket" => $ticket->id,
-                "grupo_clave" => $saveClave->grupo_clave,
+                "grupo_clave" => $grupoClave->grupo_clave,
                 "info"=> $ticket->info,
                 "id_estatus_atencion" => 1,
                 "status"=>$status
