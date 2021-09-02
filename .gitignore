@@ -18,3 +18,5 @@ package-lock.json
 php_errors.log
 _*
 test.dat
+.phplint-cache
+!.env.test
