@@ -759,7 +759,7 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
-         foreach($request->id as $i)
+         /*foreach($request->id as $i)
         {
           $mensajes =$this->mensajes->create([
           'ticket_id'=> $i,
@@ -767,7 +767,7 @@ class PortalSolicitudesController extends Controller
           'mensaje_para' => $mensaje_para,
           'attach'    =>  $attach
           ]);
-        }
+        }*/
        /* foreach($request->tickets_id as $i)
         {
           $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,1);
