@@ -34,8 +34,8 @@ class ApiController extends Controller
 
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
-    protected $catastro_url = 'http://10.150.130.90/WSCatastro/json/index.php';
-    protected $catastro_url_reg = 'http://prueba.ircnl.gob.mx/WSCatastro/json/sw_notarios.php';
+    protected $catastro_url = env("URL_CATASTRO");
+    protected $catastro_url_reg = env("URL_CATASTRO_REGISTRO");
 
 	protected $insumos_url 	= 'https://insumos.nl.gob.mx/api/url';
 	protected $insumos_auth = 'https://insumos.nl.gob.mx/api/auth';
