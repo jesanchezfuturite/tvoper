@@ -34,8 +34,8 @@ class ApiController extends Controller
 
     protected $defined_key = 'X8x7+QUsij2zTquc5ZsrDnBcZU7A4guF8uK8iPmj2w=';
 
-    protected $catastro_url = env("URL_CATASTRO");
-    protected $catastro_url_reg = env("URL_CATASTRO_REGISTRO");
+    protected $catastro_url = "";
+    protected $catastro_url_reg = "";
 
 	protected $insumos_url 	= 'https://insumos.nl.gob.mx/api/url';
 	protected $insumos_auth = 'https://insumos.nl.gob.mx/api/auth';
@@ -112,6 +112,9 @@ class ApiController extends Controller
     )
     {
 
+        $this->catastro_url_reg = env("URL_CATASTRO_REGISTRO");
+        $this->catastro_url = env("URL_CATASTRO");
+
         // inicializamos el api de insumos
         try
         {
@@ -143,7 +146,7 @@ class ApiController extends Controller
 			$this->usernotary 			= $usernotary;
 
             // obtengo la url para
-            $this->url = $url;
+            $this->url = $url;           
 
         }catch (\Exception $e){
         	dd($e->getMessage());
