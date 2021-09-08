@@ -288,9 +288,6 @@
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-        <!--  <div class="col-md-3 group-btn2">
-            <button type="button" data-dismiss="modal" class="btn green btn_cerrar_2" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
-          </div>-->
         </div>
       </div>   
     </div>
@@ -318,28 +315,6 @@
         </div>
     </div>
 </div>
-<div id="portlet-rechazar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Rechazar Solicitudes: <label id="lbl_idsolicitudes" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="rechazarSolicitudes()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
 <div id="portlet-cerrarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -357,50 +332,6 @@
                 <div id="AddbuttonDeleted">
          <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
             <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="portlet-revertTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Revertir Solicitudes: <label id="lbl_revert_tickets" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="revert()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="portlet-prelacion" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Generar Prelación del grupo: <label id="lbl_grupo_clave" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="">Confirmar</button>
         </div>
             </div>
         </div>
