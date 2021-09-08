@@ -23,6 +23,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use App\Entities\TicketBitacora;
 use App\Entities\TokenPortal;
+use App\Entities\TokenRelacionPortal;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -89,7 +90,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){   
+    public function registrarSolicitud(Request $request){  
       $name= \Request::route()->getName();
       $status="";
       $token=null;
@@ -144,10 +145,7 @@ class PortalSolicitudesTicketController extends Controller
               "grupo_clave" => $grupo_clave,
             ]);
 
-            if($request->user_id==null){
-              $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
-            }
-
+     
             if($request->has("file")){
               $file=$request->file[0];
               //si tiene id es porque se esta volviendo a editar
@@ -222,7 +220,16 @@ class PortalSolicitudesTicketController extends Controller
             }
             $first_id = reset($ids);
             if($request->user_id==null){
-              $token=TokenPortal::create(["ticket_id"=>$first_id]);
+              if($request->has("token_id")){
+                $token=TokenPortal::where("id", $request->token_id)->first();
+                $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->token]);
+                $token=$token->token_id;
+              }else{
+                $hash = md5(rand(0,1000)+strtotime(date('U'))+$first_id).time();
+                $token=TokenPortal::create(["token"=>$hash]);
+                $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->id]);
+                $token=$token->token_id;
+              }             
             }
             
             $grupo_clave="G$first_id";
@@ -296,7 +303,16 @@ class PortalSolicitudesTicketController extends Controller
             ]);
 
             if($request->user_id==null){
-              $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
+              if($request->has("token_id")){
+                $token=TokenPortal::where("id", $request->token_id)->first();
+                $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->token]);
+                $token=$token->token_id;
+              }else{
+                $hash = md5(rand(0,1000)+strtotime(date('U'))+$first_id).time();
+                $token=TokenPortal::create(["token"=>$hash]);
+                $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->id]);
+                $token=$token->token_id;
+              }             
             }
 
             $grupo_clave="G$ticket->id";
@@ -410,7 +426,16 @@ class PortalSolicitudesTicketController extends Controller
           ]);
 
           if($request->user_id==null){
-            $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
+            if($request->has("token_id")){
+              $token=TokenPortal::where("id", $request->token_id)->first();
+              $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->token]);
+              $token=$token->token_id;
+            }else{
+              $hash = md5(rand(0,1000)+strtotime(date('U'))+$first_id).time();
+              $token=TokenPortal::create(["token"=>$hash]);
+              $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$token->id]);
+              $token=$token->token_id;
+            }             
           }
           
           if($ticket->wasRecentlyCreated){
@@ -440,7 +465,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
-            "token"=>$token
+            "token_id"=>$token
           ]
         );
 
@@ -767,10 +792,6 @@ class PortalSolicitudesTicketController extends Controller
           foreach ($ids_tramites as $key => $value) {
               $solicitudTicket = $this->ticket->where('id' , $value->id)->first();
               $update=$solicitudTicket->update(['id_transaccion'=>$id_transaccion]);
-              if($solicitudTicket->user_id==null){
-                $token=TokenPortal::where("ticket_id", $solicitudTicket->id)->first();
-                $token->udpate(["id_transaccion"=>$solicitudTicket->id_transaccion]);
-              }
               array_push($array_tramites, $value->id);
               $es_aviso=$this->es_aviso($value->id);
               if($es_aviso!=1){
@@ -849,7 +870,11 @@ class PortalSolicitudesTicketController extends Controller
         ->whereNotIn('status',  [99, 80, 9])
         ->get(["id", "status", "info", "grupo_clave", "status"]);
 
-   
+          if($request->has("token_id")){
+            $token=TokenRelacionPortal::where("id", $request->token_id)->first();
+            $update=$token->update(["id_transaccion"=> $request->id_transaccion]);
+          }
+        
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
@@ -971,6 +996,11 @@ class PortalSolicitudesTicketController extends Controller
 
         $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
         ->get(["id", "status", "info", "grupo_clave", "status"]);
+
+        if($request->has("token_id")){
+          $token=TokenRelacionPortal::where("id", $request->token_id)->first();
+          $update=$token->update(["id_transaccion"=> $request->id_transaccion]);
+        }
 
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);        

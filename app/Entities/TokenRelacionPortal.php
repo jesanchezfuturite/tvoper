@@ -24,11 +24,12 @@ class TokenPortal extends Model implements Transformable
 
     protected $fillable = [
         'id',
-        'token'
+        'ticket_id',
+        'token_id',
+        'id_transaccion'
     ];
 
     
 
-    protected $table = "token_portal";
-
+    protected $table = "token_relacion_portal";
 }
