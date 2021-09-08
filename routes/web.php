@@ -341,6 +341,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud')->name('solicitud-editar');
     Route::post('/solicitud-delete', 'PortalSolicitudesController@delete')->name('solicitud-delete');
     Route::get('/solicitud-documentos', 'PortalSolicitudesController@viewpermisosdocumentos')->name('solicitud-documentos');
+    Route::get('/atencion-solicitudes', 'PortalSolicitudesController@viewAtencionSolicitudes')->name('atencion-solicitudes');
     Route::post('/solicitud-find-folio', 'PortalSolicitudesController@findTicketidFolio')->name('solicitud-find-folio');
     Route::post('/solicitud-update-permisos', 'PortalSolicitudesController@updatePermisoSolicitud')->name('solicitud-update-permisos');
 

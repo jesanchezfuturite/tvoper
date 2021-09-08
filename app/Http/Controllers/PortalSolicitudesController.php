@@ -1813,6 +1813,53 @@ class PortalSolicitudesController extends Controller
       }
     }
 
+ public function viewAtencionSolicitudes()
+    {
+      try{
+        $tipoSolicitud=$this->findSol();
+
+        $user_id = auth()->user()->id;
+      
+        $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+        ->where("id_estatus_atencion", 5)
+        ->first();
+
+        $usuarios_atencion = Portalsolicitudesresponsables::from("portal.solicitudes_responsables as res")
+        ->select("u.name", "u.email", "u.id as id_usuario")
+        ->leftjoin("operacion.users as u", "u.id", "=", "res.user_id")
+        ->whereNotNull("res.id_estatus_atencion")
+        ->groupBy("res.user_id")
+        ->get()->toArray();
+
+
+        $atencion= $responsable!=null ? "true" : "false";
+            
+        $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+        if($status==null){
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => "Este usuario no tiene asignado estatus." 
+            ]
+          );
+        }
+
+        $status = json_decode($status->estatus);
+
+        $status = $this->status->whereIn("id", $status)->get()->toArray();
+        
+        return view('portal/atencionsolicitud', [
+          "tipo_solicitud" => $tipoSolicitud , 
+          "status" => $status, 
+          "user_id"=>$user_id, 
+          "atencion"=>$atencion,
+          "usuarios_atencion"=>$usuarios_atencion
+        ]);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@viewAtencionSolicitudes");
+      }
+    }
 
   /**
 	 *	
