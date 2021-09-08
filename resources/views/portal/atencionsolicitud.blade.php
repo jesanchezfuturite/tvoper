@@ -3,7 +3,7 @@
 @section('content')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css')}}"/>
 <link href="{{ asset('assets/global/dataTable/dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
-<h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
+<h3 class="page-title">Portal <small>Atencion Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
@@ -16,7 +16,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Listado Solicitudes</a>
+            <a href="#">Atencion Solicitudes</a>
         </li>
     </ul>
 </div>
@@ -288,9 +288,6 @@
               <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
             </div>
           </div>
-        <!--  <div class="col-md-3 group-btn2">
-            <button type="button" data-dismiss="modal" class="btn green btn_cerrar_2" id="btn_cerrar_2" onclick="cerrarTicket()" >Cerrar Ticket</button>
-          </div>-->
         </div>
       </div>   
     </div>
@@ -318,28 +315,6 @@
         </div>
     </div>
 </div>
-<div id="portlet-rechazar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Rechazar Solicitudes: <label id="lbl_idsolicitudes" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="rechazarSolicitudes()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
 <div id="portlet-cerrarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -357,50 +332,6 @@
                 <div id="AddbuttonDeleted">
          <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
             <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="portlet-revertTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Revertir Solicitudes: <label id="lbl_revert_tickets" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="revert()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="portlet-prelacion" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Generar Prelación del grupo: <label id="lbl_grupo_clave" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="prelacion_confirm_all()">Confirmar</button>
         </div>
             </div>
         </div>
@@ -499,13 +430,7 @@ function configprelacion()
     objectResponse=[];    
     var reg=registroPublico();
     var resp=$.parseJSON(reg);
-    //console.log(registroPublico());
-    //console.log(resp);
     document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
-    //document.getElementById("message").value="Prelacion, Folio: \n Fecha: ";
-    data=dataPrelacion(reg,null);
-    //console.log(objectResponse);
-    //var data=dataPrelacion({namd:"asd"});
     saveMessage(1,data);
     $(".btnPrelacion").css("display", "none");    
   }
@@ -537,7 +462,6 @@ function configprelacion()
   }
   function findMotivosSelect(catalogo_id)
   {
-    //var id_catalogo_=$("#opTipoSolicitud").val();
       $.ajax({
           method: "get",            
           url: "{{ url()->route('get-solicitudes-motivos', '') }}",
@@ -590,9 +514,7 @@ function configprelacion()
          data: formdata })
       .done(function (response) {
         var objectResponse=[];
-        var padre_id=0;
-       
-        
+        var padre_id=0;        
         if(typeof response=== 'object'){
           for (n in response) { 
             var tickets_id=[]; 
@@ -614,7 +536,6 @@ function configprelacion()
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
-                  Object.assign(response[n],{"detalleDs":"Ver detalles del tramite (<label style=\"color: #cb5a5e;\">"+response[n].grupo_clave+"</label>)"});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total) + " MXN"});
                    for(h in response[n].grupo)
@@ -647,8 +568,7 @@ function configprelacion()
             }
            response=objectResponse;
 
-          }
-          //console.log(response);     
+          }   
         createTable(response);  
       })
       .fail(function( msg ) {
@@ -691,8 +611,6 @@ function configprelacion()
       var id_proceso=$("#id_proceso").val();
       var ticks_id=$.parseJSON($("#tickets_id").val());
       var ids=$.parseJSON($("#ids").val());
-
-      //console.log(tickets_id);
       $.ajax({
       method: "post",            
       url: "{{ url()->route('update-rechazo') }}",
@@ -726,7 +644,6 @@ function configprelacion()
     });
   }
   async function createTable( dataS){
-      //console.log(dataS);
       var table = $('#example').DataTable();
                 table.destroy();    
 
@@ -742,7 +659,7 @@ function configprelacion()
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "data":"detalleDs"},
+                  { "defaultContent":"Ver Detalles del Tramite"},
                   { "data":"costo_final"},
                   { "data":"grupo.length"},
                   { "data": function ( grupo ) {
@@ -756,7 +673,7 @@ function configprelacion()
         });
       $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
       await sleep(1000);
-      if(dataS.length<=10){
+      if(dataS.length<6){
         dataS.forEach((grupo) =>{
           $("#iconShow-"+grupo.grupo_clave).trigger("click");
         });
@@ -790,8 +707,6 @@ function configprelacion()
           addSelectStatus(row.data().grupo[0].grupo_clave);
           
         }
-       //sortTable(row.data().grupo[0].grupo_clave);
-
     }
   function getTemplateAcciones( data, type, row, meta){
     var  color_btn='red';
@@ -803,27 +718,18 @@ function configprelacion()
         label_btn="Asignar";
         val=1;
       }
-      let botonAtender ="";// "<a class='btn default btn-sm "+color_btn+"-stripe' href='' data-toggle='modal' data-original-title='' title='"+label_btn+"' onclick='AsignarGrupo(\""+row.grupo[0].id+"\",\""+row.grupo_clave+"\",\""+val+"\")'> <strong>"+label_btn+"</strong> </a>";
-     
+      let botonAtender ="";
       if(row.grupo[0].distrito!="1")
       {
         botonAtender='';
       }
-    /*else{
-        return "<td class='text-center' width='10%'></td>"
-      }*/
        return botonAtender;
     }
   function format ( d ,b_pr) {                 
       var valid=0;            
       var rechazados=0;            
       let html = ''; 
-      var td_fecha = ''; 
-      var th_fecha = ''; 
-      var th_f_fecha = ''; 
-      let g_prelacion = 0; 
-      var exist=0;     
-      var o_detall=0;
+      var exist=0;
       var ticket_status="";     
       var status_proceso=0;     
       d.grupo.forEach( (solicitud) =>{     
@@ -834,88 +740,15 @@ function configprelacion()
           Mp=municipio;
         }else{          
            Mp=conctenaM(municipio);
-        }  
-        if(solicitud.bitacora.length==0)
-        {
-          solicitud.bitacora.push({nombre:"N/A",id:1,id_estatus_atencion:1,responsables:{permiso:0},created_at:"N/A"});
-        }
-        var bitacora_end=solicitud.bitacora.length-1;
-        if(solicitud.bitacora[bitacora_end].id_estatus_atencion==3){
-          status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
-        }
-        if(solicitud.bitacora[bitacora_end].id_estatus_atencion==2){
-          status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
-        }
-
-        
-        var bitacora=solicitud.bitacora;
-        @if($atencion=="true")
-          solicitud.bitacora.forEach((bitacora,index)=>{ 
-           
-          bitacora_end=index;
-          bitacora=solicitud.bitacora;
-        @endif 
-        if(bitacora[bitacora_end].info!=null)
-            {
-            var infoM=$.parseJSON(bitacora[bitacora_end].info);
-            var municipioM=searchIndex('municipio',infoM.campos);
-            if(typeof (municipioM) !== 'object'){
-              Mp=municipioM;
-            }else{          
-               Mp=conctenaM(municipioM);
-            }  
-          }
-          if({{$atencion}})
-          {
-            td_fecha=bitacora[bitacora_end].created_at=="null" || bitacora[bitacora_end].created_at==null ? "":bitacora[bitacora_end].created_at;
-            th_fecha="<th>Fecha</th>";
-            td_fecha="<td>"+td_fecha+"</td>";
-            th_f_fecha="<th></th>";
-          }
+        }     
           var clase='';
-         
-          //"<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora[bitacora_end].id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
           var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
           var dist='0';
-          if(typeof(distrito)==='object'){
-            dist=distrito.clave;            
-          }
-          if(dist!='1')
-          {
-              Mp=Mp+"&nbsp;<span class='label label-sm label-success'>Distrito foráneo</span>";
-             o_detall=1;
-          }
-          if(solicitud.status!=1 && dist=='1')
-          {
-              Atender_btn="&nbsp;<span class='label label-sm label-warning'>"+solicitud.descripcion+"</span>";
-            o_detall=1;
-          }  
-          if(solicitud.status=='2' || solicitud.status=='3' && dist=='1'){
-            exist+=1;
-            ticket_status=solicitud.status;
 
-          }
-          
-          if(bitacora[bitacora_end].responsables.permiso==0 || bitacora[bitacora_end].permiso==0  /*&& index==bitacora_end*/)
-          {
-            o_detall=1;
-             Atender_btn="";
-            btn_revisar='';
-          }
-          if(bitacora[bitacora_end].id_estatus_atencion!="2")
-          {  btn_revisar=''; }
-          if(bitacora[bitacora_end].responsables.permiso==1  && solicitud.status=='1')
-          { valid=1; }
-          if(solicitud.status=='7' || solicitud.status=='8' && dist=='1')
-          { rechazados=1;}
           //console.log(valid);&& index==bitacora_end
           let botonAtender = "<td class='text-center'>"+Atender_btn+"</td>";
-          if(o_detall==1)
-          {
-            botonAtender="";
-          }
-          var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
           var solicitantes=solicitud.info.solicitantes;
           var so="";
@@ -927,7 +760,6 @@ function configprelacion()
           so=so +'.';
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
-          var valorISAI=searchIndex('valorISAI',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
           if(solicitud.status==7 || solicitud.status==8){
             clase='warning';
@@ -935,75 +767,17 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td>'+ td_fecha  + '<td>'+ solicitud.descripcion  + '</td><td class="text-center"> <span class="label label-sm label-warning">'+ bitacora[bitacora_end].nombre  + '<span></td>'+ botonAtender + '</tr>';
-         //<td>'+btn_revisar+'</td>  
-        @if($atencion=="true")
-        })
-        @endif 
-         solicitud.bitacora.forEach((bitac,index)=>{
-         if(bitac.id_estatus_atencion==2 && bitac.responsables.permiso==1){
-                g_prelacion=1;
-            }          
-        })
-        /*if(status_proceso==2 || status_proceso==3)
-        {
-                  }*/
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"> w</td>'+ botonAtender + '</tr>';
+
+
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
-      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'>Finalizar Ticket</a>";
-      var url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo' target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
-      var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
-        var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
-        var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d.tickets_id)+","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
-        
-        if(d.grupo[0].url_prelacion!=null && g_prelacion==1)
-        { btn_prelacion="";
-          select_rechazos="";
-          btn_rechazo="";
-          btn_cerrarTicket="";
-        }
-        //console.log(status_proceso);
-        if(status_proceso!=2)
-        {
-          btn_prelacion=''; 
-          url_prelacion='';
-        }else{
-           btn_cerrarTicket='';
-        }
-        if(d.grupo[0].distrito==null){
-          select_rechazos="";
-          btn_rechazo="";
-          btn_prelacion="";
-          btn_cerrarTicket='';
-        }
-        if( valid==0 || rechazados==1 ){
-          select_rechazos="";
-          btn_rechazo="";
-          btn_prelacion="";
-         url_prelacion='';
-         btn_cerrarTicket='';
-        }
-        if({{$atencion}})
-        {
-          btn_cerrarTicket='';
-          select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Proceso---</option></select>';
-          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Solicitud</a>";
-          btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Solicitud----</option></select>';
-        }
-        if(g_prelacion==1 || {{$atencion}}){
-          url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'  target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
-        }        
-        if(d.grupo[0].url_prelacion==null)
-        {
-          url_prelacion='';
-        }
-        if(o_detall==1){
-          f_o_detalle='';
-        }
-        html += "<tr>"+f_o_detalle+""+th_f_fecha+"<th colspan='3'>"+url_prelacion+"</th><th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Finalizar Ticket</a>";
+
+        html += "<tr><th></th><th colspan='3'></th><th colspan='2'></th> <th></th><th colspan='3'>"+btn_cerrarTicket+"</th><th></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th>"+th_fecha+"<th>Estatus</th><th class='text-center' >Proceso</th>"+f_o_detalle+"</tr>"+html;
+        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Proceso</th></tr>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
@@ -1110,141 +884,7 @@ function configprelacion()
       document.getElementById("lbl_grupo_clave").textContent=grupo_clave;
       $('#portlet-prelacion').modal('show');
     }
-    function prelacion_confirm_all()
-    {
-      var m_grupo_clave=$("#m_grupo_clave").val();
-      var id_proceso=$("#id_proceso").val();
-      $(".btn_prelacion_"+m_grupo_clave).css("display", "none");
-      var formdata=new FormData();
-      formdata.append("id_estatus_atencion", id_proceso);
-      var id_="";
-      var grupo_clave="";
-      count=0;
-      
-      var response_grp=$.parseJSON($("#obj_grupo").val());
-      var response_grp=$.parseJSON(JSON.stringify(response_grp));
-       var objectResponse=[];
-       //
-       $.ajax({
-      method: "get",            
-      url: "{{ url()->route('wsrp', 'qa') }}",
-      data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {
-      resp=JSON.stringify(response); 
-       if(typeof response_grp=== 'object'){
-          for (n in response_grp) {
-            var partida="";              
-            for(g in response_grp[n].grupo)
-            {
-             var pagos=[]; 
-              
-              total=0;
-              total=total+parseFloat(response_grp[n].grupo[g].info.costo_final);
-              if(typeof response_grp[n].grupo[g].total!=="undefined")
-              {
-                total=total+parseFloat(response_grp[n].grupo[g].total);
-                pagos=response_grp[n].grupo[g].pagos;
-              }
-              if(typeof(response_grp[n].grupo[g].info.detalle.descuentos)!=="undefined")
-              {
-                if(response_grp[n].grupo[g].info.detalle.descuentos.length>0){
-                  for( desc in response_grp[n].grupo[g].info.detalle.descuentos )
-                  {
-                    if(typeof(response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento)!=="undefined")
-                    {
-                      pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                      pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[g].info.detalle.descuentos[desc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[g].id_transaccion_motor});
-                      partida=partida + " "+response_grp[n].grupo[g].info.detalle.descuentos[desc].partida_descuento;
-                    }else{
-                     pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                      partida=partida;
-                    }
-                  }
-                }else{
-                  pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                      partida=partida;
-                }
-              }else{
-                 pagos.push({pagos:parseFloat(response_grp[n].grupo[g].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                  partida=partida;
-              }
-              
-              Object.assign(response_grp[n].grupo[g],{"pagos":pagos});
-              Object.assign(response_grp[n].grupo[g],{"partida":partida});
-              id_=response_grp[n].grupo[g].id; 
-                  
-              grupo_clave=response_grp[n].grupo[g].grupo_clave;
-              for(h in response_grp[n].grupo)
-              {
-                if(response_grp[n].grupo[g].id==response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[h].info.complementoDe != null && response_grp[n].grupo[h].id!=response_grp[n].grupo[h].info.complementoDe && response_grp[n].grupo[g].status!="11"){ 
-                    total=total+parseFloat(response_grp[n].grupo[h].info.costo_final);
-                    Object.assign(response_grp[n].grupo[h],{"total":total});
-                    // pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[g].id_transaccion_motor});
-                     
-                     if(typeof(response_grp[n].grupo[h].info.detalle.descuentos)!=="undefined")
-                      {
-                        for( descc in response_grp[n].grupo[h].info.detalle.descuentos )
-                        {
-                          if(typeof(response_grp[n].grupo[h].info.detalle.descuentos[descc].partida_descuento)!=="undefined")
-                          {
-                            pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.detalle.descuentos[descc].importe_total),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
-                            pagos.push({pagos:parseFloat("-"+response_grp[n].grupo[h].info.detalle.descuentos[descc].importe_subsidio),"descripcion":"Subsidio-"+response_grp[n].grupo[h].id_transaccion_motor});
-                            partida=partida + " "+response_grp[n].grupo[h].info.detalle.descuentos[desc].partida_descuento;
-                          }else{
-                           //pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
-                            partida=partida;
-                          }
-                        }
-                      }else{
-                         pagos.push({pagos:parseFloat(response_grp[n].grupo[h].info.costo_final),"descripcion":"Derecho-"+response_grp[n].grupo[h].id_transaccion_motor});
-                          partida=partida;
-                      }
-                  Object.assign(response_grp[n].grupo[h],{"pagos":pagos});
-                  Object.assign(response_grp[n].grupo[h],{"partida":partida});
-                }
-              }
-
-              Object.assign(response_grp[n].grupo[g].info,{"tramite":response_grp[n].grupo[g].tramite});
-            }
-          }
-        }
-          if(typeof response_grp=== 'object'){
-          for (n in response_grp) {              
-            for(g in response_grp[n].grupo)
-            {   count+=1;
-              var distrito=searchIndex('distrito',response_grp[n].grupo[g].info.campos); 
-              if(typeof(distrito)==='object'){
-                if(response_grp[n].grupo[g].status=='1' && distrito.clave=='1' && response_grp[n].grupo[g].padre_id==null)
-                {
-                   
-                formdata.append("tickets_id[]", response_grp[n].grupo[g].id);
-                  formdata.append("id[]", id_);
-                 
-                  document.getElementById("folioPago").value=response_grp[n].grupo[g].id_transaccion_motor;
-                  datapr=dataPrelacion(resp,JSON.stringify(response_grp[n].grupo[g]));
-                  formdata.append("data[]",JSON.stringify(datapr)); 
-                  
-                }   
-              } 
-
-            }
-          }
-          
-           if(count==0)
-          {
-            Command: toastr.warning("Sin Registros", "Notifications")
-           return;
-          } 
-          //console.log(response_grp);        
-          savePrelacion(1,formdata,grupo_clave,resp);
-        }
-       
-      })       
-      .fail(function( msg ) {
-         Command: toastr.warning("Error al generar la prelacion", "Notifications")   });
-        
-        
-    }
+   
     function savePrelacion(prelacion_,formdata,grupo_clave,resp)
     {
       var mensaje=$("#message").val();
@@ -1700,104 +1340,7 @@ function configprelacion()
         });
     }
 
-  function dataPrelacion(dataP,jsn)
-  {
-    var tramiteMember=$("#itemsTramites option:selected").text();
-    var data={}; 
-    if(jsn===null)
-    {
-      jsn=$("#jsonCode").val();
-    }  
-    var Resp=$.parseJSON(jsn);
-    //console.log(jsn);
-    dataP=$.parseJSON(dataP);
-    //console.log(dataP);
-    var subsidio_=searchIndex('subsidio',Resp.info.campos);
-    var hoja_=searchIndex('hojas',Resp.info.campos);
-    var municipio_=searchIndex('municipio',Resp.info.campos);
-    var nombre_=searchIndex('nombre',Resp.info.campos);
-    var apellidoMat_=searchIndex('apellidoMat',Resp.info.campos);
-    var apellidoPat_=searchIndex('apellidoPat',Resp.info.campos);
-    var sdivisas=searchIndex('divisas',Resp.info.campos);
-    var escrituraActaOficio_=searchIndex('escrituraActaOficio',Resp.info.campos);
-    var nombreSolicitante=nombre_+" "+apellidoPat_+" "+apellidoMat_;
-    var divisas=searchDivisa(sdivisas);
-    if(typeof (municipio_) !== 'object')
-    {
-        municipio_=[{nombre:municipio_}];
-    }else{
-       Mp=municipio_;
-    }
-    if(typeof(municipio_.nombre)!=='undefined')
-    {
-      municipio_=[municipio_];
-    }
-    if(typeof (escrituraActaOficio_) === 'object'){
-      escrituraActaOficio_=conctenaM(escrituraActaOficio_);
-    }else{          
-       escrituraActaOficio_=escrituraActaOficio_;
-    }
-    Mp=conctenaM(municipio_);
-    Object.assign(data,{solicitanteNombre:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});    
-    Object.assign(data,{municipioConc:Mp});    
-    Object.assign(data,{municipio:municipio_});    
-    Object.assign(data,{escrituraActaOficio:escrituraActaOficio_});    
-    Object.assign(data,{lote:searchIndex('lote',Resp.info.campos)});    
-    Object.assign(data,{hoja:hoja_});    
-    Object.assign(data,{pagos:Resp.pagos});    
-    Object.assign(data,{partida:Resp.partida});    
-    Object.assign(data,{divisa:divisas});    
-    Object.assign(data,{fse:Resp.id_transaccion});    
-    if(typeof (subsidio_) !== 'object')
-    {
-      Object.assign(data,{subsidio:null});
-    }else{
-      Object.assign(data,{subsidio:subsidio_.nombre});
-    }
-    if(typeof(dataP.folio)==='undefined')
-    {
-      Object.assign(data,{folio:null});
-      Object.assign(data,{fecha:null});
-      Object.assign(data,{hora:null});
-    }else{
-      Object.assign(data,{folio:dataP.folio});
-      Object.assign(data,{fecha:dataP.fecha});
-      Object.assign(data,{hora:dataP.hora});
-    }
-    Object.assign(data,{folioPago:Resp.id_transaccion_motor});
-    Object.assign(data,{grupo_clave:Resp.grupo_clave});
-    Object.assign(data,{Municipio:"Monterrey, NL."});
-    
-    Object.assign(data,{razonSocial:searchIndex('razonSocial',Resp.info.campos)});
-    Object.assign(data,{folioTramite:Resp.id});
-    Object.assign(data,{hojas:searchIndex('hojas',Resp.info.campos)});
-    Object.assign(data,{tramite_id:Resp.info.tramite_id}); 
-    Object.assign(data,{tramite:Resp.info.tramite}); 
-    Object.assign(data,{valorOperacion:searchIndex('valorOperacion',Resp.info.campos)});
-   
-    if(typeof(Resp.notary_number)!=="undefined"){
-      Object.assign(data,{noNotaria:Resp.notary_number});
-      Object.assign(data,{elaboro:Resp.nombre_usuario_tramite+" "+Resp.apellido_pat_tramite+" "+Resp.apellido_mat_tramite});
-    }else{
-      Object.assign(data,{noNotaria:0});
-      Object.assign(data,{elaboro:Resp.info.solicitantes[0].nombreSolicitante+" "+Resp.info.solicitantes[0].apPat+" "+Resp.info.solicitantes[0].apMat});
-    }
-    Object.assign(data,{recibe:"{{ Auth::user()->name }}"});
-    if(typeof(Resp.total)==="undefined")
-    {
-      if(Resp.info.costo_final=="undefined")
-      {
-        Object.assign(data,{costo_final:Resp.info.detalle.costo_final});
-      }else{
-        Object.assign(data,{costo_final:Resp.info.costo_final});
-      }
-    }else{
-      Object.assign(data,{costo_final:Resp.total});
-    }
-    //console.log(data);
-    return data;
-
-  }
+ 
   function limpiar()
   {
     $("#checkbox1").prop("checked", false);
