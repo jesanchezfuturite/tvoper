@@ -422,6 +422,7 @@ class PortalSolicitudesTicketController extends Controller
               $data=array(
                 "id"=>$dato["id"],
                 "clave"=>$dato["clave"],
+                "ticket_padre"=>$dato["ticket_padre"],
                 "catalogo_id"=>$dato["catalogo_id"],
                 "user_id"=>$dato["user_id"],
                 "info"=>$info,
