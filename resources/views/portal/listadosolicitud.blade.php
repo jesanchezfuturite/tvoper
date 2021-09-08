@@ -614,6 +614,7 @@ function configprelacion()
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
+                  Object.assign(response[n],{"detalleDs":"Ver detalles del tramite (<label style=\"color: #cb5a5e;\">"+response[n].grupo_clave+"</label>)"});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total) + " MXN"});
                    for(h in response[n].grupo)
@@ -741,7 +742,7 @@ function configprelacion()
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "defaultContent":"Ver Detalles del Tramite"},
+                  { "data":"detalleDs"},
                   { "data":"costo_final"},
                   { "data":"grupo.length"},
                   { "data": function ( grupo ) {
@@ -755,7 +756,7 @@ function configprelacion()
         });
       $('#example tbody').unbind().on('click', 'td.detectarclick', buildTemplateChild );
       await sleep(1000);
-      if(dataS.length<6){
+      if(dataS.length<=10){
         dataS.forEach((grupo) =>{
           $("#iconShow-"+grupo.grupo_clave).trigger("click");
         });
@@ -1000,7 +1001,7 @@ function configprelacion()
         if(o_detall==1){
           f_o_detalle='';
         }
-        html += "<tr>"+f_o_detalle+"<th></th>"+th_f_fecha+"<th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        html += "<tr>"+f_o_detalle+""+th_f_fecha+"<th colspan='3'>"+url_prelacion+"</th><th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
 //style='display:none;'
         tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th>"+th_fecha+"<th>Estatus</th><th class='text-center' >Proceso</th>"+f_o_detalle+"</tr>"+html;
         return tbl_head;
