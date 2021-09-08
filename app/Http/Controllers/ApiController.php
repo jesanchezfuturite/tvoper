@@ -379,6 +379,7 @@ class ApiController extends Controller
                     if($response->getStatusCode() == 200)
                     {
                         $body = $response->getBody()->getContents();
+                        dd($body);
                         return response()->json(['response'=>$body,'message'=>'OK'],200,$this->header,JSON_UNESCAPED_UNICODE);
                     }
                     else
