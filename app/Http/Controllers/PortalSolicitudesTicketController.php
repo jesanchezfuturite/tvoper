@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use App\Entities\TicketBitacora;
+use App\Entities\TokenPortal;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -91,6 +92,7 @@ class PortalSolicitudesTicketController extends Controller
     public function registrarSolicitud(Request $request){   
       $name= \Request::route()->getName();
       $status="";
+      $token=null;
       if($name=="solicitudes-register-temporal"){
         $status=80;
       }
@@ -105,8 +107,7 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has("status") && $request->status==8){
         $status=8;
       }
-
-
+   
       if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
 
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
@@ -143,6 +144,9 @@ class PortalSolicitudesTicketController extends Controller
               "grupo_clave" => $grupo_clave,
             ]);
 
+            if($request->user_id==null){
+              $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
+            }
 
             if($request->has("file")){
               $file=$request->file[0];
@@ -217,6 +221,9 @@ class PortalSolicitudesTicketController extends Controller
                array_push($ids, $ticket->id);              
             }
             $first_id = reset($ids);
+            if($request->user_id==null){
+              $token=TokenPortal::create(["ticket_id"=>$first_id]);
+            }
             
             $grupo_clave="G$first_id";
             $saveClave = $this->ticket->where("clave",$clave)->update([
@@ -287,6 +294,10 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+
+            if($request->user_id==null){
+              $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
+            }
 
             $grupo_clave="G$ticket->id";
             $saveClave = $this->ticket->where("id",$ticket->id)->update([
@@ -397,6 +408,10 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
+
+          if($request->user_id==null){
+            $token=TokenPortal::create(["ticket_id"=>$ticket->id]);
+          }
           
           if($ticket->wasRecentlyCreated){
             $bitacora=TicketBitacora::create([
@@ -425,6 +440,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
+            "token"=>$token
           ]
         );
 
@@ -749,8 +765,12 @@ class PortalSolicitudesTicketController extends Controller
         $array_tramites=[];
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {
-              $solicitudTicket = $this->ticket->where('id' , $value->id)
-              ->update(['id_transaccion'=>$id_transaccion]);
+              $solicitudTicket = $this->ticket->where('id' , $value->id)->first();
+              $update=$solicitudTicket->update(['id_transaccion'=>$id_transaccion]);
+              if($solicitudTicket->user_id==null){
+                $token=TokenPortal::where("ticket_id", $solicitudTicket->id)->first();
+                $token->udpate(["id_transaccion"=>$solicitudTicket->id_transaccion]);
+              }
               array_push($array_tramites, $value->id);
               $es_aviso=$this->es_aviso($value->id);
               if($es_aviso!=1){
