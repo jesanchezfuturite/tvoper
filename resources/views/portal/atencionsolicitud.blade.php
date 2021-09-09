@@ -192,32 +192,13 @@
                         <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
                         <span class="help-block">&nbsp;</span>
                         <div class="form-group form-md-checkboxes">
-                          <div class="md-checkbox-inline">
-                            <div class='md-checkbox'>
-                              <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
-                                <label for='checkbox1'>
-                                <span></span>
-                                <span class='check'></span> <span class='box'>
-                                </span> Rechazo. </label>
-                            </div>
-                          
+                          <div class="md-checkbox-inline">                          
                             <div class='md-checkbox'>
                               <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
                                 <label for='checkbox30'>
                                 <span></span>
                                 <span class='check'></span> <span class='box'>
                                 </span>  Mensaje Publico. </label>
-                            </div>
-                          </div>
-                        </div>
-                          <div class="row selectMotivos">
-                            <div class="col-md-12">
-                            <span class="help-block">&nbsp;</span> 
-                            <label class="col-md-2">Motivos de Rechazo</label>
-                              <div class="col-md-7">
-                              <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
-                                <option value="0">------</option>  
-                              </select>
                             </div>
                           </div>
                         </div>
@@ -753,11 +734,16 @@ function configprelacion()
           var solicitantes=solicitud.info.solicitantes;
           var so="";
           var coma="";
+          if(typeof solicitantes !=="undefined"){
           solicitantes.forEach((soli,ind)=>{
             so= so + coma + soli.nombreSolicitante + " " + soli.apPat + " " + soli.apMat;
             coma=', ';
           });
           so=so +'.';
+        }else{
+          so='';
+        }
+
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
@@ -1108,6 +1094,8 @@ function configprelacion()
           var soli=Resp.info.solicitantes;
           var tipo="";
           var obj="";
+          if(typeof soli !=="undefined")
+          {
           $.each(soli, function(i, item) { 
            
              for (n in item) {  
@@ -1147,6 +1135,7 @@ function configprelacion()
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
             }            
           }
+        }
           if(typeof(Resp.notary_number)!=="undefined" && typeof(Resp.notary_number)!=="object" ){
             $(".divNotaria").css("display", "block");
             dataNot='';
@@ -1207,7 +1196,7 @@ function configprelacion()
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='{{ url()->route('listado-download', '') }}/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
