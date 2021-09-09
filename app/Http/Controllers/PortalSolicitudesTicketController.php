@@ -389,7 +389,7 @@ class PortalSolicitudesTicketController extends Controller
           $bitacora=TicketBitacora::create([
             "id_ticket" => $ticket->id,
             "grupo_clave" => $ticket->grupo_clave,
-            "id_estatus_atencion" => 2,
+            "id_estatus_atencion" => 3,
             "info"=>$ticket->info,
             "status"=>$status
           ]);
@@ -442,7 +442,7 @@ class PortalSolicitudesTicketController extends Controller
             $bitacora=TicketBitacora::create([
               "id_ticket" => $ticket->id,
               "grupo_clave" => $ticket_anterior->grupo_clave,
-              "id_estatus_atencion" => 1,
+              "id_estatus_atencion" => 3,
               "info"=>$ticket->info,
               "status"=>$status
             ]);
@@ -2100,5 +2100,20 @@ class PortalSolicitudesTicketController extends Controller
         );
         }
     }
+
+    public function updatestatusAtencion(Request $request){    
+      try {
+        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave)
+        ->update(['status' => 2]);
+      } catch (\Exception $e) {
+      Log::info('Error Portal - status recepcion de documentos: '.$e->getMessage());
+      return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cambiar status recepcion ".$e->getMessage(),
+          ]
+      );
+      }
+     }
 
 }
