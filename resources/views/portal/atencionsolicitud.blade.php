@@ -192,32 +192,13 @@
                         <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
                         <span class="help-block">&nbsp;</span>
                         <div class="form-group form-md-checkboxes">
-                          <div class="md-checkbox-inline">
-                            <div class='md-checkbox'>
-                              <input type='checkbox' id='checkbox1' name="checkMotivos" class='md-check' onchange="changeMotivos()">
-                                <label for='checkbox1'>
-                                <span></span>
-                                <span class='check'></span> <span class='box'>
-                                </span> Rechazo. </label>
-                            </div>
-                          
+                          <div class="md-checkbox-inline">                          
                             <div class='md-checkbox'>
                               <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
                                 <label for='checkbox30'>
                                 <span></span>
                                 <span class='check'></span> <span class='box'>
                                 </span>  Mensaje Publico. </label>
-                            </div>
-                          </div>
-                        </div>
-                          <div class="row selectMotivos">
-                            <div class="col-md-12">
-                            <span class="help-block">&nbsp;</span> 
-                            <label class="col-md-2">Motivos de Rechazo</label>
-                              <div class="col-md-7">
-                              <select class="select2me form-control" name="itemsMotivos" id="itemsMotivos" onchange="changeSelectMot()">
-                                <option value="0">------</option>  
-                              </select>
                             </div>
                           </div>
                         </div>
@@ -324,7 +305,29 @@
             </div>
             <div class="modal-body">
                 <span class="help-block">&nbsp;</span> <p>
-             ¿Finalizar Solicitudes: <label id="lbl_tickets" style="color: #cb5a5e;"></label>?</p>
+             ¿Rechazar Solicitudes: <label id="lbl_tickets" style="color: #cb5a5e;"></label>?</p>
+              <span class="help-block">&nbsp;</span>              
+                
+            </div>
+            <div class="modal-footer">
+                <div id="AddbuttonDeleted">
+         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
+        </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="portlet-aceptarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
+                <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <span class="help-block">&nbsp;</span> <p>
+             ¿Aceptar Solicitudes: <label id="lbl_a_tickets" style="color: #cb5a5e;"></label>?</p>
               <span class="help-block">&nbsp;</span>              
                 
             </div>
@@ -753,11 +756,16 @@ function configprelacion()
           var solicitantes=solicitud.info.solicitantes;
           var so="";
           var coma="";
+          if(typeof solicitantes !=="undefined"){
           solicitantes.forEach((soli,ind)=>{
             so= so + coma + soli.nombreSolicitante + " " + soli.apPat + " " + soli.apMat;
             coma=', ';
           });
           so=so +'.';
+        }else{
+          so='';
+        }
+
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
@@ -773,7 +781,7 @@ function configprelacion()
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
-      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Finalizar Ticket</a>";
+      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Rechazar Tickets</a>";
 
         html += "<tr><th></th><th colspan='3'></th><th colspan='2'></th> <th></th><th colspan='3'>"+btn_cerrarTicket+"</th><th></th></tr>";
 //style='display:none;'
@@ -976,15 +984,8 @@ function configprelacion()
       if(typeof response=== 'object'){
         for (n in response) { 
           for(k in response[n].grupo)
-          {   
-            distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
-            if(typeof distrito==="object")
-            {
-              if(distrito.clave=="1" && response[n].grupo[k].status=="1")
-              {
-                 ids.push(response[n].grupo[k].id);
-              }
-            }                                                   
+          {
+            ids.push(response[n].grupo[k].id);                                                                
           } 
         }
       }
@@ -1108,6 +1109,8 @@ function configprelacion()
           var soli=Resp.info.solicitantes;
           var tipo="";
           var obj="";
+          if(typeof soli !=="undefined")
+          {
           $.each(soli, function(i, item) { 
            
              for (n in item) {  
@@ -1147,6 +1150,7 @@ function configprelacion()
               $("#addSolicitante").append("<div class='col-md-4'><div class='form-group'><label><strong>"+obj+":</strong></label><br><label>"+tipo+"</label></div></div>");            
             }            
           }
+        }
           if(typeof(Resp.notary_number)!=="undefined" && typeof(Resp.notary_number)!=="object" ){
             $(".divNotaria").css("display", "block");
             dataNot='';
@@ -1207,7 +1211,7 @@ function configprelacion()
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='{{ url()->route('listado-download', '') }}/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
