@@ -422,7 +422,7 @@ class ApiController extends Controller
                     if(!empty($actafprot) && empty($escriturapub)) $elements.= '&actafprot='.$actafprot;
                     if(empty($actafprot) && !empty($escriturapub)) $elements.= '&escriturapub='.$escriturapub;
                     $elements.= '&operacion='.$operacion;
-                    $elements.= '&motivooperacion='.$motivooperacion;
+                    $elements.= '&motivo_operacion='.$motivooperacion;
                     $elements.= '&folioforma='.$folioforma;
                     $elements.= '&descripcion_predio='.$descripcion_predio;
                     $elements.= '&adquirientes='.urlencode(serialize($adquirientes));
