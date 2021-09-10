@@ -4,7 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateTokenPortalTable.
+ * Class CreateTokenPortalsTable.
  */
 class CreateTokenPortalTable extends Migration
 {
@@ -17,8 +17,7 @@ class CreateTokenPortalTable extends Migration
 	{
 		Schema::create('portal.token_portal', function(Blueprint $table) {
             $table->increments('id');
-            $table->Integer('ticket_id');
-			$table->Integer('id_transaccion');
+			$table->string('token',200)->nullable();
             $table->timestamps();
 		});
 	}
@@ -30,6 +29,6 @@ class CreateTokenPortalTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('token_portal');
+		Schema::drop('portal.token_portal');
 	}
 }
