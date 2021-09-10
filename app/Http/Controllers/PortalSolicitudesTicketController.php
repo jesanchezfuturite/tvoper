@@ -1067,7 +1067,7 @@ class PortalSolicitudesTicketController extends Controller
           ]);
 
 
-      } catch (\Exception $e) {
+      } catch (\Exception $e) { 
         Log::info('Error al actualizar status' .$e->getMessage());
         return response()->json(
           [
@@ -2103,8 +2103,18 @@ class PortalSolicitudesTicketController extends Controller
 
     public function updatestatusAtencion(Request $request){    
       try {
-        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave)
-        ->update(['status' => 2]);
+        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave)->get();
+        $update=$ticket->update(['status' => 1]);
+
+        foreach ($ticket as $key => $value) {
+          $bitacora=TicketBitacora::create([
+            "id_ticket" => $value->id,
+            "grupo_clave" => $value->grupo_clave,
+            "info"=> $value->info,
+            "id_estatus_atencion" => 2,
+            "status"=>1
+          ]);
+        }
       } catch (\Exception $e) {
       Log::info('Error Portal - status recepcion de documentos: '.$e->getMessage());
       return response()->json(
