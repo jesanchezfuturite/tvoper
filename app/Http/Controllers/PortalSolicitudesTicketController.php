@@ -154,7 +154,7 @@ class PortalSolicitudesTicketController extends Controller
                     if ($verificar!== 0) {
                       //se hace un borrado logico al registo anterior
               
-                      $consultar->update(["status"=>0]);
+                      $update=PortalSolicitudesMensajes::where("ticket_id", $request->id)->update(["status"=>0]);
   
                       //se guarda un archivo nuevo
                         $data =[

@@ -143,7 +143,7 @@ class FacturacionOperaciones extends Command
         //     ]
         // );
 
-        $info = $this->pr->select(['referencia'])->whereIn("origen",[5,11])->where(
+        $info = $this->pr->select(['referencia'])->whereIn("origen",[5,7,11])->where(
             [
                 "facturado" => 0,
                 "status"    => 'p'
