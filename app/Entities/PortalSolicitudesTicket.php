@@ -42,6 +42,10 @@ class PortalSolicitudesTicket extends Model implements Transformable
     public function tramites(){
         return $this->hasMany('App\Entities\PortalTramites', 'id', 'id_transaccion');
     }
+
+    public function bitacora(){
+        return $this->hasMany('App\Entities\TicketBitacora', 'id_ticket', 'id');
+    }
     public function configusers(){
         return $this->hasMany('App\Entities\PortalConfigUserNotaryOffice', 'user_id', 'user_id');
     }
@@ -49,6 +53,7 @@ class PortalSolicitudesTicket extends Model implements Transformable
 
     public function archivos(){
         return $this->mensajes();
+
     }
 
 }

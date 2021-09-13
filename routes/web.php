@@ -341,14 +341,24 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/solicitud-editar', 'PortalSolicitudesController@editarSolicitud')->name('solicitud-editar');
     Route::post('/solicitud-delete', 'PortalSolicitudesController@delete')->name('solicitud-delete');
     Route::get('/solicitud-documentos', 'PortalSolicitudesController@viewpermisosdocumentos')->name('solicitud-documentos');
+    Route::get('/atencion-solicitudes', 'PortalSolicitudesController@viewAtencionSolicitudes')->name('atencion-solicitudes');
     Route::post('/solicitud-find-folio', 'PortalSolicitudesController@findTicketidFolio')->name('solicitud-find-folio');
     Route::post('/solicitud-update-permisos', 'PortalSolicitudesController@updatePermisoSolicitud')->name('solicitud-update-permisos');
+
+    Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle/{idticket?}');
+
     Route::get('/solicitud-find-detalle/{idticket?}', 'PortalSolicitudesController@findDetalleSolicitud')->name('solicitud-find-detalle');
 
     Route::post('/solicitud-save-documento', 'PortalSolicitudesController@saveFile')->name('solicitud-save-documento');
+
     /*estas son para crear los tickets de solicitud*/
     Route::post('/solicitudes-registro', 'PortalSolicitudesController@registrarSolicitudes')->name('solicitudes-registro'); // este sirve para crear los tickets configurados y guardar los vakores iniciale de una solicitud
-
+    Route::get('/get-estatus-atencion', 'PortalSolicitudesController@getEstatusAtencion')->name('get-estatus-atencion');
+    Route::post('/agregar-estatus-atencion', 'PortalSolicitudesController@agregarResponsableEstatusAtencion')->name('agregar-estatus-atencion');
+    Route::post('/editar-estatus-atencion', 'PortalSolicitudesController@editarAtenderSolicitud')->name('editar-estatus-atencion');
+    Route::get('/get-all-procesos/{id}', 'PortalSolicitudesController@getAllProcesos')->name('get-all-procesos');
+    Route::post('/registro-bitacora', 'PortalSolicitudesController@agregarTicketBitacora')->name('registro-bitacora');
+    Route::post('/revertir-status', 'PortalSolicitudesController@revertirStatus')->name('revertir-status');
 
     Route::get('/traux-pago-costos', 'PortaltramitesauxController@Viewtipopagocosto')->name('traux-pago-costos');
     Route::get('/traux-get-tramites', 'PortaltramitesauxController@findTramites')->name('traux-get-tramites');
@@ -414,6 +424,8 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/get-firma-find/{tramite_id?}', 'PortalSolicitudesController@findFirmaTramite')->name('get-firma-find');
     Route::post('/update-firma', 'PortalSolicitudesController@updateFirmaTramite')->name('update-firma');
+
+    Route::get('/view-file/{file}', 'PortalSolicitudesController@viewFile')->name('view-file');
 
     Route::post('/solicitudes-register', 'PortalSolicitudesTicketController@registrarSolicitud')->name('solicitudes-register');
     Route::put('/solicitudes-discard/{id}', 'PortalSolicitudesTicketController@eliminarSolicitud');
@@ -516,7 +528,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/siger-insertaconceptos', 'ApisigerController@InsertaConceptos');
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
-  
+
     Route::get('/reporte-usuarios', 'ReportesController@listadoUsuariosPortal')->name('reporte-usuarios');
     Route::post('/find-usuarios', 'ReportesController@findUsuarios')->name('find-usuarios');
     Route::post('/descargar-excel', 'ReportesController@excelUsuarios')->name("export");
@@ -524,4 +536,9 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/file/{file?}' , 'ReportesController@downloadFile')->name('file');
     
     Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
+    Route::get('/plantilla', 'PortalSolicitudesController@plantilla');
+
+    Route::get('/notify/{id}/{folio}/{status}/{motivo?}', 'PortalSolicitudesController@notify');
+    Route::post('/update-status-atencion', 'PortalSolicitudesTicketController@updatestatusAtencion');
+    Route::post('/aceptar-rechazar-tramite', 'PortalSolicitudesController@aceptarRechazarTramite');
 });
