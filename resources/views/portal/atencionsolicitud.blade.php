@@ -177,7 +177,7 @@
           </div>    
         </div>
       </div>
-      <div class="content-mensajes">
+      <div class="content-mensajes" hidden="true">
         <div class="row">
           <div class="col-md-12">
             <div class="panel panel-default">
@@ -781,9 +781,10 @@ function configprelacion()
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
-      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Rechazar Tickets</a>";
+      var btn_cerrarTicket="<a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Rechazar Tickets</a>";
+      var btn_aceptarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Aceptar Tickets</a>";
 
-        html += "<tr><th></th><th colspan='3'></th><th colspan='2'></th> <th></th><th colspan='3'>"+btn_cerrarTicket+"</th><th></th></tr>";
+        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='1'>"+btn_aceptarTicket+"</th><th colspan='2'>"+btn_cerrarTicket+"</th></tr>";
 //style='display:none;'
         tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Proceso</th></tr>"+html;
         return tbl_head;
