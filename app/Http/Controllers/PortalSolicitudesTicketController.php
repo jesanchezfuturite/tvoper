@@ -834,11 +834,7 @@ class PortalSolicitudesTicketController extends Controller
         ->whereNotIn('status',  [99, 80, 9])
         ->get(["id", "status", "info", "grupo_clave", "status"]);
 
-          if($request->has("token_id")){
-            $token=TokenRelacionPortal::where("id", $request->token_id)->first();
-            $update=$token->update(["id_transaccion"=> $request->id_transaccion]);
-          }
-        
+  
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
