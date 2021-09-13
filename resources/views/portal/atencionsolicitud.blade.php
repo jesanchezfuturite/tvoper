@@ -182,7 +182,7 @@
         <div class="row">
           <div class="col-md-8" style="text-align: left;">
             <div class="form-group">
-               <button type="button" data-dismiss="modal" class="btn red" onclick="limpiar()">Salir</button>
+               <button type="button" data-dismiss="modal" class="btn red">Salir</button>
             </div>
           </div>
           <div class="col-md-1 ">
@@ -677,6 +677,8 @@ function configprelacion()
         }else{
           so='';
         }
+        var btn_cerrarTicket="<a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"rechazar\")'>Rechazar</a>";
+        var btn_aceptarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"aceptar\")'>Aceptar</a>";
 
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
@@ -687,18 +689,16 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"> w</td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center">'+btn_cerrarTicket+'</td><td class="text-center">'+btn_aceptarTicket+'<td>'+ botonAtender + '</tr>';
 
 
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
-      var btn_cerrarTicket="<a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Rechazar Tickets</a>";
-      var btn_aceptarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Aceptar Tickets</a>";
-
-        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='1'>"+btn_aceptarTicket+"</th><th colspan='2'>"+btn_cerrarTicket+"</th></tr>";
+      
+        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='2'></th><th colspan='2'></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Proceso</th></tr>"+html;
+        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' ></th><th class='text-center' ></th></tr>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
@@ -1138,30 +1138,21 @@ function configprelacion()
          Command: toastr.warning("Error", "Notifications");
         });
     }
-    function cerrarTicket()
+    function aceptarRechazar(id_ticket,mensaje_)
     {
-      var idT=$("#idTicket").val();
-      var id_catalogo_=$("#opTipoSolicitud").val();
-      btn_2="cerrar";
-      //var btn_2=$("#btn_cerrar_2").val();
-      //console.log(btn_2);
+      //var idT=$("#idTicket").val();
+      //var mensaje_=$("#message").val();
      $.ajax({
            method: "POST", 
-           url: "{{ url()->route('cerrar-ticket') }}",
-           data:{ id:idT ,id_catalogo:id_catalogo_,option:btn_2,_token:'{{ csrf_token() }}'} })
+           url: "{{ url()->route('aceptar-rechazar-tramite') }}",
+           data:{ ticket_id:id_ticket ,mensaje:mensaje_,_token:'{{ csrf_token() }}'} })
         .done(function (response) {
-          //console.log(response.solicitante);
-
            if(response.Code=="200")
              {
                Command: toastr.success(response.Message, "Notifications")
                findSolicitudes();
-               findSol();
-               chgopt(id_catalogo_);
-               limpiar();
                return;
-             }
-          //TableManaged7.init7();   
+             } 
         })
         .fail(function( msg ) {
          Command: toastr.warning("Error", "Notifications");
@@ -1176,16 +1167,6 @@ function configprelacion()
   return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  function limpiar()
-  {
-    $("#checkbox1").prop("checked", false);
-    $("#checkbox30").prop("checked", false);
-    $(".selectMotivos").css("display", "none");
-    document.getElementById("message").value="";
-    document.getElementById("message").disabled=false;
-    document.getElementById('delFile').click();
-    
-  }
   function searchIndex(key,jarray)
   {
     //console.log(jarray);
