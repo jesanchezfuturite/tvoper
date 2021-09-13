@@ -177,85 +177,6 @@
           </div>    
         </div>
       </div>
-      <div class="content-mensajes">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4><strong>Nuevo Mensaje</strong></h4> 
-                </div>
-                <div class="panel-body"id="notaria">
-                  <div class="col-md-12">
-                    <div class="col-md-9">             
-                      <div class="form-group">
-                        <label>Mensaje</label>
-                        <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
-                        <span class="help-block">&nbsp;</span>
-                        <div class="form-group form-md-checkboxes">
-                          <div class="md-checkbox-inline">                          
-                            <div class='md-checkbox'>
-                              <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
-                                <label for='checkbox30'>
-                                <span></span>
-                                <span class='check'></span> <span class='box'>
-                                </span>  Mensaje Publico. </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-3">             
-                      <div class="form-group">
-                        <span class="help-block">&nbsp;</span>                
-                        <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
-                        <span class="help-block">&nbsp;</span>
-                        <div class="fileinput fileinput-new" data-provides="fileinput">
-                                <span class="btn green btn-file">
-                                <span class="fileinput-new">
-                                <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
-                                <span class="fileinput-exists">
-                                <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
-                                <input type="file" name="file" accept="application/pdf" id="file" >
-                                </span>
-                                <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
-                                </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
-                                </a></div>
-                                
-                        </div>
-                      </div>
-                    </div>
-                  </div> 
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="panel panel-default">
-              <div class="panel-heading">                
-                  <h4><strong>Mensajes registrados</strong></h4>
-                </div>
-                <div class="panel-body"> 
-                  <div class="col-md-12">
-                  <div id="addtableMsg">
-                    <div class="removeMsg"> 
-                      <table class="table table-hover" id="sample_7">
-                       <thead>
-                        <tr>
-                          <th></th>
-                          <th>Titulo</th>
-                          <th></th>
-                        </tr>
-                        </thead>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
       <div class="modal-footer">
         <div class="row">
@@ -266,7 +187,7 @@
           </div>
           <div class="col-md-1 ">
             <div class="form-group ">
-              <button type="button"  class="btn default btnPrelacion " onclick="prelacion()" >Prelación</button>
+              <button type="button"  class="btn default btnPrelacion ">Prelación</button>
             </div>
           </div>
         </div>
@@ -427,15 +348,6 @@ function configprelacion()
   {
     var id_=$("#id_registro").val();
     
-  }
-  function prelacion()
-  { 
-    objectResponse=[];    
-    var reg=registroPublico();
-    var resp=$.parseJSON(reg);
-    document.getElementById("message").value="Prelacion, Folio: " + resp.folio + "\n Fecha: "+resp.fecha; 
-    saveMessage(1,data);
-    $(".btnPrelacion").css("display", "none");    
   }
   async function registroPublico()
   {
@@ -781,9 +693,10 @@ function configprelacion()
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
-      var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+")'>Rechazar Tickets</a>";
+      var btn_cerrarTicket="<a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Rechazar Tickets</a>";
+      var btn_aceptarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='findSolicitudesCerrar()'>Aceptar Tickets</a>";
 
-        html += "<tr><th></th><th colspan='3'></th><th colspan='2'></th> <th></th><th colspan='3'>"+btn_cerrarTicket+"</th><th></th></tr>";
+        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='1'>"+btn_aceptarTicket+"</th><th colspan='2'>"+btn_cerrarTicket+"</th></tr>";
 //style='display:none;'
         tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Proceso</th></tr>"+html;
         return tbl_head;
@@ -1175,7 +1088,7 @@ function configprelacion()
             }             
           }
             $("#scrollDiv").animate({ scrollTop: 0 }, "slow");
-          findMotivosSelect([catalogo_id]);
+         
     }
     function findMessage(id_)    
     {
@@ -1262,89 +1175,7 @@ function configprelacion()
   function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
   }
-    function saveMessage(prelacion_,data)
-    {
-      //console.log(data);
-      var mensaje=$("#message").val();
-      var select=$("#itemsMotivos").val();
-      var mot=$("#itemsMotivos option:selected").text();
-      var file=$("#file").val();
-      var id_=$("#idTicket").val();
-      var ticks_id=$.parseJSON($.parseJSON($("#tickets_id").val()));
-      var grp_clave=$("#grp_clave").val();
-      var check=$("#checkbox30").prop("checked");
-      var checkRechazo=$("#checkbox1").prop("checked");
-      var msjpublic="1";
-      var rechazo=0;
-      var formdata = new FormData();
-      if(check==false){
-        var msjpublic="0";        
-      }
-      if(checkRechazo==true){
-        if(select==0)
-        {
-          Command: toastr.warning("Motivo de rechazo, Requerido!", "Notifications")
-          return;
-        }
-        if(mensaje.length>0)
-        {
-          mensaje=', Nota: '+mensaje;
-        } 
-        mensaje=mot +mensaje;
-        formdata.append("rechazo_id",select);
-        
-      }
-    console.log(ticks_id);
-      for(r in ticks_id)
-        {
-          formdata.append("tickets_id[]", ticks_id[r]);  
-        }
-      if(mensaje.length==0){
-        Command: toastr.warning("Mensaje, Requerido!", "Notifications")
-        return;
-      }
-        var fileV = $("#file")[0].files[0];
-        if(file.length>0){ 
-          formdata.append("file", fileV);
-        }              
-        formdata.append("id[]", id_);      
-        formdata.append("mensaje", mensaje);
-        formdata.append("mensaje_para", msjpublic);
-        formdata.append("prelacion", prelacion_);
-        formdata.append("rechazo", checkRechazo);
-        formdata.append("grupo_clave", grp_clave);
-        formdata.append("data[]", JSON.stringify(data));
-        formdata.append("_token",'{{ csrf_token() }}');
-        //console.log(Object.fromEntries(formdata));
-        $.ajax({
-           method: "POST",
-           contentType: false,
-            processData: false, 
-           url: "{{ url()->route('guardar-solicitudes') }}",
-           data: formdata })
-        .done(function (response) {
-          //console.log(response.solicitante);
-           if(response.Code=="200")
-             {
-              document.getElementById("message").value="";
-              document.getElementById("file").value="";
-              limpiar();
-              findMessage(JSON.stringify(ticks_id));
-               Command: toastr.success(response.Message, "Notifications")
-               findSolicitudes();
-               return;
-             }
-             else{
-                Command: toastr.warning("Ocurrio un Error", "Notifications")
-             }
-          //TableManaged7.init7();   
-        })
-        .fail(function( msg ) {
-         Command: toastr.warning("Error", "Notifications");
-        });
-    }
 
- 
   function limpiar()
   {
     $("#checkbox1").prop("checked", false);
