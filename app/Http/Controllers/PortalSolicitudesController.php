@@ -2315,7 +2315,8 @@ class PortalSolicitudesController extends Controller
 
   public function aceptarRechazarTramite(Request $request){
     try {
-      $mensaje = $this->mensajes->updateOrCreate(["id" =>$request->ticket_id], [
+      $mensaje = $this->mensajes->updateOrCreate(["ticket_id" =>$request->ticket_id], [
+        "ticket_id"=>$request->ticket_id,
         "mensaje"=>$request->mensaje
       ]);
 
