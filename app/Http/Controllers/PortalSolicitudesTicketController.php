@@ -149,7 +149,7 @@ class PortalSolicitudesTicketController extends Controller
                   $archivo = explode("/download/", $attach);                   
                   $nom = $file->getClientOriginalName(); 
                   $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);            
-                  $verificar=strcmp($archivo[1], $nombre); 
+                  $verificar=strcmp($archivo[1], $nombre);
                    
                     if ($verificar!== 0) {
                       //se hace un borrado logico al registo anterior
@@ -1947,7 +1947,7 @@ class PortalSolicitudesTicketController extends Controller
 
         try {
         $solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
-        ->where("solicitudes_ticket", $id)->first();
+        ->where("solicitudes_ticket.id", $id)->first();
         if($solicitudes->tramite_id==$aviso){
             return 1;
         }else{
