@@ -1596,19 +1596,5 @@ class PortalSolicitudesTicketController extends Controller
       );
     }
   }
-  public function getTramitesToken($token){
-    try {
-      $tickets = TokenRelacionPortal::where("token_id", $token)->get()->pluck("ticket_id")->toArray();
-      $solicitudes = PortalSolicitudesTicket::whereIn("id", $tickets)->get()->toArray();
-      return $solicitudes;
-    } catch (\Exception $e) {
-      Log::info('Get Tramites :'.$e->getMessage());
-      return response()->json(
-        [
-          "Code" => "400",
-          "Message" => "Error al obtener información",
-        ]
-      );
-    }
-  }
+
 }

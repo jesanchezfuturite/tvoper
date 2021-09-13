@@ -494,5 +494,4 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     
     Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
 
-    Route::get('/get-tramites/{token}', "PortalSolicitudesTicketController@getTramitesToken");
 });
