@@ -2312,5 +2312,28 @@ class PortalSolicitudesController extends Controller
   ';
   return $email;
   }
+
+  public function aceptarRechazarTramite(Request $request){
+    try {
+      $mensaje = $this->mensajes->updateOrCreate(["id" =>$request->ticket_id], [
+        "mensaje"=>$request->mensaje
+      ]);
+
+      $estatus = $request->mensaje="aceptar" ? "aceptado" : "rechazado";
+
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Tramite ".$estatus
+      ]);
+    } catch (\Exception $e) {
+      Log::info('Error Estatus Tramite: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al aceptar/rechazar tramite"
+      ]);
+    }
+  }
   
 }
