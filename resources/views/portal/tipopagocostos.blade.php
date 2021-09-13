@@ -160,6 +160,14 @@
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio14" name="radio2" class="md-radiobtn" value="I" >
+                      <label for="radio14">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Indefinido. </label>
                     </div>
                   </div>
               </div>
@@ -219,6 +227,14 @@
                       <span class="check"></span>
                       <span class="box"></span>
                         Lote. </label>
+                    </div>|
+                    <div class="md-radio">
+                      <input type="radio" id="radio15" name="radio4" class="md-radiobtn" value="A" >
+                      <label for="radio15">
+                      <span></span>
+                      <span class="check"></span>
+                      <span class="box"></span>
+                        Anual. </label>
                     </div>
                   </div>
               </div>
