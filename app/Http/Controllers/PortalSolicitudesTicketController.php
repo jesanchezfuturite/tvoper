@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use App\Entities\TicketBitacora;
-use App\Entities\TokenPortal;
-use App\Entities\TokenRelacionPortal;
 
 class PortalSolicitudesTicketController extends Controller
 {
