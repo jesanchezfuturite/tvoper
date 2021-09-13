@@ -536,5 +536,5 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/plantilla', 'PortalSolicitudesController@plantilla');
 
     Route::get('/notify/{id}/{folio}/{status}/{motivo?}', 'PortalSolicitudesController@notify');
-    Route::post('/update-status-atencion', 'PortalSolicitudesTicketController@updateStatusAtencion');
+    Route::post('/update-status-atencion', 'PortalSolicitudesTicketController@updatestatusAtencion');
 });
