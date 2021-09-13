@@ -2320,7 +2320,7 @@ class PortalSolicitudesController extends Controller
         "mensaje"=>$request->mensaje
       ]);
 
-      $estatus = $request->mensaje="aceptar" ? "aceptado" : "rechazado";
+      $estatus = $request->mensaje=="aceptar" ? "aceptado" : "rechazado";
 
       return response()->json(
         [
