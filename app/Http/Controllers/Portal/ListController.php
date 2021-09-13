@@ -51,9 +51,13 @@ class ListController extends Controller {
 		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 404);;
 
 		$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
-		$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
-		$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
-		if(gettype($users) != 'array') $users = [$users];
+		if(isset($user->notary)){
+			$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
+			$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
+			if(gettype($users) != 'array') $users = [$users];
+		} else {
+			$users = [ $user->id ];
+		}
 		$tickets = Tickets::whereIn('user_id', $users)
 			->with('files')
 			->select(
