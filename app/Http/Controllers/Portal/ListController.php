@@ -96,6 +96,17 @@ class ListController extends Controller {
 								"\"ticket_id\":",
 								ticket.id,
 								",",
+
+								"\"clave\":\"",
+								ticket.clave,
+								"\"",
+								",",
+
+								"\"catalogo_titulo\":\"",
+								catalogo.titulo,
+								"\"",
+								",",
+
 								"\"status\":",
 								ticket.status,
 								",",
