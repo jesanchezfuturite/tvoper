@@ -91,6 +91,7 @@ class PortalSolicitudesTicketController extends Controller
     public function registrarSolicitud(Request $request){  
       $name= \Request::route()->getName();
       $aviso=env("TRAMITE_AVISO");
+      dd($aviso, $request->catalogo_id);
       $status="";
       $token=null;
       if($name=="solicitudes-register-temporal"){
