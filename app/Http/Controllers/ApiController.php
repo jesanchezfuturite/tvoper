@@ -425,7 +425,7 @@ class ApiController extends Controller
                     $elements.= '&vendedores='.urlencode(serialize($vendedores));
 
                     $url = $this->catastro_url_reg . '?' . $elements;
-                    // dd($url);
+                    Log::info($url);
                     
                     $response = $this->client->request('GET',$url);
 
