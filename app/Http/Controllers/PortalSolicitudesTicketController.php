@@ -2061,26 +2061,36 @@ class PortalSolicitudesTicketController extends Controller
 
     public function updatestatusAtencion(Request $request){    
       try {
-        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave)->get();
+        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave);
         $update=$ticket->update(['status' => 1]);
+        $ticket=$ticket->get();
+        if($update){
+          foreach ($ticket as $key => $value) {
+            $bitacora=TicketBitacora::create([
+              "id_ticket" => $value->id,
+              "grupo_clave" => $value->grupo_clave,
+              "info"=> $value->info,
+              "id_estatus_atencion" => 2,
+              "status"=>1
+            ]);
+          }
+          return response()->json(
+            [
+            "Code" => "200",
+            "Message" => "Estatus actualizado",
+            ]
+          );
+        }        
 
-        foreach ($ticket as $key => $value) {
-          $bitacora=TicketBitacora::create([
-            "id_ticket" => $value->id,
-            "grupo_clave" => $value->grupo_clave,
-            "info"=> $value->info,
-            "id_estatus_atencion" => 2,
-            "status"=>1
-          ]);
-        }
+        
       } catch (\Exception $e) {
       Log::info('Error Portal - status recepcion de documentos: '.$e->getMessage());
-      return response()->json(
-          [
-          "Code" => "400",
-          "Message" => "Error al cambiar status recepcion ".$e->getMessage(),
-          ]
-      );
+        return response()->json(
+            [
+            "Code" => "400",
+            "Message" => "Error al cambiar status recepcion ".$e->getMessage(),
+            ]
+        );
       }
      }
 
