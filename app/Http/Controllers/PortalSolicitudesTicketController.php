@@ -21,6 +21,7 @@ use DB;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
+use App\Entities\TicketBitacora;
 
 class PortalSolicitudesTicketController extends Controller
 {
@@ -87,11 +88,12 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){   
+    public function registrarSolicitud(Request $request){  
       $name= \Request::route()->getName();
       $aviso=env("TRAMITE_AVISO");
       dd($aviso);
       $status="";
+      $token=null;
       if($name=="solicitudes-register-temporal"){
         $status=80;
       }
@@ -106,7 +108,7 @@ class PortalSolicitudesTicketController extends Controller
       if($request->has("status") && $request->status==8){
         $status=8;
       }
-
+      
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
 
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
@@ -132,7 +134,6 @@ class PortalSolicitudesTicketController extends Controller
         if($status==80){   
             $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
               "clave" => $clave,
-              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -140,7 +141,12 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+            $grupo_clave="G$ticket->id";
+            $saveClave = $this->ticket->where("id",$ticket->id)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
 
+     
             if($request->has("file")){
               $file=$request->file[0];
               //si tiene id es porque se esta volviendo a editar
@@ -156,7 +162,7 @@ class PortalSolicitudesTicketController extends Controller
                     if ($verificar!== 0) {
                       //se hace un borrado logico al registo anterior
               
-                      $consultar->update(["status"=>0]);
+                      $update=PortalSolicitudesMensajes::where("ticket_id", $request->id)->update(["status"=>0]);
   
                       //se guarda un archivo nuevo
                         $data =[
@@ -214,6 +220,12 @@ class PortalSolicitudesTicketController extends Controller
                array_push($ids, $ticket->id);              
             }
             $first_id = reset($ids);
+            
+            $grupo_clave="G$first_id";
+            $saveClave = $this->ticket->where("clave",$clave)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
+
             if($request->has("file")){ 
               $file=$request->file[0];
               //si tiene id es porque el registo viene de borrador
@@ -271,7 +283,6 @@ class PortalSolicitudesTicketController extends Controller
           }else{
             $ticket = $this->ticket->create([
               "clave" => $clave,
-              "grupo_clave" => $grupo,
               "catalogo_id" => $catalogo_id,
               "info"=> json_encode($info),
               "user_id"=>$user_id,
@@ -280,6 +291,21 @@ class PortalSolicitudesTicketController extends Controller
               "required_docs"=>$request->required_docs
             ]);
 
+
+            $grupo_clave="G$ticket->id";
+            $saveClave = $this->ticket->where("id",$ticket->id)->update([
+              "grupo_clave" => $grupo_clave,
+            ]);
+            $grupoClave = $this->ticket->where("id",$ticket->id)->first();
+            if($ticket->wasRecentlyCreated){
+              $bitacora=TicketBitacora::create([
+                "id_ticket" => $ticket->id,
+                "grupo_clave" => $grupoClave->grupo_clave,
+                "info"=> $ticket->info,
+                "id_estatus_atencion" => 1,
+                "status"=>$status
+              ]);
+            }
 
             if($request->has("file")){ 
               $file=$request->file[0];
@@ -328,15 +354,21 @@ class PortalSolicitudesTicketController extends Controller
         if($status==7){
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
-            "grupo_clave" => $grupo,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
-            "status"=>1,
+            "status"=>3,
             "en_carrito"=>$carrito,
             "required_docs"=>$request->required_docs,
             "ticket_padre"=>$request->ticket_anterior
 
+          ]);
+          $bitacora=TicketBitacora::create([
+            "id_ticket" => $ticket->id,
+            "grupo_clave" => $ticket->grupo_clave,
+            "id_estatus_atencion" => 2,
+            "info"=>$ticket->info,
+            "status"=>$status
           ]);
 
           if($request->has("file")){
@@ -354,11 +386,12 @@ class PortalSolicitudesTicketController extends Controller
         
         }
         if($status==8){
-          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->update(["status"=>10]);
-   
+          $ticket_anterior = $this->ticket->where('id',$request->ticket_anterior)->first();
+          $update=$ticket_anterior->update(["status"=>10]);
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->id], [
             "clave" => $clave,
-            "grupo_clave" => $grupo,
+            "grupo_clave" =>$ticket_anterior->grupo_clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
@@ -368,7 +401,17 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);
- 
+
+          
+          if($ticket->wasRecentlyCreated){
+            $bitacora=TicketBitacora::create([
+              "id_ticket" => $ticket->id,
+              "grupo_clave" => $ticket_anterior->grupo_clave,
+              "id_estatus_atencion" => 1,
+              "info"=>$ticket->info,
+              "status"=>$status
+            ]);
+          }
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
@@ -387,6 +430,7 @@ class PortalSolicitudesTicketController extends Controller
           [
             "Code" => "200",
             "Message" => "Solicitud registrada",
+            "token_id"=>$token
           ]
         );
 
@@ -715,8 +759,8 @@ class PortalSolicitudesTicketController extends Controller
         $array_tramites=[];
         if($solTramites){
           foreach ($ids_tramites as $key => $value) {
-              $solicitudTicket = $this->ticket->where('id' , $value->id)
-              ->update(['id_transaccion'=>$id_transaccion]);
+              $solicitudTicket = $this->ticket->where('id' , $value->id)->first();
+              $update=$solicitudTicket->update(['id_transaccion'=>$id_transaccion]);
               array_push($array_tramites, $value->id);
               $es_aviso=$this->es_aviso($value->id);
               if($es_aviso!=1){
@@ -752,6 +796,8 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function saveTransaccionMotor(Request $request){
       $error=null;
+      $success=0;
+      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -791,8 +837,9 @@ class PortalSolicitudesTicketController extends Controller
 
         $ids = $this->ticket->where('id_transaccion' , $request->id_transaccion)
         ->whereNotIn('status',  [99, 80, 9])
-        ->get(["id", "status", "info"]);
+        ->get(["id", "status", "info", "grupo_clave", "status"]);
 
+  
         foreach ($ids as $key => $value) {
           $this->guardarCarrito($value->id, 2);         
           $info = json_decode($value->info);
@@ -801,14 +848,31 @@ class PortalSolicitudesTicketController extends Controller
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor;
-                 $verificar = array_search("1", array_column($valor, 'distrito'));
-                 if(false !== $verificar){
+                 $valor = $distrito->valor->distrito;
+                 if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
+                  $bitacora=TicketBitacora::create([
+                    "id_ticket" => $value->id,
+                    "grupo_clave" =>$value->grupo_clave,
+                    "id_estatus_atencion" => 2,
+                    "info"=>$value->info,
+                    "status"=>$value->status
+                  ]);
+                  $success=1;
+                  $user_id=$value->user_id; 
+                  Log::info("distrito 1 if ");
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
+                    $bitacora=TicketBitacora::create([
+                      "id_ticket" => $value->id,
+                      "grupo_clave" =>$value->grupo_clave,
+                      "id_estatus_atencion" => 4,
+                      "info"=>$value->info,
+                      "status"=>$value->status
+                    ]); 
+                    Log::info("distrito 1 else ");
                  }
               }else{
                 if($value->status<>5){
@@ -824,28 +888,35 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-
+        if($success==1){
+          try {				
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
+            
+          } catch (\Exception $e) {
+            return ["status"=>403];
+          }
+        }
+        Log::info('Transaccion guardada');
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Transacción motor actualizado"
+        ]);
       } catch (\Exception $e) {
-        $error = $e;
-      }
-      if($error){
         Log::info('Error Guardar transaccion: '.$e->getMessage());
         return response()->json(
           [
             "Code" => "400",
             "Message" => "Error al guardar transaccion motor ".$e->getMessage(),
-          ]);
-      }else{
-        return response()->json(
-          [
-            "Code" => "200",
-            "Message" => "Transacción motor actualizado"
-          ]);
+        ]);
       }
+   
 
     }
     public function updateStatusTramite(Request $request){
       $error=null;
+      $success=0;
+      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -889,7 +960,12 @@ class PortalSolicitudesTicketController extends Controller
         ]);
 
         $ids = $this->ticket->where('id_transaccion' , $id)->whereNotIn('status',  [99, 80, 9])        
-        ->get(["id", "status", "info"]);
+        ->get(["id", "status", "info", "grupo_clave", "status"]);
+
+        if($request->has("token_id")){
+          $token=TokenRelacionPortal::where("id", $request->token_id)->first();
+          $update=$token->update(["id_transaccion"=> $request->id_transaccion]);
+        }
 
         foreach ($ids as $key => $value) {
           if($es_aviso!=1){
@@ -898,18 +974,37 @@ class PortalSolicitudesTicketController extends Controller
                
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados) && $value->status<>5){
-            $campos = $info->camposConfigurados;
+         
+            Log::info("campos configurados");
+            $campos = $info->camposConfigurados;           
              $key2 = array_search("Municipio", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor;
-                 $verificar = array_search("1", array_column($valor, 'distrito'));
-                 if(false !== $verificar){
+                 $valor = $distrito->valor->distrito;
+                 if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
+                  $bitacora=TicketBitacora::create([
+                    "id_ticket" => $value->id,
+                    "grupo_clave" =>$value->grupo_clave,
+                    "id_estatus_atencion" => 2,
+                    "info"=>$value->info,
+                    "status"=>$value->status
+                  ]);
+                  $success=1;
+                  $user_id=$value->user_id; 
+                  Log::info("distrito 1 if");
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
                     ->update(['status'=>2]);
+                    $bitacora=TicketBitacora::create([
+                      "id_ticket" => $value->id,
+                      "grupo_clave" =>$value->grupo_clave,
+                      "id_estatus_atencion" => 4,
+                      "info"=>$value->info,
+                      "status"=>$value->status
+                    ]);
+                    Log::info("distrito 1 else");
                  }
               }else{
                 if($value->status<>5){
@@ -924,24 +1019,30 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-
-
-
-      } catch (\Exception $e) {
-          $error = $e;
-      }
-      if ($error) {
-        return response()->json(
-          [
-            "Code" => "400",
-            "Message" => "Error al actualizar estatus ".$e->getMessage()
-          ]);
-      }else {
+        if($success==1){
+          try {				
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);
+            
+          } catch (\Exception $e) {
+            return ["status"=>403];
+          }
+        }
+        Log::info('Estatus actualizado');
         return response()->json(
           [
             "Code" => "200",
             "Message" => "Estatus actualizado",
           ]);
+
+
+      } catch (\Exception $e) { 
+        Log::info('Error al actualizar status' .$e->getMessage());
+        return response()->json(
+          [
+            "Code" => "400",
+            "Message" => "Error al actualizar estatus ".$e->getMessage()
+          ]);
+          // $error = $e;
       }
 
     }
@@ -959,9 +1060,9 @@ class PortalSolicitudesTicketController extends Controller
     public function getRegistroTramite($id){
       try {
         $solicitud = PortalSolicitudesTicket::with(["archivos" => function( $query ){
-          $query->where('status', 1);
+          $query->where('status', 1)->orderBy("id","DESC");
 
-         }])->where('clave' , $id)->get();
+         }])->where('clave' , $id)->where("status","<>", 9)->get();
 
 
         return $solicitud;
@@ -1345,9 +1446,7 @@ class PortalSolicitudesTicketController extends Controller
             `solicitudes_catalogo`.`titulo`,
             `solicitudes_catalogo`.`tramite_id`,
             `solicitudes_catalogo`.`firma`,
-
             IF(`solicitudes_ticket`.`status` != 99, `solicitudes_status`.`descripcion`, IF(`solicitudes_ticket`.`status` = 99, 'Pendiente de pago', NULL)) AS descripcion,
-
             `solicitudes_ticket`.`status`,
             `solicitudes_ticket`.`en_carrito`,
             `solicitudes_ticket`.`id_transaccion`,
@@ -1954,11 +2053,11 @@ class PortalSolicitudesTicketController extends Controller
         try {
         $solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
         ->where("solicitudes_ticket.id", $id)->first();
-        if($solicitudes->tramite_id==$aviso){       
-            return 1;
-        }else{
-            return 0;
-        }
+          if($solicitudes->tramite_id==$aviso){      
+              return 1;
+          }else{
+              return 0;
+          }
         } catch (\Exception $e) {
         Log::info('Error Portal - verificar aviso: '.$e->getMessage());
         return response()->json(
@@ -1969,5 +2068,30 @@ class PortalSolicitudesTicketController extends Controller
         );
         }
     }
+
+    public function updatestatusAtencion(Request $request){    
+      try {
+        $ticket = PortalSolicitudesTicket::where("grupo_clave", $request->grupo_clave)->get();
+        $update=$ticket->update(['status' => 1]);
+
+        foreach ($ticket as $key => $value) {
+          $bitacora=TicketBitacora::create([
+            "id_ticket" => $value->id,
+            "grupo_clave" => $value->grupo_clave,
+            "info"=> $value->info,
+            "id_estatus_atencion" => 2,
+            "status"=>1
+          ]);
+        }
+      } catch (\Exception $e) {
+      Log::info('Error Portal - status recepcion de documentos: '.$e->getMessage());
+      return response()->json(
+          [
+          "Code" => "400",
+          "Message" => "Error al cambiar status recepcion ".$e->getMessage(),
+          ]
+      );
+      }
+     }
 
 }

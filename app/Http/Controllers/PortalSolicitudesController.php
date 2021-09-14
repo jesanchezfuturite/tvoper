@@ -35,8 +35,17 @@ use App\Repositories\SolicitudesMotivoRepositoryEloquent;
 use App\Repositories\MotivosRepositoryEloquent;
 use App\Entities\SolicitudesMotivo;
 use App\Repositories\OperacionUsuariosEstatusRepositoryEloquent;
+use App\Entities\PortalNotaryOffices;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
+use App\Entities\EstatusAtencion;
+use App\Entities\Portalsolicitudesresponsables;
+use App\Entities\Users;
+use App\Entities\TicketBitacora;
+use App\Entities\UsersPortal;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use App\Entities\NotificacionEstatusAtencion;
 
 class PortalSolicitudesController extends Controller
 {
@@ -56,6 +65,9 @@ class PortalSolicitudesController extends Controller
   protected $solicitudesMotivos;
   protected $motivos;
   protected $userEstatus;
+
+  protected $ticketBitacoradb;
+
   protected $docbitacoradb;
   protected $url;
   protected $tramitesdb;
@@ -78,12 +90,14 @@ class PortalSolicitudesController extends Controller
      SolicitudesMotivoRepositoryEloquent $solicitudesMotivos,
      MotivosRepositoryEloquent $motivos,
      OperacionUsuariosEstatusRepositoryEloquent $userEstatus,
+     TicketBitacora $ticketBitacoradb,
      PortalDocumentosBitacoraRepositoryEloquent $docbitacoradb,
      UrlGenerator $url,
      PortalTramitesRepositoryEloquent $tramitesdb
+
     )
     {
-      $this->middleware('auth');
+      // $this->middleware('auth');
       $this->users = $users;
       $this->solicitudes = $solicitudes;
       $this->tramites = $tramites;
@@ -100,9 +114,14 @@ class PortalSolicitudesController extends Controller
       $this->solicitudesMotivos = $solicitudesMotivos;
       $this->motivos = $motivos;
       $this->userEstatus = $userEstatus;
+
+      $this->ticketBitacoradb = $ticketBitacoradb;
+
+
       $this->docbitacoradb = $docbitacoradb;
       $this->url = $url;
       $this->tramitesdb = $tramitesdb;
+
     }
 
   /**
@@ -459,30 +478,17 @@ class PortalSolicitudesController extends Controller
   }
   public function filtrar(Request $request){
     $user_id = auth()->user()->id;
-    $relacion = $this->configUserNotary->where('user_id', $user_id)->first();
-    if($relacion){
-      $notaria = $this->notary->where("id", $relacion->notary_office_id)->first();
-    }else{
-      $notaria=[];
-    }
-
     
-    
-    $filtro = $solicitudes = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
+    $filtro = PortalSolicitudesticket::leftjoin('solicitudes_catalogo as c', 'c.id', '=', 'solicitudes_ticket.catalogo_id')
     ->leftjoin('solicitudes_tramite as tmt', 'tmt.id', '=', 'solicitudes_ticket.id_transaccion')
     ->where('solicitudes_ticket.status', '!=', 99)
-    //  ->where(function($q) use ($user_id){
-    //   $q->whereNull('solicitudes_ticket.asignado_a')
-    //     ->orwhere('solicitudes_ticket.asignado_a', $user_id);
-    // })
-    // ->whereIn("c.id", $responsables)
     ->whereNotNull('solicitudes_ticket.id_transaccion')
     ->whereNotNull('solicitudes_ticket.grupo_clave')
     ->select("c.atendido_por", "c.id as id_catalogo" ,"solicitudes_ticket.id", "solicitudes_ticket.grupo_clave");
     if($request->has('tipo_solicitud')){
         $filtro->where('c.id', $request->tipo_solicitud);
     }
-
+   
     if($request->has('estatus')){
       if($request->estatus ==0){
         $filtro->where('solicitudes_ticket.status', '<>', 2);
@@ -492,48 +498,119 @@ class PortalSolicitudesController extends Controller
     }
 
     if($request->has('id_solicitud')){
-      $filtro->where('solicitudes_ticket.id','LIKE',"%$request->id_solicitud%")
-      ->orWhere('solicitudes_ticket.grupo_clave','LIKE',"%$request->id_solicitud%")
-      ->orWhere('tmt.id_transaccion_motor','LIKE',"%$request->id_solicitud%");
+      $filtro->where('solicitudes_ticket.id_transaccion',$request->id_solicitud)
+      ->orWhere('tmt.id_transaccion_motor',$request->id_solicitud)
+      ->orWhere('solicitudes_ticket.grupo_clave',$request->id_solicitud);
       
     }
-    $ids_catalogos = $filtro->get()->pluck("id_catalogo")->toArray();  
 
-    $responsables = $this->solicitudrespdb->where("user_id", $user_id)
-    ->get()->pluck("catalogo_id")->toArray();
+    if($request->has("user_id")){
+      $filtro->leftjoin('solicitudes_responsables as res', "solicitudes_ticket.catalogo_id", "=", "res.catalogo_id") 
+      ->join('solicitudes_ticket_bitacora as tkb', "solicitudes_ticket.id", "=", "tkb.id_ticket")
+      ->where("res.user_id", $request->user_id)
+      ->where("res.catalogo_id", $request->tipo_solicitud)
+      ->whereNotNull('res.id_estatus_atencion');
+    }
+  
+    $cat = $filtro->get()->pluck("id_catalogo")->toArray();  
+    $ids_catalogos= array_unique($cat);
 
-    $grupo = $filtro->groupBy('solicitudes_ticket.grupo_clave')
+    //  $responsables = $this->solicitudrespdb->whereIn("catalogo_id", $ids_catalogos)
+    // ->get()->toArray();
+   
+
+    $filter = $filtro->groupBy('solicitudes_ticket.grupo_clave')
     ->get()->pluck('grupo_clave')->toArray();
-    $catalogo = array_intersect($ids_catalogos, $responsables);
+    $grupo=array_filter($filter);
     
-    $solicitudes = DB::connection('mysql6')->table('portal.solicitudes_catalogo as c')
+      // $catalogo = array_intersect($ids_catalogos, $responsables);
+   
+  
+    $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
+    ->with("bitacora")
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
-    "c.id as catalogo", "tk.info", "tmt.id_transaccion_motor",
-    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", "tk.grupo_clave", "pr.url_prelacion", "c.padre_id")
-    ->leftJoin('portal.solicitudes_ticket as tk', 'c.id', '=', 'tk.catalogo_id')
+    "tk.info", 
+    "c.id as catalogo", "tmt.id_transaccion_motor",
+    "tk.created_at", "op.importe_transaccion", "servicio.Tipo_Descripcion as tramite", 
+    "tk.grupo_clave", "pr.url_prelacion", "c.padre_id",
+    "n.notary_number","n.titular_id","n.substitute_id",
+    "n.phone","n.fax","n.email", "n.street", "n.number", "n.indoor-number", "n.district", "n.federal_entity_id",
+    "n.city_id", "n.zip", "n.sat_constancy_file", "n.notary_constancy_file", "usert.name as nombre_titular", 
+    "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular", 
+    "usert.status as status_titular", "u.name as nombre_usuario_tramite", "u.fathers_surname as apellido_pat_tramite",
+    "u.mothers_surname as apellido_mat_tramite")
+    ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
     ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
     ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', 'servicio.Tipo_Code')
     ->leftJoin('portal.mensaje_prelacion as pr', 'tk.grupo_clave', 'pr.grupo_clave')
-    ->orderBy('tk.created_at', 'DESC')
-    // ->whereIn('tk.grupo_clave',$filtro)->get();
-    ->whereIn('c.id',$catalogo)->get();
-   
+    ->leftJoin('portal.users as u', 'tk.user_id', 'u.id')
+    ->leftJoin('portal.config_user_notary_offices as config', 'config.user_id', 'tk.user_id')
+    ->leftJoin('portal.notary_offices as n', 'n.id', 'config.notary_office_id')
+    ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
+    ->orderBy('tk.created_at', 'ASC')
+    ->whereIn('c.id',$ids_catalogos)->get();
+
     $newDato=[];
+
     foreach($grupo as $i => $id){
       $datos=[];
-      foreach ($solicitudes as $d => $value) {     
-        if($value->grupo_clave== $id){
-          if(isset($value->info)){            
-            $info=$this->asignarClavesCatalogo($value->info);
-            $value->info=$info;
+      $campos_catalogo = [];
+      foreach ($solicitudes as $key => $value){   
+        if($value->grupo_clave== $id){   
+          if(isset($value->info)){  
+            $value->info = json_decode($value->info);
+            if(isset($value->info->campos)){
+              $campos_catalogo = array_merge($campos_catalogo, array_keys((array)$value->info->campos));        
+              $campos_catalogo = array_unique($campos_catalogo);
+              $catalogo = DB::connection('mysql6')->table('campos_catalogue')->select('id', 'descripcion','alias')
+              ->whereIn('id', $campos_catalogo)->get()->toArray();           
+     
+              $campos = [];
+              foreach($value->info->campos as $key2 => $val){
+                  if(is_numeric($key2)){
+                    $key2 = $catalogo[array_search($key2, array_column($catalogo, 'id'))]->descripcion;
+                    $campos[$key2] = $val;
+                  } 
+                  $value->info->campos = $campos;
+                  
+              }    
+            }
+          
           }
+          if(!$value->bitacora->isEmpty()){
+            foreach ($value->bitacora as $bit => &$bitacora) {             
+                $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
+                $bitacora->nombre = $estatus->descripcion;
+                $bitacora->catalogo = $value->catalogo;
+
+                $res = Portalsolicitudesresponsables::from("solicitudes_responsables as r")
+                ->where("r.catalogo_id", $bitacora->catalogo)
+                ->where("r.id_estatus_atencion", $bitacora->id_estatus_atencion)
+                ->where("r.user_id", $user_id)
+                ->select('r.*', DB::raw('(CASE 
+                  WHEN r.user_id = '."$user_id".' THEN "1" 
+                  WHEN r.user_id = "null" THEN "1" 
+                  ELSE "0" 
+                  END) AS permiso'))
+                ->first();
+                if($res!=null){
+                  $bitacora->permiso=$res->permiso;
+                  $bitacora->responsables = $res;
+                }else{
+                  $bitacora->permiso=0;
+                  $bitacora->responsables =[];
+                }
+               
+
+            }
+          }
+     
           array_push($datos, $value);
           $newDato[$i]["grupo_clave"]=$id;
-          $newDato[$i]["notaria"]=$notaria;
           $newDato[$i]["grupo"]=$datos;
         }
       
@@ -547,14 +624,43 @@ class PortalSolicitudesController extends Controller
     $tipoSolicitud=$this->findSol();
 
     $user_id = auth()->user()->id;
+  
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
 
+    $usuarios_atencion = Portalsolicitudesresponsables::from("portal.solicitudes_responsables as res")
+    ->select("u.name", "u.email", "u.id as id_usuario")
+    ->leftjoin("operacion.users as u", "u.id", "=", "res.user_id")
+    ->whereNotNull("res.id_estatus_atencion")
+    ->groupBy("res.user_id")
+    ->get()->toArray();
+
+
+    $atencion= $responsable!=null ? "true" : "false";
+        
     $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+    if($status==null){
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Este usuario no tiene asignado estatus." 
+        ]
+      );
+    }
 
     $status = json_decode($status->estatus);
 
     $status = $this->status->whereIn("id", $status)->get()->toArray();
     
-    return view('portal/listadosolicitud', ["tipo_solicitud" => $tipoSolicitud , "status" => $status]);
+    return view('portal/listadosolicitud', [
+      "tipo_solicitud" => $tipoSolicitud , 
+      "status" => $status, 
+      "user_id"=>$user_id, 
+      "atencion"=>$atencion,
+      "usuarios_atencion"=>$usuarios_atencion
+    ]);
 
   }
   public function findSol()
@@ -636,7 +742,7 @@ class PortalSolicitudesController extends Controller
     $mensaje_para = $request->mensaje_para;
     $ticket_id = $request->id;
     $prelacion = $request->prelacion;
-    //log::info($request->all());
+    $mensajes;
    
     if($request->has("file")){
       $file = $request->file('file');
@@ -654,31 +760,30 @@ class PortalSolicitudesController extends Controller
         $msprelacion =$this->msjprelaciondb->create([
           'grupo_clave'=> $request->grupo_clave,'url_prelacion'=>$attach,'status'=>'1'
         ]);
-        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id);
-        foreach($request->id as $i)
-          {
-           $this->ticket->update(['status'=>"2"],$i);
-          }
+         /*foreach($request->id as $i)
+        {
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
+        }*/
+       /* foreach($request->tickets_id as $i)
+        {
+          $this->saveTicketBitacora($i,$request->grupo_clave,$request->id_estatus_atencion,auth()->user()->id,$mensaje,1);
+        }*/
+        $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,"Pasa a Validador",$request->id_estatus_atencion);
       }
-    try {
-          foreach($request->id as $i)
-          {
-
-            $mensajes =$this->mensajes->create([
-            'ticket_id'=> $i,
-            'mensaje' => $mensaje,
-            'mensaje_para' => $mensaje_para,
-            'attach'    =>  $attach
-            ]);
-          }
-
+    try {  
       if($request->rechazo=="true")
       {
-        
-        foreach($request->id as $i)
+        $rch=0;
+
+        foreach($request->tickets_id as $i)
         {
           $newid=$i;
-          $rch=0;
+          $status="";
           switch ($request->rechazo_id) {
             case '50':
               $rch=7;
@@ -696,33 +801,63 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
+          }else if($rch==7 || $rch==8){            
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
+
+            //$newCatalogoid=$findSolTicket[0]->catalogo_id;
+
+            /*while(true)
+            {                
+              $findCatalogoPadre=$this->solicitudes->findWhere(["id"=>$newCatalogoid]);
+              if($findCatalogoPadre[0]->padre_id==null)
+              {
+                $upTicket=$this->ticket->update(["catalogo_id"=>$newCatalogoid],$i);
+                break;
+              }else{
+                 $newCatalogoid=$findCatalogoPadre[0]->padre_id;
+              }           
+            }*/
+            if (in_array($i, (array)$request->id))
+            {
+              $ins=$this->ticket->update(["status"=>$rch],$i);
+              $status=$rch;
+            }else{
+              $status=$findSolTicket[0]->status;
+            }
+            $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
           }else{
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
-            while(true)
-            {
-              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
-              //log::info($sTicket);
-              if($sTicket[0]->ticket_relacionado==null)
-              {
-                $newid=$sTicket[0]->id;
-                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
-                break;
-              }else{
-                $newid=$sTicket[0]->ticket_relacionado;
-              }
-            }
-          }         
+            $status=$rch;
+            $this->saveTicketBitacora($i,$request->grupo_clave,2,auth()->user()->id,$mensaje,$status);
+          }
+          
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
         }
-          $solicitudTicket = $this->ticket->whereIn('id' , $request->id)
-        ->update(['status'=> "3"]);
+      }else{
+        foreach($request->id as $i)
+        {
+          $mensajes =$this->mensajes->create([
+          'ticket_id'=> $i,
+          'mensaje' => $mensaje. " , Por: ".auth()->user()->name,
+          'mensaje_para' => $mensaje_para,
+          'attach'    =>  $attach
+          ]);
+        }
       }
+
       return response()->json(
         [
           "Code" => "200",
-          "Message" => "Mensaje guardado con éxito",
-          "data"=>$mensajes
-
+          "Message" => "Mensaje guardado con éxito"
         ]
       );
 
@@ -737,54 +872,25 @@ class PortalSolicitudesController extends Controller
       );
     }
   }
-  public function cerrarCrearTicket($id,$grupo_clave,$ticket_id){
+  public function cerrarCrearTicket($ticket_id,$grupo_clave,$id,$mensaje,$id_estatus_atencion){
     //log::info($ticket_id); 
     try{
      
-        foreach($id as $i)
+        foreach($ticket_id as $i)
         {   
           $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
-          foreach ($findSolTicket as $e) {            
-            $findTicket=$this->ticket->findWhere(['ticket_relacionado'=>$i]);
-            if($findTicket->count()==0)
-            {
-              $findCatalogoHijo=$this->solicitudes->findWhere(["padre_id"=>$e->catalogo_id]);
-              if($findCatalogoHijo->count()>0)
-              {                
-                $catalogoH=$findCatalogoHijo[0]->id;
-                $ins=$this->ticket->create([
-                  "clave"=>$e->clave,
-                  "grupo_clave"=>$e->grupo_clave,
-                  "id_tramite"=>$e->id_tramite,
-                  "recibo_referencia"=>$e->recibo_referencia,
-                  "catalogo_id"=>$catalogoH,
-                  "id_transaccion"=>$e->id_transaccion,
-                  "info"=>$e->info,
-                  "relacionado_a"=>$e->relacionado_a,
-                  "ticket_relacionado"=>$e->id,
-                  "ticket_padre"=>$e->ticket_padre,
-                  "user_id"=>$e->user_id,
-                  "creado_por"=>$e->creado_por,
-                  "asignado_a"=>$e->asignado_a,
-                  "en_carrito"=>$e->en_carrito,
-                  "firmado"=>$e->firmado,
-                  "por_firmar"=>$e->por_firmar,
-                  "doc_firmado"=>$e->doc_firmado,
-                  "required_docs"=>$e->required_docs,
-                  "status"=>$e->status
-                ]);
-              }
-            }
-          }
-          
-        }
-        foreach($ticket_id as $ti)
-        { 
-          $fTicket=$this->ticket->findWhere(['ticket_relacionado'=>$ti]);
-          if($fTicket->count()>0)
-          {
-            $upTicket=$this->ticket->update(["status"=>"1"],$fTicket[0]->id);
-          }
+          foreach ($findSolTicket as $e) { 
+            $status=$e->status;           
+            if($id_estatus_atencion=="3"){
+              $status="2";
+              $ins=$this->ticket->update(["status"=>"2"],$e->id);
+              $this->saveTicketBitacora($i,$grupo_clave,4,auth()->user()->id,$mensaje,$status);
+            }else if($id_estatus_atencion==2){
+               $this->saveTicketBitacora($i,$grupo_clave,3,null,$mensaje,$status);
+            }else{
+               $this->saveTicketBitacora($i,$grupo_clave,$id_estatus_atencion,auth()->user()->id,$mensaje,$status);
+            }  
+          }          
         }
       }catch(\Exception $e){
         Log::info('Error Cerrar Ticket '.$e->getMessage());
@@ -863,25 +969,28 @@ class PortalSolicitudesController extends Controller
 
     }
     public function getMensajes($id){
-      try{
+      try{ 
+        $id=json_decode($id);
+        //log::info($id);
         $mensajes=array();
-         $findmensajes = $this->mensajes->where('ticket_id', $id)
+         $findmensajes = $this->mensajes->whereIn('ticket_id', $id)
                     ->orderBy('created_at', 'DESC')
                     ->get()
                     ->toArray();
 
 
-        $findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
+        /*$findSolicitudes=$this->ticket->findWhere(["id"=>$id]);
         $findMensajesPadre=[];
-        //log::info($findSolicitudes[0]["ticket_relacionado"]);
+        log::info($findSolicitudes[0]["ticket_relacionado"]);
         if(isset($findSolicitudes[0]["ticket_relacionado"])){
           $findMensajesPadre = $this->mensajes->where('ticket_id', $findSolicitudes[0]["ticket_relacionado"])
           ->orderBy('created_at', 'DESC')
           ->get()
           ->toArray();
 
-        }
-        $mensajes=array_merge($findmensajes,$findMensajesPadre);
+        }*/
+        $mensajes=$findmensajes;
+       // $mensajes=array_merge($findmensajes,$findMensajesPadre);
 
 
      
@@ -908,17 +1017,24 @@ class PortalSolicitudesController extends Controller
       }
     }
     public function getFileRoute($id, $type){
-        $url= env("SESSION_HOSTNAME");
-        $link = env("SESSION_HOSTNAME")."/notary-offices/file/"."$id/$type";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $link);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $route = curl_exec($ch);
-        $error =curl_error($ch);
-        curl_close($ch);
-        $route=json_decode($route);
-        return $url."/".$route->response;
+      try{
+        $notary = PortalNotaryOffices::find($id);
+        if($type=='sat'){
+          $file=$notary->sat_constancy_file;	
+          
+        }else{			
+          $file=$notary->notary_constancy_file;
+        
+          
+        }
+        $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+        $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$filename;        
+        return redirect()->to($url);
+     
 
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@getFileRoute ".$e->getMessage());
+      }
 
     }
 
@@ -1396,12 +1512,14 @@ class PortalSolicitudesController extends Controller
   }
   public   function upStatusRechazo(Request $request)
   {
+    //log::info($request->all());
     try {
-        $id=$request->id;
+        $id=$request->tickets_id;
+        $rch=0;
         foreach($id as $i)
         {
           $newid=$i;
-          $rch=0;
+          $status="";
           $mensaje="";
           switch ($request->estatus) {
             case '50':
@@ -1420,30 +1538,43 @@ class PortalSolicitudesController extends Controller
           
           if($rch==2){
             $mensaje="Accion: ".$request->mensaje; 
-            $solicitudTicket = $this->ticket->whereIn('id' , $id)->update(['status'=> "2"]);
-            $this->cerrarCrearTicket($request->id,$request->grupo_clave,$request->id);
-          }else{
-            $solicitudTicket = $this->ticket->whereIn('id' , $id)
-        ->update(['status'=> "3"]);
+            $this->cerrarCrearTicket($request->tickets_id,$request->grupo_clave,$request->id,$mensaje,$request->id_estatus_atencion);
+          }else if($rch==7 || $rch==8){            
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
-            while(true)
-            {
-              $sTicket = $this->ticket->findWhere(["id"=>$newid]);
-              //log::info($sTicket);
-              if($sTicket[0]->ticket_relacionado==null)
+            $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
+
+            $newCatalogoid=$findSolTicket[0]->catalogo_id;
+
+           /* while(true)
+            {                
+              $findCatalogoPadre=$this->solicitudes->findWhere(["id"=>$newCatalogoid]);
+              if($findCatalogoPadre[0]->padre_id==null)
               {
-                $newid=$sTicket[0]->id;
-                $upTicket=$this->ticket->update(["status"=>$rch],$newid);
+                $upTicket=$this->ticket->update(["catalogo_id"=>$newCatalogoid],$i);
                 break;
               }else{
-                $newid=$sTicket[0]->ticket_relacionado;
-              }
+                 $newCatalogoid=$findCatalogoPadre[0]->padre_id;
+              }           
+            }*/
+            if (in_array($i, $request->id))
+            {
+              $ins=$this->ticket->update(["status"=>$rch],$i);
+              $status=$rch;
+            }else{
+              $status=$findSolTicket[0]->status;
             }
+            $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
+          }else{
+            $mensaje="Motivo de rechazo: ".$request->mensaje;
+            $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
+            $status=$rch;
+            $this->saveTicketBitacora($i,$request->grupo_clave,2,auth()->user()->id,$mensaje,$status);
           }
+          //$ins=$this->ticket->whereIn("id",$request->id)->update(["status"=>$rch]);
            $mensajes =$this->mensajes->create([
             'ticket_id'=> $i,
-            'mensaje' => $mensaje,
+            'mensaje' => $mensaje . " , Por: ".auth()->user()->name,
             'mensaje_para' => 1,
             'attach'    =>  ""
             ]);          
@@ -1476,6 +1607,742 @@ class PortalSolicitudesController extends Controller
       return "0";
     }
     return $url;
+  }
+  public  function getEstatusAtencion()
+  {
+    try{
+     $estatus = EstatusAtencion::get()->toArray();
+     return $estatus;
+    }catch (\Exception $e) {
+      log::info("PortalSolicitudes@getEstatusAtencion " . $e);
+      return "0";
+    }
+  }
+
+  public function agregarResponsableEstatusAtencion(Request $request){
+    $id_tramite = $request->catalogo_id;
+    $status = $request->id_estatus_atencion;
+    $atiende = $request->user;
+    $users=explode(",",$atiende);
+    try {
+
+  
+      foreach ($users as $e) {
+        $responsables=$this->solicitudrespdb->create([
+        "user_id"=>$e,
+        "catalogo_id"=>$id_tramite,
+        "id_estatus_atencion"=>$status
+      ]);
+      }
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Solicitud asignada con éxito",
+        ]
+      );
+
+    }catch(\Exception $e) {
+
+      Log::info('Error Asignar solicitud '.$e->getMessage());
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al agregar responsable a la solicitud",
+        ]
+      );
+    }
+
+  }
+
+  public function editarAtenderSolicitud(Request $request){
+    $tramite_id = $request->catalogo_id;
+    $atiende = $request->user;
+    $status = $request->id_estatus_atencion;
+    $users=explode(",",$atiende);
+    try{
+
+      $del = Portalsolicitudesresponsables::where('catalogo_id', '=', $tramite_id)
+            ->whereIn('id_estatus_atencion', $status)->get();
+
+      $del->each->delete();
+
+      foreach ($users as $e) {
+        $responsable=$this->solicitudrespdb->create([
+          "user_id"=>$e,
+          "catalogo_id"=>$tramite_id,
+          "id_estatus_atencion"=>$status
+        ]);
+      }
+
+
+    return response()->json(
+      [
+        "Code" => "200",
+        "Message" => "Atender solicitud actualizada",
+      ]
+    );
+
+    }catch(\Exception $e){
+
+      Log::info('Error editar atender solicitud '.$e->getMessage());
+
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error editar atender solicitud ".$e->getMessage(),
+        ]
+      );
+    }
+
+  }
+  public function getAllProcesos($id){
+    try{
+      $procesos = $this->getEstatusAtencion();
+      $responsables = Portalsolicitudesresponsables::where('catalogo_id', '=', $id)
+      ->get();
+     
+      foreach ($procesos as $key => &$value) {
+      $users=[];
+
+        foreach ($responsables as $r => $res) {
+          if($res->id_estatus_atencion==$value["id"]){
+            $user=Users::find($res->user_id);
+            $users[]=array(
+              'id' => $user->id,
+              'nombre'  =>$user->name,
+              'correo' => $user->email
+            );
+            $value["users"]=$users;
+
+          }
+        }
+       
+      }
+      return $procesos;
+    }
+    catch(\Exception $e) {
+      Log::info('Error Portal Solicitudes - Obtener procesos de solicitudes: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al obtener procesos" .$e->getMessage()
+        ]
+      );
+    }
+  }
+  public function agregarTicketBitacora(Request $request){
+    $data = $request->all();
+    try {
+      $create = TicketBitacora::create($data);
+      if($create){
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Ticket agregado a bitacora "
+          ]
+        );
+      }
+    
+    } catch (\Exception $e) {
+      Log::info('Error Portal Solicitudes - registro de bitacora: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al obtener procesos" .$e->getMessage()
+        ]
+      );
+    }
+  }
+  private function saveTicketBitacora($ticket_id,$grupo_clave,$id_estatus_atencion,$user_id,$mensaje,$status)
+  {
+    try {
+      $findInfoTicket=$this->ticket->findWhere(["id"=>$ticket_id]);
+      $this->ticketBitacoradb->create(["id_ticket"=>$ticket_id,"grupo_clave"=>$grupo_clave,"id_estatus_atencion"=>$id_estatus_atencion,"info"=>$findInfoTicket[0]->info,"user_id"=>$user_id,"mensaje"=>$mensaje,"status"=>$status]);
+    } catch (Exception $e) {
+      log::info("saveTicketBitacora: ".$e);
+    }
+      
+  }
+
+  public function revertirStatus(Request $request){
+    $user_id = auth()->user()->id;
+    $tickets = $request->id_ticket;
+    $status = $request->status;
+    $estatus_atencion=$request->estatus_atencion;
+    $mensaje = $request->has("mensaje") ? $request->mensaje : "";
+
+    $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+    ->where("id_estatus_atencion", 5)
+    ->first();
+    try {
+      if($responsable!=null){       
+        foreach ($tickets as $i => $id) {
+            $ticket = PortalSolicitudesTicket::where('id',$id)->first();         
+            $update = $ticket->update(["status"=> $status]);
+            $bitacora = $this->saveTicketBitacora($id,$ticket->grupo_clave,$estatus_atencion, $user_id,$mensaje="", $status);
+         
+
+        }
+        return response()->json(
+          [
+            "Code" => "200",
+            "Message" => "Se actualizo estatus"
+          ]
+        );
+
+      }else{
+        return response()->json(
+          [
+            "Code" => "409",
+            "Message" => "No tiene permisos de supervisor"
+          ]
+        );
+      }
+    } catch (\Exception $e) {
+      Log::info('Error Portal Solicitudes - actualizar status: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "409",
+          "Message" => "Error al revertir status" .$e->getMessage()
+        ]
+      );
+    }
+    
+  }
+
+  public function viewFile($file)
+    {
+      try{
+      $pathtoFile = storage_path('app/'.$file);
+      return response()->file($pathtoFile);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@viewFile");
+      }
+    }
+
+ public function viewAtencionSolicitudes()
+    {
+      try{
+        $tipoSolicitud=$this->findSol();
+
+        $user_id = auth()->user()->id;
+      
+        $responsable = Portalsolicitudesresponsables::where("user_id", $user_id)
+        ->where("id_estatus_atencion", 5)
+        ->first();
+
+        $usuarios_atencion = Portalsolicitudesresponsables::from("portal.solicitudes_responsables as res")
+        ->select("u.name", "u.email", "u.id as id_usuario")
+        ->leftjoin("operacion.users as u", "u.id", "=", "res.user_id")
+        ->whereNotNull("res.id_estatus_atencion")
+        ->groupBy("res.user_id")
+        ->get()->toArray();
+
+
+        $atencion= $responsable!=null ? "true" : "false";
+            
+        $status = $this->userEstatus->where("id_usuario", $user_id)->first();
+
+        if($status==null){
+          return response()->json(
+            [
+              "Code" => "400",
+              "Message" => "Este usuario no tiene asignado estatus." 
+            ]
+          );
+        }
+
+        $status = json_decode($status->estatus);
+
+        $status = $this->status->whereIn("id", $status)->get()->toArray();
+        
+        return view('portal/atencionsolicitud', [
+          "tipo_solicitud" => $tipoSolicitud , 
+          "status" => $status, 
+          "user_id"=>$user_id, 
+          "atencion"=>$atencion,
+          "usuarios_atencion"=>$usuarios_atencion
+        ]);
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@viewAtencionSolicitudes");
+      }
+    }
+
+  /**
+	 *	
+	 * notify. Este metodo es para la modificacion de enviar el correo 
+	 *
+	 * @param $id => para buscar el id en la tabla
+	 *
+	 * @return 99 si error 100 si todo correcto
+	 *
+	 */
+	public function notify($id, $folio, $status, $motivo=""){
+
+        switch ($status) {
+          case "1":
+            $encabezado="Expediente aprobado en IRCNL";
+                    
+            $mensaje="Tu trámite con número de folio <strong>$folio</strong> fue aprobado por el
+            registrador asignado. Por favor, recoge tu expediente con el trámite
+            terminado en el Módulo de Entrega de Documentos dentro de 2
+            días hábiles. Si tienes dudas sobre el uso de esta plataforma
+            puedes llamar a Informatel 070.";
+            break;
+          case "7":
+            $encabezado="Expediente rechazado en IRCNL";
+
+            $mensaje="Tu trámite con Núm. De <strong>$folio</strong> fue rechazado por el motivo:
+            $motivo
+            Por favor, recoge tu expediente en el Módulo de Entrega de
+            Documentos, completa la información que te solicitan y
+            posteriormente preséntate en el Módulo de Recepción de
+            Documentos para reingresar el expediente. Si tienes dudas sobre el
+            uso de esta plataforma puedes llamar a Informatel 070";
+            break;
+          case "8":
+            $encabezado="Notificación de falta de pago";
+            $mensaje="Es necesario que complementes el pago de tu trámite con número
+            de folio <strong>$folio</strong> para que pueda ser ingresado correctamente. Retoma
+            tu trámite en la bandeja de Recibidos y realiza el pago
+            correspondiente. Al terminar, preséntate en el Módulo de Recepción
+            de Documentos con tu expediente y tu comprobante de pago. Si
+            tienes dudas sobre el uso de esta plataforma puedes llamar a
+            Informatel 070.
+            ";
+            break;
+          case "5":
+            $encabezado="Orden de Referencia";
+            $mensaje ="Su pedido con folio <strong>$folio</strong> está en espera del pago";
+            break;
+          case "2":
+            $encabezado="Recibo Pagado";
+            $mensaje ="Su pedido con folio <strong>$folio</strong> ha sido pagado.";
+            break;
+          default:
+          $statusTicket = 1;
+        }
+        $table = new NotificacionEstatusAtencion();
+        $mail = new PHPMailer(true);
+
+        $user = UsersPortal::findOrFail($id);
+			  $correo= "karla.cesgu@gmail.com";
+
+        $nombre =$user->name." ".$user->fathers_surname." ".$user->mothers_surname;
+         
+        $message=$this->plantilla($nombre, $folio, $encabezado, $mensaje);
+        //log::info($correo.'  '.$nombre.' '.$folio);
+        try{
+            
+            // $mail->isSMTP();
+            // $mail->CharSet = 'utf-8';
+            // $mail->SMTPAuth =true;
+            // $mail->SMTPSecure = 'tls';
+            // $mail->Host = 'smtp.gmail.com';
+            // $mail->Port = '587'; 
+            // $mail->Username = 'karlacespedesgob@gmail.com';
+            // $mail->Password = 'cespedes2020';
+            // $mail->setFrom('karlacespedesgob@gmail.com', 'noreply tesoreria'); 
+            // $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
+            // $mail->MsgHTML($message);                    
+            // $mail->addAddress($correo, $nombre); 
+            // $mail->send();
+
+            
+            $table->create(
+              [
+                  "user"      => $correo,
+                  "message"   => $message,
+                  "sent"      => 0
+              ]
+          );
+          return  1;
+        }catch(\Exception $e){
+          \Log::info("Error email => ".$e->getMessage());
+          return 99;
+        }
+		
+
+	}
+
+
+
+  public function plantilla($nombre, $folio, $encabezado, $mensaje)
+  {  
+   
+      $email='<!doctype html><html><head><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Egobierno</title><style> 
+    img {
+      border: none;
+      -ms-interpolation-mode: bicubic;
+      max-width: 100%; 
+    }
+    .footer{
+      font-style: italic;
+    }
+    body {
+      background-color: #f6f6f6;
+      font-family: sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      line-height: 1.4;
+      margin: 0;
+      padding: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%; 
+    }
+    table {
+      border-collapse: separate;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      width: 100%; }
+      table td {
+        font-family: sans-serif;
+        font-size: 14px;
+        vertical-align: top; 
+    }
+    .body {
+      background-color: #f6f6f6;
+      width: 100%; 
+    }
+    .container {
+      display: block;
+      margin: 0 auto !important;
+      /* makes it centered */
+      max-width: 780px;
+      padding: 10px;
+      width: 780px; 
+    }
+    .content {
+      box-sizing: border-box;
+      display: block;
+      margin: 0 auto;
+      max-width: 680px;
+      padding: 10px; 
+    }
+    .main {
+      background: #ffffff;
+      border-radius: 3px;
+      width: 100%; 
+    }
+
+    .wrapper {
+      box-sizing: border-box;
+      padding: 20px; 
+    }
+
+    .content-block {
+      padding-bottom: 10px;
+      padding-top: 10px;
+    }
+
+    .footer {
+      clear: both;
+      margin-top: 10px;
+      text-align: center;
+      width: 100%; 
+    }
+      .footer td,
+      .footer p,
+      .footer span,
+      .footer a {
+        color: #999999;
+        font-size: 12px;
+        text-align: center; 
+    }
+
+    h2,
+    h3,
+    h4 {
+      color: #000000;
+      font-family: sans-serif;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
+      margin-bottom: 30px; 
+    }
+
+    h1 {
+      color: #035a54;
+      font-family: sans-serif;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
+      margin-bottom: 30px; 
+    }
+
+    h1 {
+      font-size: 35px;
+      font-weight: 300;
+      text-align: center;
+      text-transform: capitalize; 
+    }
+
+    p,
+    ul,
+    ol {
+      font-family: sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      margin: 0;
+      margin-bottom: 15px; 
+    }
+      p li,
+      ul li,
+      ol li {
+        list-style-position: inside;
+        margin-left: 5px; 
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: underline; 
+    }
+    .btn {
+      box-sizing: border-box;
+      width: 100%; }
+      .btn > tbody > tr > td {
+        padding-bottom: 15px; }
+      .btn table {
+        width: auto; 
+    }
+      .btn table td {
+        background-color: #ffffff;
+        border-radius: 5px;
+        text-align: center; 
+    }
+      .btn a {
+        background-color: #ffffff;
+        border: solid 1px #3498db;
+        border-radius: 5px;
+        box-sizing: border-box;
+        color: #3498db;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0;
+        padding: 12px 25px;
+        text-decoration: none;
+        text-transform: capitalize; 
+    }
+    .btn-primary table td {
+      background-color: #3498db; 
+    }
+
+    .btn-primary a {
+      background-color: #3498db;
+      border-color: #3498db;
+      color: #ffffff; 
+    }
+    .last {
+      margin-bottom: 0; 
+    }
+
+    .first {
+      margin-top: 0; 
+    }
+
+    .align-center {
+      text-align: center; 
+    }
+
+    .align-right {
+      text-align: right; 
+    }
+
+    .align-left {
+      text-align: left; 
+    }
+
+    .clear {
+      clear: both; 
+    }
+
+    .mt0 {
+      margin-top: 0; 
+    }
+
+    .mb0 {
+      margin-bottom: 0; 
+    }
+
+    .preheader {
+      color: transparent;
+      display: none;
+      height: 0;
+      max-height: 0;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      mso-hide: all;
+      visibility: hidden;
+      width: 0; 
+    }
+
+    .powered-by a {
+      text-decoration: none; 
+    }
+
+    hr {
+      border: 0;
+      border-bottom: 1px solid #bebebe;
+      margin: 20px 0; 
+    }
+    @media only screen and (max-width: 620px) {
+      table[class=body] h1 {
+        font-size: 28px !important;
+        margin-bottom: 10px !important; 
+      }
+      table[class=body] p,
+      table[class=body] ul,
+      table[class=body] ol,
+      table[class=body] td,
+      table[class=body] span,
+      table[class=body] a {
+        font-size: 16px !important; 
+      }
+      table[class=body] .wrapper,
+      table[class=body] .article {
+        padding: 10px !important; 
+      }
+      table[class=body] .content {
+        padding: 0 !important; 
+      }
+      table[class=body] .container {
+        padding: 0 !important;
+        width: 100% !important; 
+      }
+      table[class=body] .main {
+        border-left-width: 0 !important;
+        border-radius: 0 !important;
+        border-right-width: 0 !important; 
+      }
+      table[class=body] .btn table {
+        width: 100% !important; 
+      }
+      table[class=body] .btn a {
+        width: 100% !important; 
+      }
+      table[class=body] .img-responsive {
+        height: auto !important;
+        max-width: 100% !important;
+        width: auto !important; 
+      }
+    }
+    @media all {
+      .ExternalClass {
+        width: 100%; 
+      }
+      .ExternalClass,
+      .ExternalClass p,
+      .ExternalClass span,
+      .ExternalClass font,
+      .ExternalClass td,
+      .ExternalClass div {
+        line-height: 100%; 
+      }
+      .apple-link a {
+        color: inherit !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        text-decoration: none !important; 
+      }
+      #MessageViewBody a {
+        color: inherit;
+        text-decoration: none;
+        font-size: inherit;
+        font-family: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+      }
+      .btn-primary table td:hover {
+        background-color: #34495e !important; 
+      }
+      .btn-primary a:hover {
+        background-color: #34495e !important;
+        border-color: #34495e !important; 
+      } 
+    }
+  </style>
+  </head>
+  <body class="">  
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+      <td>&nbsp;</td>
+      <td class="container">
+        <div class="content">
+          <table role="presentation" class="main">
+            <tr>
+              <td class="wrapper">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td>
+                     <center><h1><strong>'.$encabezado.'</strong></h1></center> 
+                     <h3>Estimado(a) <strong>'.$nombre.'</strong></h3>                                 
+                      <br>
+                      <p>'.$mensaje.' </p> 
+                      <br>
+                      <!--<p></p>-->
+                      <br>
+                      <br>
+                      <p><h2><center>ATENTAMENTE</center><h2></p>
+                      <p class="footer"><h2><center>Dirección General de Instituto Registral y Catastral</center><h2></p>
+                      <p>Con fundamento en los artículos 18, 20, 21 y 22 de la Ley Federal de Transparencia y Acceso a la Información
+                      Pública Gubernamental. Artículos 37 y 40 de su reglamento, así como los lineamientos de la Protección de
+                      Datos Personales expedidos por el Instituto Federal de Acceso a la Información y Protección de Datos; los Datos Personales contenidos en el presente documento están protegidos, por tanto solo podrán ser usados para
+                      los fines por los cuales fueron entregados, cualquier uso deberá ser autorizado por el titular de los mismos.</p>
+                       <br> <br>
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <tbody>
+                          <tr>
+                            <td align="left">
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tbody >
+                                  <tr> </td>
+                                   <!-- <td whidth="100%" align="center"> <a href="" target="_blank">Ver Recibo</a> </td>-->
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>       
+        </div></td><td>&nbsp;</td></tr></table></body></html>
+  ';
+  return $email;
+  }
+
+  public function aceptarRechazarTramite(Request $request){
+    try {
+      $mensaje = $this->mensajes->updateOrCreate(["ticket_id" =>$request->ticket_id], [
+        "ticket_id"=>$request->ticket_id,
+        "mensaje"=>$request->mensaje
+      ]);
+
+      $estatus = $request->mensaje=="aceptar" ? "aceptado" : "rechazado";
+
+      return response()->json(
+        [
+          "Code" => "200",
+          "Message" => "Tramite ".$estatus
+      ]);
+    } catch (\Exception $e) {
+      Log::info('Error Estatus Tramite: '.$e->getMessage());
+      return response()->json(
+        [
+          "Code" => "400",
+          "Message" => "Error al aceptar/rechazar tramite"
+      ]);
+    }
   }
   
 }
