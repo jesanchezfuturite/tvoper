@@ -113,7 +113,7 @@ class PortalSolicitudesTicketController extends Controller
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
       $catalogo_id = $tramite->id;      
 
-      if($request->has("en_carrito") && $request->catalogo_id<>$aviso){$carrito =1;}else{$carrito="";}
+      if($request->has("en_carrito") && $request->catalogo_id<>$aviso){$carrito =1;}else{$carrito=null;}
 
       $error =null;
       $info = json_decode($request->info);
