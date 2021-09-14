@@ -89,6 +89,7 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function registrarSolicitud(Request $request){   
       $name= \Request::route()->getName();
+      $aviso=env("TRAMITE_AVISO");
       $status="";
       if($name=="solicitudes-register-temporal"){
         $status=80;
@@ -105,13 +106,13 @@ class PortalSolicitudesTicketController extends Controller
         $status=8;
       }
 
-
-      if($request->has("en_carrito")){$carrito =1;}else{$carrito="";}
-
       if($request->has("grupo_clave")){$grupo = $request->grupo_clave;}else{$grupo="";}
 
       $tramite = $this->solicitudes->where('tramite_id', $request->catalogo_id)->first();
-      $catalogo_id = $tramite->id;
+      $catalogo_id = $tramite->id;      
+
+      if($request->has("en_carrito") && $request->catalogo_id<>$aviso){$carrito =1;}else{$carrito="";}
+
       $error =null;
       $info = json_decode($request->info);
       
@@ -1952,8 +1953,7 @@ class PortalSolicitudesTicketController extends Controller
         try {
         $solicitudes = PortalSolicitudesTicket::leftJoin('solicitudes_catalogo', 'solicitudes_ticket.catalogo_id', '=', 'solicitudes_catalogo.id')
         ->where("solicitudes_ticket.id", $id)->first();
-        if($solicitudes->tramite_id==$aviso){
-          $solicitudes->update(["en_carrito"=>NULL]);
+        if($solicitudes->tramite_id==$aviso){       
             return 1;
         }else{
             return 0;
