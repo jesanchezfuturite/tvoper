@@ -58,4 +58,8 @@ class Tramites extends Model implements Transformable
 
     public $timestamps = false;
 
+	public function servicios() {
+		return $this->hasMany("App\Entities\Egobiernotiposervicios", "Tipo_Code", "id_tipo_servicio");
+	}
+
 }
