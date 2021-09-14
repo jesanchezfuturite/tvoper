@@ -21,7 +21,11 @@ class Tickets extends Model {
         return $this->hasOneThrough(Transaccion::class, OperTransaccion::class, 'id_transaccion_motor', 'id_transaccion_motor', null, 'id_transaccion_motor');
     }
 
-    public function files () {
+    public function files_clave () {
         return $this->hasMany(Mensajes::class, 'clave', 'clave')->whereNotNull('attach')->where('status', 1);
+    }
+
+    public function files () {
+        return $this->hasMany(Mensajes::class, 'ticket_id', 'tramite_id')->whereNotNull('attach')->where('status', 1);
     }
 }
