@@ -439,28 +439,34 @@ class PortalSolicitudesTicketController extends Controller
         if($type=="firma"){
           $solicitudes = PortalSolicitudesTicket::whereIn('solicitudes_ticket.user_id', $users)
           ->select('solicitudes_ticket.*', 'tmt.id_transaccion_motor', 'op.fecha_limite_referencia',
-          'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia', 'servicio.perfil')
+          'op.id_transaccion_motor','op.fecha_pago', 'op.id_transaccion', 'op.referencia', 'servicio.perfil', 
+          'c.tramite_id')
           ->leftJoin('portal.solicitudes_catalogo as c', 'solicitudes_ticket.catalogo_id', '=', 'c.id')
           ->leftJoin('solicitudes_tramite as tmt', 'solicitudes_ticket.id_transaccion', '=', 'tmt.id')
           ->leftjoin('operacion.oper_transacciones as op', 'tmt.id_transaccion_motor', '=', 'op.id_transaccion_motor')
           ->leftJoin('egobierno.tipo_servicios as servicio', 'c.tramite_id', '=','servicio.Tipo_Code')
-          ->where(function ($query) {
-            $query->where('solicitudes_ticket.por_firmar', '=', 1)
-            ->where('solicitudes_ticket.firmado', null)
-            ->whereNotNull('solicitudes_ticket.id_transaccion');
-          })
-          ->with(['catalogo' => function ($query) {
-            $query->select('id', 'tramite_id')
-            ->where("firma", 1);
-          }])->get()->toArray();
+          ->where('solicitudes_ticket.por_firmar', '=', 1)
+          ->where('solicitudes_ticket.firmado', null)
+          ->where("c.firma", 1)
+          ->whereRaw(
+            '(
+                CASE 
+                     WHEN c.tramite_id = 517 THEN solicitudes_ticket.id_transaccion IS NULL
+                     ELSE  solicitudes_ticket.id_transaccion IS NOT NULL
+                END
+            )'
+            )
+          ->get()
+          ->toArray();
+
         }else{
-          $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
-          ->where(function ($query) {
-            $query->where('en_carrito', '=', 1);
-          })
-          ->with(['catalogo' => function ($query) {
-            $query->select('id', 'tramite_id');
-          }])->get();
+          $solicitudes = PortalSolicitudesTicket::whereIn('solicitudes_ticket.user_id', $users) 
+          ->select('solicitudes_ticket.*', 'c.tramite_id')
+          ->leftJoin('solicitudes_catalogo as c', 'solicitudes_ticket.catalogo_id', '=', 'c.id')
+          ->where('solicitudes_ticket.status', 99)
+          ->where('solicitudes_ticket.en_carrito', '=', 1)
+
+          ->get();
           $solicitudes = $solicitudes->toArray();          
          
         }
@@ -479,11 +485,6 @@ class PortalSolicitudesTicketController extends Controller
         
                
         $ids_tramites=[];
-        foreach ($solicitudes as &$sol){
-          foreach($sol["catalogo"]  as $s){
-            $sol["tramite_id"]=$s["tramite_id"];
-          }
-        }
 
         $ids_tramites= array_column((array)$solicitudes, 'tramite_id');
 
