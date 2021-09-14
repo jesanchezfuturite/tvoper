@@ -500,6 +500,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/wsrc-actamat/{nombre}/{apaterno}/{amaterno}/{fechanac}', 'ApircController@buscarActaMat')->name('wsrc-actamat');
     Route::get('/wsedu-catescuela/{nivel}','ApiEducacionController@buscarEscuela')->name('wsedu-catescuela');
     Route::get('/wsedu-certificado','ApiEducacionController@certificadoEstudios')->name('wsedu-certificado');
+    Route::post('/wsedu-avisocert','ApiEducacionController@insertCertificado')->name('wsedu-avisocert');
 
 
     Route::get('/configprelacion', 'PortalSolicitudesController@configdocprelacion')->name('configprelacion');
