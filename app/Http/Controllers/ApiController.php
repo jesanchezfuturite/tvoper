@@ -379,6 +379,10 @@ class ApiController extends Controller
                     if($response->getStatusCode() == 200)
                     {
                         $body = $response->getBody()->getContents();
+                        try {
+                            if(substr(utf8_decode($body), 0, 1) == '?') $body = substr(utf8_decode($body), 1);
+                            $body = json_decode($body);
+                        } catch (Error $err) { }
                         return response()->json(['response'=>$body,'message'=>'OK'],200,$this->header,JSON_UNESCAPED_UNICODE);
                     }
                     else
@@ -418,8 +422,8 @@ class ApiController extends Controller
                     if(!empty($actafprot) && empty($escriturapub)) $elements.= '&actafprot='.$actafprot;
                     if(empty($actafprot) && !empty($escriturapub)) $elements.= '&escriturapub='.$escriturapub;
                     $elements.= '&operacion='.$operacion;
-                    $elements.= '&motivooperacion='.$motivooperacion;
-                    $elements.= '&folioforma='.$folioforma;
+                    $elements.= '&motivo_operacion='.$motivooperacion;
+                    $elements.= '&folio_forma='.$folioforma;
                     $elements.= '&descripcion_predio='.$descripcion_predio;
                     $elements.= '&adquirientes='.urlencode(serialize($adquirientes));
                     $elements.= '&vendedores='.urlencode(serialize($vendedores));
