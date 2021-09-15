@@ -696,9 +696,9 @@ function configprelacion()
       //console.log(exist);
       var f_o_detalle='<th></th>';
       
-        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='2'></th><th colspan='2'></th></tr>";
+        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='3'></th><th colspan='3'></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' ></th><th class='text-center' ></th></tr>"+html;
+        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' ></th><th class='text-center' ></th><th></th><th></th></tr>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
@@ -881,68 +881,8 @@ function configprelacion()
         Command: toastr.warning("Error Rechazo", "Notifications") 
       })
     }
-    function rechazarArray(id_transaccion,tickets_id,id_estatus_atencion,data)
-    {
-      //console.log(tickets_id);
-      var estatus_=$("#select_"+id_transaccion).val();
-      if(estatus_=='0')
-      {
-        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
-        return;
-      }
-      response=[data];
-      //var tickets_id=[];
-      var ids=[];
-      var grupo_clave="";
-      if(typeof response=== 'object'){
-        for (n in response) { 
-          for(k in response[n].grupo)
-          {
-            ids.push(response[n].grupo[k].id);                                                                
-          } 
-        }
-      }
-
-      if(ids.length>0){
-        document.getElementById("lbl_idsolicitudes").textContent=ids;
-        document.getElementById("ids").value=JSON.stringify(ids);
-         $('#portlet-rechazar').modal('show');
-         document.getElementById("idgrupo").value=id_transaccion;
-         document.getElementById("tickets_id").value=JSON.stringify(ids);
-         document.getElementById("id_proceso").value=id_estatus_atencion;
-      }
-
-    }
-    function rechazarSolicitudes()
-    {
-      var id_transaccion=$("#idgrupo").val();
-      var id_proceso=$("#id_proceso").val();
-      var ids=$.parseJSON($("#ids").val());
-      var tick_id=$.parseJSON($("#tickets_id").val());
-      var estatus_=$("#select_"+id_transaccion).val();
-      var mot=$("#select_"+id_transaccion+" option:selected").text();
-      if(estatus_=='0')
-      {
-        Command: toastr.warning("Seleccionar Motivo de rechazo", "Notifications") 
-        return;
-      }
-      //console.log(ids);
-      $.ajax({
-      method: "post",            
-      url: "{{ url()->route('update-rechazo') }}",
-      data: {id:ids,estatus:estatus_,grupo_clave:id_transaccion,mensaje:mot,tickets_id:tick_id,id_estatus_atencion:id_proceso,_token:'{{ csrf_token() }}'}  })
-      .done(function (response) { 
-          if(response.Code=='200'){
-             findSolicitudes();
-            Command: toastr.success(response.Message, "Notifications") 
-          }else{
-              Command: toastr.warning(response.Message, "Notifications") 
-          }
-        })
-      .fail(function( msg ) {
-        Command: toastr.warning("Error Rechazo", "Notifications") 
-      })
-    }
+  
+   
    function addSelect(grupo_clave,id){
       $.ajax({
           method: "get",            
