@@ -176,6 +176,84 @@
             
           </div>    
         </div>
+        <div class="content-mensajes">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4><strong>Nuevo Mensaje</strong></h4> 
+                </div>
+                <div class="panel-body"id="notaria">
+                  <div class="col-md-12">
+                    <div class="col-md-9">             
+                      <div class="form-group">
+                        <label>Mensaje</label>
+                        <textarea class="form-control" rows="4" placeholder="Escribe..." id="message"></textarea>
+                        <span class="help-block">&nbsp;</span>
+                        <div class="form-group form-md-checkboxes">
+                          <div class="md-checkbox-inline">
+                            <div class='md-checkbox'>
+                              <input type='checkbox' id='checkbox30' name="checkbox30" class='md-check'>
+                                <label for='checkbox30'>
+                                <span></span>
+                                <span class='check'></span> <span class='box'>
+                                </span>  Mensaje Publico. </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">             
+                      <div class="form-group">
+                        <span class="help-block">&nbsp;</span>                
+                        <button type="button" class="btn blue" onclick="saveMessage(0,{})" id="btn_guardar"><i class="fa fa-check"></i> Guardar</button>
+                        <span class="help-block">&nbsp;</span>
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                                <span class="btn green btn-file">
+                                <span class="fileinput-new">
+                                <i class="fa fa-plus"></i>&nbsp; &nbsp;Adjuntar Archivo </span>
+                                <span class="fileinput-exists">
+                                <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Archivo </span>
+                                <input type="file" name="file" accept="application/pdf" id="file" >
+                                </span>
+                                <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 140px;overflow: hidden; white-space: nowrap;">
+                                </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 155px;top: 4px" id="delFile">
+                                </a></div>
+                                
+                        </div>
+                      </div>
+                    </div>
+                  </div> 
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">                
+                  <h4><strong>Mensajes registrados</strong></h4>
+                </div>
+                <div class="panel-body"> 
+                  <div class="col-md-12">
+                  <div id="addtableMsg">
+                    <div class="removeMsg"> 
+                      <table class="table table-hover" id="sample_7">
+                       <thead>
+                        <tr>
+                          <th></th>
+                          <th>Titulo</th>
+                          <th></th>
+                        </tr>
+                        </thead>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
       <div class="modal-footer">
@@ -701,6 +779,88 @@ function configprelacion()
         tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' ></th><th class='text-center' ></th><th></th><th></th></tr>"+html;
         return tbl_head;
     }
+    function saveMessage(prelacion_,data)
+    {
+      //console.log(data);
+      var mensaje=$("#message").val();
+      var select=$("#itemsMotivos").val();
+      var mot=$("#itemsMotivos option:selected").text();
+      var file=$("#file").val();
+      var id_=$("#idTicket").val();
+      var ticks_id=$.parseJSON($.parseJSON($("#tickets_id").val()));
+      var grp_clave=$("#grp_clave").val();
+      var check=$("#checkbox30").prop("checked");
+      var checkRechazo=$("#checkbox1").prop("checked");
+      var msjpublic="1";
+      var rechazo=0;
+      var formdata = new FormData();
+      if(check==false){
+        var msjpublic="0";        
+      }
+      if(checkRechazo==true){
+        if(select==0)
+        {
+          Command: toastr.warning("Motivo de rechazo, Requerido!", "Notifications")
+          return;
+        }
+        if(mensaje.length>0)
+        {
+          mensaje=', Nota: '+mensaje;
+        } 
+        mensaje=mot +mensaje;
+        formdata.append("rechazo_id",select);
+        
+      }
+    console.log(ticks_id);
+      for(r in ticks_id)
+        {
+          formdata.append("tickets_id[]", ticks_id[r]);  
+        }
+      if(mensaje.length==0){
+        Command: toastr.warning("Mensaje, Requerido!", "Notifications")
+        return;
+      }
+        var fileV = $("#file")[0].files[0];
+        if(file.length>0){ 
+          formdata.append("file", fileV);
+        }              
+        formdata.append("id[]", id_);      
+        formdata.append("mensaje", mensaje);
+        formdata.append("mensaje_para", msjpublic);
+        formdata.append("prelacion", prelacion_);
+        formdata.append("rechazo", checkRechazo);
+        formdata.append("grupo_clave", grp_clave);
+        formdata.append("data[]", JSON.stringify(data));
+        formdata.append("_token",'{{ csrf_token() }}');
+        //console.log(Object.fromEntries(formdata));
+        $.ajax({
+           method: "POST",
+           contentType: false,
+            processData: false, 
+           url: "{{ url()->route('guardar-solicitudes') }}",
+           data: formdata })
+        .done(function (response) {
+          //console.log(response.solicitante);
+           if(response.Code=="200")
+             {
+              document.getElementById("message").value="";
+              document.getElementById("file").value="";
+              limpiar();
+              findMessage(JSON.stringify(ticks_id));
+               Command: toastr.success(response.Message, "Notifications")
+               findSolicitudes();
+               return;
+             }
+             else{
+                Command: toastr.warning("Ocurrio un Error", "Notifications")
+             }
+          //TableManaged7.init7();   
+        })
+        .fail(function( msg ) {
+         Command: toastr.warning("Error", "Notifications");
+        });
+    }
+
     function revisar(id_tick,grupo_clv,id_atencion,status_){
 
       $.ajax({
@@ -796,6 +956,7 @@ function configprelacion()
       })
 
     }
+
     function relacion_mult(grupo_clave,data,id_proceso)
     {
       //searchSolicitudes(grupo_clave);
@@ -1051,8 +1212,12 @@ function configprelacion()
               attach="";
             }else {
               icon="<i class='fa fa-download'></i>";
-              attach=item.attach;
+              attach=item.attach.split("/");
+            console.log(attach);
+              
+              attach= attach[attach.length-1];
             }
+            console.log(attach);
             if(item.mensaje_para==null || item.mensaje_para==0 )
             {
               mensaje_para="Privado";
@@ -1061,10 +1226,12 @@ function configprelacion()
               mensaje_para="Publico";
               label="success";
             }
+            
+
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='"+item.attach+"' title='Descargar Archivo' target='_blank'>"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
@@ -1167,6 +1334,13 @@ function configprelacion()
     }
   }
 }
+function limpiar()
+  {
+    $("#checkbox1").prop("checked", false);
+    document.getElementById("message").value="";
+    document.getElementById('delFile').click();
+    
+  }
   </script>
 
 @endsection
