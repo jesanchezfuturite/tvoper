@@ -155,6 +155,7 @@ class ApiEducacionController extends Controller
 
     public function insertCertificado(Request $request)
     {
+        Log::info($request->all());
         $recibo = $request->recibo;
         $curp = strtoupper($request->curp);
         $nombre = strtoupper($request->nombre);
@@ -167,7 +168,6 @@ class ApiEducacionController extends Controller
         $folio = $request->foliocontrol;
         $nivel = (!in_array($request->nivel, [11,12,13])) ? 0 : $request->nivel;
         $accion = (!in_array($request->accion, [1,2])) ? 9 : $request->accion;
-        Log::info(json_encode($request->all()));
         $url = env("URL_CER_EDU") . $recibo . "/" . $curp . "/" . $apaterno . "/" . $amaterno . "/" . $nombre . "/" . $anio . "/" . $mail . "/" . $telefono . "/" . $cct . "/" . $folio . "/" . $nivel . "/" . $accion ;
         
         try {
