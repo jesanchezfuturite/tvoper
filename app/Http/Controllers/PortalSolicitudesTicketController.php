@@ -199,6 +199,8 @@ class PortalSolicitudesTicketController extends Controller
             $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 80)
             ->update(['status' => 9]);
           }
+          
+          $status = $request->catalogo_id==$aviso ? 2 : 99;
            
           if(!empty($datosrecorrer)){
             $datosrecorrer = json_decode($datosrecorrer);       
