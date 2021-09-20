@@ -74,14 +74,14 @@ class ApiEducacionController extends Controller
      * @param cct (codigo de escuela)
      * @param folio de control
      * @param nivel de estudios (11,12 o 13)
-     * @param accion (0 = INSERT, 2 = CONSULTA)
+     * @param accion (1 = INSERT, 2 = CONSULTA)
      *
      *
      * @return json
      */
 
     public function certificadoEstudios(Request $request)
-    {
+    {   
         $recibo = $request->recibo;
         $curp = strtoupper($request->curp);
         $nombre = strtoupper($request->nombre);
@@ -93,11 +93,10 @@ class ApiEducacionController extends Controller
         $cct = strtoupper($request->cct);
         $folio = $request->foliocontrol;
         $nivel = (!in_array($request->nivel, [11,12,13])) ? 0 : $request->nivel;
-        $accion = (!in_array($request->accion, [0,2])) ? 9 : $request->accion;
+        $accion = (!in_array($request->accion, [1,2])) ? 9 : $request->accion;
         $doc = (!isset($request->doc)) ? true : false;
-
         $url = env("URL_CER_EDU") . $recibo . "/" . $curp . "/" . $apaterno . "/" . $amaterno . "/" . $nombre . "/" . $anio . "/" . $mail . "/" . $telefono . "/" . $cct . "/" . $folio . "/" . $nivel . "/" . $accion ;
-        
+
         try {
 
             $client = new \GuzzleHttp\Client();
@@ -124,16 +123,17 @@ class ApiEducacionController extends Controller
 
                 if((strcmp($data, "Alumno no encontrado, sujeto a revisión por Control Escolar") === 0) || (strcmp($data, "Certificado encontrado exitosamente") == 0))
                     return response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
-                else
+                else if($doc)
                     return response()->json(['err'=>true,'msg'=>$data,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
+                else 
+                    return response()->json(['err'=>false,'msg'=>'OK','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
             }
             else {
 
                 return response()->json(['err'=>true,'msg'=>'Ocurrio un error desconocido o La solicitud no es válida'],400,$this->header,JSON_UNESCAPED_UNICODE);
             }
             
-        } 
-        catch(RequestException $e) {
+        } catch(RequestException $e) {
             
             $m = 'Error, información de solicitud erronea';
 
@@ -145,8 +145,7 @@ class ApiEducacionController extends Controller
             }
             
             return response()->json(['err'=>true,'msg'=>$m,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             Log::info("Error Api EDU @ certificadoEstudios ".$e->getMessage());
             return response()->json(['err'=>true,'msg'=>'Error desconocido o la solicitud no es válida.','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
@@ -155,7 +154,7 @@ class ApiEducacionController extends Controller
 
     public function insertCertificado(Request $request)
     {
-        Log::info($request->all());
+
         $recibo = $request->recibo;
         $curp = strtoupper($request->curp);
         $nombre = strtoupper($request->nombre);
@@ -170,41 +169,38 @@ class ApiEducacionController extends Controller
         $accion = (!in_array($request->accion, [1,2])) ? 9 : $request->accion;
         $url = env("URL_CER_EDU") . $recibo . "/" . $curp . "/" . $apaterno . "/" . $amaterno . "/" . $nombre . "/" . $anio . "/" . $mail . "/" . $telefono . "/" . $cct . "/" . $folio . "/" . $nivel . "/" . $accion ;
         
+        return response()->json(['err'=>false,'msg'=>'OK','data'=>$url],200,$this->header,JSON_UNESCAPED_UNICODE);
+        
         try {
-
-            // $client = new \GuzzleHttp\Client();
-
-            // $response = $client->get(
-            //     $url,
-            //     [
-            //         'headers' => [
-            //             'Accept' => 'application/json',  
-            //         ]
-            //     ]
-            // );
-
-            // Log::info("StatusCode : ". $response->getStatusCode() . " Response: " . $response->getBody());
+            $client = new \GuzzleHttp\Client();
+            log::info($url);
+            $response = $client->get(
+                $url,
+                [
+                    'headers' => [
+                        'Accept' => 'application/json',  
+                    ]
+                ]
+            );
 
             if($response->getStatusCode() == 200) {
 
-                // $results = $response->getBody();
-                // log::info($results);
-                // $results = json_decode($results);
-                // $data = empty($results->results) ? "" : $results->results;
-                // if
-                // return response()->json(['err'=>false,'msg'=>'','data'=>$]);
-                // if()
-                //     return response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
-                // else
-                //     return response()->json(['err'=>true,'msg'=>$data,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
+                $results = $response->getBody();
+                log::info($results);
+                $results = json_decode($results);
+                $data = empty($results->results) ? "" : $results->results;
+
+                if(!empty($data))
+                    return response()->json(['err'=>false,'msg'=>'','data'=>$data],200,$this->header,JSON_UNESCAPED_UNICODE);
+                else
+                    return response()->json(['err'=>true,'msg'=>$data,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
             }
             else {
-
+                log::info('Error Api EDU @ insertCertificado: ');
+                log::info($results);
                 return response()->json(['err'=>true,'msg'=>'Ocurrio un error desconocido o La solicitud no es válida'],400,$this->header,JSON_UNESCAPED_UNICODE);
-            }
-            
-        } 
-        catch(RequestException $e) {
+            }            
+        } catch(RequestException $e) {
             
             $m = 'Error, información de solicitud erronea';
 
@@ -214,12 +210,11 @@ class ApiEducacionController extends Controller
                 if(in_array($e->getResponse()->getStatusCode(),['400','500']))    
                     $m = $b->Message;
             }
-            
+            log::info('Error Api EDU @ insertCertificado: ');
+            log::info($m);
             return response()->json(['err'=>true,'msg'=>$m,'data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
-        }
-        catch (\Exception $e) {
-
-            Log::info("Error Api EDU @ certificadoEstudios ".$e->getMessage());
+        } catch (Exception $e) {
+            Log::info("Error Api EDU @ insertCertificado ".$e->getMessage());
             return response()->json(['err'=>true,'msg'=>'Error desconocido o la solicitud no es válida.','data'=>''],400,$this->header,JSON_UNESCAPED_UNICODE);
         }
     }
