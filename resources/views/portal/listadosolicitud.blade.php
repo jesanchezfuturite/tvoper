@@ -876,7 +876,7 @@ function configprelacion()
          
           //"<a class='btn default btn-sm red-stripe' data-toggle='modal' data-original-title='' title='Revisado' onclick='revisar(\""+solicitud.id+"\",\""+solicitud.grupo_clave+"\",\""+bitacora[bitacora_end].id_estatus_atencion+"\",\""+solicitud.status+"\")'><strong>Revisado</strong> </a>";
           var distrito=searchIndex('distrito',solicitud.info.campos);
-          var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
+          var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+bitacora[bitacora_end].id_estatus_atencion+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
           var dist='0';
           if(typeof(distrito)==='object'){
             dist=distrito.clave;            
