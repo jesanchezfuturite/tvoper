@@ -1212,12 +1212,9 @@ function configprelacion()
               attach="";
             }else {
               icon="<i class='fa fa-download'></i>";
-              attach=item.attach.split("/");
-            console.log(attach);
-              
+              attach=item.attach.split("/");            
               attach= attach[attach.length-1];
             }
-            console.log(attach);
             if(item.mensaje_para==null || item.mensaje_para==0 )
             {
               mensaje_para="Privado";
