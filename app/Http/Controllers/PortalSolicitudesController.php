@@ -2330,6 +2330,17 @@ class PortalSolicitudesController extends Controller
 
       $estatus = $request->mensaje=="aceptar" ? "aceptado" : "rechazado";
 
+      $ticket = PortalSolicitudesTicket::find($request->ticket_id);
+      if($mensaje){
+        $bitacora=TicketBitacora::create([
+          "id_ticket" => $ticket->ticket_id,
+          "grupo_clave" =>$ticket->grupo_clave,
+          "info"=>$ticket->info,
+          "status"=>$ticket->status
+        ]);
+  
+      }
+     
       return response()->json(
         [
           "Code" => "200",
