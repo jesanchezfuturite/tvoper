@@ -881,13 +881,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-        if($success==1){
-          try {				
+        if($success==1){		
             $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
-            
-          } catch (\Exception $e) {
-            return ["status"=>403];
-          }
         }
         Log::info('Transaccion guardada');
         return response()->json(
@@ -1009,13 +1004,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-        if($success==1){
-          try {				
-            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);
-            
-          } catch (\Exception $e) {
-            return ["status"=>403];
-          }
+        if($success==1){        		
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);        
         }
         Log::info('Estatus actualizado');
         return response()->json(
