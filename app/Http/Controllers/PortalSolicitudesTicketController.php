@@ -838,10 +838,10 @@ class PortalSolicitudesTicketController extends Controller
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
-             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
+            $key2 = array_search("Distrito", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor->distrito;
+                 $valor = $distrito->valor->clave;
                  if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
@@ -962,10 +962,10 @@ class PortalSolicitudesTicketController extends Controller
          
             Log::info("campos configurados");
             $campos = $info->camposConfigurados;           
-             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
+            $key2 = array_search("Distrito", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor->distrito;
+                 $valor = $distrito->valor->clave;
                  if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
