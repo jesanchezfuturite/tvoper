@@ -88,7 +88,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){  
+    public function registrarSolicitud(Request $request){ 
       $name= \Request::route()->getName();
       $status="";
       $token=null;
@@ -349,25 +349,54 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         if($status==7){
+          $tk = PortalSolicitudesTicket::where("id", $request->ticket_anterior)->selectRaw("
+            @gpo_clave:=grupo_clave,
+            (select
+            CASE
+              WHEN count(*) > 1
+              THEN @gpo_clave
+              ELSE NULL
+            END
+            from solicitudes_ticket where grupo_clave = @gpo_clave) AS in_group
+          ")->get();
+          $status = $tk[0]->in_group==null ? 1 : 3;        
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
-            "status"=>3,
+            "status"=>$status,
             "en_carrito"=>$carrito,
             "required_docs"=>$request->required_docs,
             "ticket_padre"=>$request->ticket_anterior
 
-          ]);
-          $bitacora=TicketBitacora::create([
-            "id_ticket" => $ticket->id,
-            "grupo_clave" => $ticket->grupo_clave,
-            "id_estatus_atencion" => 2,
-            "info"=>$ticket->info,
-            "status"=>$status
-          ]);
+          ]);  
+          if($status==1){
+            $bitacora=TicketBitacora::create([
+              "id_ticket" => $ticket->id,
+              "grupo_clave" => $ticket->grupo_clave,
+              "id_estatus_atencion" => 2,
+              "info"=>$ticket->info,
+              "status"=>$status
+            ]);
+          }else{
+            $tickets=PortalSolicitudesTicket::where("grupo_clave", $tk[0]->in_group);
+            $update=$tickets->update(['status' => 3]);            
+            $ticket=$tickets->get();
 
+            if($update){
+              foreach ($ticket as $key => $value) {
+                $bitacora=TicketBitacora::create([
+                  "id_ticket" => $value->id,
+                  "grupo_clave" => $value->grupo_clave,
+                  "info"=> $value->info,
+                  "id_estatus_atencion" => 2,
+                  "status"=>3
+                ]);
+              }
+            }     
+          }
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
