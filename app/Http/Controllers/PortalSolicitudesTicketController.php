@@ -1064,7 +1064,7 @@ class PortalSolicitudesTicketController extends Controller
   public function enCarrito(Request $request){
     $body = $request->json()->all();
     $user_id = $body["user_id"];
-    $clave = $this->ticket->whereIn('id',$body['ids'])->pluck("clave")->toArray();
+    $clave = $this->ticket->whereIn('id',$body['ids'])->where("status", 2)->pluck("clave")->toArray();
     $relation = $this->configUserNotary->where('user_id', $user_id)->first();
     if($relation){
       $notary_id = $relation->notary_office_id;
