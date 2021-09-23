@@ -372,31 +372,15 @@ class PortalSolicitudesTicketController extends Controller
             "ticket_padre"=>$request->ticket_anterior
 
           ]);  
-          if($status==1){
-            $bitacora=TicketBitacora::create([
-              "id_ticket" => $ticket->id,
-              "grupo_clave" => $ticket->grupo_clave,
-              "id_estatus_atencion" => 2,
-              "info"=>$ticket->info,
-              "status"=>$status
-            ]);
-          }else{
-            $tickets=PortalSolicitudesTicket::where("grupo_clave", $tk[0]->in_group);
-            $update=$tickets->update(['status' => 3]);            
-            $ticket=$tickets->get();
 
-            if($update){
-              foreach ($ticket as $key => $value) {
-                $bitacora=TicketBitacora::create([
-                  "id_ticket" => $value->id,
-                  "grupo_clave" => $value->grupo_clave,
-                  "info"=> $value->info,
-                  "id_estatus_atencion" => 2,
-                  "status"=>3
-                ]);
-              }
-            }     
-          }
+          $bitacora=TicketBitacora::create([
+            "id_ticket" => $ticket->id,
+            "grupo_clave" => $ticket->grupo_clave,
+            "id_estatus_atencion" => 2,
+            "info"=>$ticket->info,
+            "status"=>$status
+          ]);
+       
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
