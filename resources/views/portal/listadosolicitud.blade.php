@@ -3,12 +3,12 @@
 @section('content')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css')}}"/>
 <link href="{{ asset('assets/global/dataTable/dataTables.min.css')}}" rel="stylesheet" type="text/css"/>
-<h3 class="page-title">Portal <small>Listado Solicitudes</small></h3>
+<h3 class="page-title">Portal <small>Atención Solicitudes</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
         <li>
             <i class="fa fa-home"></i>
-            <a href="index.html">Home</a>
+            <a href="/home">Home</a>
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
@@ -16,7 +16,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Listado Solicitudes</a>
+            <a href="#">Atención Solicitudes</a>
         </li>
     </ul>
 </div>
@@ -897,7 +897,7 @@ function configprelacion()
 
           }
           
-          if(bitacora[bitacora_end].responsables.permiso==0 || bitacora[bitacora_end].permiso==0  /*&& index==bitacora_end*/)
+          if(bitacora[bitacora_end].responsables.permiso==0 || bitacora[bitacora_end].permiso==0 && !{{$atencion}}/*&& index==bitacora_end*/)
           {
             o_detall=1;
              Atender_btn="";
@@ -1460,6 +1460,7 @@ function configprelacion()
       document.getElementById("grp_clave").value=grupo_clave;
       document.getElementById("tickets_id").value=JSON.stringify(tickets_id);
       document.getElementById("data").value=data_o;
+      document.getElementById("id_proceso").value=catalogo_id;
       //console.log(tickets_id);
       findMessage(tickets_id);
             response=$.parseJSON(JSON.stringify(data_o));
@@ -1535,6 +1536,7 @@ function configprelacion()
     }
     function findMessage(id_)    
     {
+      var id_proceso=$("#id_proceso").val();
       $.ajax({
            method: "GET", 
            url: "{{ url()->route('listado-mensajes', '') }}" + "/"+id_,
@@ -1564,15 +1566,19 @@ function configprelacion()
               mensaje_para="Publico";
               label="success";
             }
+            var disabled="style='pointer-events: none;cursor: default;'";
+            if(id_proceso=="2" || {{$atencion}})
+            {
+              disabled='';
+            }
               $('#sample_7 tbody').append("<tr>"
                   +"<td>"+item.ticket_id+"</td>"
                   +"<td>"+item.mensaje+"</td>"
-                  +"<td><a href='{{ url()->route('listado-download', '') }}/"+item.attach+"' title='Descargar Archivo'>"+attach+" "+icon+"</a></td>"
+                  +"<td><a href='{{ url()->route('listado-download', '') }}/"+item.attach+"' title='Descargar Archivo' "+disabled+">"+attach+" "+icon+"</a></td>"
                   +"<td><span class='label label-sm label-"+label+"'>"+mensaje_para+"</span></td>"
                   +"<td>"+item.created_at+"</td>"
                   +"</tr>"
-                );           
-            
+                );   
             });
           
           //TableManaged7.init7();   
