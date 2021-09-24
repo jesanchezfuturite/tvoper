@@ -740,7 +740,7 @@ function configprelacion()
           var dist='0';
 
           //console.log(valid);&& index==bitacora_end
-          let botonAtender = "<td class='text-center'>"+Atender_btn+"</td>";
+          let botonAtender = Atender_btn;
         var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
           var lote=searchIndex('lote',solicitud.info.campos);
           var solicitantes=solicitud.info.solicitantes;
@@ -767,16 +767,16 @@ function configprelacion()
             clase='';
           }
 
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center">'+btn_cerrarTicket+'</td><td class="text-center">'+btn_aceptarTicket+'<td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"><table class="table-hover"><tr><th>'+btn_cerrarTicket+'</th><th>'+btn_aceptarTicket+'</th><th>'+botonAtender+'</th></tr></table></td></tr>';
 
 
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
       
-        html += "<tr><th></th><th colspan='5'></th> <th></th><th></th><th colspan='3'></th><th colspan='3'></th></tr>";
+        html += "<tr><th colspan='5'></th> <th></th><th></th><th colspan='3'></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' ></th><th class='text-center' ></th><th></th><th></th></tr>"+html;
+        tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Opciones</th></tr>"+html;
         return tbl_head;
     }
     function saveMessage(prelacion_,data)
