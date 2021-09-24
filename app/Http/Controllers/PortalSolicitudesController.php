@@ -582,7 +582,10 @@ class PortalSolicitudesController extends Controller
           
           }
           if(!$value->bitacora->isEmpty()){
-            foreach ($value->bitacora as $bit => &$bitacora) {             
+            foreach ($value->bitacora as $bit => &$bitacora) { 
+                $user=Users::select("name", "email")->where("id", $bitacora->user_id)->first();
+                $bitacora->name=$user["name"];
+                $bitacora->email=$user["email"];        
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
                 $bitacora->nombre = $estatus->descripcion;
                 $bitacora->catalogo = $value->catalogo;
