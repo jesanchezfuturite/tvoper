@@ -88,7 +88,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-    public function registrarSolicitud(Request $request){  
+    public function registrarSolicitud(Request $request){ 
       $name= \Request::route()->getName();
       $status="";
       $token=null;
@@ -349,17 +349,30 @@ class PortalSolicitudesTicketController extends Controller
         }
 
         if($status==7){
+          $tk = PortalSolicitudesTicket::where("id", $request->ticket_anterior)->selectRaw("
+            @gpo_clave:=grupo_clave,
+            (select
+            CASE
+              WHEN count(*) > 1
+              THEN @gpo_clave
+              ELSE NULL
+            END
+            from solicitudes_ticket where grupo_clave = @gpo_clave) AS in_group
+          ")->get();
+          $status = $tk[0]->in_group==null ? 1 : 3;        
+
           $ticket = $this->ticket->updateOrCreate(["id" =>$request->ticket_anterior], [
             "clave" => $clave,
             "catalogo_id" => $catalogo_id,
             "info"=> json_encode($info),
             "user_id"=>$user_id,
-            "status"=>3,
+            "status"=>$status,
             "en_carrito"=>$carrito,
             "required_docs"=>$request->required_docs,
             "ticket_padre"=>$request->ticket_anterior
 
-          ]);
+          ]);  
+
           $bitacora=TicketBitacora::create([
             "id_ticket" => $ticket->id,
             "grupo_clave" => $ticket->grupo_clave,
@@ -367,7 +380,7 @@ class PortalSolicitudesTicketController extends Controller
             "info"=>$ticket->info,
             "status"=>$status
           ]);
-
+       
           if($request->has("file")){
               foreach ($request->file as $key => $value) {
                 $data =[
@@ -838,10 +851,10 @@ class PortalSolicitudesTicketController extends Controller
           $info = json_decode($value->info);
           if(isset($info->camposConfigurados)){
             $campos = $info->camposConfigurados;
-             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
+            $key2 = array_search("Distrito", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor->distrito;
+                 $valor = $distrito->valor->clave;
                  if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
@@ -881,13 +894,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-        if($success==1){
-          try {				
+        if($success==1){		
             $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
-            
-          } catch (\Exception $e) {
-            return ["status"=>403];
-          }
         }
         Log::info('Transaccion guardada');
         return response()->json(
@@ -967,10 +975,10 @@ class PortalSolicitudesTicketController extends Controller
          
             Log::info("campos configurados");
             $campos = $info->camposConfigurados;           
-             $key2 = array_search("Municipio", array_column($campos, 'nombre'));
+            $key2 = array_search("Distrito", array_column($campos, 'nombre'));
               if(isset($key2) && $key2 !== FALSE){
                  $distrito = $campos[$key2];
-                 $valor = $distrito->valor->distrito;
+                 $valor = $distrito->valor->clave;
                  if($valor==1){
                   $solicitudTicket = $this->ticket->where('id',$value->id)
                   ->update(['status'=>1]);
@@ -1009,13 +1017,8 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-        if($success==1){
-          try {				
-            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);
-            
-          } catch (\Exception $e) {
-            return ["status"=>403];
-          }
+        if($success==1){        		
+            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);        
         }
         Log::info('Estatus actualizado');
         return response()->json(

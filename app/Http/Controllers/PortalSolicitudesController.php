@@ -527,7 +527,7 @@ class PortalSolicitudesController extends Controller
    
   
     $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
-    ->with("bitacora")
+    ->with("bitacora")  
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
@@ -540,7 +540,7 @@ class PortalSolicitudesController extends Controller
     "n.city_id", "n.zip", "n.sat_constancy_file", "n.notary_constancy_file", "usert.name as nombre_titular", 
     "usert.fathers_surname as apellido_pat_titular","usert.mothers_surname as apellido_mat_titular", 
     "usert.status as status_titular", "u.name as nombre_usuario_tramite", "u.fathers_surname as apellido_pat_tramite",
-    "u.mothers_surname as apellido_mat_tramite")
+    "u.mothers_surname as apellido_mat_tramite",    DB::raw('(select mensaje from solicitudes_mensajes where ticket_id  =   tk.id  and status = 1 order by id asc limit 1) as mensaje'))
     ->leftJoin('portal.solicitudes_catalogo as c', 'tk.catalogo_id', '=', 'c.id')
     ->leftJoin('portal.solicitudes_status as status', 'tk.status', '=', 'status.id')
     ->leftJoin('portal.solicitudes_tramite as tmt', 'tk.id_transaccion', '=', 'tmt.id')
@@ -2330,6 +2330,17 @@ class PortalSolicitudesController extends Controller
 
       $estatus = $request->mensaje=="aceptar" ? "aceptado" : "rechazado";
 
+      $ticket = PortalSolicitudesTicket::find($request->ticket_id);
+      if($mensaje){
+        $bitacora=TicketBitacora::create([
+          "id_ticket" => $ticket->ticket_id,
+          "grupo_clave" =>$ticket->grupo_clave,
+          "info"=>$ticket->info,
+          "status"=>$ticket->status
+        ]);
+  
+      }
+     
       return response()->json(
         [
           "Code" => "200",
