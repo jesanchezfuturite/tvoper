@@ -256,21 +256,17 @@
         </div>
       </div>
     </div>
-      <div class="modal-footer">
-        <div class="row">
-          <div class="col-md-8" style="text-align: left;">
-            <div class="form-group">
-               <button type="button" data-dismiss="modal" class="btn red">Salir</button>
-            </div>
-          </div>
-          <div class="col-md-1 ">
-            <div class="form-group ">
-              <button type="button"  class="btn default btnPrelacion ">Prelación</button>
-            </div>
+  </div>
+    <div class="modal-footer">
+      <div class="row">
+        <div class="col-md-8" style="text-align: left;">
+          <div class="form-group">
+             <button type="button" data-dismiss="modal" class="btn red">Salir</button>
           </div>
         </div>
-      </div>   
-    </div>
+      </div>
+    </div>  
+    
   </div>
 </div>
 <div id="portlet-asignar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
@@ -529,6 +525,7 @@ function configprelacion()
                     total=total+parseFloat(response[n].grupo[k].info.costo_final);
                   }                  
                   Object.assign(response[n],{"tickets_id":tickets_id});
+                  Object.assign(response[n],{"detalleDs":"Ver detalles del tramite (<label style=\"color: #cb5a5e;\">"+response[n].grupo_clave+"</label>)"});
                   Object.assign(response[n],{"catalogos_id":catalogos_id});
                   Object.assign(response[n],{"costo_final":formatter.format(total) + " MXN"});
                    for(h in response[n].grupo)
@@ -652,7 +649,7 @@ function configprelacion()
                   return row.grupo.length > 0 ? '<a ><i id="iconShow-' + data  +'" class="fa fa-plus"></a>' : '';
                 }
               },
-                  { "defaultContent":"Ver Detalles del Tramite"},
+                  { "data":"detalleDs"},
                   { "data":"costo_final"},
                   { "data":"grupo.length"},
                   { "data": function ( grupo ) {
@@ -725,7 +722,8 @@ function configprelacion()
       var exist=0;
       var ticket_status="";     
       var status_proceso=0;     
-      d.grupo.forEach( (solicitud) =>{     
+      d.grupo.forEach( (solicitud) =>{   
+      var estatus_solicitud='';  
       //console.log(solicitud.permiso);  
         var municipio=searchIndex('municipio',solicitud.info.campos);
         var Mp='';
@@ -755,8 +753,8 @@ function configprelacion()
         }else{
           so='';
         }
-        var btn_cerrarTicket="<a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"rechazar\")'>Rechazar</a>";
-        var btn_aceptarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"aceptar\")'>Aceptar</a>";
+        var btn_cerrarTicket="<th><a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"rechazar\")'>Rechazar</a></th>";
+        var btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
 
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
@@ -766,17 +764,26 @@ function configprelacion()
           }else{
             clase='';
           }
-
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"><table class="table-hover"><tr><th>'+btn_cerrarTicket+'</th><th>'+btn_aceptarTicket+'</th><th>'+botonAtender+'</th></tr></table></td></tr>';
+          if(solicitud.mensaje=="rechazar" || solicitud.mensaje=="aceptar")
+          {
+            btn_cerrarTicket='';
+            btn_aceptarTicket='';
+            if(solicitud.mensaje=="rechazar" ){estatus_solicitud='RECHAZADO';}
+            if(solicitud.mensaje=="aceptar" ){estatus_solicitud='ACEPTADO';}
+          }else{
+            estatus_solicitud='N/A';
+          }
+           estatus_solicitud='<label style="color: #cb5a5e;">'+estatus_solicitud+'</label>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"><table class="table-hover"><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></td></tr>';
 
 
       });
       //console.log(exist);
       var f_o_detalle='<th></th>';
       
-        html += "<tr><th colspan='5'></th> <th></th><th></th><th colspan='3'></th></tr>";
+        html += "<tr><th colspan='7'></th> <th></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th><th>Estatus</th><th class='text-center' >Opciones</th></tr>"+html;
+        tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th class='text-center' >Solicitantes</th><th>Estatus Solicitud</th><th>Estatus</th><th class='text-center' >Opciones</th></tr>"+html;
         return tbl_head;
     }
     function saveMessage(prelacion_,data)

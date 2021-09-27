@@ -784,6 +784,8 @@ function configprelacion()
           $("#select_"+row.data().grupo[0].grupo_clave).select2();
           addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id);
         }else{
+          $("#select_"+row.data().grupo[0].grupo_clave).select2();
+          addSelect(row.data().grupo[0].grupo_clave,row.data().catalogos_id);
           $("#select_status_"+row.data().grupo[0].grupo_clave).select2();
           $("#select_atencion_"+row.data().grupo[0].grupo_clave).select2();
           addSelectAtencion(row.data().grupo[0].grupo_clave);
@@ -825,7 +827,10 @@ function configprelacion()
       var exist=0;     
       var o_detall=0;
       var ticket_status="";     
-      var status_proceso=0;     
+      var status_proceso=0;
+      var select_status="";  
+      var select_proceso="";  
+      var btn_revertir="";  
       d.grupo.forEach( (solicitud) =>{     
       //console.log(solicitud.permiso);  
         var municipio=searchIndex('municipio',solicitud.info.campos);
@@ -950,19 +955,20 @@ function configprelacion()
                   }*/
       });
       //console.log(exist);
+      var footer_row="";
       var f_o_detalle='<th></th>';
       var btn_cerrarTicket="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Finalizar Ticket' class='btn default btn-sm' onclick='findSolicitudesCerrar(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'>Finalizar Ticket</a>";
       var url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo' target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
       var btn_prelacion="<a href='javascript:;' class='btn btn-sm default btn_prelacion_"+d.grupo[0].grupo_clave+"' onclick='relacion_mult(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d)+","+status_proceso+")'><i class='fa fa-file-o'></i> Realizar la prelación de todo el trámite  </a>";
-        var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">-------</option></select>';
+        var select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_'+d.grupo[0].grupo_clave+'" id="select_'+d.grupo[0].grupo_clave+'"><option value="0">----Motivos Rechazo---</option></select>';
         var btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar' class='btn default btn-sm' onclick='rechazarArray(\""+d.grupo[0].grupo_clave+"\","+JSON.stringify(d.tickets_id)+","+status_proceso+","+JSON.stringify(d)+")'>Rechazar</a>";
-        
-        if(d.grupo[0].url_prelacion!=null && g_prelacion==1)
+        if(!{{$atencion}}){
+        if(d.grupo[0].url_prelacion!=null && g_prelacion==1 )
         { btn_prelacion="";
           select_rechazos="";
           btn_rechazo="";
           btn_cerrarTicket="";
-        }
+        }}
         //console.log(status_proceso);
         if(status_proceso!=2)
         {
@@ -970,40 +976,45 @@ function configprelacion()
           url_prelacion='';
         }else{
            btn_cerrarTicket='';
-        }
+        }if(!{{$atencion}}){
         if(d.grupo[0].distrito==null){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
           btn_cerrarTicket='';
-        }
-        if( valid==0 || rechazados==1 ){
+        }}
+        if(!{{$atencion}}){
+        if( valid==0 || rechazados==1 && !{{$atencion}}){
           select_rechazos="";
           btn_rechazo="";
           btn_prelacion="";
          url_prelacion='';
          btn_cerrarTicket='';
         }
+      }
+        if(o_detall==1){
+          f_o_detalle='';
+        }if(g_prelacion==1 || {{$atencion}}){
+          url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'  target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
+        } 
         if({{$atencion}})
         {
           btn_cerrarTicket='';
-          select_rechazos='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Proceso---</option></select>';
-          btn_rechazo="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Solicitud</a>";
-          btn_prelacion='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Solicitud----</option></select>';
+          select_proceso='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Proceso---</option></select>';
+          btn_revertir="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Solicitud</a>";
+          select_status='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Solicitud----</option></select>';
+          footer_row="<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+select_status+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_proceso+"</th><th class='text-center'>"+btn_revertir+"</th></tr>"
         }
-        if(g_prelacion==1 || {{$atencion}}){
-          url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'  target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
-        }        
+               
         if(d.grupo[0].url_prelacion==null)
         {
           url_prelacion='';
         }
-        if(o_detall==1){
-          f_o_detalle='';
-        }
-        html += "<tr>"+f_o_detalle+""+th_f_fecha+"<th colspan='3'>"+url_prelacion+"</th><th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th>"+btn_rechazo+"</th></tr>";
+        
+        html += "<tfooter>"+footer_row +
+        /*"<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th class='text-center'>"+btn_rechazo+"</th></tr>*/"</tfooter>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th>"+th_fecha+"<th>Estatus</th><th class='text-center' >Proceso</th>"+f_o_detalle+"</tr>"+html;
+        tbl_head = "<table class='table table-hover ' class='sort_table' id='tbl_"+d.grupo_clave+"'><thead><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th>"+th_fecha+"<th>Estatus</th><th class='text-center' >Proceso</th>"+f_o_detalle+"</tr></thead>"+html;
         return tbl_head;
     }
     function revisar(id_tick,grupo_clv,id_atencion,status_){
@@ -1340,7 +1351,7 @@ function configprelacion()
             distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
             if(typeof distrito==="object")
             {
-              if(distrito.clave=="1" && response[n].grupo[k].status=="1")
+              if(distrito.clave=="1" && response[n].grupo[k].status=="0" || response[n].grupo[k].status=="1")
               {
                  ids.push(response[n].grupo[k].id);
               }
@@ -1396,7 +1407,7 @@ function configprelacion()
           data: {solicitud_catalogo_id:id,_token:'{{ csrf_token() }}'}  })
           .done(function (response) { 
             $("#select_"+grupo_clave+" option").remove();
-          $("#select_"+grupo_clave).append("<option value='0'>------</option>");
+          $("#select_"+grupo_clave).append("<option value='0'>---Motivos Rechazo---</option>");
           $.each($.parseJSON(response), function(i, item) {
             $("#select_"+grupo_clave).append("<option value='"+item.motivo_id+"'>"+item.motivo+"</option>");
           
