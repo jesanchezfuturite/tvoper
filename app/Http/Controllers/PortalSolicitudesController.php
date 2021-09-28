@@ -2336,9 +2336,10 @@ class PortalSolicitudesController extends Controller
       $ticket = PortalSolicitudesTicket::find($request->ticket_id);
       if($mensaje){
         $bitacora=TicketBitacora::create([
-          "id_ticket" => $ticket->ticket_id,
+          "id_ticket" => $ticket->id,
           "grupo_clave" =>$ticket->grupo_clave,
           "info"=>$ticket->info,
+          "mensaje"=>$estatus,
           "status"=>$ticket->status
         ]);
   
