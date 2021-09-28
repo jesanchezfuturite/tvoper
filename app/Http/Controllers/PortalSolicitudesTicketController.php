@@ -289,8 +289,7 @@ class PortalSolicitudesTicketController extends Controller
                       'clave' => $clave,
                       'attach'=>$consultar->attach
                     ]);
-                  }
-                }
+                  }                
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
                 $data =[
@@ -301,9 +300,9 @@ class PortalSolicitudesTicketController extends Controller
                 ];
 
                 $this->saveFile($data);
-              }    
-    
-            }
+              }  
+            }      
+          }
         }
         return response()->json(
           [
