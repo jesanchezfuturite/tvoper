@@ -529,6 +529,7 @@ class PortalSolicitudesController extends Controller
     $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
     ->with("bitacora.usuario:id,name,email")
     ->with(["bitacora.atencion:id,descripcion"])
+    ->with(["bitacora.statusticket:id,descripcion"])
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",

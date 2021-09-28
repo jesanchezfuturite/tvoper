@@ -44,4 +44,8 @@ class TicketBitacora extends Model implements Transformable
         return $this->hasOne('App\Entities\Users', 'id', 'user_id'); 
     }
 
+    public function statusticket(){
+        return $this->hasOne('App\Entities\StatusTicket', 'id', 'status'); 
+    }
+
 }
