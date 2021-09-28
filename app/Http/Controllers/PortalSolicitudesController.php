@@ -587,8 +587,9 @@ class PortalSolicitudesController extends Controller
                 $bitacora->name=$user["name"];
                 $bitacora->email=$user["email"];        
                 $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
-                $bitacora->nombre = $estatus->descripcion;
-                $bitacora->catalogo = $value->catalogo;
+
+                $bitacora->nombre = $estatus!=null ? $estatus->descripcion : "";
+                $bitacora->catalogo = $estatus!=null ?  $value->catalogo : "";
 
                 $res = Portalsolicitudesresponsables::from("solicitudes_responsables as r")
                 ->where("r.catalogo_id", $bitacora->catalogo)
@@ -2338,6 +2339,7 @@ class PortalSolicitudesController extends Controller
         $bitacora=TicketBitacora::create([
           "id_ticket" => $ticket->id,
           "grupo_clave" =>$ticket->grupo_clave,
+          "id_estatus_atencion"=>1,
           "info"=>$ticket->info,
           "mensaje"=>$estatus,
           "status"=>$ticket->status
