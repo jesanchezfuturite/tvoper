@@ -749,7 +749,6 @@ function configprelacion()
         @endif
 
       });
-      //console.log(exist);
       var num=7;
        var h_atendio=''; 
       var f_o_detalle='<th></th>';
@@ -759,7 +758,6 @@ function configprelacion()
             num=8;           
           }
         html += "<tr><th colspan='"+num+"'></th> <th></th></tr>";
-//style='display:none;'
         tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th class='text-center' >Solicitantes</th><th>Estatus Solicitud</th><th>Estatus</th>"+h_atendio+"<th class='text-center' >Opciones</th></tr>"+html;
         return tbl_head;
     }
