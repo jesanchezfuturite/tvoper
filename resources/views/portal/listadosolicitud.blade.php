@@ -851,6 +851,9 @@ function configprelacion()
         if(solicitud.bitacora[bitacora_end].id_estatus_atencion==2){
           status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
         }
+        if(solicitud.bitacora[bitacora_end].id_estatus_atencion==4){
+          status_proceso=solicitud.bitacora[bitacora_end].id_estatus_atencion;
+        }
 
         
         var bitacora=solicitud.bitacora;
@@ -939,8 +942,10 @@ function configprelacion()
           }else{
             clase='';
           }
-
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td>'+ td_fecha  + '<td>'+ solicitud.descripcion  + '</td><td class="text-center"> <span class="label label-sm label-warning">'+ bitacora[bitacora_end].nombre  + '<span></td>'+ botonAtender + '</tr>';
+          name_us="";
+          if(bitacora[bitacora_end].usuario != null)
+            {name_us=bitacora[bitacora_end].usuario.name;}
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td>'+ td_fecha  + '<td>'+ solicitud.descripcion  + '</td><td class="text-center"> <span class="label label-sm label-warning">'+ bitacora[bitacora_end].nombre  + '</span> <span class="help-block">'+ name_us+'</span></td>'+ botonAtender + '</tr>';
          //<td>'+btn_revisar+'</td>  
         @if($atencion=="true")
         })
@@ -1007,13 +1012,15 @@ function configprelacion()
           select_proceso='<select class="select-a form-control form-filter input-sm" name="select_atencion_'+d.grupo[0].grupo_clave+'" id="select_atencion_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Proceso---</option></select>';
           btn_revertir="<a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Revertir Estatus' class='btn default btn-sm' onclick='revertirStatus("+JSON.stringify(d.tickets_id)+","+JSON.stringify(d)+",\"" +ticket_status+"\")'>Revertir Solicitud</a>";
           select_status='<select class="select-a form-control form-filter input-sm" name="select_status_'+d.grupo[0].grupo_clave+'" id="select_status_'+d.grupo[0].grupo_clave+'"><option value="0">---Estatus Solicitud----</option></select>';
-          footer_row="<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+select_status+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_proceso+"</th><th class='text-center'>"+btn_revertir+"</th></tr>"
+          footer_row="";
+          html += "<tfooter><tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th><th colspan='2'>"+select_status+"</th><th colspan='2'>"+select_proceso+"</th><th class='text-center'>"+btn_revertir+"</th><th  colspan='3'>"+select_rechazos+"</th> <th class='text-center'>"+btn_rechazo+"</th></tr></tfooter>";
+        }else{
+          html += "<tfooter><tr><th></th>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th><th colspan='3'>"+btn_prelacion +btn_cerrarTicket+"</th> <th colspan='3'>"+select_rechazos+"</th><th class='text-center'>"+btn_rechazo+"</th></tr></tfooter>";
         }
                
         
         
-        html += "<tfooter>"+footer_row +
-        /*"<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th class='text-center'>"+btn_rechazo+"</th></tr>*/"</tfooter>";
+        
 //style='display:none;'
         tbl_head = "<table class='table table-hover ' class='sort_table' id='tbl_"+d.grupo_clave+"'><thead><tr><th></th><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th># de Lotes</th><th class='text-center' >Solicitantes</th> <th>Valor Castatral</th><th>Valor de operacion</th>"+th_fecha+"<th>Estatus</th><th class='text-center' >Proceso</th>"+f_o_detalle+"</tr></thead>"+html;
         return tbl_head;
@@ -1349,7 +1356,7 @@ function configprelacion()
         for (n in response) { 
           for(k in response[n].grupo)
           {   
-            distrito=searchIndex('distrito',response[n].grupo[h].info.campos);
+            distrito=searchIndex('distrito',response[n].grupo[k].info.campos);
             if(typeof distrito==="object")
             {
               if(distrito.clave=="1" && response[n].grupo[k].status=="0" || response[n].grupo[k].status=="1")

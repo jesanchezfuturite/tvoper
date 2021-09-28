@@ -687,8 +687,8 @@ function configprelacion()
 
           //console.log(valid);&& index==bitacora_end
           let botonAtender = Atender_btn;
-        var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
-          var lote=searchIndex('lote',solicitud.info.campos);
+        //var valorCatas=searchIndex('valorCatastral',solicitud.info.campos);
+          //var lote=searchIndex('lote',solicitud.info.campos);
           var solicitantes=solicitud.info.solicitantes;
           var so="";
           var coma="";
@@ -705,7 +705,7 @@ function configprelacion()
         var btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
        
 
-          var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
+          //var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
           if(solicitud.status==7 || solicitud.status==8){
             clase='warning';
