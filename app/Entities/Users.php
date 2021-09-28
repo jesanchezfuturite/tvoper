@@ -20,7 +20,7 @@ class Users extends Model implements Transformable
      *
      * @var array
      */
-    protected $table = "users";
-    protected $fillable = ['name','email','status','email_verified_at','password','remember_token' , 'idComunidad', 'portal_registrador_id'];
+    protected $table = "operacion.users";
+    protected $fillable = ['id','name','email','status','email_verified_at','password','remember_token' , 'idComunidad', 'portal_registrador_id'];
 
 }

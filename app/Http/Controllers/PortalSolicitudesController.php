@@ -527,7 +527,8 @@ class PortalSolicitudesController extends Controller
    
   
     $solicitudes =PortalSolicitudesTicket::from('solicitudes_ticket as tk')
-    ->with("bitacora")  
+    ->with("bitacora.usuario:id,name,email")
+    ->with(["bitacora.atencion:id,descripcion"])
     ->select("tk.id", "c.titulo","tk.id_transaccion",
     "status.descripcion","tk.status",
     "tk.ticket_relacionado", "tk.asignado_a",
@@ -553,7 +554,7 @@ class PortalSolicitudesController extends Controller
     ->leftJoin('portal.users as usert', 'n.titular_id', 'usert.id')
     ->orderBy('tk.created_at', 'ASC')
     ->whereIn('c.id',$ids_catalogos)->get();
-
+    // dd($solicitudes->toArray());
     $newDato=[];
 
     foreach($grupo as $i => $id){
@@ -582,14 +583,9 @@ class PortalSolicitudesController extends Controller
           
           }
           if(!$value->bitacora->isEmpty()){
-            foreach ($value->bitacora as $bit => &$bitacora) { 
-                $user=Users::select("name", "email")->where("id", $bitacora->user_id)->first();
-                $bitacora->name=$user["name"];
-                $bitacora->email=$user["email"];        
-                $estatus=EstatusAtencion::find($bitacora->id_estatus_atencion);
-
-                $bitacora->nombre = $estatus!=null ? $estatus->descripcion : "";
-                $bitacora->catalogo = $estatus!=null ?  $value->catalogo : "";
+            foreach ($value->bitacora as $bit => &$bitacora) {       
+                $bitacora->catalogo =  $value->catalogo;
+                $bitacora->nombre = $bitacora->atencion->descripcion;
 
                 $res = Portalsolicitudesresponsables::from("solicitudes_responsables as r")
                 ->where("r.catalogo_id", $bitacora->catalogo)
@@ -2327,6 +2323,7 @@ class PortalSolicitudesController extends Controller
 
   public function aceptarRechazarTramite(Request $request){
     try {
+      $user_id = auth()->user()->id;
       $mensaje = $this->mensajes->updateOrCreate(["ticket_id" =>$request->ticket_id], [
         "ticket_id"=>$request->ticket_id,
         "mensaje"=>$request->mensaje
@@ -2342,7 +2339,8 @@ class PortalSolicitudesController extends Controller
           "id_estatus_atencion"=>1,
           "info"=>$ticket->info,
           "mensaje"=>$estatus,
-          "status"=>$ticket->status
+          "status"=>$ticket->status,
+          "user_id"=> $user_id
         ]);
   
       }

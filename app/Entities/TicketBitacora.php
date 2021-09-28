@@ -38,7 +38,10 @@ class TicketBitacora extends Model implements Transformable
     protected $table = "solicitudes_ticket_bitacora";
 
     public function atencion(){
-        return $this->hasMany('App\Entities\EstatusAtencion', 'id', 'id_estatus_atencion');
+        return $this->hasOne('App\Entities\EstatusAtencion', 'id', 'id_estatus_atencion');
+    }
+    public function usuario(){
+        return $this->hasOne('App\Entities\Users', 'id', 'user_id'); 
     }
 
 }
