@@ -743,7 +743,7 @@ function configprelacion()
             else{estatus_solicitud='N/A';}         
           }
            estatus_solicitud='<label style="color: #cb5a5e;">'+estatus_solicitud+'</label>';
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td>'+b_atendio+'<td class="text-center"><table class="table-hover"><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></td></tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td>'+b_atendio+'<td class="text-center" style="text-align:center;" ><center><table class="table-hover" ><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></center></td></tr>';
         @if($atencion=="true")
         })
         @endif
