@@ -997,6 +997,10 @@ function configprelacion()
         }if(g_prelacion==1 || {{$atencion}}){
           url_prelacion="<a href='{{ url()->route('view-file', '') }}/"+d.grupo[0].url_prelacion+"' title='Descargar Archivo'  target='_blank'>"+d.grupo[0].url_prelacion+"<i class='fa fa-download blue'></i></a></td>";
         } 
+        if(d.grupo[0].url_prelacion==null)
+        {
+          url_prelacion='';
+        }
         if({{$atencion}})
         {
           btn_cerrarTicket='';
@@ -1006,10 +1010,7 @@ function configprelacion()
           footer_row="<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+select_status+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_proceso+"</th><th class='text-center'>"+btn_revertir+"</th></tr>"
         }
                
-        if(d.grupo[0].url_prelacion==null)
-        {
-          url_prelacion='';
-        }
+        
         
         html += "<tfooter>"+footer_row +
         /*"<tr>"+f_o_detalle+"<th colspan='3'>"+url_prelacion+"</th>"+th_f_fecha+"<th colspan='3'>"+btn_prelacion+"</th> <th>"+btn_cerrarTicket+"</th><th colspan='3'>"+select_rechazos+"</th><th class='text-center'>"+btn_rechazo+"</th></tr>*/"</tfooter>";

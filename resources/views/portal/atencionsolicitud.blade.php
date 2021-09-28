@@ -269,50 +269,8 @@
     
   </div>
 </div>
-<div id="portlet-asignar" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cerrarModal()"></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿<label id="lbl_habilitar" style="color: #cb5a5e;"></label> Asignar grupo de solicitudes, con id grupo: <label id="lbl_idgrupo" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" onclick="cerrarModal()">Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="Asignar()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
 </div>
-<div id="portlet-cerrarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ></button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <span class="help-block">&nbsp;</span> <p>
-             ¿Rechazar Solicitudes: <label id="lbl_tickets" style="color: #cb5a5e;"></label>?</p>
-              <span class="help-block">&nbsp;</span>              
-                
-            </div>
-            <div class="modal-footer">
-                <div id="AddbuttonDeleted">
-         <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
-        </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <div id="portlet-aceptarTickets" class="modal fade " tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -322,14 +280,14 @@
             </div>
             <div class="modal-body">
                 <span class="help-block">&nbsp;</span> <p>
-             ¿Aceptar Solicitudes: <label id="lbl_a_tickets" style="color: #cb5a5e;"></label>?</p>
+             ¿<label id="lbl_solicitud" style="color: #cb5a5e;"></label> Solicitudes:  <label id="lbl_tickets" style="color: #cb5a5e;"></label>?</p>
               <span class="help-block">&nbsp;</span>              
                 
             </div>
             <div class="modal-footer">
                 <div id="AddbuttonDeleted">
          <button type="button" data-dismiss="modal" class="btn default" >Cancelar</button>
-            <button type="button" data-dismiss="modal" class="btn green" onclick="cerrarSolicitudes()">Confirmar</button>
+            <button type="button" data-dismiss="modal" class="btn green" onclick="aceptarRechazar()">Confirmar</button>
         </div>
             </div>
         </div>
@@ -350,6 +308,7 @@
 <input type="text" name="data" id="data" hidden="true">
 <input type="text" name="id_proceso" id="id_proceso" hidden="true">
 <input type="text" name="ticket_status" id="ticket_status" hidden="true">
+<input type="text" name="msg_estatus" id="msg_estatus" hidden="true">
 @endsection
 
 @section('scripts')
@@ -565,35 +524,15 @@ function configprelacion()
        Command: toastr.warning("Error", "Notifications");
     });
   }
-  function findSolicitudesCerrar(grupo_clave,data,id_proceso){
-      document.getElementById("obj_grupo").value=JSON.stringify([data]);
-    var formdata={ };
-    Object.assign(formdata,{id_solicitud:grupo_clave}); 
-    Object.assign(formdata,{_token:'{{ csrf_token() }}'});  
-    response=[data];
-    var tickets_id=[];
-    var ids=[];
-    var grupo_clave="";
-    if(typeof response=== 'object'){
-      for (n in response) { 
-        for(k in response[n].grupo)
-        {   
-          tickets_id.push(response[n].grupo[k].id);               
-          if(response[n].grupo[k].status=="1")
-          {
-            ids.push(response[n].grupo[k].id);
-            grupo_clave=response[n].grupo[k].grupo_clave;
-          }                                                      
-        } 
-      }
-    }
-
-    document.getElementById("lbl_tickets").textContent=tickets_id;
-    $('#portlet-cerrarTickets').modal('show');
-    document.getElementById("idgrupo").value=grupo_clave;
-    document.getElementById("id_proceso").value=id_proceso;
-    document.getElementById("tickets_id").value=JSON.stringify(ids);
-    document.getElementById("ids").value=JSON.stringify(ids);
+  function aceptarRechazarSolicitud(id_ticket,mensaje_){
+    console.log(mensaje_);
+     document.getElementById("msg_estatus").value=mensaje_;
+     document.getElementById("id_registro").value=id_ticket;
+    document.getElementById("lbl_tickets").textContent=id_ticket;
+    if(mensaje_=='aceptar'){mensaje_="Aceptar";}
+    if(mensaje_=='rechazar'){mensaje_="Rechazar";}
+    document.getElementById("lbl_solicitud").textContent=mensaje_;
+    $('#portlet-aceptarTickets').modal('show');
   }
   function cerrarSolicitudes()
     {
@@ -731,10 +670,19 @@ function configprelacion()
           Mp=municipio;
         }else{          
            Mp=conctenaM(municipio);
-        }     
+        }  
+        @if($atencion=="true")
+          solicitud.bitacora.forEach((bitacora,index)=>{ 
+           
+          bitacora_end=index;
+          bitacora=solicitud.bitacora[index];
+          bitacora_length=solicitud.bitacora.length-1;
+        @endif    
+            
+          var b_atendio='';    
           var clase='';
           var distrito=searchIndex('distrito',solicitud.info.campos);
-          var Atender_btn="<a class='btn default btn-sm yellow-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
+          var Atender_btn="<a class='btn default btn-sm green-stripe' href='#portlet-atender' data-toggle='modal' data-original-title='' title='Detalles' onclick='findAtender(\""+solicitud.id+"\",\""+solicitud.status+"\",\""+solicitud.grupo_clave+"\",\""+solicitud.id_transaccion_motor+"\",\""+solicitud.catalogo+"\",\""+JSON.stringify(solicitud.tickets_id)+"\","+JSON.stringify(solicitud)+")'><strong>Detalles</strong> </a>";
           var dist='0';
 
           //console.log(valid);&& index==bitacora_end
@@ -753,9 +701,9 @@ function configprelacion()
         }else{
           so='';
         }
-        var btn_cerrarTicket="<th><a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"rechazar\")'>Rechazar</a></th>";
-        var btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazar("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
-
+        var btn_cerrarTicket="<th><a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"rechazar\")'>Rechazar</a></th>";
+        var btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
+       
 
           var valorOperacion=searchIndex('valorOperacion',solicitud.info.campos);
           let tdShowHijas = solicitud.grupo && solicitud.grupo.length > 0 ? "<a onclick='showMore(" + JSON.stringify(solicitud) +", event)' ><i id='iconShowChild-" + solicitud.id  +"' class='fa fa-plus'></a>" : '';
@@ -763,6 +711,11 @@ function configprelacion()
             clase='warning';
           }else{
             clase='';
+          }
+          if(solicitud.status!="2")
+          {
+            btn_cerrarTicket='';
+            btn_aceptarTicket='';
           }
           if(solicitud.mensaje=="rechazar" || solicitud.mensaje=="aceptar")
           {
@@ -773,17 +726,41 @@ function configprelacion()
           }else{
             estatus_solicitud='N/A';
           }
+           if({{$atencion}})
+          { 
+            nams=bitacora.name ==null || bitacora.name=='null' ? " N/A": bitacora.name ;
+            b_atendio="<td>"+nams +"</td>";  
+            if(index!=bitacora_length || bitacora.mensaje=="rechazar" || bitacora.mensaje=="aceptar" )
+            {
+              btn_cerrarTicket='';
+              btn_aceptarTicket='';
+            }else{
+              btn_cerrarTicket="<th><a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"rechazar\")'>Rechazar</a></th>";
+              btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
+            }
+            if(bitacora.mensaje=="rechazar" ){estatus_solicitud='RECHAZADO';}
+            else if(bitacora.mensaje=="aceptar" ){estatus_solicitud='ACEPTADO';}
+            else{estatus_solicitud='N/A';}         
+          }
            estatus_solicitud='<label style="color: #cb5a5e;">'+estatus_solicitud+'</label>';
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td><td class="text-center"><table class="table-hover"><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></td></tr>';
-
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td>'+b_atendio+'<td class="text-center"><table class="table-hover"><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></td></tr>';
+        @if($atencion=="true")
+        })
+        @endif
 
       });
       //console.log(exist);
+      var num=7;
+       var h_atendio=''; 
       var f_o_detalle='<th></th>';
-      
-        html += "<tr><th colspan='7'></th> <th></th></tr>";
+       if({{$atencion}})
+          {      
+            h_atendio="<th>Atendio</th>"; 
+            num=8;           
+          }
+        html += "<tr><th colspan='"+num+"'></th> <th></th></tr>";
 //style='display:none;'
-        tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th class='text-center' >Solicitantes</th><th>Estatus Solicitud</th><th>Estatus</th><th class='text-center' >Opciones</th></tr>"+html;
+        tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th class='text-center' >Solicitantes</th><th>Estatus Solicitud</th><th>Estatus</th>"+h_atendio+"<th class='text-center' >Opciones</th></tr>"+html;
         return tbl_head;
     }
     function saveMessage(prelacion_,data)
@@ -1249,10 +1226,10 @@ function configprelacion()
          Command: toastr.warning("Error", "Notifications");
         });
     }
-    function aceptarRechazar(id_ticket,mensaje_)
+    function aceptarRechazar()
     {
-      //var idT=$("#idTicket").val();
-      //var mensaje_=$("#message").val();
+      var id_ticket=$("#id_registro").val();
+      var mensaje_=$("#msg_estatus").val();
      $.ajax({
            method: "POST", 
            url: "{{ url()->route('aceptar-rechazar-tramite') }}",
