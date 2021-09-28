@@ -730,7 +730,7 @@ function configprelacion()
           { 
             nams=bitacora.name ==null || bitacora.name=='null' ? " N/A": bitacora.name ;
             b_atendio="<td>"+nams +"</td>";  
-            if(index!=bitacora_length || bitacora.mensaje=="rechazar" || bitacora.mensaje=="aceptar" )
+            if(index!=bitacora_length || bitacora.mensaje=="rechazado" || bitacora.mensaje=="aceptado" )
             {
               btn_cerrarTicket='';
               btn_aceptarTicket='';
@@ -738,18 +738,17 @@ function configprelacion()
               btn_cerrarTicket="<th><a class='btn default btn-sm' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"rechazar\")'>Rechazar</a></th>";
               btn_aceptarTicket="<th><a class='btn default btn-sm green' data-toggle='modal' data-original-title='' title='Rechazar Tickets' class='btn default btn-sm' onclick='aceptarRechazarSolicitud("+solicitud.id+",\"aceptar\")'>Aceptar</a></th>";
             }
-            if(bitacora.mensaje=="rechazar" ){estatus_solicitud='RECHAZADO';}
-            else if(bitacora.mensaje=="aceptar" ){estatus_solicitud='ACEPTADO';}
+            if(bitacora.mensaje=="rechazado" ){estatus_solicitud='RECHAZADO';}
+            else if(bitacora.mensaje=="aceptado" ){estatus_solicitud='ACEPTADO';}
             else{estatus_solicitud='N/A';}         
           }
            estatus_solicitud='<label style="color: #cb5a5e;">'+estatus_solicitud+'</label>';
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td>'+b_atendio+'<td class="text-center"><table class="table-hover"><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></td></tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +''+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+so+'</td><td>'+estatus_solicitud+'</td><td>'+ solicitud.descripcion  + '</td>'+b_atendio+'<td class="text-center" style="text-align:center;" ><center><table class="table-hover" ><tr>'+btn_cerrarTicket+''+btn_aceptarTicket+'<th>'+botonAtender+'</th></tr></table></center></td></tr>';
         @if($atencion=="true")
         })
         @endif
 
       });
-      //console.log(exist);
       var num=7;
        var h_atendio=''; 
       var f_o_detalle='<th></th>';
@@ -759,7 +758,6 @@ function configprelacion()
             num=8;           
           }
         html += "<tr><th colspan='"+num+"'></th> <th></th></tr>";
-//style='display:none;'
         tbl_head = "<table class='table table-hover table-bordered table-striped' class='sort_table' id='tbl_"+d.grupo_clave+"'><tr><th>Solicitud</th><th>FSE</th><th>Trámite</th><th>Municipios</th><th class='text-center' >Solicitantes</th><th>Estatus Solicitud</th><th>Estatus</th>"+h_atendio+"<th class='text-center' >Opciones</th></tr>"+html;
         return tbl_head;
     }
