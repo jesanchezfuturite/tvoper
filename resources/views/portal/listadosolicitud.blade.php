@@ -945,7 +945,7 @@ function configprelacion()
           name_us="";
           if(bitacora[bitacora_end].usuario != null)
             {name_us=bitacora[bitacora_end].usuario.name;}
-          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td>'+ td_fecha  + '<td>'+ solicitud.descripcion  + '</td><td class="text-center"> <span class="label label-sm label-warning">'+ bitacora[bitacora_end].nombre  + '</span> <span class="help-block">'+ name_us+'</span></td>'+ botonAtender + '</tr>';
+          html += '<tr class="'+clase+'" id="trchild-' + solicitud.id +'" ><td style="width:3%;">' + tdShowHijas +'</td><td>'+solicitud.id_transaccion_motor +'('+ solicitud.id  + ')</td><td>'+ solicitud.id_transaccion  + '</td><td>'+ solicitud.tramite  + '</td><td>'+Mp+'</td><td>'+lote+'</td><td>'+so+'</td><td>'+ formatter.format(valorCatas) + '</td> <td >'+formatter.format(valorOperacion)+'</td>'+ td_fecha  + '<td>'+ solicitud.descripcion  + '</td><td class="text-center"> <span class="label label-sm label-warning">'+ bitacora[bitacora_end].nombre  + '</span> </td>'+ botonAtender + '</tr>';
          //<td>'+btn_revisar+'</td>  
         @if($atencion=="true")
         })
