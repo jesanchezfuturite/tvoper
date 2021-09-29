@@ -214,7 +214,7 @@ class PortalSolicitudesTicketController extends Controller
 
               ]);
 
-               array_push($ids, $ticket->id);              
+               array_push($ids, $ticket->id);               
             }
             $first_id = reset($ids);
             
@@ -802,8 +802,6 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function saveTransaccionMotor(Request $request){
       $error=null;
-      $success=0;
-      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -865,8 +863,6 @@ class PortalSolicitudesTicketController extends Controller
                     "info"=>$value->info,
                     "status"=>$value->status
                   ]);
-                  $success=1;
-                  $user_id=$value->user_id; 
                   Log::info("distrito 1 if ");
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
@@ -894,9 +890,9 @@ class PortalSolicitudesTicketController extends Controller
             }
           }
         }
-        if($success==1){		
-            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
-        }
+        // if($success==1){		
+        //     $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion]);
+        // }
         Log::info('Transaccion guardada');
         return response()->json(
           [
@@ -916,8 +912,6 @@ class PortalSolicitudesTicketController extends Controller
     }
     public function updateStatusTramite(Request $request){
       $error=null;
-      $success=0;
-      $user_id=null;
       switch ($request->status) {
         case "60":
           $statusTicket = 5;
@@ -988,9 +982,7 @@ class PortalSolicitudesTicketController extends Controller
                     "id_estatus_atencion" => 2,
                     "info"=>$value->info,
                     "status"=>$value->status
-                  ]);
-                  $success=1;
-                  $user_id=$value->user_id; 
+                  ]);                
                   Log::info("distrito 1 if");
                  }else{
                     $solicitudTicket = $this->ticket->where('id',$value->id)
@@ -1016,9 +1008,6 @@ class PortalSolicitudesTicketController extends Controller
               $tramites_finalizados = $this->tramites_finalizados($value->id);
             }
           }
-        }
-        if($success==1){        		
-            $answer = app()->call('App\Http\Controllers\PortalSolicitudesController@notify', [$user_id, $request->id_transaccion, 2]);        
         }
         Log::info('Estatus actualizado');
         return response()->json(

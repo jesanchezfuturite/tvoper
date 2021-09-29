@@ -1507,11 +1507,11 @@ class PortalSolicitudesController extends Controller
 
     return $informacion;
   }
-  public   function configdocprelacion()
+  public function configdocprelacion()
   {
       return json_encode(config('docprelacion'));
   }
-  public   function upStatusRechazo(Request $request)
+  public function upStatusRechazo(Request $request)
   {
     //log::info($request->all());
     try {
@@ -1546,7 +1546,8 @@ class PortalSolicitudesController extends Controller
             $findSolTicket=$this->ticket->findWhere(["id"=>$i]);
 
             $newCatalogoid=$findSolTicket[0]->catalogo_id;
-
+            $usuario=$findSolTicket[0]->user_id;
+            $transaccion =$findSolTicket[0]->id_transaccion;
            /* while(true)
             {                
               $findCatalogoPadre=$this->solicitudes->findWhere(["id"=>$newCatalogoid]);
@@ -1566,6 +1567,9 @@ class PortalSolicitudesController extends Controller
               $status=$findSolTicket[0]->status;
             }
             $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
+          
+            $send = $this->notify($user_id, $transaccion, $status, $mensaje);
+      
           }else{
             $mensaje="Motivo de rechazo: ".$request->mensaje;
             $this->msjprelaciondb->deleteWhere(['grupo_clave'=>$request->grupo_clave]);
@@ -1882,7 +1886,7 @@ class PortalSolicitudesController extends Controller
 	public function notify($id, $folio, $status, $motivo=""){
 
         switch ($status) {
-          case "1":
+          case "4":
             $encabezado="Expediente aprobado en IRCNL";
                     
             $mensaje="Tu trámite con número de folio <strong>$folio</strong> fue aprobado por el
@@ -1913,16 +1917,6 @@ class PortalSolicitudesController extends Controller
             Informatel 070.
             ";
             break;
-          case "5":
-            $encabezado="Orden de Referencia";
-            $mensaje ="Su pedido con folio <strong>$folio</strong> está en espera del pago";
-            break;
-          case "2":
-            $encabezado="Recibo Pagado";
-            $mensaje ="Su pedido con folio <strong>$folio</strong> ha sido pagado.";
-            break;
-          default:
-          $statusTicket = 1;
         }
         $table = new NotificacionEstatusAtencion();
         $mail = new PHPMailer(true);
