@@ -16,6 +16,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use App\Entities\NotificacionEstatusAtencion;
+use App\Entities\UsersPortal;
 
 class SendEmails extends Command
 {
@@ -45,7 +46,8 @@ class SendEmails extends Command
     {
          parent::__construct();        
 
-        // $this->notificacion = new NotificacionEstatusAtencion();
+        $this->notificacion = new NotificacionEstatusAtencion();
+        
 
 
     }

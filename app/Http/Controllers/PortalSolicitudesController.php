@@ -1922,29 +1922,14 @@ class PortalSolicitudesController extends Controller
         $mail = new PHPMailer(true);
 
         $user = UsersPortal::findOrFail($id);
-			  $correo= "karla.cesgu@gmail.com";
+			  $correo= "correo@correo.com";
+        // $correo= $user->email;
 
         $nombre =$user->name." ".$user->fathers_surname." ".$user->mothers_surname;
          
         $message=$this->plantilla($nombre, $folio, $encabezado, $mensaje);
-        //log::info($correo.'  '.$nombre.' '.$folio);
         try{
-            
-            // $mail->isSMTP();
-            // $mail->CharSet = 'utf-8';
-            // $mail->SMTPAuth =true;
-            // $mail->SMTPSecure = 'tls';
-            // $mail->Host = 'smtp.gmail.com';
-            // $mail->Port = '587'; 
-            // $mail->Username = 'karlacespedesgob@gmail.com';
-            // $mail->Password = 'cespedes2020';
-            // $mail->setFrom('karlacespedesgob@gmail.com', 'noreply tesoreria'); 
-            // $mail->Subject = 'GOBIERNO DEL ESTADO DE NUEVO LEÓN';
-            // $mail->MsgHTML($message);                    
-            // $mail->addAddress($correo, $nombre); 
-            // $mail->send();
-
-            
+                        
             $table->create(
               [
                   "user"      => $correo,
