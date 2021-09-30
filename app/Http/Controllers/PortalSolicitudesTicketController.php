@@ -206,7 +206,7 @@ class PortalSolicitudesTicketController extends Controller
                 $token=$tokenCreate->id;
               }else{
                 $hash = md5(rand(0,1000)+strtotime(date('U'))+$first_id).time();
-                $token=TokenPortal::create(["token"=>$hash]);
+                $tokenCreate=TokenPortal::create(["token"=>$hash]);
                 $relToken=TokenRelacionPortal::create(["ticket_id"=>$ticket->id, "token_id"=>$tokenCreate->id]);
                 $token=$tokenCreate->id;
               }             
