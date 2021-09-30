@@ -254,7 +254,15 @@ class PortalSolicitudesTicketController extends Controller
                   $this->saveFile($data);
                  }
               }else{
+                  //nunca se guardo un rregistro de este ticket en borrador
+                $data =[
+                  'ticket_id'=> $first_id,
+                  'clave'=>$clave,
+                  'mensaje' => $request->descripcion[0],
+                  'file'    => $file
+                ];
 
+                $this->saveFile($data);
               }
             }
           }else{            
