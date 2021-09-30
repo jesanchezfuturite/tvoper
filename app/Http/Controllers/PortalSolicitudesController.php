@@ -1568,7 +1568,7 @@ class PortalSolicitudesController extends Controller
             }
             $this->saveTicketBitacora($i,$request->grupo_clave,1,auth()->user()->id,$mensaje,$status);
           
-            $send = $this->notify($user_id, $transaccion, $status, $mensaje);
+            $send = $this->notify($usuario, $transaccion, $status, $mensaje);
       
           }else{
             $mensaje="Motivo de rechazo: ".$request->mensaje;
