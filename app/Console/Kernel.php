@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('obtener:Municipios')
         ->weekly();
 
-        $schedule->command('mailing:sendemailstatus')
+        $schedule->command('sendmail:sendemailstatus')
         ->everyFiveMinutes();
 
     }   
