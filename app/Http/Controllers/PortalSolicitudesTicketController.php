@@ -405,6 +405,16 @@ class PortalSolicitudesTicketController extends Controller
             $query->select('id', 'tramite_id')
             ->where("firma", 1);
           }])->get()->toArray();
+        }else if($type=="token"){
+          $tickets = TokenRelacionPortal::where("token_id", $user_id)->get()->pluck("ticket_id")->toArray();
+          $solicitudes = PortalSolicitudesTicket::whereIn("id", $tickets)
+          ->where(function ($query) {
+            $query->where('en_carrito', '=', 1);
+          })
+          ->with(['catalogo' => function ($query) {
+            $query->select('id', 'tramite_id');
+          }])
+          ->get()->toArray();
         }else{
           $solicitudes = PortalSolicitudesTicket::whereIn('user_id', $users)->where('status', 99)
           ->where(function ($query) {
