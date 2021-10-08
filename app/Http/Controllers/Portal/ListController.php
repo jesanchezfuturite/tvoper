@@ -51,9 +51,13 @@ class ListController extends Controller {
 		if($startDate > $endDate) return response()->json(["code" => 409, "message" => "conflict", "description" => "La fecha de inicio (start_date) no debe ser mayor a la fecha final (end_date)"], 404);;
 
 		$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
-		$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
-		$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
-		if(gettype($users) != 'array') $users = [$users];
+		if(isset($user->notary)){
+			$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
+			$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
+			if(gettype($users) != 'array') $users = [$users];
+		} else {
+			$users = [ $user->id ];
+		}
 		$tickets = Tickets::whereIn('user_id', $users)
 			->with('files')
 			->select(
@@ -240,6 +244,7 @@ class ListController extends Controller {
 		$ticketsTotalGroupBy = $ticketsTotalGroupBy->whereIn('ticket.status', $status)
 			->leftjoin('solicitudes_catalogo as catalogo', 'ticket.catalogo_id', 'catalogo.id')
 			->leftjoin('egobierno.tipo_servicios as servicio', 'catalogo.tramite_id', 'servicio.Tipo_Code')
+			->leftjoin('solicitudes_tramite as tramite', 'tramite.id', 'ticket.id_transaccion')
 			->select(DB::raw('COUNT(DISTINCT '.$groupBy.') AS count'));
 		if(array_search(98, $status) !== false) $ticketsTotalGroupBy = $ticketsTotalGroupBy->whereRaw('(catalogo.firma = 1 AND ticket.firmado IS NULL)');
 		// ESTE ELIMINA LOS TICKETS QUE NO ESTAN FIRMADOS EN EL LISTADO DE FINALIZADO
