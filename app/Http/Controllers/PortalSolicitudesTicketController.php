@@ -421,7 +421,6 @@ class PortalSolicitudesTicketController extends Controller
 
 
           }
-          
         }
         return response()->json(
           [
