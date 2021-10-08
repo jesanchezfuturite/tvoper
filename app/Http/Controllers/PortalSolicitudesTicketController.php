@@ -84,7 +84,7 @@ class PortalSolicitudesTicketController extends Controller
 
         return $tmts;
     }
-  public function registrarSolicitud(Request $request){   
+    public function registrarSolicitud(Request $request){   
       $name= \Request::route()->getName();
       if($name=="RegistrarSolicitudTemporal"){
         $status=80;
@@ -124,6 +124,7 @@ class PortalSolicitudesTicketController extends Controller
               "en_carrito"=>$carrito,
               "required_docs"=>$request->required_docs
             ]);
+
             if($request->has("file")){ //tiene archivo
               foreach ($request->file as $key => $value) {
                 $file=$value;
@@ -162,33 +163,6 @@ class PortalSolicitudesTicketController extends Controller
                   }
                 
                 }else{ //else no tiene id
-            if($request->has("file")){
-              $file=$request->file[0];
-              //si tiene id es porque se esta volviendo a editar
-              if($request->has("id")){
-                $consultar=PortalSolicitudesMensajes::where("ticket_id", $request->id)->first();
-                if($consultar!=null){
-                  $attach =$consultar->attach;
-                  $archivo = explode("/download/", $attach);                   
-                  $nom = $file->getClientOriginalName(); 
-                  $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);            
-                  $verificar=strcmp($archivo[1], $nombre); 
-                   
-                    if ($verificar!== 0) {
-                      //se hace un borrado logico al registo anterior
-              
-                      $update=PortalSolicitudesMensajes::where("ticket_id", $request->id)->update(["status"=>0]);
-  
-                      //se guarda un archivo nuevo
-                        $data =[
-                          'ticket_id'=>$ticket->id,
-                          'clave'=>$clave,
-                          'mensaje' => $request->descripcion[0],
-                          'file'    => $request->file[0]
-                          ];
-                        $this->saveFile($data);
-                    }
-                }else{
                   $data =[
                     'ticket_id'=>$ticket->id,
                     'clave'=>$clave,
@@ -344,34 +318,6 @@ class PortalSolicitudesTicketController extends Controller
                 "Message" => "Solicitud registrada",
               ]
             );
-                        'clave'=>$clave,
-                        'mensaje' => $request->descripcion[0],
-                        'file'    => $file
-                      ];
-
-                      $this->saveFile($data);
-                  }else{
-                    //si es igual a 0 ya no se guarda el archivo y solo se duplica el registo de mensajes relacionado al nuevo ticket
-                    PortalSolicitudesMensajes::create([
-                      'ticket_id'=> $ticket->id,
-                      'mensaje' => $request->descripcion[0],
-                      'clave' => $clave,
-                      'attach'=>$consultar->attach
-                    ]);
-                  }                
-              }else{
-                //nunca se guardo un rregistro de este ticket en borrador
-                $data =[
-                  'ticket_id'=> $ticket->id,
-                  'clave'=>$clave,
-                  'mensaje' => $request->descripcion[0],
-                  'file'    => $file
-                ];
-
-                $this->saveFile($data);
-              }  
-            }      
-          }
         }
       } catch (\Exception $e) {
         Log::info('Error Guardar Solicitud Portal - Registrar solicitud: '.$e->getMessage());
