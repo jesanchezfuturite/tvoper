@@ -23,10 +23,24 @@ jobs:
         echo "BRANCH_PATH=deployed-$BRANCH" >> $GITHUB_ENV &&
         echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
 
-    - name: Test new env
+    - name: Define new env vars
+      env:
+        DESCRIPTION: ${{ toJson(github.event.pull_request.body) }}
       run: |
         echo ${{ env.BRANCH_PATH }} &&
-        echo ${{ env.BRANCH_NAME }}
+        echo ${{ env.BRANCH_NAME }} &&
+        echo "$DESCRIPTION"
+        CUSTOM_ENV=$(
+          if [[ "$DESCRIPTION" =~ \[\:ENVS\:\]\\r\\n(.*)\\r\\n\[\:\/ENVS\:\] ]]
+          then 
+            echo ${BASH_REMATCH[1]}
+          else
+            echo null
+          fi
+        )
+        echo $CUSTOM_ENV;
+        CUSTOM_ENV=$(echo "$CUSTOM_ENV" | sed -z 's/\\r\\n/ /g;s/ $/\\r\\n/')
+        echo "CUSTOM_ENV=($CUSTOM_ENV)" >> $GITHUB_ENV
 
     - name: start deployment
       uses: bobheadxi/deployments@v0.4.3
@@ -58,46 +72,74 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.QA_ENDPOINT }}
-        username: ${{ secrets.QA_USER }}
-        password: ${{ secrets.QA_PASSWORD }}
+        host: ${{ secrets.DEV_ENDPOINT }}
+        username: ${{ secrets.DEV_USER }}
+        password: ${{ secrets.DEV_PASSWORD }}
         script: |
+          CUSTOM_ENV=${{ env.CUSTOM_ENV }}
           branchPath=${{ env.BRANCH_PATH }} &&
           echo "$branchPath" &&
-          cd ${{ secrets.QA_FOLDER }} &&
+          cd ${{ secrets.DEV_FOLDER }} &&
           cd .. &&
 
           if [ -d "$branchPath" ];
           then
             test -f "$branchPath/.env" && cp $branchPath/.env .env.$branchPath;
-            echo ${{ secrets.QA_PASSWORD }} | sudo -S rm -Rf $branchPath;
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S rm -Rf $branchPath;
           fi &&
           
           git clone -b ${{ github.head_ref }} --single-branch ${{ secrets.URL_REPO }} $branchPath &&
           cd $branchPath &&
 
           test -f "../.env.$branchPath" && cp ../.env.$branchPath .env;
-          ! test -f "../.env.$branchPath" && cp ${{ secrets.QA_FOLDER }}/.env .env;
+          ! test -f "../.env.$branchPath" && cp ${{ secrets.DEV_FOLDER }}/.env .env;
 
-          search_1="APP_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}" &&
-          search_3="ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/public" &&
-          search_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/public\/" &&
+          search_1="APP_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}" &&
+          search_3="ASSET_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}\/public" &&
+          search_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}\/public\/" &&
           
-          replace_1="APP_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\"\nAPP_PREFIX=\"\/$branchPath" &&
-          replace_3="ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\/public" &&
-          replace_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.QA_ENDPOINT }}\/$branchPath\/public\/" &&
+          replace_1="APP_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}\/$branchPath\"\nAPP_PREFIX=\"\/$branchPath" &&
+          replace_3="ASSET_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}\/$branchPath\/public" &&
+          replace_4="MIX_ASSET_URL=\"http:\/\/${{ secrets.DEV_ENDPOINT }}\/$branchPath\/public\/" &&
 
           sed -i "s/$search_1/$replace_1/gi" .env &&
           sed -i "s/$search_3/$replace_3/gi" .env &&
           sed -i "s/$search_4/$replace_4/gi" .env &&
+
+          if($CUSTOM_ENV != null)
+          then
+            for element in "${CUSTOM_ENV[@]}"
+            do
+              IFS="=" read -a element <<< "$element"
+              
+              key="${element[0]}"
+              val="${element[1]}"
+              replace="$key=\"$val\""
+
+              if grep -F $key .env
+              then
+                lineNum="$(grep -n "$key" .env | head -n 1 | cut -d: -f1)"
+                totalLines="$(wc -l .env)"
+
+                echo "$lineNum => $totalLines"
+                
+                sed -i "${lineNum}d" .env &&
+                sed -i "${lineNum}i $replace" .env &&
+                echo "Variable ($key) modificada con éxito"
+              else
+                echo "$key=\"$val\"" >> .env &&
+                echo "Variable ($key) agregada con éxito"
+              fi
+            done
+          fi
 
           composer install &&
           composer dump-autoload &&
           npm install &&
           npm run prod &&
           
-          echo ${{ secrets.QA_PASSWORD }} | sudo -S chown -R nginx storage &&
-          echo ${{ secrets.QA_PASSWORD }} | sudo -S chmod -R 777 storage public
+          echo ${{ secrets.DEV_PASSWORD }} | sudo -S chown -R nginx storage &&
+          echo ${{ secrets.DEV_PASSWORD }} | sudo -S chmod -R 777 storage public
 
     - name: kill vpn
       if: always()
@@ -111,4 +153,4 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         status: ${{ job.status }}
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-        env_url: "http://${{ secrets.QA_ENDPOINT }}/${{ env.BRANCH_PATH }}/"
+        env_url: "http://${{ secrets.DEV_ENDPOINT }}/${{ env.BRANCH_PATH }}/"
