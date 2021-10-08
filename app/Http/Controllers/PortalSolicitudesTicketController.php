@@ -184,8 +184,6 @@ class PortalSolicitudesTicketController extends Controller
               );
             }
              //se hace un borrado logico del ticket anterior borrador
-            $eliminar_ticket = $this->ticket->where('id', $request->id)
-            //se hace un borrado logico del ticket anterior borrador
             $eliminar_ticket = $this->ticket->where('id', $request->id)->where("status", 80)
             ->update(['status' => 9]);
           }
