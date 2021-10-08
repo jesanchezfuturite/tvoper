@@ -54,10 +54,14 @@ class ListController extends Controller {
 		$column = 'user_id';
 		$values = [];
 		if($request->user){
-			$user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
-			$user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
-			$users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
-			if(gettype($users) != 'array') $users = [$users];
+      $user = User::with('notary')->orWhere('users.id', (int)$request->user)->first();
+      if(isset($user->notary)){
+        $user->notary->users = UsersNotaryOffices::with('users')->where('notary_office_id', $user->notary->id)->get();
+        $users = $this->array_value_recursive('user_id', $user->notary->users->toArray());
+        if(gettype($users) != 'array') $users = [$users];
+      } else {
+        $users = [ $user->id ];
+      }
 			$values = $users;
 		} else if ($request->token) {
 			$token = SolicitudesToken::select('ticket_id')->where([ 'token_id' => $request->token ])->get();
@@ -65,7 +69,6 @@ class ListController extends Controller {
 			if(gettype($ids) != 'array') $ids = [$ids];
 			$values = $ids;
 			$column = 'ticket.id';
-			// dd($ids);
 		}
 
 		$tickets = Tickets::whereIn($column, $values)
