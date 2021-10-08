@@ -49,7 +49,7 @@ class PortalNotaryOfficesController extends Controller
             $file = $file;
 			$extension = $file->getClientOriginalExtension();
 		
-			$attach = "archivo_temporal_".date("U").".".$extension;
+            $attach = "archivo_temporal_".$key."_".date("U").".".$extension;
             
 			\Storage::disk('local')->put($attach,  \File::get($file));
             $data[$key] = [
@@ -60,6 +60,7 @@ class PortalNotaryOfficesController extends Controller
 
       
         }
+     
         $data = array_merge($data, $this->flatten([ "notary_office" => $notary_office ]));
         
         try {
@@ -123,7 +124,7 @@ class PortalNotaryOfficesController extends Controller
                 $file = $file;
                 $extension = $file->getClientOriginalExtension();
             
-                $attach = "archivo_temporal_".date("U").".".$extension;
+                $attach = "archivo_temporal_".$key."_".date("U").".".$extension;
                 
                 \Storage::disk('local')->put($attach,  \File::get($file));
                 $data[$key] = [
@@ -141,7 +142,6 @@ class PortalNotaryOfficesController extends Controller
         }
         $link = env("SESSION_HOSTNAME")."/notary-offices/". "$notary_id/users/$user_id";
 
-        
         try {
             $res = (new Client())->request(
                 'POST',
