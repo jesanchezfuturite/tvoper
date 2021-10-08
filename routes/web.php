@@ -526,7 +526,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/siger-rejecttickets/{boleta}/{comment}/{type}', 'ApisigerController@RejectTicket');
     Route::get('/siger-updatemunicipio/{boleta}/{municipio}/{region}', 'ApisigerController@updateMunicipio');
     Route::post('/add-folios-exp', 'PortalSolicitudesTicketController@addFolios');
-});
+
 
     Route::get('/reporte-usuarios', 'ReportesController@listadoUsuariosPortal')->name('reporte-usuarios');
     Route::post('/find-usuarios', 'ReportesController@findUsuarios')->name('find-usuarios');
