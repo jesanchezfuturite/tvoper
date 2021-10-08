@@ -140,7 +140,7 @@ class PortalSolicitudesTicketController extends Controller
                     if ($verificar!== 0) {
                       //se hace un borrado logico al registo anterior
               
-                      $consultar->update(["status"=>0]);
+                      $update=PortalSolicitudesMensajes::where("ticket_id", $request->id)->update(["status"=>0]);
   
                       //se guarda un archivo nuevo
                         $data =[
@@ -289,21 +289,20 @@ class PortalSolicitudesTicketController extends Controller
                       'clave' => $clave,
                       'attach'=>$consultar->attach
                     ]);
-                  }
-                }
+                  }                
               }else{
                 //nunca se guardo un rregistro de este ticket en borrador
                 $data =[
-                  'ticket_id'=> $first_id,
+                  'ticket_id'=> $ticket->id,
                   'clave'=>$clave,
                   'mensaje' => $request->descripcion[0],
                   'file'    => $file
                 ];
 
                 $this->saveFile($data);
-              }    
-    
-            }
+              }  
+            }      
+          }
         }
         return response()->json(
           [
