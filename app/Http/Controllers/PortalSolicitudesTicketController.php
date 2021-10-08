@@ -2089,7 +2089,7 @@ class PortalSolicitudesTicketController extends Controller
        }
     }  
   }
-}
+
     public function es_aviso($id){    
         $aviso=env("TRAMITE_AVISO");
 
