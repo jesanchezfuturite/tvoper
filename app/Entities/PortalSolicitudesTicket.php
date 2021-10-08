@@ -25,7 +25,7 @@ class PortalSolicitudesTicket extends Model implements Transformable
     protected $fillable = [
         'id','clave','catalogo_id', 'info','relacionado_a','ticket_relacionado',
         'id_transaccion', 'user_id','creado_por', 'asignado_a', 'status',
-        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs',
+        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs', 'id_insumos',
         'grupo_clave', 'ticket_padre'
         ];
 
@@ -38,8 +38,22 @@ class PortalSolicitudesTicket extends Model implements Transformable
     public function mensajes(){
 	  	return $this->hasMany('App\Entities\PortalSolicitudesMensajes', 'ticket_id', 'id');
     }
+
     public function tramites(){
         return $this->hasMany('App\Entities\PortalTramites', 'id', 'id_transaccion');
+    }
+
+    public function bitacora(){
+        return $this->hasMany('App\Entities\TicketBitacora', 'id_ticket', 'id');
+    }
+    public function configusers(){
+        return $this->hasMany('App\Entities\PortalConfigUserNotaryOffice', 'user_id', 'user_id');
+    }
+
+
+    public function archivos(){
+        return $this->mensajes();
+
     }
 
 }
