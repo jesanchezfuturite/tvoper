@@ -33,6 +33,7 @@ use App\Repositories\PortalmensajeprelacionRepositoryEloquent;
 use App\Repositories\SolicitudesMotivoRepositoryEloquent;
 use App\Repositories\MotivosRepositoryEloquent;
 use App\Entities\SolicitudesMotivo;
+use App\Entities\PortalNotaryOffices;
 use Luecano\NumeroALetras\NumeroALetras;
 use Milon\Barcode\DNS1D;
 
@@ -741,17 +742,24 @@ class PortalSolicitudesController extends Controller
       }
     }
     public function getFileRoute($id, $type){
-        $url= env("SESSION_HOSTNAME");
-        $link = env("SESSION_HOSTNAME")."/notary-offices/file/"."$id/$type";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $link);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $route = curl_exec($ch);
-        $error =curl_error($ch);
-        curl_close($ch);
-        $route=json_decode($route);
-        return $url."/".$route->response;
+      try{
+        $notary = PortalNotaryOffices::find($id);
+        if($type=='sat'){
+          $file=$notary->sat_constancy_file;	
+          
+        }else{			
+          $file=$notary->notary_constancy_file;
+        
+          
+        }
+        $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+        $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$filename;        
+        return redirect()->to($url);
+     
 
+      }catch(\Exception $e){
+        log::info("error PortalSolicitudesController@getFileRoute ".$e->getMessage());
+      }
 
     }
 
