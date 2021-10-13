@@ -1331,7 +1331,7 @@ function changeComunidad()
                 var urlnotaria=  urlnotaria.replace(':id_notaria', id_notaria);
 
                 document.getElementById('id_NotTitular').value=item.id;
-                btn_download="<a class='btn btn-icon-only yellow' href='"+urlsat+" target='_blank' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='"+urlnotaria+"' target='_blank'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
+                btn_download="<a class='btn btn-icon-only yellow' href='"+urlsat+"' target='_blank' data-toggle='modal' data-original-title='' title='Descargar Constancia SAT' ><i class='fa fa-file-pdf-o'></i></a><a class='btn btn-icon-only yellow' data-toggle='modal' href='"+urlnotaria+"' target='_blank'  title='Descargar Constancia Notaria' ><i class='fa fa-file-pdf-o'></i></a>";
                 btn_desact="</a><a class='btn btn-icon-only default' data-toggle='modal' href='#'  title='No Aplica')'><i class='fa fa-power-off'></i></a>";
               }else{
                 btn_download=""; 
