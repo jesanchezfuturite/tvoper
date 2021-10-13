@@ -25,7 +25,8 @@ class PortalSolicitudesTicket extends Model implements Transformable
     protected $fillable = [
         'id','clave','catalogo_id', 'info','relacionado_a','ticket_relacionado',
         'id_transaccion', 'user_id','creado_por', 'asignado_a', 'status',
-        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs', 'id_insumos'
+        'en_carrito','por_firmar', 'id_tramite', 'recibo_referencia','required_docs', 'id_insumos',
+        'folio_insumos'
         ];
 
     protected $table = "solicitudes_ticket";
