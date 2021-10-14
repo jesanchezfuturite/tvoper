@@ -22,7 +22,7 @@ class Portalsolicitudesresponsables extends Model implements Transformable
      */
     protected $connection = "mysql6";
 
-    protected $fillable = ['id','user_id','catalogo_id'];
+    protected $fillable = ['id','user_id','catalogo_id', 'id_estatus_atencion'];
 
     protected $table = "solicitudes_responsables";
 

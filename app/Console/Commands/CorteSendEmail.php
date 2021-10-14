@@ -372,9 +372,11 @@ class CorteSendEmail extends Command
                     log::info($findDuplicado);
                     if($findDuplicado->count()==0)
                     {*/
-                        
-                        
-                        $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
+                        //log::info($concilia->id_processed);
+                if($concilia->id_processed==null || $concilia->id_processed <> $concilia->id)        
+                   {
+
+                       $RowClaveltramite=str_pad('025001',6,"0",STR_PAD_LEFT);
                     
                         $RowFechaDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Ymd'),8);
                         $RowHoraDis=str_pad(Carbon::parse($concilia->fecha_ejecucion)->format('Hms'),6);
@@ -400,7 +402,7 @@ class CorteSendEmail extends Command
                         File::append($Directorio,$cadena."\r\n");
                         File::append($Directorio2,$cadena."\r\n");
                         $updateConciliacion=$this->pr->UpdatePorTransaccion($concilia->fecha_ejecucion,$concilia->id);
-                   
+                    }   
                         /*$insertDuplicado=$this->cortearchivosdb->create(['referencia'=>$concilia->referencia,'transaccion_id'=>$concilia->id_detalle_tramite,'banco_id'=>$concilia->banco_id,'cuenta_banco'=>$concilia->cuenta_banco,'cuenta_alias'=>$concilia->cuenta_alias,'tipo_servicio'=>$concilia->tipo_servicio,'fecha_ejecucion'=>$concilia->fecha_ejecucion]);
                         
                     }else{
