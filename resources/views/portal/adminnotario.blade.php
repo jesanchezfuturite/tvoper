@@ -876,8 +876,7 @@ function changeComunidad()
       method: "get",            
       url: "{{ url()->route('notary-offices-roles') }}",      
       data: {_token:'{{ csrf_token() }}'}  })
-      .done(function (response) {     
-        console.log(response);
+      .done(function (response) { 
         document.getElementById("arrayPermisos").value=JSON.stringify(response);
           
         })
