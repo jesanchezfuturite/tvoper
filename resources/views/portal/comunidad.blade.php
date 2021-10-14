@@ -3,6 +3,7 @@
 
 @section('content')
 <link href="assets/global/css/checkbox.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css"/>
 <h3 class="page-title">Portal <small>Comunidades</small></h3>
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -31,7 +32,6 @@
                 <i class="fa fa-bank"></i>Agregar Comunidad
             </div>
             <div class="tools">                
-              <a href="#portlet-rol" data-toggle="modal" class="config" data-original-title="" title="Crear Nuevo"></a>
               <a href="#portlet-rol" data-toggle="modal" class="tooltips" data-original-title="" title="Editar Registro" onclick="editRol()"><i class='fa fa-pencil' style="color:#d7eaf8 !important;"></i>
               </a>
               <a href="#portlet-deleted" data-toggle="modal" class="tooltips" data-original-title="" title="Eliminar Registro">
@@ -40,7 +40,23 @@
             </div>
         </div>
         <div class="portlet-body">
-        <div class="row">            
+        <div class="row"> 
+          <div class="col-md-1"> 
+              <div class="form-group">
+                <label >Nueva Comunidad</label>                                             
+                
+              </div>
+            </div> 
+            <div class="col-md-3">             
+            <div class="form-group">
+              <input type="text" class="form-control" name="nameRol" id="nameRol" placeholder="Ingrese Nombre de la Comunidad...">
+            </div>
+          </div>
+            <div class="col-md-1">             
+            <div class="form-group">
+              <button type="submit" class="btn blue" onclick="saveRol()"><i class="fa fa-check"></i> Agregar</button>
+            </div>
+          </div>           
             <div class="col-md-3 col-ms-12">
                 <div class="form-group">
                     <label >Comunidades Registrados </label>  
@@ -61,17 +77,65 @@
         </div>
     </div>
 </div>
+
+<!-----------------------------------------ROW-------------------------------------------->
+<div class="row">
+    <div class="portlet box blue">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-bank"></i>Perfiles
+            </div>
+            <div class="tools">                
+              
+            </div>
+        </div>
+        <div class="portlet-body">
+          <div class="row"> 
+            <div class="col-md-1"> 
+                <div class="form-group">
+                  <label >Perfiles</label>                                             
+                  
+                </div>
+              </div> 
+              <div class="col-md-3">             
+              <div class="form-group">
+                <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeRol()">
+                      <option value="0">------</option>                         
+                    </select>
+              </div>
+            </div> 
+            <div class="col-md-1"> 
+                <div class="form-group">
+                  <label >Permisos</label>                                             
+                  
+                </div>
+              </div> 
+              <div class="col-md-3">             
+              <div class="form-group">
+                <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeRol()">
+                      <option value="0">------</option>                         
+                    </select>
+              </div>
+            </div>           
+          </div>
+        </div>
+    </div>
+</div>
+
+<!----------------------------------------- ROW-------------------------------------------->
 <div class="row">
  <!-- BEGIN SAMPLE TABLE PORTLET-->
   <div class="portlet box blue">
     <div class="portlet-title" >
       <div class="caption">
-          <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configuracion Tramites</div>
+          <div id="borraheader">  <i class="fa fa-cogs"> </i>&nbsp;Configuracion Usuarios</div>
       </div>
       <div class="tools">                
        <!--<a href="#portlet-perfil"  class="config" data-original-title="" title="Crear Nuevo"></a>
-       --> 
+       -->
+        <a href="#portlet-user" data-toggle="modal" class="tooltips" data-original-title="" title="Editar Registro"><i class='fa fa-user' style="color:#d7eaf8 !important;"></i></a>
         <a href="#portlet-perfil" data-toggle="modal" class="tooltips" data-original-title="" title="Editar Registro"><i class='fa fa-pencil' style="color:#d7eaf8 !important;"></i></a>
+
       </div>           
     </div>
       <div class="portlet-body">
@@ -81,8 +145,10 @@
           <table class="table table-hover" id="sample_2">
             <thead>
               <tr>
-              <th>Comunidad</th>
-              <th>Tramite</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Perfil</th>
+              <th></th>
             <!--<th>&nbsp;</th> --->
             </tr>
           </thead>
@@ -96,45 +162,7 @@
         <!-- END SAMPLE TABLE PORTLET-->
 </div>
 
-<!----------------------------------------- Nuevo ROL-------------------------------------------->
-<div class="modal fade" id="portlet-rol" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarRol()"></button>
-        <h4 class="modal-title">Configuracion Comunidad</h4>
-        <input type="text" name="id_rol" id="id_rol" hidden="true">
-      </div>
-      <div class="modal-body">
-        <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-12"> 
-              <div class="form-group">
-                <label >Nombre</label>                                             
-                <input type="text" class="form-control" name="nameRol" id="nameRol" placeholder="Ingrese Nombre de la Comunidad...">
-              </div>
-            </div>        
-          </div>
-        </div>
-       
-      <div class="row">
-        <div class="col-md-12">
-          <div class="col-md-12">             
-            <div class="form-group">
-              <button type="submit" class="btn blue" onclick="saveRol()"><i class="fa fa-check"></i> Guardar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarRol()">Cerrar</button>
-      </div>
-    </div>
-    </div>
-  </div>
-</div>
-</div>
+
 <!----------------------------------------- Nuevo Rol Tramite-------------------------------------------->
 <div class="modal fade" id="portlet-perfil" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
   <div class="modal-dialog">
@@ -213,17 +241,338 @@
     </div>
 </div>
 
+
+<!-----------------------------------------ADD USER----- ----------------------------->
+<div class="modal fade" id="portlet-user" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog" style="width: 75%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"data-dismiss="modal" aria-hidden="true" onclick="limpiarNot()"></button>
+        <h3 class="modal-title" id="encabezado_modal">Configuración Notaria</h3>        
+      </div>
+      <div class="modal-body">
+      <div class="section-notary">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos generales sobre la notaría</strong></h4>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <div class="form-group">
+                <label for="numNotario">* Número de Notaria</label>                                             
+                <input type="text" class="form-control" name="numNotario" id="numNotario" placeholder="Ingrese Numero de Notaria..."autocomplete="off">
+              </div>                                           
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="itemsEntidadNot">* Entidad Federativa</label>  
+                <select id="itemsEntidadNot" class="select2me form-control" onchange="changeEntidades()">
+                  <option value="0">-------</option>
+                </select>    
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="itemsCiudadNot">* Ciudad</label>
+                <select id="itemsCiudadNot" class="select2me form-control" >
+                  <option value="0">-------</option>
+                </select>
+             </div> 
+            </div>
+                                     
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+          <div class="col-md-5"> 
+              <div class="form-group">
+                <label for="calleNotario"> * Calle</label>                                             
+                <input type="text" class="form-control" name="calleNotario" id="calleNotario" placeholder="Ingrese Calle...">
+              </div>
+            </div> 
+           <div class="col-md-2">
+              <div class="form-group">
+                <label for="numeroExtNotario">* Número Exterior</label>                                                       
+                <input type="text" class="form-control" name="numeroExtNotario" id="numeroExtNotario" placeholder="Ingrese Numero Exterior..."maxlength="10"autocomplete="off">
+             </div> 
+           </div>
+           <div class="col-md-2">
+              <div class="form-group">
+                <label for="numeroNotario">Número Interior</label>                                                       
+                <input type="text" class="form-control" name="numeroNotario" id="numeroNotario" placeholder="Ingrese Numero..." autocomplete="off">
+             </div> 
+           </div> 
+           <div class="col-md-3">
+              <div class="form-group">
+                <label for="codigopostNotario">* Código Postal</label>                                                       
+                <input type="text" class="form-control valida-numeros"maxlength = "10" name="codigopostNotario" id="codigopostNotario" placeholder="Ingrese Codigo Postal...">
+             </div> 
+           </div>
+                                         
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-5"> 
+              <div class="form-group">
+                <div class="form-group">
+                <label for="distritoNotario">* Colonia</label>                                             
+                <input type="text" class="form-control" name="distritoNotario" id="distritoNotario" placeholder="Ingrese Colonia..." autocomplete="off">
+              </div>                                            
+              </div>
+            </div>
+             <div class="col-md-3"> 
+              <div class="form-group">
+                <label for="telNotario">* Número de Teléfono</label>                                             
+                <input type="text" class="valida-numeros form-control" name="telNotario" id="telNotario" placeholder="Ingrese Numero de Teléfono..."  maxlength = "10"autocomplete="off">
+              </div>
+            </div>            
+             <div class="col-md-4">
+              <div class="form-group">
+                <label for="emailNotario">* Correo Electrónico</label>                                             
+                <input type="text" class="form-control" name="emailNotario" id="emailNotario" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                <span id="emailNot" class="help-block"></span>                                           
+              </div>
+            </div>            
+             
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4" hidden="true"> 
+              <div class="form-group"> 
+                   <div class="form-group">
+                <label for="faxNotario">Fax</label>                                             
+                <input type="text" class="form-control" name="faxNotario" id="faxNotario" placeholder="Ingrese Fax..."  maxlength = "10">
+              </div>                                
+              </div>
+            </div>
+                       
+          </div>
+        </div>
+      </div> 
+        <div class="row title-user">
+          <div class="col-md-12">
+            <div class="portlet-body form">
+              <div class="form-body">
+                <h4 class="form-section"><strong>Datos del notario titular</strong></h4>
+                <input hidden="true" type="text" name="idperfil" id="idperfil">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section-users">
+        <div class="row">
+          <div class="col-md-12">
+          <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="curpUser">* CURP</label>                                             
+                <input type="text" class="form-control" name="curpUser" id="curpUser" placeholder="Ingrese Curp..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="18" oninput="validarCurpUser()">
+                 <span id="curpUs" class="help-block"></span>
+              </div>
+            </div>             
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="nameUser">* Nombre(s)</label>                                             
+                <input type="text" class="form-control" name="nameUser" id="nameUser" placeholder="Ingrese Nombre(s)..."autocomplete="off">
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="apePatUser">* Apellido Paterno</label>                                             
+                <input type="text" class="form-control" name="apePatUser" id="apePatUser" placeholder="Ingrese Apellido Paterno..."autocomplete="off">
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="apeMatUser">* Apellido Materno</label>                                                       
+                <input type="text" class="form-control" name="apeMatUser" id="apeMatUser" placeholder="Ingrese Apellido Materno..."autocomplete="off">
+             </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="rfcUser">* RFC</label>                                                       
+                <input type="text" class="form-control" name="rfcUser" id="rfcUser" placeholder="Ingrese RFC..."autocomplete="off" onkeyup="this.value = this.value.toUpperCase();" maxlength="13" oninput="validarRFCUser()">
+                 <span id="rfcUs" class="help-block"></span>
+             </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="telUser">* Número de Teléfono</label>                                             
+                <input type="text" class="valida-numeros form-control" name="telUser" id="telUser" placeholder="Ingrese Numero de Teléfono..." autocomplete="off" maxlength="10">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">          
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <label for="emailUser">* Correo Electrónico</label>                                             
+                <input type="text" class="form-control" name="emailUser" id="emailUser" placeholder="Ingrese Correo Electrónico..." autocomplete="off">
+                <span id="emailOK" class="help-block"></span>                                            
+              </div>
+            </div> 
+            <div class="col-md-4" hidden="true">
+              <div class="form-group">
+                <label for="itemsTipoUser">* Tipo</label>                                                       
+                <select id="itemsTipoUser" class="select2me form-control" >                  
+                  <option value="fisica">Fisica</option>                  
+                </select>
+             </div>
+            </div>
+            <div class="col-md-4 input-comunidad"> 
+              <div class="form-group">
+                <label for="itemsCofigNotario">* Comunidad</label> 
+                   <select id="itemsCofigNotario" class="select2me form-control" disabled="true">
+                  <option value="0">-------</option>
+                </select>                                
+              </div>
+            </div>
+            <div class="col-md-4 input-permiso"> 
+              <div class="form-group"> 
+                <label for="itemsPermiso">* Permiso</label>
+                <select id="itemsPermiso" class="select2me form-control" onchange="changePermiso();">
+                  <option value="0">-------</option>
+                </select>                               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <div class="form-group">
+                <label for="users">* Usuario</label>&nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="El usuario debe ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a>                                           
+                <input type="text" class="form-control" name="users" id="users" placeholder="Ingrese Nombre de Usuario..."autocomplete="off" oninput="usernameE(this.value,'userError')">
+                <span id="userError" class="help-block"></span>
+              </div>                                           
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group"> 
+               <label class="required_pass">*</label> <label for="password">Contraseña</label> &nbsp; &nbsp;<a  class=" popovers"  data-trigger="hover" data-placement="top" data-content="La contraseña debe de estar compuesto por una mayúscula, minúsculas, un número y ser al menos 8 caracteres..." data-original-title="Información"><i class="fa fa-question-circle"></i></a> 
+                <div class="input-icon right">
+                    <i  id="pass1"class="fa fa-eye-slash" onclick="onechange1()"  style="cursor:pointer;color: black;"></i>
+                    <input type="password" name="password"id="password" autocomplete="new-password" class="form-control" placeholder="Ingresa la Contraseña" value="">
+                    <span class="help-block">&nbsp; &nbsp;<a onclick="gPasswordPerf()"> Generar</a></span>
+                </div>
+              </div> 
+            </div>
+            
+          </div>
+        </div>
+      </div>
+        <div class="row section-archivos">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Constancia SAT </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia SAT </span>
+                        <input type="file" name="fileSAT" accept="application/pdf" id="fileSAT">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span>&nbsp; <a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput"style="position: absolute;left: 215px;top: 4px" id="delFileSAT">
+                        </a></div>
+                        
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4"> 
+              <div class="form-group">
+               
+               <div class="fileinput fileinput-new" data-provides="fileinput">
+                        <span class="btn green btn-file">
+                        <span class="fileinput-new">
+                        <i class="fa fa-plus"></i>&nbsp; &nbsp;*Adjuntar Constancia Notario </span>
+                        <span class="fileinput-exists">
+                        <i class="fa fa-exchange"></i>&nbsp; &nbsp;Cambiar Constancia Notario </span>
+                        <input type="file" name="fileNotario" accept="application/pdf"  id="fileNotario">
+                        </span>
+                        <div class="col-md-12"><span class="fileinput-filename" style="display:block;text-overflow: ellipsis;width: 200px;overflow: hidden; white-space: nowrap;">
+                        </span><a href="javascript:;" class="close fileinput-exists" data-dismiss="fileinput" style="position: absolute;left: 215px;top: 4px" id="delFileNotario">
+                        </a></div>
+                        
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="row input-checkbox-reenvio">
+          <div class="col-md-12">
+            <div class="col-md-4"> 
+              <div class="form-group">
+               <div class='md-checkbox'>
+                    <input type='checkbox' id='checkbox1' name="checkFile" class='md-check '>
+                    <label for='checkbox1'>
+                    <span></span>
+                    <span class='check'></span> <span class='box'>
+                  </span>  Reenvio de Correo. </label>
+                </div>                                        
+              </div>
+            </div>            
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">             
+            <div class="form-group">
+              <span class="help-block">&nbsp;</span>
+             <!-- <button type="submit" class="btn blue btn-save-Not" onclick="saveNotario()"><i class="fa fa-check"></i> Guardar</button>
+              <button type="submit" class="btn blue btn-upd-Not" onclick="updateNotaria()"><i class="fa fa-check"></i> Guardar</button>-->
+              <button type="submit" class="btn blue btn-saveup-User" onclick="saveUpdatePerf()"><i class="fa fa-check"></i> Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn default" onclick="limpiarNot()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <input type="text" name="jsonTramites" id="jsonTramites"  value="[]" hidden="true">
 <input type="text" name="jsonCode" id="jsonCode" hidden="true">
 <input type="text" name="selectedChecks" id="selectedChecks" value="[]" hidden="true">
 @endsection
 
 @section('scripts')
-
+<script src="assets/global/scripts/validar_pdf.js" type="text/javascript"></script>
+<script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
     findTramites();
     TableManaged.init();
+    $(".section-notary").css("display", "none");
+     $(".title-user").css("display", "none");
+     $(".section-users").css("display", "block");
+     $(".section-archivos").css("display", "none");     
+
+     $(".input-comunidad").css("display", "none");
+     $(".input-permiso").css("display", "block");
+    
+
+     $(".btn-save-Not").css("display", "none");
+     $(".btn-saveup-User").css("display", "block");
+     $(".btn-upd-Not").css("display", "none");
     });
   function deleteRol()
   { 
