@@ -170,5 +170,11 @@ class OperacionRolesController extends Controller
 		}
 
     }
+    public function index_comunidad()
+    {
+        $tramites = $this->listTramites();
+        $roles = $this->getRoles(); 
+        return view('portal/comunidad',[ "roles" => $roles, "tramites" => $tramites ]);
+    }
 
 }

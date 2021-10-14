@@ -496,5 +496,6 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
 
     Route::get('/asignar-tramites', "RolesController@index");
 
+    Route::get('/comunidad', "OperacionRolesController@index_comunidad")->name("comunidad");
 
 });
