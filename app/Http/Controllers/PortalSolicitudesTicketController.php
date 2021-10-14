@@ -134,7 +134,7 @@ class PortalSolicitudesTicketController extends Controller
                   $attach =$consultar->attach;
                   $archivo = explode("/download/", $attach);                   
                   $nom = $file->getClientOriginalName(); 
-                  $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);            
+                  $nombre = preg_replace('/[^A-Za-z0-9\-]/', '', $nom);            
                   $verificar=strcmp($archivo[1], $nombre); 
                    
                     if ($verificar!== 0) {
@@ -205,7 +205,7 @@ class PortalSolicitudesTicketController extends Controller
                   if($consultar!=null){
                     $archivo = explode("/download/",$consultar->attach);                   
                     $nom = $file->getClientOriginalName();    
-                    $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $nom);              
+                    $nombre =  preg_replace('/[^A-Za-z0-9\-]/', '', $nom);             
                     $verificar=strcmp($archivo[1], $nombre);   
                     //si es diferente de 0 significa que el archivo es diferente y por lo tanto se tiene que guardar
                     if ($verificar!== 0) {
@@ -527,7 +527,7 @@ class PortalSolicitudesTicketController extends Controller
       $clave = $data['clave'];
       $extension = $file->getClientOriginalExtension();
       $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-      $nombre = preg_replace('([^A-Za-z0-9 ])', ' ', $filename);     
+      $nombre =  preg_replace('/[^A-Za-z0-9\-]/', '', $filename);     
 
       $number = PortalSolicitudesTicket::from("solicitudes_ticket as tk")
       ->select("notary.notary_number")
@@ -1371,7 +1371,8 @@ class PortalSolicitudesTicketController extends Controller
           $ticket_id = $value["ticket_id"];
           $file = $value['file'];
           $nomArchivo = $value['filename'];
-          $filename = preg_replace('([^A-Za-z0-9 ])', ' ', $nomArchivo);
+          $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $nomArchivo); 
+            
 
           $mensajes =$this->mensajes->create([
             'ticket_id'=> $ticket_id,
