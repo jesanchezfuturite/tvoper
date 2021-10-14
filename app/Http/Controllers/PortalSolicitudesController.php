@@ -754,7 +754,7 @@ class PortalSolicitudesController extends Controller
         }
         $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
         $url = env("SESSION_HOSTNAME")."/notary-offices/download/".$filename;        
-        return redirect()->to($url);
+        return redirect()->secure($url);
      
 
       }catch(\Exception $e){
