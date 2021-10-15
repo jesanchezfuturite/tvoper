@@ -958,9 +958,18 @@ class PortalSolicitudesController extends Controller
       }
       $this->saveDocBitacora($request->ticket_id,$attach,"documento nuevo");
       $this->mensajes->create(["clave"=>$request->clave,"attach"=>$attach,"ticket_id"=>$request->ticket_id,"mensaje"=>"CALCULO DEL ISR CONFORME AL 126 LISR O COMPROBANTE DE LA EXENCIÓN","status"=>'1']);
+
       if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+    
       $attach = str_replace($name, rawurlencode($name), $attach);
       $imageData = base64_encode(file_get_contents($attach));
+      $host=substr($this->url->to('/') , 5);
+        if($host=='https')
+            {
+              if(preg_match("/http:/", $attach)) $attach = str_replace("http", "https", $attach);
+            }else{
+              if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+            }
       return response()->json([
         "Code" => "200",
         "Message" => "Guardado correctamente",
@@ -1076,14 +1085,22 @@ class PortalSolicitudesController extends Controller
             $id_mensaje=$value["id"];         
             $extension=explode(".",$file_name); 
             $file_extension=$extension[count($extension)-1];
-            //log::info($attach);
+
             if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+
             $attach = str_replace($file_name, rawurlencode($file_name), $attach);
             $imageData = base64_encode(file_get_contents($attach));            
             $file_data=$imageData;
           }
         }
-
+         $host=substr($this->url->to('/') , 5);
+        if($host=='https')
+            {
+              if(preg_match("/http:/", $attach)) $attach = str_replace("http", "https", $attach);
+            }else{
+              if(preg_match("/https:/", $attach)) $attach = str_replace("https", "http", $attach);
+            }
+      
         $response []=array(
           "clave"=> $k,
           "id_transaccion_motor"=> $id_transaccion_motor,
