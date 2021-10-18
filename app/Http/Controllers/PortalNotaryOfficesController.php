@@ -234,18 +234,34 @@ class PortalNotaryOfficesController extends Controller
         return $response;
    }
    public function getRolesPermission(){
+    try
+    {
         $url = getenv("SESSION_HOSTNAME")."/notary-offices/roles";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $listRoles = curl_exec($ch);
-        if ($listRoles === false) {
-            throw new \Exception(curl_error($ch), curl_errno($ch));
-        }
-        curl_close($ch);
-        $json = json_decode($listRoles);
-        $data = $json->response->notary_office;
-        return $data;
+
+        $client = new \GuzzleHttp\Client();
+
+        $response = $client->request("GET", $url);
+
+        $bodyResponse = $response->getBody();
+        $data= json_decode($bodyResponse);    
+        return $data->response->notary_office;
+
+    }catch (\Exception $e){
+        Log::info("Error al obtener roles" . $e->getMessage());
+
+    }
+        // $url = getenv("SESSION_HOSTNAME")."/notary-offices/roles";
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // $listRoles = curl_exec($ch);
+        // if ($listRoles === false) {
+        //     throw new \Exception(curl_error($ch), curl_errno($ch));
+        // }
+        // curl_close($ch);
+        // $json = json_decode($listRoles);
+        // $data = $json->response->notary_office;
+        // return $data;
    }
    public function getRoles(){
         try{
