@@ -9,12 +9,19 @@ use Illuminate\Support\Facades\Log;
 use App\Repositories\AdministratorsRepositoryEloquent;
 
 use App\Repositories\MenuRepositoryEloquent;
+use App\Repositories\TransaccionesRepositoryEloquent;
+use App\Repositories\EntidadRepositoryEloquent;
+use App\Repositories\EntidadtramiteRepositoryEloquent;
+use App\Repositories\TramitesRepositoryEloquent;
 
 class HomeController extends Controller
 {
 
 
     protected $admin ;
+    protected $transaccionesdb;
+    protected $entidaddb;
+    protected $tramitesdb;
 
     /**
      * Create a new controller instance.
@@ -23,7 +30,11 @@ class HomeController extends Controller
      */
     public function __construct( 
         AdministratorsRepositoryEloquent $admin,
-        MenuRepositoryEloquent $menu
+        MenuRepositoryEloquent $menu,
+        TransaccionesRepositoryEloquent $transaccionesdb,
+        EntidadRepositoryEloquent $entidaddb,
+        TramitesRepositoryEloquent $tramitesdb
+
      )
     {
         $this->middleware('auth');
@@ -32,6 +43,9 @@ class HomeController extends Controller
 
         $this->admin = $admin;
         $this->menu = $menu;
+        $this->transaccionesdb=$transaccionesdb;
+        $this->entidaddb=$entidaddb;
+        $this->tramitesdb=$tramitesdb;
     }
 
     /**
@@ -127,6 +141,13 @@ class HomeController extends Controller
         }
         //log::info($response);
         return $response;
+    }
+
+    public function SearchEntidad(Request $request)
+    {
+        $findEntidad=$this->entidaddb->findWhere([""=>]);
+        
+        return json_encode($findEntidad);
     }
     
 }
