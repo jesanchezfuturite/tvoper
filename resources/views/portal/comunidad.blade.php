@@ -113,7 +113,7 @@
               </div> 
               <div class="col-md-3">             
               <div class="form-group">
-                <select class="select2me form-control"name="itemsRoles" id="itemsRoles" onchange="changeRol()">
+                <select class="select2me form-control"name="itemsPerm" id="itemsPerm">
                       <option value="0">------</option>                         
                     </select>
               </div>
@@ -685,11 +685,12 @@
 <script type="text/javascript" src="assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js"></script>
 <script type="text/javascript">
   jQuery(document).ready(function() {
-    findTramites();
     ItemsPermisos();
+    findTramites();   
     findentidades();
     TableManaged.init();
     ItemsComunidad();
+    //SelectItemsPermisos();
     $(".section-notary").css("display", "none");
      $(".title-user").css("display", "none");
      $(".section-users").css("display", "block");
@@ -793,10 +794,22 @@ function changeEntidades()
       data: {_token:'{{ csrf_token() }}'}  })
       .done(function (response) { 
         document.getElementById("arrayPermisos").value=JSON.stringify(response);
-          
+          SelectItemsPermisos();
         })
       .fail(function( msg ) {
          Command: toastr.warning("Error al Cargar Select Rol", "Notifications")   });
+  }
+  function SelectItemsPermisos()
+  { 
+    var array=$("#arrayPermisos").val();
+        $("#itemsPerm option").remove();
+        $('#itemsPerm').append("<option value='0'>------</option>");
+          $.each($.parseJSON(array), function(i, item) {
+            if(item.name.match("titular")){
+              $('#itemsPerm').append("<option value='"+item.id+"'>"+item.description+"</option>");            
+            }
+          });
+          $("#itemsPerm").val("0").change();
   }
   function selectPermiso_insert()
   { 
