@@ -462,7 +462,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <div class="clearfix">
 </div>
 <!-- BEGIN CONTAINER -->
-<div class="page-container">
+<div class="page-container" id="app">
 	<!-- BEGIN SIDEBAR -->
 	<div class="page-sidebar-wrapper">
 		<!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
@@ -1663,9 +1663,9 @@ License: You must have a valid license purchased only from themeforest(the above
 			</div>
 		</div>
 	</div>
-</div>
+</div>-->
 <!-- END QUICK SIDEBAR -->
-</div>
+
 <!-- END CONTAINER -->
 <!-- BEGIN FOOTER -->
 <div class="page-footer">
@@ -1726,6 +1726,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="{{ asset('assets/admin/pages/scripts/components-pickers.js') }}" type="text/javascript"></script>
 <script src="{{ asset('assets/admin/pages/scripts/table-managed.js') }}"></script>
 <script src="{{ asset('assets/admin/pages/scripts/table-editable.js') }}"></script>
+ <script src="{{ asset('js/app.js') }}" defer></script>
 <script>
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components

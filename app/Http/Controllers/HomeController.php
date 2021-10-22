@@ -13,6 +13,7 @@ use App\Repositories\TransaccionesRepositoryEloquent;
 use App\Repositories\EntidadRepositoryEloquent;
 use App\Repositories\EntidadtramiteRepositoryEloquent;
 use App\Repositories\TramitesRepositoryEloquent;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -145,9 +146,27 @@ class HomeController extends Controller
 
     public function SearchEntidad(Request $request)
     {
-        $findEntidad=$this->entidaddb->findWhere([""=>]);
-        
-        return json_encode($findEntidad);
+    
+        setlocale(LC_ALL, 'es_MX', 'es', 'ES', 'es_MX.utf8');
+        $fecha = Carbon::now();
+        $fecha->diffForHumans();
+        $mes = $fecha->formatLocalized('%B');
+        $f_inicio = Carbon::now()->startOfMonth()->subMonth()->toDateString();
+        $f_fin = Carbon::now()->endOfMonth()->subMonth()->toDateString();
+        $data=array();
+        $find =$this->transaccionesdb->findREntidad($f_inicio,$f_fin);
+        $array1=array();
+        $array2=array();
+        foreach ($find as $k) {
+            $array1 []= $k->entidad;
+            $array2 []= $k->transacciones;
+        }
+        $data=array(
+            "mes"=>$mes,
+            "data_label"=>$array1,
+            "data"=>$array2
+        );
+        return json_encode($data);
     }
     
 }

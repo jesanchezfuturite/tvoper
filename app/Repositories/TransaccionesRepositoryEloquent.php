@@ -340,5 +340,25 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
             return null;
         }        
     }
-    
+    public function findREntidad($f_inicio,$f_fin)
+    {
+      try{        
+        $data = Transacciones::where('fecha_transaccion','>',$f_inicio)
+        ->where('fecha_transaccion','<',$f_fin)
+        ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_transacciones.entidad')
+        ->select('operacion.oper_entidad.nombre AS entidad')
+        ->selectRaw('COUNT(operacion.oper_transacciones.id_transaccion_motor) AS transacciones')
+        ->Where('operacion.oper_entidad.id','<>',null)
+        ->where ('operacion.oper_transacciones.estatus','=','0')
+        ->where('operacion.oper_transacciones.id_transaccion_motor','>','2000000000') 
+        ->groupBy('entidad')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@findREntidad] Error ' . $e->getMessage());
+            return null;
+        }  
+    }
 }
