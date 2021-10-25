@@ -6,7 +6,6 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -14,23 +13,25 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
-                    You are logged in!
                 </div>
-                <example-component></example-component>
             </div>
         </div>
     </div>
 </div>
-
 </div>
 <div class="row">
   <div class="col-md-6">
-    <chart-bar></chart-bar>
-     
+    <chart-bar></chart-bar>    
+  </div>
+   <div class="col-md-6">
+    <chart-bar></chart-bar>    
   </div>
 </div>
 @endsection
 @section('scripts')
-
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    ComponentsPickers.init(); 
+  });
+</script>
 @endsection

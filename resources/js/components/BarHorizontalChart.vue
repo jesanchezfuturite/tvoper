@@ -1,14 +1,14 @@
 
 <script>
-  import { Bar } from 'vue-chartjs'
+  import { HorizontalBar } from 'vue-chartjs'
 
 export default {
-  name:"BarChart",
+  name:"BarHorizontalChart",
   props:{
     chartdatas:[]
 
   },
-  extends: Bar,
+  extends: HorizontalBar,
   data(){
       return{
         chartdata: {
