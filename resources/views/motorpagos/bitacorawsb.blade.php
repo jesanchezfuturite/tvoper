@@ -28,147 +28,113 @@
     <strong>Info:</strong> Reporte por fecha de pago, filtro por FECHA y PLATAFORMA, Busqueda por rango de fechas.
 </div>
 
+
 <div class="row">
-    <div class="portlet-body">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="portlet box blue">
-                    <div class="portlet-title">
-                        <div class="caption"><i class="fa fa-gift"></i>Reporte</div>                        
+    <div class="col-md-12 col-sm-12 text-left">
+        <span class="help-block">Selecciona una Opcion. </span>
+        <div class="md-radio-inline">
+            <div class="md-radio">
+                <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()">
+                <label for="radio6">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span> Hace 1 Dia (Últimas 24hrs).
+                </label>
+            </div>
+            <div class="md-radio">
+                <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="tresdias" onclick="radiobuttons()">
+                <label for="radio7"><span></span>
+                    <span class="check"></span>
+                    <span class="box"></span >Hace 3 Días.
+            </label>
+            </div>
+            <div class="md-radio">
+                <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="avanzado" onclick="radiobuttons()">
+                <label for="radio8">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>Avanzado (Rango Fechas). 
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div id="addTimerpicker" hidden="true">
+            <div class='col-md-3'>
+                <span class='help-block'>&nbsp;</span>
+                <div class='input-group'>
+                    <label for='fecha'>Seleccionar Rango de Fechas.</label>
+                    <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'>
+                        <span class='input-group-addon'>De</span>
+                        <input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'>
+                        <span class='input-group-addon'>A</span>
+                        <input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'>
                     </div>
-                    <div class="portlet-body">
-                        <div class="row">
-                            <div class="col-md-12 text-right">
-                                <span class="help-block">Selecciona una Opcion. </span>
-                                <div class="md-radio-inline">
-                                    <div class="md-radio">
-                                        <input type="radio" id="radio6" name="radio2" class="md-radiobtn" value="undia" onclick="radiobuttons()">
-                                        <label for="radio6">
-                                        <span></span>
-                                        <span class="check"></span>
-                                        <span class="box"></span>Hace 1 Dia (Últimas 24hrs). </label>
-                                    </div>
-                                    <div class="md-radio">
-                                        <input type="radio" id="radio7" name="radio2" class="md-radiobtn" value="tresdias" onclick="radiobuttons()">
-                                        <label for="radio7">
-                                        <span></span>
-                                        <span class="check"></span>
-                                        <span class="box"></span>Hace 3 Días.</label>
-                                    </div>
-                                    <div class="md-radio">
-                                        <input type="radio" id="radio8" name="radio2" class="md-radiobtn" value="avanzado" onclick="radiobuttons()">
-                                        <label for="radio8">
-                                        <span></span>
-                                        <span class="check"></span>
-                                        <span class="box"></span>Avanzado (Rango Fechas). </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div id="addTimerpicker" hidden="true">
-                                <div class='col-md-4'>
-                                    <span class='help-block'>&nbsp;</span>
-                                    <div class='form-group'>
-                                        <label for='fecha'>Seleccionar Rango de Fechas.</label>
-                                        <div class='input-group input-large date-picker input-daterange' data-date-format='yyyy-mm-dd'>
-                                            <span class='input-group-addon'>De</span>
-                                            <input type='text' class='form-control' name='from' id='fechainicio' autocomplete='off'>
-                                            <span class='input-group-addon'>A</span>
-                                            <input type='text' class='form-control' name='to'id='fechafin' autocomplete='off'>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- <div class='col-md-3'>
-                                    <span class='help-block'>&nbsp;</span>
-                                    <div class='form-group'>
-                                        <label>Referencia / Folio</label>
-                                        <input type='text' placeholder='Ingrese RFC / Placas / Folio' autocomplete='off' name='rfc' id='rfc' class='form-control'>
-                                    </div>
-                                </div> -->
-                                <div class='col-md-1'>
-                                    <span class='help-block'>&nbsp;</span>
-                                    <span class='help-block'>&nbsp;</span>
-                                    <div class='form-group'>
-                                        <button class='btn green' id='Buscaroper' onclick='RangoFechas()'>Buscar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='form-group'>
-                                <div class='col-md-12 text-right'>
-                                    <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button>
-                                </div>
-                            </div>
-                        </div>
-                        <span class='help-block'>&nbsp;</span>
-                        <div id="addTable_1">
-                            <div  id="table_1">
-                                <div class="table-scrollable"> 
-                                    <table class="table table-hover table-responsive" id="sample_3">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th> 
-                                                <th>Fecha</th> 
-                                                <th>Operacion</th> 
-                                                <th>Referencia</th> 
-                                                <th>Ip</th>
-                                                <th>Banco</th>
-                                                <th>Importe</th>
-                                                <th>Respuesta</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody> 
-                                            <tr>
-                                                <td></td>                     
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>                                   
-                                        </tbody>                                    
-                                    </table>                          
-                                </div>
-                            </div>
-                        </div>
-                    </div>                    
                 </div>
+            </div>
+            <div class='col-md-1'>
+                <span class='help-block'>&nbsp;</span>
+                <span class='help-block'>&nbsp;</span>
+                <div class='btn-group'>
+                    <button class='btn green' id='Buscaroper' onclick='RangoFechas()'>Buscar</button>
+                </div>
+            </div>
+        </div>
+        <div class='form-group'>
+            <div class='col-md-12 text-left'>
+                <span class='help-block'>&nbsp;</span>
+                <!-- <button class='btn blue' onclick='saveOper()'><i class='fa fa-file-excel-o'></i> Descargar CSV</button> -->
+                <button class='btn blue' id="bitacora"><i class='fa fa-file-excel-o'></i> Descargar CSV</button>
             </div>
         </div>
     </div>
 </div>
 
+<span class='help-block'>&nbsp;</span>
 
-<div class="modal fade bs-modal-lg" id="large" tabindex="-1" data-backdrop="static" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Modal Title</h4>
-            </div>
-            <div class="modal-body">
-               <div class="vl">
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                    <span class="help-block"> &nbsp;</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn default" data-dismiss="modal">Close</button>
-            
+<div class="row">
+    <div class="col-md-12">
+        <div id="addTable_1">
+            <div id="table_1">
+
+                    <table class="table table-hover table-responsive" id="sample_3">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th> 
+                                <th>Operacion</th> 
+                                <th>Referencia</th> 
+                                <th>Ip</th>
+                                <th>Banco</th>
+                                <th>Importe</th>
+                                <th>Respuesta</th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            <tr>                     
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>                                   
+                        </tbody>                                    
+                    </table>                          
+
             </div>
         </div>
     </div>
 </div>
-<input type="text" name="jsonCode1" id="jsonCode1" hidden="true">
+<form id="form_bitacora" action="{{ url()->route('export-bitacorawsb') }}" method="post">
+    {{ csrf_field() }}
+    <!-- <input type="hidden" name="f1" id="f1" value="">
+    <input type="hidden" name="f2" id="f2" value=""> -->
+    <input type="hidden" name="response" id="response" value="">
+</form>
 
 @endsection
 @section('scripts')
@@ -187,12 +153,34 @@
     jQuery(document).ready(function() {
         UIBlockUI.init(); 
         cargatabla1();
-        // cargatabla2(); 
-        // cargatabla3(); 
-        ComponentsPickers.init(); 
+        ComponentsPickers.init();
+
+        $('#bitacora').click(function(){
+            
+            event.preventDefault();
+
+            var j = $('#response').val();
+            
+            if(j == "") {
+                Command: toastr.warning("Se necesita hacer una busqueda", "Notifications");
+                return false;
+            }
+
+            var option = document.querySelector('input[name = radio2]:checked').value;
+
+            if(j === "0") {
+                Command: toastr.warning("No hubo resultados en la busqueda", "Notifications");
+                return false;   
+            }
+
+            $('#form_bitacora').submit();
+
+        });
+ 
 
     });
 
+    
     function RangoFechas()
     {
         fechaIn = $("#fechainicio").val();
@@ -203,9 +191,7 @@
         }else{
             consulta(fechaIn,fechaF);                    
         }
-    }
-
-    
+    }    
 
     function cargatabla1()
     {    
@@ -213,33 +199,28 @@
         
         $('#sample_3 thead tr').clone(true).appendTo('#sample_3 thead');
         $('#sample_3').DataTable({
+            "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
             "pageLength": 20,
-            "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],            
-            initComplete: function () {            
-                this.api().columns().every( function () {
-                    
-                    var column = this;               
-                    var select = $('<select class="select2me form-control"><option value=""></option></select>')
-                        .appendTo( $("#sample_3 thead tr:eq(0) th:eq('" + inin + "')").empty() )
-                        .on( 'change', function () {
-                            var val = $.fn.dataTable.util.escapeRegex(
-                                $(this).val()
-                            );
-     
-                            column
-                                .search( val ? '^' + val + '$' : '', true, false )
-                                .draw();
-                               
-                        });
-     
-                    column.data().unique().sort().each( function ( d, j ) {
-                        select.append( '<option value="' + d + '">' + d + '</option>' )
-                    });
+            "searching": false,
+            initComplete: function() {
+                this.api().columns().every(function(){
+                    var column = this;
+                    var select = $('<select><option value=""> ------ </option></select>')
+                        .appendTo($("#sample_3 thead tr:eq(0) th:eq('" + inin + "')")
+                            .empty())
+                                .on('change',function() { 
+                                    var val = $.fn.dataTable.util.escapeRegex( $(this).val() ); 
+                                    column.search( val ? '^'+val+'$' : '', true, false ).draw(); 
+                                });
+                                
+                            column.data().unique().sort().each( function(d,j) {
+                                select.append('<option value="'+d+'">'+d+'</option>');
+                            });
+
                     inin = inin + 1;
                 });
             }
-        });
-        
+        });        
     }
 
     function radiobuttons()
@@ -270,16 +251,14 @@
 
         $.ajax({
             method: "post",            
-            url: "{{ url('/report-bitacora-wsbancos') }}",
+            url: "{{ url()->route('report-bitacora-wsbancos') }}",
             data: {fechaInicio:fechaIn,fechaFin:fechaF,_token:'{{ csrf_token() }}'}  }
         )
         .done(function (response) { 
 
-            document.getElementById('jsonCode1').value = JSON.stringify(response);;        
+            document.getElementById('response').value = JSON.stringify(response);
+
             $("#sample_3 tbody tr").remove();   
-            // var Resp = $.parseJSON(response);
-            var color   = '';
-            var label = '';
 
             $.each(response, function(i, item) {
 
@@ -288,7 +267,6 @@
 
                 $('#sample_3 tbody')
                     .append($('<tr>')
-                        .append($('<td>').html(item.id))
                         .append($('<td>').html(item.fecha))
                         .append($('<td>').html(item.operacion))
                         .append($('<td>').html(item.referencia))
@@ -306,7 +284,6 @@
 
             $("#sample_3 tbody tr").remove();
             $("#sample_3 tbody").append($('<tr>').append($('<td>').html('No Encontrado'))); 
-            // $("#sample_3 tbody").append("<tr>"+"<td>No Found</td>"+"</tr>");
             Command: toastr.warning("Registro No Encontrado", "Notifications")
 
         });
@@ -318,33 +295,29 @@
         $("#table_1").remove();
         $("#addTable_1")
             .append($('<div>').attr('id','table_1')
-                .append($('<div>').addClass('table-scrollable')
-                    .append($('<table>')
-                        .addClass('table table-hover table-responsive')
-                        .attr('id','sample_3')
-                        .append($('<thead>')
-                            .append($('<tr>')
-                                .append($('<th>').html('#'))
-                                .append($('<th>').html('Fecha'))
-                                .append($('<th>').html('Operacion'))
-                                .append($('<th>').html('Referencia'))
-                                .append($('<th>').html('Ip'))
-                                .append($('<th>').html('Banco'))
-                                .append($('<th>').html('Importe'))
-                                .append($('<th>').html('Respuesta'))
-                            )
+                .append($('<table>')
+                    .addClass('table table-hover table-responsive')
+                    .attr('id','sample_3')
+                    .append($('<thead>')
+                        .append($('<tr>')
+                            .append($('<th>').html('Fecha'))
+                            .append($('<th>').html('Operacion'))
+                            .append($('<th>').html('Referencia'))
+                            .append($('<th>').html('Ip'))
+                            .append($('<th>').html('Banco'))
+                            .append($('<th>').html('Importe'))
+                            .append($('<th>').html('Respuesta'))
                         )
-                        .append($('<tbody>')
-                            .append($('<tr>')
-                                .append($('<td>').html('Espere Cargando.....'))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                                .append($('<td>').html(''))
-                            )
+                    )
+                    .append($('<tbody>')
+                        .append($('<tr>')
+                            .append($('<td>').html('Espere Cargando.....'))
+                            .append($('<td>').html(''))
+                            .append($('<td>').html(''))
+                            .append($('<td>').html(''))
+                            .append($('<td>').html(''))
+                            .append($('<td>').html(''))
+                            .append($('<td>').html(''))
                         )
                     )
                 )
@@ -353,8 +326,6 @@
 
     function timpicker()
     {
-        //$("#addTimerpicker div").remove();
-         //$("#addTimerpicker").append("");
         $("#addTimerpicker").css("display", "block");         
         document.getElementById('fechainicio').value='';
         document.getElementById('fechafin').value='';
@@ -362,18 +333,16 @@
 
     function saveOper()
     {
-        var JSONData=$("#jsonCode1").val();
+        var JSONData=$("#response").val();
         var ReportTitle='Reporte_Bitacora_WSB';
         JSONToCSVConvertor(JSONData, ReportTitle, true);
     }
 
-    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
-        
+    function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) 
+    {    
         var f = new Date();
         fecha =  f.getFullYear()+""+(f.getMonth() +1)+""+f.getDate()+"_";
         var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
-        // var arrData = JSONData;   
-        // console.log(arrData); 
         var CSV = '';    
     
         if (ShowLabel) {

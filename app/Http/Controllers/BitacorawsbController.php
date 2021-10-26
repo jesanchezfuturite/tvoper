@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\Exportable;
+use App\Exports\BitacoraExport;
 
 /**** Repository ****/
 use App\Repositories\BitacorawsbRepositoryEloquent;
@@ -58,6 +62,22 @@ class BitacorawsbController extends Controller
 		} catch (Exception $e) {
 			
 			return response()->json(['error'=>true,'msg'=>$e->getMessage(),'data'=>[]]);
+		}
+	}
+
+	public function excelBitacora(Request $request) {
+
+		try {
+			$data = json_decode($request->response);		
+			return Excel::download( new BitacoraExport($data) , 'bitacora.xlsx' );
+		} catch (Exception $e) {
+			Log::info('Error  '.$e->getMessage());
+            return response()->json(
+                [
+                    "Code" => "400",
+                    "Message" => "Error al generar excel ".$e->getMessage(),
+                ]
+            );
 		}
 	}
 

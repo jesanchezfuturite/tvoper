@@ -168,6 +168,7 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::post('/report-paid-operation','MasterlogController@consultamasterlog')->name('report-paid-operation');
     Route::get('/reporte-bitacora','BitacorawsbController@index')->name('reporte-bitacora');
     Route::post('/report-bitacora-wsbancos','BitacorawsbController@consultabitacora')->name('report-bitacora-wsbancos');
+    Route::post('/export-bitacorawsb','BitacorawsbController@excelBitacora')->name('export-bitacorawsb');
 
     /************************ FAMILIA ***********************/
     Route::get('/familia','MotorpagosController@familia')->name('familia');
