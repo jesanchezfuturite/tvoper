@@ -4,7 +4,7 @@
 <link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
 <link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 
-<h3 class="page-title">Consultas <small>Reporte por fecha de pago</small></h3>
+<h3 class="page-title">Consultas <small>Bitacora WS Bancos</small></h3>
 
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -18,7 +18,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Reporte por fecha de pagos</a>
+            <a href="#">Bitacora</a>
         </li>
     </ul>
 </div>
@@ -99,31 +99,30 @@
     <div class="col-md-12">
         <div id="addTable_1">
             <div id="table_1">
-
-                    <table class="table table-hover table-responsive" id="sample_3">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th> 
-                                <th>Operacion</th> 
-                                <th>Referencia</th> 
-                                <th>Ip</th>
-                                <th>Banco</th>
-                                <th>Importe</th>
-                                <th>Respuesta</th>
-                            </tr>
-                        </thead>
-                        <tbody> 
-                            <tr>                     
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>                                   
-                        </tbody>                                    
-                    </table>                          
+                <table class="table table-hover table-responsive" id="sample_3">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th> 
+                            <th>Operacion</th> 
+                            <th>Referencia</th> 
+                            <th>Ip</th>
+                            <th>Banco</th>
+                            <th>Importe</th>
+                            <th>Respuesta</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr>                     
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>                                   
+                    </tbody>                                    
+                </table>                          
 
             </div>
         </div>
