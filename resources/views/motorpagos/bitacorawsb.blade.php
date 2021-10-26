@@ -1,7 +1,7 @@
 @extends('layout.app')
 @section('content')
 
-<link href="assets/global/dataTable/dataTables.min.css" rel="stylesheet" type="text/css"/>
+<link href="{{ asset('assets/global/dataTable/dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
 <link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 
 <h3 class="page-title">Consultas <small>Bitacora WS Bancos</small></h3>
@@ -138,14 +138,14 @@
 @endsection
 @section('scripts')
 
-<script src="assets/global/dataTable/dataTables.min.js"></script>
-<script src="assets/global/dataTable/dataTables.buttons.min.js"></script>
-<script src="assets/global/dataTable/buttons.flash.min.js"></script>
-<script src="assets/global/dataTable/jszip.min.js"></script>
-<script src="assets/global/dataTable/pdfmake.min.js"></script>
-<script src="assets/global/dataTable/vfs_fonts.js"></script>
-<script src="assets/global/dataTable/buttons.html5.min.js"></script>
-<script src="assets/global/dataTable/buttons.print.min.js"></script>
+<script src="{{ asset('assets/global/dataTable/dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/buttons.flash.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/pdfmake.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/vfs_fonts.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/global/dataTable/buttons.print.min.js') }}"></script>
 
 <script  type="text/javascript">
 
