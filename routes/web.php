@@ -494,5 +494,6 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     
     Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
 
-    Route::get('/reporte-mes','HomeController@SearchEntidad');
+    Route::get('/reporte-mes-c','HomeController@SearchEntidad')->name("reporte-mes-c");
+    Route::get('/reporte-tramites-c','HomeController@SearchRange')->name("reporte-tramites-c");
 });

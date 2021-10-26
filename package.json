@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "chart.js": "2.9.4",
+        "v-calendar": "^2.3.4",
         "vue-chartjs": "3.5.1"
     }
 }

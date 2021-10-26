@@ -348,6 +348,7 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
         ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_transacciones.entidad')
         ->select('operacion.oper_entidad.nombre AS entidad')
         ->selectRaw('COUNT(operacion.oper_transacciones.id_transaccion_motor) AS transacciones')
+        ->selectRaw('SUM(operacion.oper_transacciones.importe_transaccion) AS monto_total')
         ->Where('operacion.oper_entidad.id','<>',null)
         ->where ('operacion.oper_transacciones.estatus','=','0')
         ->where('operacion.oper_transacciones.id_transaccion_motor','>','2000000000') 
@@ -358,6 +359,30 @@ class TransaccionesRepositoryEloquent extends BaseRepository implements Transacc
        
         }catch( \Exception $e){
             Log::info('[TransaccionesRepositoryEloquent@findREntidad] Error ' . $e->getMessage());
+            return null;
+        }  
+    }
+    public function findRTramites($f_inicio,$f_fin)
+    {
+      try{        
+        $data = Transacciones::where('fecha_transaccion','>',$f_inicio)
+        ->where('fecha_transaccion','<',$f_fin)
+        ->leftjoin('operacion.oper_entidad','operacion.oper_entidad.id','=','operacion.oper_transacciones.entidad')
+        ->leftjoin('operacion.oper_tramites','operacion.oper_tramites.id_transaccion_motor','=','operacion.oper_transacciones.id_transaccion_motor')
+        ->leftjoin('egobierno.tipo_servicios','egobierno.tipo_servicios.Tipo_Code','=','operacion.oper_tramites.id_tipo_servicio')
+        ->select('egobierno.tipo_servicios.Tipo_Descripcion AS tramite','operacion.oper_entidad.nombre AS entidad')
+        ->selectRaw('COUNT(operacion.oper_tramites.id_tramite_motor) AS transacciones')
+        ->selectRaw('SUM(operacion.oper_tramites.importe_tramite) AS monto_total')
+        ->Where('operacion.oper_entidad.id','<>',null)
+        ->where ('operacion.oper_transacciones.estatus','=','0')
+        ->where('operacion.oper_transacciones.id_transaccion_motor','>','2000000000') 
+        ->groupBy('tramite')
+        ->get();
+
+        return $data;
+       
+        }catch( \Exception $e){
+            Log::info('[TransaccionesRepositoryEloquent@findRTramites] Error ' . $e->getMessage());
             return null;
         }  
     }

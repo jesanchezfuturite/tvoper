@@ -20,11 +20,13 @@
 </div>
 </div>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <chart-bar></chart-bar>    
   </div>
-   <div class="col-md-6">
-    <chart-bar></chart-bar>    
+</div>
+<div class="row">
+   <div class="col-md-12">
+    <chart-horizontal></chart-horizontal>    
   </div>
 </div>
 @endsection
