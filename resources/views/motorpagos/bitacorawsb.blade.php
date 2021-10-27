@@ -4,7 +4,7 @@
 <link href="{{ asset('assets/global/dataTable/dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
 <link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css"/>
 
-<h3 class="page-title">Consultas <small>Bitacora WS Bancos</small></h3>
+<h3 class="page-title">Consultas <small>Log WS Bancos</small></h3>
 
 <div class="page-bar">
     <ul class="page-breadcrumb">
@@ -18,7 +18,7 @@
             <i class="fa fa-angle-right"></i>
         </li>
         <li>
-            <a href="#">Bitacora</a>
+            <a href="#">LOG</a>
         </li>
     </ul>
 </div>
