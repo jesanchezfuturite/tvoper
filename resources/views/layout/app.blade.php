@@ -1729,6 +1729,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="{{ asset('assets/admin/pages/scripts/table-editable.js') }}"></script>
  <script src="{{ asset('js/app.js') }}" defer></script>
 <script>
+		console.log($.fn.jquery);
       jQuery(document).ready(function() {    
         Metronic.init(); // init metronic core components
 		Layout.init(); // init current layout
