@@ -493,4 +493,11 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/file/{file?}' , 'ReportesController@downloadFile')->name('file');
     
     Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
+
+    //conciliacion reporte
+    Route::get('/get-year', "ConciliacionReporteController@getYear");
+    Route::get('/get-month', "ConciliacionReporteController@getMonth");
+    Route::get('/get-days/{month}/{year}', "ConciliacionReporteController@getDays");
+    Route::get('/get-filename', "ConciliacionReporteController@getFilename");
+    Route::post('/get-dataconciliacion', "ConciliacionReporteController@getDataConciliacion");
 });
