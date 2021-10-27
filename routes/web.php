@@ -495,9 +495,11 @@ Route::group(["prefix" => getenv("APP_PREFIX") ?? "/"], function(){
     Route::get('/get-all-tramites/{user}', "Portal\ListController@getTramites");
 
     //conciliacion reporte
-    Route::get('/get-year', "ConciliacionReporteController@getYear");
-    Route::get('/get-month', "ConciliacionReporteController@getMonth");
-    Route::get('/get-days/{month}/{year}', "ConciliacionReporteController@getDays");
-    Route::get('/get-filename', "ConciliacionReporteController@getFilename");
-    Route::post('/get-dataconciliacion', "ConciliacionReporteController@getDataConciliacion");
+    Route::get('/get-year', "ConciliacionReporteController@getYear")->name("get-year");
+    Route::get('/get-month', "ConciliacionReporteController@getMonth")->name("get-month");
+    Route::get('/get-days/{month}/{year}', "ConciliacionReporteController@getDays")->name("get-days");
+    Route::get('/get-filename', "ConciliacionReporteController@getFilename")->name("get-filename");
+    Route::post('/get-dataconciliacion', "ConciliacionReporteController@getDataConciliacion")->name("get-dataconciliacion");
+    Route::get('/reporte-conciliacion', "ConciliacionReporteController@index")->name("reporte-conciliacion");
+
 });
