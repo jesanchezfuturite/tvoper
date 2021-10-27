@@ -27,7 +27,7 @@
               </v-date-picker>
               </div>
             </div>
-            <div class="col-md-2"> <button class="btn green" v-on:click="findReg()"> Buscar</button> </div>
+            <div class="col-md-2"> <button class="btn green" v-on:click="findTramites()"> Buscar</button> </div>
           </div>
         </div>
         
@@ -62,15 +62,25 @@ export default {
   },
   methods:{
     obtenerR(){
-      axios.get("/reporte-tramites-c")
+      axios.post("/reporte-tramites-c",{})
       .then((response)=>{
         this.loaded = true
         this.chartdatas=response.data        
       })
     },
-    findReg(){
-      console.log(new Date(this.range.start).toISOString().slice(0,10));
-      console.log(new Date(this.range.end).toISOString().slice(0,10))
+    findTramites(){
+      this.loaded = false
+      axios.post('/reporte-tramites-c', {
+        incio: new Date(this.range.start).toISOString().slice(0,10),
+        fin: new Date(this.range.end).toISOString().slice(0,10)
+      })
+      .then((response)=>{
+        this.loaded = true
+        this.chartdatas=response.data
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
   },
   mounted() {

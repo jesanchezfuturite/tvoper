@@ -20,15 +20,16 @@
 </div>
 </div>
 <div class="row">
-  <div class="col-md-12">
-    <chart-bar></chart-bar>    
-  </div>
-</div>
-<div class="row">
    <div class="col-md-12">
     <chart-horizontal></chart-horizontal>    
   </div>
 </div>
+<div class="row">
+  <div class="col-md-12">
+    <chart-bar></chart-bar>    
+  </div>
+</div>
+
 @endsection
 @section('scripts')
 <script type="text/javascript">
