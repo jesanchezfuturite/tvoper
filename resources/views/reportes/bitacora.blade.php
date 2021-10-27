@@ -9,7 +9,6 @@
           <th>Fecha</th> 
           <th>Operacion</th> 
           <th>Referencia</th> 
-          <th>Ip</th>
           <th>Banco</th>
           <th>Importe</th>
           <th>Respuesta</th>  
@@ -21,7 +20,6 @@
            <td >{{ $row->fecha }}</td>
            <td >{{ $row->operacion }}</td>
            <td >{{ $row->referencia }}</td>
-           <td >{{ $row->ip }}</td>
            <td >{{ $row->banco }}</td>
            <td >{{ $row->importe }}</td>
            <td >{{ $row->respuesta }}</td>

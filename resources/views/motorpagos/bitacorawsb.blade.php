@@ -56,12 +56,20 @@
                     <span class="box"></span>Avanzado (Rango Fechas). 
                 </label>
             </div>
+            <div class="md-radio">
+                <input type="radio" id="radio9" name="radio2" class="md-radiobtn" value="referencia" onclick="radiobuttons()">
+                <label for="radio9">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>Por referencia. 
+                </label>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12 col-sm-12">
+    <div class="col-md-12">
         <div id="addTimerpicker" hidden="true">
             <div class='col-md-3'>
                 <span class='help-block'>&nbsp;</span>
@@ -80,6 +88,25 @@
                 <span class='help-block'>&nbsp;</span>
                 <div class='btn-group'>
                     <button class='btn green' id='Buscaroper' onclick='RangoFechas()'>Buscar</button>
+                </div>
+            </div>
+        </div>
+        <div id="campoReferencia" hidden="true">
+            <div class="col-md-3">
+                <span class='help-block'>&nbsp;</span>
+                <div class="input-group col-sm-12">
+                    <label for="referencia">Datos necesarios.</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">Referencia</span>
+                        <input type="text" class="form-control" name="referencia" id="referencia" autocomplete="off" maxlength="30">
+                    </div>
+                </div>
+            </div>              
+            <div class='col-md-1'>
+                <span class='help-block'>&nbsp;</span>
+                <span class='help-block'>&nbsp;</span>
+                <div class='btn-group'>
+                    <button class='btn green' id='BuscarRef' onclick='BuscarRef()'>Buscar</button>
                 </div>
             </div>
         </div>
@@ -105,7 +132,6 @@
                             <th>Fecha</th> 
                             <th>Operacion</th> 
                             <th>Referencia</th> 
-                            <th>Ip</th>
                             <th>Banco</th>
                             <th>Importe</th>
                             <th>Respuesta</th>
@@ -113,7 +139,6 @@
                     </thead>
                     <tbody> 
                         <tr>                     
-                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -130,8 +155,6 @@
 </div>
 <form id="form_bitacora" action="{{ url()->route('export-bitacorawsb') }}" method="post">
     {{ csrf_field() }}
-    <!-- <input type="hidden" name="f1" id="f1" value="">
-    <input type="hidden" name="f2" id="f2" value=""> -->
     <input type="hidden" name="response" id="response" value="">
 </form>
 
@@ -190,6 +213,16 @@
         }else{
             consulta(fechaIn,fechaF);                    
         }
+    }
+
+    function BuscarRef()
+    {
+        ref = $('#referencia').val();
+
+        if(ref.length < 1)
+            Command: toastr.warning("Referencia no válida","Notifications")
+        else
+            consultaref(ref)
     }    
 
     function cargatabla1()
@@ -200,7 +233,6 @@
         $('#sample_3').DataTable({
             "lengthMenu": [[5, 15, 20, -1], [5, 15, 20, "All"]],
             "pageLength": 20,
-            "searching": false,
             initComplete: function() {
                 this.api().columns().every(function(){
                     var column = this;
@@ -232,9 +264,13 @@
         if(option=="avanzado") {
             timpicker();
         }
+        else if(option=="referencia") {
+            porreferencia();
+        }
         else {
             //$("#addTimerpicker div").remove();
             $("#addTimerpicker").css("display", "none");
+            $("#campoReferencia").css("display","none");
             if(option == "undia") {
                 consulta("1","1");
             }
@@ -269,7 +305,6 @@
                         .append($('<td>').html(item.fecha))
                         .append($('<td>').html(item.operacion))
                         .append($('<td>').html(item.referencia))
-                        .append($('<td>').html(item.ip))
                         .append($('<td>').html(item.banco))
                         .append($('<td>').html(item.importe))
                         .append($('<td>').html(item.respuesta))
@@ -289,6 +324,40 @@
 
     }
 
+    function consultaref(ref) {
+        Addtable1();
+
+        $.ajax({
+            method: "post",
+            url: "{{ url()->route('search-bitacorawsb-ref') }}",
+            data: {ref:ref,_token:'{{ csrf_token() }}'}
+        })
+        .done(function(response){
+            $.each(response, function(i, item) {
+
+                var iext = (typeof item.extra === 'string' && item.extra !== null) ? $.parseJSON(item.extra) : { id_tramite:0, des_tramite:'ND' };
+                var dext = iext.des_tramite === null ? 'ND' : iext.des_tramite.toUpperCase();
+
+                $('#sample_3 tbody')
+                    .append($('<tr>')
+                        .append($('<td>').html(item.fecha))
+                        .append($('<td>').html(item.operacion))
+                        .append($('<td>').html(item.referencia))
+                        .append($('<td>').html(item.banco))
+                        .append($('<td>').html(item.importe))
+                        .append($('<td>').html(item.respuesta))
+                    );
+            });       
+            
+            cargatabla1();
+        })
+        .fail(function(msg){
+            $("#sample_3 tbody tr").remove();
+            $("#sample_3 tbody").append($('<tr>').append($('<td>').html('No Encontrado'))); 
+            Command: toastr.warning("Registro No Encontrado", "Notifications")
+        });
+    }   
+
     function Addtable1()
     {
         $("#table_1").remove();
@@ -302,7 +371,6 @@
                             .append($('<th>').html('Fecha'))
                             .append($('<th>').html('Operacion'))
                             .append($('<th>').html('Referencia'))
-                            .append($('<th>').html('Ip'))
                             .append($('<th>').html('Banco'))
                             .append($('<th>').html('Importe'))
                             .append($('<th>').html('Respuesta'))
@@ -316,7 +384,6 @@
                             .append($('<td>').html(''))
                             .append($('<td>').html(''))
                             .append($('<td>').html(''))
-                            .append($('<td>').html(''))
                         )
                     )
                 )
@@ -325,9 +392,17 @@
 
     function timpicker()
     {
+        $("#campoReferencia").css("display","none");
         $("#addTimerpicker").css("display", "block");         
         document.getElementById('fechainicio').value='';
         document.getElementById('fechafin').value='';
+    }
+
+    function porreferencia()
+    {
+        $("#addTimerpicker").css("display","none");
+        $("#campoReferencia").css("display","block");
+        document.getElementById('referencia').value='';
     }
 
     function saveOper()

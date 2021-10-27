@@ -57,10 +57,32 @@ class BitacorawsbController extends Controller
 
 			$result = $this->bitacora->findbyDates($fechaIn,$fechaFi);
 
+			// foreach ($result as $index => $v) {
+		 //        $operacion = str_replace(" - DBC", "", $v->operacion);
+		 //        $result[$index]->operacion=$operacion;
+		 //    }
+
             return response()->json($result);
 			
 		} catch (Exception $e) {
 			
+			return response()->json(['error'=>true,'msg'=>$e->getMessage(),'data'=>[]]);
+		}
+	}
+
+	public function consultabitacoraxref(Request $request) {
+
+		try {
+			$referencia = $request->ref;
+
+			if(strlen($referencia) <= 0)
+				return respone()->json(['error'=>true,'msg'=>'Longitud de referencia invalida','data'=>[]]);
+
+			$result = $this->bitacora->findbyReferencia($referencia);
+
+			return response()->json($result);
+			
+		} catch (Exception $e) {
 			return response()->json(['error'=>true,'msg'=>$e->getMessage(),'data'=>[]]);
 		}
 	}
