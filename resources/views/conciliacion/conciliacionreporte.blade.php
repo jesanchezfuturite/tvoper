@@ -140,7 +140,7 @@
     function findYear(){
         $.ajax({
            method: "get",            
-           url: "{{ url()->route('/get-year') }}",
+           url: "{{ url()->route('get-year') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           $("#itemYear option").remove();
@@ -155,7 +155,7 @@
     function findMonth(){
         $.ajax({
            method: "get",            
-           url: "{{ url()->route('/get-month') }}",
+           url: "{{ url()->route('get-month') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           $("#itemMonth option").remove();
@@ -170,7 +170,7 @@
     function findFileName(){
         $.ajax({
            method: "get",            
-           url: "{{ url()->route('/get-filename') }}",
+           url: "{{ url()->route('get-filename') }}",
            data: {_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
           $("#itemfilename option").remove();
@@ -204,7 +204,7 @@
         
         $.ajax({
            method: "POST",            
-           url: "{{ url()->route('/get-dataconciliacion') }}",
+           url: "{{ url()->route('get-dataconciliacion') }}",
            data: {day: itemDay,month:itemMonth,year:itemYear,filename:itemfilename,_token:'{{ csrf_token() }}'}  })
         .done(function (response) {  
             console.log(response);
@@ -233,7 +233,7 @@
         }else{
             $.ajax({
                method: "get",            
-               url: "{{ url()->route('/get-days') }}" +"/"+itemMonth+"/"+itemYear,
+               url: "{{ url()->route('get-days') }}" +"/"+itemMonth+"/"+itemYear,
                data: {_token:'{{ csrf_token() }}'}  })
             .done(function (response) {  
               $("#itemDay option").remove();
