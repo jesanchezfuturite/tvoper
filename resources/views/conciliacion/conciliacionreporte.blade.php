@@ -161,7 +161,7 @@
           $("#itemMonth option").remove();
           $("#itemMonth").append("<option value='0'>-------</option>");
             $.each(response, function(i, item) {                
-               $("#itemMonth").append("<option value='"+item.month+"'>"+item.month+"</option>");  
+               $("#itemMonth").append("<option value='"+item.value+"'>"+item.month+"</option>");  
             });
         })
         .fail(function( msg ) {
