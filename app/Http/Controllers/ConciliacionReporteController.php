@@ -54,4 +54,8 @@ class ConciliacionReporteController extends Controller
         ->get()->toArray();
         return json_encode($data);
     }
+    public function index()
+    {
+        return view("conciliacion/conciliacionreporte");
+    }
 }
